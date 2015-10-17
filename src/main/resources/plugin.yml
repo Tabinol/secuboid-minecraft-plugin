@@ -1,0 +1,50 @@
+name: Secuboid
+main: me.tabinol.secuboid.Secuboid
+version: ${project.version}
+description: "Lands and grief protection plugin"
+author: [Tabinol, Kaz00]
+depend: [Vault]
+softdepend: [WorldEdit, Essentials, VanishNoPacket]
+commands:
+   secuboid:
+      description: Secuboid Command
+      aliases: [sc, secuboid, fd, claim]
+      usage: /secuboid help
+      permission: secuboid.use
+      permission-message: you don't have permission for that!
+permissions:
+    secuboid.*:
+        description: Secuboid Command Permission
+        default: op
+        children:
+            secuboid.adminmod: true
+            secuboid.adminmod.auto: true
+            secuboid.collisionapprove: true
+            secuboid.socialspy: true
+            secuboid.bypassban: true
+            secuboid.use: true
+            secuboid.reload: true
+    secuboid.adminmod:
+        description: Can use Admin Mod
+        default: op
+    secuboid.adminmod.auto:
+        description: Auto Admin Mod on connect
+        default: op
+        children:
+            secuboid.adminmod: true
+    secuboid.collisionapprove:
+        description: Can approve land creation collisions
+        default: op
+    secuboid.socialspy:
+        description: Can read conversations from all lands
+        default: op
+    secuboid.bypassban:
+        description: Ban and kick does not affect this player
+        default: op
+    secuboid.use:
+        description: Can use secuboid command
+        default: op
+    secuboid.reload:
+        description: Can reload the plugin
+        default: op
+

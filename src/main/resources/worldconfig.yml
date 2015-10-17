@@ -1,0 +1,98 @@
+# Configuration for worlds
+# Important: For Permission keys, replace "." by "_".
+# Example: "group.newbies" will become "group_newbies"
+
+_Global_:                           # _Global_ is for all worlds
+  ContainerPermissions:
+    Permission:
+      group_newbies:
+        BUILD:
+          Value: false
+          Heritable: true
+        OPEN:
+          Value: false
+          Heritable: true
+        BUCKET_WATER:
+          Value: false
+          Heritable: true
+        BUCKET_LAVA:
+          Value: false
+          Heritable: true
+    Permission:
+      group_users:
+        LAND_CREATE:
+          Value: true
+          Heritable: false
+        BUILD:
+          Value: true
+          Heritable: false
+        ECO_LAND_FOR_SALE:
+          Value: true
+          Heritable: true
+        ECO_LAND_BUY:
+          Value: true
+          Heritable: true
+        ECO_LAND_FOR_RENT:
+          Value: true
+          Heritable: true
+        ECO_LAND_RENT:
+          Value: true
+          Heritable: true
+  ContainerFlags:
+    FIRESPREAD:
+      Value: true
+      Heritable: true
+    CREEPER_DAMAGE:
+      Value: true
+      Heritable: true
+    TNT_EXPLOSION:
+      Value: true
+      Heritable: true
+    TNT_DAMAGE:
+      Value: true
+      Heritable: true
+    ENDERMAN_DAMAGE:
+      Value: true
+      Heritable: true
+    WITHER_DAMAGE:
+      Value: true
+      Heritable: true
+    ENDERDRAGON_DAMAGE:
+      Value: true
+      Heritable: true
+    GHAST_DAMAGE:
+      Value: true
+      Heritable: true
+    TNT_DAMAGE:
+      Value: true
+      Heritable: true
+    FULL_PVP:
+      Value: true
+      Heritable: true
+    FACTION_PVP:
+      Value: true
+      Heritable: true
+    ECO_BLOCK_PRICE:
+      Value: 0.01
+      Heritable: true
+#world1:
+#  ContainerPermissions:
+#    Group:
+#      Newbies:
+#        BUILD_PLACE:
+#          Value: false
+#          Heritable: true
+#        BUILD_DESTROY:
+#          Value: false
+#          Heritable: true
+#    Everybody:
+#      BUILD_PLACE:
+#        Value: true
+#        Heritable: false
+#      BUILD_DESTROY:
+#        Value: true
+#        Heritable: false
+#  ContainerFlags:
+#    CREEPER_DAMAGE:
+#      Value: true
+#      Heritable: false

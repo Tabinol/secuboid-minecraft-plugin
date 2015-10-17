@@ -1,0 +1,108 @@
+# Default for land type (/secuboid type) at the end of this file
+
+                               # Default configuration when a land is created (all lands)
+ContainerPermissions:          # Permissions
+  Visitor:
+    BUCKET_WATER:
+      Value: false
+      Heritable: true
+    BUCKET_LAVA:
+      Value: false
+      Heritable: true
+    BUILD:
+      Value: false
+      Heritable: true
+    OPEN:
+      Value: false
+      Heritable: true
+    USE:
+      Value: false
+      Heritable: true
+    ANIMAL_KILL:
+      Value: false
+      Heritable: true
+    FIRE:
+      Value: false
+      Heritable: true
+  Owner:
+    RESIDENT_MANAGER:
+      Value: true
+      Heritable: false
+    LAND_CREATE:
+      Value: true
+      Heritable: false
+    LAND_REMOVE:
+      Value: true
+      Heritable: false
+    LAND_KICK:
+      Value: true
+      Heritable: false
+    LAND_BAN:
+      Value: true
+      Heritable: false
+    LAND_WHO:
+      Value: true
+      Heritable: false
+    LAND_NOTIFY:
+      Value: true
+      Heritable: false
+    MONEY_DEPOSIT:
+      Value: true
+      Heritable: false
+    MONEY_WITHDRAW:
+      Value: true
+      Heritable: false
+    BUCKET_WATER:
+      Value: true
+      Heritable: true
+    BUCKET_LAVA:
+      Value: true
+      Heritable: true
+    BUILD:
+      Value: true
+      Heritable: true
+    OPEN:
+      Value: true
+      Heritable: true
+    USE:
+      Value: true
+      Heritable: true
+    ANIMAL_KILL:
+      Value: true
+      Heritable: true
+    FIRE:
+      Value: true
+      Heritable: true
+  Resident:
+    BUILD:
+      Value: true
+      Heritable: false
+    OPEN:
+      Value: true
+      Heritable: false
+    USE:
+      Value: true
+      Heritable: true
+    ANIMAL_KILL:
+      Value: true
+      Heritable: true
+    LAND_WHO:
+      Value: true
+      Heritable: false
+    LAND_NOTIFY:
+      Value: true
+      Heritable: false
+ContainerFlags:                # Flags
+  CREEPER_DAMAGE:
+    Value: false
+    Heritable: true
+
+# Here is the configuration for specific types in config.yml
+admin:                         # The name of the type
+  ContainerPermissions:
+    Resident:
+      BUILD:
+        Value: false
+        Heritable: false
+  ContainerFlags:
+      

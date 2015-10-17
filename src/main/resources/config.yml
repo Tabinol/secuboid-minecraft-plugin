@@ -1,0 +1,48 @@
+##################################################################
+# Secuboid config file                                           #
+##################################################################
+general:                             # ----General Config----
+  debug: false                       # Set to true to show DebugLog 
+  lang: english                      # english, french for now
+  Storage: flat                      # Only flat is supported for now
+  # The next value is if you want the Factoid explosion protection.
+  # Set it to "False" if you prefer to disable explosions from Essentials
+  # or avoiding plugin conflicts. Flags (???_DAMAGE) will be ignored.
+  OverrideExplosions: true
+  UseEconomy: false
+  InfoItem: 352                      # Item that give Land information
+  SelectItem: 367                    # Item that give Land selection
+land:
+  Types:
+    List:                            # land types or categories
+      - admin
+      - player
+    OnCreate:                        # Automatic categories on create
+      AdminMod: admin                # On admin mode (or "-null-")
+      NoneAdminMod: player           # Non admin mode (normal players or "-null-")
+  # AllowCollision:
+  # true: Collisions are permitted without verification.
+  # approve: A player with permission factoid.approvecollision must approve
+  #          the land created if there is a collision.
+  # false: No collision permitted.
+  AllowCollision: approve            # true, approve, false
+  LandChat: true                     # Allow private chat in lands (=, < and >)
+  SpectatorIsVanish: true            # true, Spectator players are not show in 
+                                     # land players list 
+  ApproveNotifyTime: 24002           # Time to notify for Approval (in ticks)
+                                     # or 0 for disabling
+  SelectAutoCancel: 12000            # Time before auto cancel a selection
+                                     # or 0 for disabling
+  MaxVisualSelect: 256               # High value = crash or severe lag
+  MaxVisualSelectFromPlayer: 128     # Same problem ;-)
+  DefaultXsize: 10
+  DefaultZsize: 10
+  DefaultBottom: 0
+  DefaultTop: 255
+  MaxLandPerPlayer: 5
+  area:
+    MaxAreaPerLand: 3
+  OwnerCanSet:                     # What the owner can set on his land?
+    Permissions: [BUILD, OPEN, USE, ANIMAL_KILL, TAMED_KILL, VILLAGER_KILL, VILLAGER_GOLEM_KILL, HORSE_KILL]
+    Flags: [TNT_EXPLOSION, TNT_DAMAGE, MESSAGE_JOIN, MESSAGE_QUIT]
+  BeaconLight: false               #Set beacon light effect of an selection

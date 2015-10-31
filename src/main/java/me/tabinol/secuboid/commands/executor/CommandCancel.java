@@ -59,7 +59,7 @@ public class CommandCancel extends CommandExec {
         fromAutoCancel = false;
     }
 
-    // Called from PlayerListener
+    // Called from FlyCreativeListener
     /**
      * Instantiates a new command cancel.
      *
@@ -83,8 +83,8 @@ public class CommandCancel extends CommandExec {
 
         if (playerConf.getConfirm() != null) {
             playerConf.setConfirm(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.CANCEL.ACTION"));
-            Secuboid.getThisPlugin().iLog().write(player.getName() + " cancel for action");
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
+            Secuboid.getThisPlugin().getLog().write(player.getName() + " cancel for action");
             
             if(!fromAutoCancel) {
                 return;
@@ -94,8 +94,8 @@ public class CommandCancel extends CommandExec {
         if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
 
             playerConf.getSelection().removeSelection(SelectionType.AREA);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.SELECT.CANCEL"));
-            Secuboid.getThisPlugin().iLog().write(player.getName() + ": Select cancel");
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
+            Secuboid.getThisPlugin().getLog().write(player.getName() + ": Select cancel");
 
             if(!fromAutoCancel) {
                 return;
@@ -106,7 +106,7 @@ public class CommandCancel extends CommandExec {
         if (playerConf.getSetFlagUI() != null) {
 
             playerConf.setSetFlagUI(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.CANCEL.FLAGS"));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.FLAGS"));
 
             if(!fromAutoCancel) {
                 return;
@@ -117,7 +117,7 @@ public class CommandCancel extends CommandExec {
         if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
 
             playerConf.getSelection().removeSelection(SelectionType.LAND);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.CANCEL.SELECT"));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
 
             // Cancel selection (it is the last think selected)
             playerConf.setAutoCancelSelect(false);

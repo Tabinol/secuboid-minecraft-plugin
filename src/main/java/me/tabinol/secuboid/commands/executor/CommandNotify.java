@@ -58,9 +58,9 @@ public class CommandNotify extends CommandExec {
         
         if (land.isPlayerNotify(entity.playerConf.getPlayerContainer())) {
             land.removePlayerNotify(entity.playerConf.getPlayerContainer());
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
         } else {
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
             land.addPlayerNotify(entity.playerConf.getPlayerContainer());
         }
     }

@@ -18,10 +18,10 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPermission;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPermission;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import org.bukkit.permissions.Permission;
  * The Class PlayerContainerPermission.
  */
 public class PlayerContainerPermission extends PlayerContainer 
-	implements IPlayerContainerPermission {
+    implements ApiPlayerContainerPermission {
 
     /** The perm. */
     private Permission perm;
@@ -44,7 +44,7 @@ public class PlayerContainerPermission extends PlayerContainer
      */
     public PlayerContainerPermission(String bukkitPermission) {
 
-        super(bukkitPermission, EPlayerContainerType.PERMISSION, true);
+        super(bukkitPermission, ApiPlayerContainerType.PERMISSION, true);
         perm = new Permission(bukkitPermission);
     }
 
@@ -52,7 +52,7 @@ public class PlayerContainerPermission extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
 
         return container2 instanceof PlayerContainerPermission
                 && name.equalsIgnoreCase(container2.getName());
@@ -77,7 +77,7 @@ public class PlayerContainerPermission extends PlayerContainer
     }
 
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return hasAccess(player);
     }
@@ -95,7 +95,7 @@ public class PlayerContainerPermission extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
 
     }
 }

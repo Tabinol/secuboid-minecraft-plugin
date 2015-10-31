@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.factions.Faction;
 import me.tabinol.secuboid.lands.Land;
 
 
@@ -35,23 +34,23 @@ import me.tabinol.secuboid.lands.Land;
  * The Class StorageThread.
  */
 public class StorageThread extends Thread {
-	
-	/** The exit request. */
-	private boolean exitRequest = false;
+    
+    /** The exit request. */
+    private boolean exitRequest = false;
 
     /** The in load. */
     protected boolean inLoad = true; // True if the Database is in Loaded
 
-	/** The storage. */
+    /** The storage. */
     private final Storage storage;
     
-	/** The land save list request. */
-	private final List<Object> saveList;
+    /** The land save list request. */
+    private final List<Object> saveList;
 
-	/** The land save list request. */
-	private final List<Object> removeList;
+    /** The land save list request. */
+    private final List<Object> removeList;
 
-	/** The lock. */
+    /** The lock. */
     final Lock lock = new ReentrantLock();
     
     /** The lock command request. */
@@ -62,24 +61,24 @@ public class StorageThread extends Thread {
 
     /** Class internally used to store landName et LandGenealogy in a list */
     private class NameGenealogy {
-    	
-    	String landName;
-    	int landGenealogy;
-    	
-    	NameGenealogy(String landName, int landGenealogy) {
-    		
-    		this.landName = landName;
-    		this.landGenealogy = landGenealogy;
-    	}
+        
+        String landName;
+        int landGenealogy;
+        
+        NameGenealogy(String landName, int landGenealogy) {
+            
+            this.landName = landName;
+            this.landGenealogy = landGenealogy;
+        }
     }
     
     /**
      * Instantiates a new storage thread.
      */
     public StorageThread() {
-    	
+        
         this.setName("Secuboid Storage");
-    	storage = new StorageFlat();
+        storage = new StorageFlat();
         saveList = Collections.synchronizedList(new ArrayList<Object>());
         removeList = Collections.synchronizedList(new ArrayList<Object>());
     }
@@ -88,11 +87,11 @@ public class StorageThread extends Thread {
      * Load all and start.
      */
     public void loadAllAndStart() {
-    	
+        
         inLoad = true;
-    	storage.loadAll();
-    	inLoad = false;
-    	this.start();
+        storage.loadAll();
+        inLoad = false;
+        this.start();
     }
     
     /**
@@ -106,112 +105,93 @@ public class StorageThread extends Thread {
     }
 
     /* (non-Javadoc)
-	 * @see java.lang.Thread#run()
-	 */
-	@Override
-	public void run() {
-    	
-		lock.lock();
-    	
-		// Output request loop (waiting for a command)
-		while(!exitRequest) {
-			
-   			// Save Lands or Factions
-   			while(!saveList.isEmpty()) {
-   				
-   				Object saveEntry = saveList.remove(0);
-   				if(saveEntry instanceof Land) {
-   					storage.saveLand((Land)saveEntry);
-   				} else {
-   					storage.saveFaction((Faction)saveEntry);
-   				}
-   			}
-   			
-   			// Remove Lands or Factions
-   			while(!removeList.isEmpty()) {
-   				
-   				Object removeEntry = removeList.remove(0);
-   				if(removeEntry instanceof Land) {
-   					storage.removeLand((Land)removeEntry);
-   				} else if( removeEntry instanceof NameGenealogy){
-   					storage.removeLand(((NameGenealogy)removeEntry).landName, 
-   							((NameGenealogy)removeEntry).landGenealogy);
-   				} else {
-   					storage.removeFaction((Faction)removeEntry);
-   				}
-   			}
-   			
-    		// wait!
-    		try {
-    			commandRequest.await();
-    			Secuboid.getThisPlugin().iLog().write("Storage Thread wake up!");
-   			} catch (InterruptedException e) {
-   				// TODO Auto-generated catch block
-   				e.printStackTrace();
-   			}
-		}
-		notSaved.signal();
-		lock.unlock();
+     * @see java.lang.Thread#run()
+     */
+    @Override
+    public void run() {
+        
+        lock.lock();
+        
+        // Output request loop (waiting for a command)
+        while(!exitRequest) {
+            
+               // Save Lands or Factions
+               while(!saveList.isEmpty()) {
+                   
+                   Object saveEntry = saveList.remove(0);
+                storage.saveLand((Land)saveEntry);
+               }
+               
+               // Remove Lands or Factions
+               while(!removeList.isEmpty()) {
+                   
+                   Object removeEntry = removeList.remove(0);
+                   if(removeEntry instanceof Land) {
+                       storage.removeLand((Land)removeEntry);
+                   } else if( removeEntry instanceof NameGenealogy) {
+                    storage.removeLand(((NameGenealogy) removeEntry).landName,
+                            ((NameGenealogy) removeEntry).landGenealogy);
+                }
+               }
+               
+            // wait!
+            try {
+                commandRequest.await();
+                Secuboid.getThisPlugin().getLog().write("Storage Thread wake up!");
+               } catch (InterruptedException e) {
+                   // TODO Auto-generated catch block
+                   e.printStackTrace();
+               }
+        }
+        notSaved.signal();
+        lock.unlock();
     }
-	
-	/**
-	 * Stop next run.
-	 */
-	public void stopNextRun() {
-		
-		if(!isAlive()) {
-			Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Problem with save Thread. Possible data loss!");
-			return;
-		}
-		exitRequest = true;
-		lock.lock();
-		commandRequest.signal();
-		try {
-			notSaved.await();
-		} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		} finally {
-			lock.unlock();
-		}
-	}
-	
-	/**
-	 * Save land.
-	 *
-	 * @param land the land
-	 */
-	public void saveLand(Land land) {
-		
-		if(!inLoad) {
-			saveList.add(land);
-			wakeUp();
-		}
-	}
+    
+    /**
+     * Stop next run.
+     */
+    public void stopNextRun() {
+        
+        if(!isAlive()) {
+            Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Problem with save Thread. Possible data loss!");
+            return;
+        }
+        exitRequest = true;
+        lock.lock();
+        commandRequest.signal();
+        try {
+            notSaved.await();
+        } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /**
+     * Save land.
+     *
+     * @param land the land
+     */
+    public void saveLand(Land land) {
+        
+        if(!inLoad) {
+            saveList.add(land);
+            wakeUp();
+        }
+    }
 
-	/**
-	 * Save faction.
-	 *
-	 * @param faction the faction
-	 */
-	public void saveFaction(Faction faction) {
-		
-		if(!inLoad) {
-			saveList.add(faction);
-			wakeUp();
-		}
-	}
-	
-	/**
-	 * Removes the land.
-	 *
-	 * @param land the land
-	 */
-	public void removeLand(Land land) {
-		
-		removeList.add(land);
-		wakeUp();
-	}
+    /**
+     * Removes the land.
+     *
+     * @param land the land
+     */
+    public void removeLand(Land land) {
+        
+        removeList.add(land);
+        wakeUp();
+    }
 
     /**
      * Removes the land.
@@ -220,27 +200,16 @@ public class StorageThread extends Thread {
      * @param landGenealogy The land genealogy
      */
     public void removeLand(String landName, int landGenealogy) {
-    	
-    	removeList.add(new NameGenealogy(landName, landGenealogy));
-    	wakeUp();
+        
+        removeList.add(new NameGenealogy(landName, landGenealogy));
+        wakeUp();
     }
 
-    /**
-	 * Removes the faction.
-	 *
-	 * @param faction the faction
-	 */
-	public void removeFaction(Faction faction) {
-		
-		removeList.add(faction);
-		wakeUp();
-	}
-	
-	private void wakeUp() {
-		
-		lock.lock();
-		commandRequest.signal();
-		Secuboid.getThisPlugin().iLog().write("Storage request (Thread wake up...)");
-		lock.unlock();
-	}
+    private void wakeUp() {
+        
+        lock.lock();
+        commandRequest.signal();
+        Secuboid.getThisPlugin().getLog().write("Storage request (Thread wake up...)");
+        lock.unlock();
+    }
 }

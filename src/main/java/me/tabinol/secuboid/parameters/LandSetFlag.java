@@ -38,19 +38,19 @@ public class LandSetFlag extends Thread implements Listener{
     
     /** The area. */
     @SuppressWarnings("unused")
-	private CuboidArea area;
+    private CuboidArea area;
     
     /** The Redstone torch off. */
     @SuppressWarnings("unused")
-	private ItemStack RedstoneTorchOff = new ItemStack(Material.REDSTONE_TORCH_OFF);
+    private ItemStack RedstoneTorchOff = new ItemStack(Material.REDSTONE_TORCH_OFF);
     
     /** The Redstone torch on. */
     @SuppressWarnings("unused")
-	private ItemStack RedstoneTorchOn = new ItemStack(Material.REDSTONE_TORCH_ON);
+    private ItemStack RedstoneTorchOn = new ItemStack(Material.REDSTONE_TORCH_ON);
     
     /** The inventory. */
     @SuppressWarnings("unused")
-	private Inventory inventory;
+    private Inventory inventory;
     
     /**
      * Instantiates a new land set flag.
@@ -72,7 +72,7 @@ public class LandSetFlag extends Thread implements Listener{
         
         inventory = player.getServer().createInventory(null,8,"Flag Setting");
         @SuppressWarnings("unused")
-		int i = 0;
+        int i = 0;
        /* for(){
             if(){
                 ItemStack Torch = RedstoneTorchOn.clone();

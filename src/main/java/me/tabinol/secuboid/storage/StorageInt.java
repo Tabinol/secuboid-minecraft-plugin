@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.storage;
 
-import me.tabinol.secuboid.factions.Faction;
 import me.tabinol.secuboid.lands.Land;
 
 
@@ -55,26 +54,7 @@ public interface StorageInt {
     public void removeLand(String landName, int landGenealogy);
 
     /**
-     * Load factions.
-     */
-    public void loadFactions();
-    
-    /**
      * Load lands.
      */
     public void loadLands();    
-    
-    /**
-     * Save faction.
-     *
-     * @param faction the faction
-     */
-    public void saveFaction(Faction faction);
-    
-    /**
-     * Removes the faction.
-     *
-     * @param faction the faction
-     */
-    public void removeFaction(Faction faction);
 }

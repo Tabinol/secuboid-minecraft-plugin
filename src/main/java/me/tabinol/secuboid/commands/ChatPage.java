@@ -89,10 +89,10 @@ public class ChatPage {
         
         // Check if there is a parameter
         if (param != null) {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().iLanguage().getMessage(header,
+            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage(header,
                     ChatColor.GREEN + param + ChatColor.GRAY));
         } else {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().iLanguage().getMessage(header));
+            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage(header));
         }
         
         // Send lines to sender
@@ -100,12 +100,12 @@ public class ChatPage {
         
         // If there is one or multiple page, put the number of page at the bottom
         if (totalPages > 1) {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.PAGE.MULTIPAGE",
+            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PAGE.MULTIPAGE",
                     "" + pageNumber, "" + totalPages));
-            Secuboid.getThisPlugin().iPlayerConf().get(sender).setChatPage(this);
+            Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(this);
         } else {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.PAGE.ONEPAGE"));
-            Secuboid.getThisPlugin().iPlayerConf().get(sender).setChatPage(null);
+            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PAGE.ONEPAGE"));
+            Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(null);
         }
 
     }

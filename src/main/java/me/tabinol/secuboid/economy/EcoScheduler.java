@@ -24,8 +24,8 @@ import java.util.Calendar;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -35,42 +35,42 @@ public class EcoScheduler extends BukkitRunnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
-    	
-    	Calendar now = Calendar.getInstance();
-    	
-    	// Check for rent renew
-    	for(ILand land : Secuboid.getThisPlugin().iLands().getForRent()) {
-    		
-    		long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
-    		
-    		if(land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
-    			
-    			//Check if the tenant has enough money or time limit whit no auto renew 
-    			if(Secuboid.getThisPlugin().iPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
-    					|| !land.getRentAutoRenew()) {
-    				
-					// Unrent
-					((Land) land).unSetRented();
-					try {
-						new EcoSign((ILand) land, land.getRentSignLoc()).createSignForRent(
-								land.getRentPrice(), land.getRentRenew(),
-								land.getRentAutoRenew(), null);
-					} catch (SignException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-    			} else {
-    			
-    				// renew rent
-    				Secuboid.getThisPlugin().iPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(), 
-    					land.getWorldName(), land.getRentPrice());
-    				if(land.getOwner() instanceof IPlayerContainerPlayer) {
-        				Secuboid.getThisPlugin().iPlayerMoney().giveToPlayer(((IPlayerContainerPlayer)land.getOwner()).getOfflinePlayer(), 
-        					land.getWorldName(), land.getRentPrice());
-    				}
-    				((Land) land).setLastPaymentTime(new Timestamp(now.getTime().getTime()));
-    			}
-    		}
-    	}
+        
+        Calendar now = Calendar.getInstance();
+        
+        // Check for rent renew
+        for(ApiLand land : Secuboid.getThisPlugin().getLands().getForRent()) {
+            
+            long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
+            
+            if(land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
+                
+                //Check if the tenant has enough money or time limit whit no auto renew 
+                if(Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
+                        || !land.getRentAutoRenew()) {
+                    
+                    // Unrent
+                    ((Land) land).unSetRented();
+                    try {
+                        new EcoSign((ApiLand) land, land.getRentSignLoc()).createSignForRent(
+                                land.getRentPrice(), land.getRentRenew(),
+                                land.getRentAutoRenew(), null);
+                    } catch (SignException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                } else {
+                
+                    // renew rent
+                    Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
+                        land.getWorldName(), land.getRentPrice());
+                    if(land.getOwner() instanceof ApiPlayerContainerPlayer) {
+                        Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((ApiPlayerContainerPlayer)land.getOwner()).getOfflinePlayer(),
+                            land.getWorldName(), land.getRentPrice());
+                    }
+                    ((Land) land).setLastPaymentTime(new Timestamp(now.getTime().getTime()));
+                }
+            }
+        }
     }
 }

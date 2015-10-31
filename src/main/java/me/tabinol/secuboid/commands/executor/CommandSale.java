@@ -45,12 +45,12 @@ public class CommandSale extends CommandExec {
      */
     @Override
     public void commandExecute() throws SecuboidCommandException {
-    	
+        
         checkSelections(true, null);
         checkPermission(true, true, null, null);
         if(!entity.playerConf.isAdminMod()) {
-        	// If the player not adminmod, he must be owner && permission true
-        	checkPermission(false, false, PermissionList.ECO_LAND_FOR_SALE.getPermissionType(), null);
+            // If the player not adminmod, he must be owner && permission true
+            checkPermission(false, false, PermissionList.ECO_LAND_FOR_SALE.getPermissionType(), null);
         }
         
         String curArg = entity.argList.getNext();
@@ -59,28 +59,28 @@ public class CommandSale extends CommandExec {
         
         // Check for sign in hand
         if(entity.player.getGameMode() != GameMode.CREATIVE && entity.player.getItemInHand().getType() != Material.SIGN) {
-        	throw new SecuboidCommandException("Must have a sign in hand", entity.player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
+            throw new SecuboidCommandException("Must have a sign in hand", entity.player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
         }
         
         // If 'recreate'
         if(curArg.equalsIgnoreCase("recreate")) {
-        	if(!land.isForSale()) {
-        		throw new SecuboidCommandException("The land is not for sale", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
-        	}
-        	try {
-        		ecoSign = new EcoSign(land, entity.player);
-				ecoSign.createSignForSale(land.getSalePrice());
-				removeSignFromHand();
-				if(!ecoSign.getLocation().getBlock().equals(land.getSaleSignLoc().getBlock())) {
-					ecoSign.removeSign(land.getSaleSignLoc());
-					((Land) land).setSaleSignLoc(ecoSign.getLocation());
-				}
-			} catch (SignException e) {
-				throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
-			}
-        	
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
-            Secuboid.getThisPlugin().iLog().write("Sign recreated for land " + land.getName() + " by: " + entity.playerName);
+            if(!land.isForSale()) {
+                throw new SecuboidCommandException("The land is not for sale", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+            }
+            try {
+                ecoSign = new EcoSign(land, entity.player);
+                ecoSign.createSignForSale(land.getSalePrice());
+                removeSignFromHand();
+                if(!ecoSign.getLocation().getBlock().equals(land.getSaleSignLoc().getBlock())) {
+                    ecoSign.removeSign(land.getSaleSignLoc());
+                    ((Land) land).setSaleSignLoc(ecoSign.getLocation());
+                }
+            } catch (SignException e) {
+                throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+            }
+            
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
+            Secuboid.getThisPlugin().getLog().write("Sign recreated for land " + land.getName() + " by: " + entity.playerName);
             
             return;
         }
@@ -89,25 +89,25 @@ public class CommandSale extends CommandExec {
         try {
             salePrice = Double.parseDouble(curArg);
         } catch (NumberFormatException ex) {
-        	throw new SecuboidCommandException("Error in the command", entity.player, "GENERAL.MISSINGINFO");
+            throw new SecuboidCommandException("Error in the command", entity.player, "GENERAL.MISSINGINFO");
         }
         
         // Land already for sale?
         if(land.isForSale()) {
-        	throw new SecuboidCommandException("Land already for sale", entity.player, "COMMAND.ECONOMY.ALREADYSALE");
+            throw new SecuboidCommandException("Land already for sale", entity.player, "COMMAND.ECONOMY.ALREADYSALE");
         }
 
         // Create Sign
         try {
-			ecoSign = new EcoSign(land, entity.player);
-			ecoSign.createSignForSale(salePrice);
-			removeSignFromHand();
-		} catch (SignException e) {
-			throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
-		}
+            ecoSign = new EcoSign(land, entity.player);
+            ecoSign.createSignForSale(salePrice);
+            removeSignFromHand();
+        } catch (SignException e) {
+            throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+        }
         ((Land) land).setForSale(true, salePrice, ecoSign.getLocation());
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
-        Secuboid.getThisPlugin().iLog().write("The land " + land.getName() + " is set to for sale by: " + entity.playerName);
+        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
+        Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is set to for sale by: " + entity.playerName);
     }
 
 

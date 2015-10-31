@@ -43,7 +43,7 @@ public class Log {
      */
     public Log() {
 
-        this.debug = Secuboid.getThisPlugin().iConf().isDebug();
+        this.debug = Secuboid.getThisPlugin().getConf().isDebug();
         this.Folder = Secuboid.getThisPlugin().getDataFolder();
     }
 
@@ -72,7 +72,7 @@ public class Log {
                 bufWriter = new BufferedWriter(fileWriter);
                 bufWriter.newLine();
                 bufWriter.write("[Secuboid][v." + Secuboid.getThisPlugin().getDescription().getVersion()
-                		+ "][" + Dates.time() + "]" + text);
+                        + "][" + Dates.time() + "]" + text);
                 bufWriter.close();
             } catch (IOException ex) {
                 Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);

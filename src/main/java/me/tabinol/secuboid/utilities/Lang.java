@@ -66,11 +66,36 @@ public class Lang {
      * Reload config.
      */
     public final void reloadConfig() {
-        this.lang = Secuboid.getThisPlugin().iConf().getLang();
+        this.lang = Secuboid.getThisPlugin().getConf().getLang();
         this.langFile = new File(plugin.getDataFolder() + "/lang/", lang + ".yml");
-        if (Secuboid.getThisPlugin().iConf().getLang() != null) {
+        if (Secuboid.getThisPlugin().getConf().getLang() != null) {
             copyLang();
             loadYamls();
+        }
+    }
+
+    /**
+     * Copyt the language file.
+     */
+    private void copyLang() {
+        try {
+            if (!langFile.exists()) {
+                langFile.getParentFile().mkdirs();
+                FileCopy.copyTextFromJav(plugin.getResource("lang/" + lang + ".yml"), langFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Load yamls.
+     */
+    private void loadYamls() {
+        try {
+            langconfig.load(langFile);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -158,31 +183,6 @@ public class Lang {
     }
 
     /**
-     * Load yamls.
-     */
-    private void loadYamls() {
-        try {
-            langconfig.load(langFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Copyt the language file.
-     */
-    private void copyLang() {
-        try {
-            if (!langFile.exists()) {
-                langFile.getParentFile().mkdirs();
-                FileCopy.copyTextFromJav(plugin.getResource("lang/" + lang + ".yml"), langFile);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Gets the occurence.
      *
      * @param s the s
@@ -209,7 +209,7 @@ public class Lang {
     public String getHelp(String mainCommand, String commandName) {
         
         ConfigurationSection helpSec = langconfig.getConfigurationSection("HELP." + mainCommand + "." + commandName);
-        
+
         // No help for this command?
         if(helpSec == null) {
             return null;

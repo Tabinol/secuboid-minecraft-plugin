@@ -39,7 +39,7 @@ public class PlayerMoney {
      */
     public PlayerMoney() {
 
-        economy = Secuboid.getThisPlugin().iDependPlugin().getEconomy();
+        economy = Secuboid.getThisPlugin().getDependPlugin().getEconomy();
     }
     
     /**

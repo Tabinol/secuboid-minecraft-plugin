@@ -24,7 +24,7 @@ import me.tabinol.secuboid.commands.CommandThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.ChatColor;
 
@@ -35,7 +35,7 @@ import org.bukkit.ChatColor;
 @InfoCommand(name="owner", forceParameter=true)
 public class CommandOwner extends CommandThreadExec {
 
-	/**
+    /**
      * Instantiates a new command owner.
      *
      * @param entity the entity
@@ -56,9 +56,9 @@ public class CommandOwner extends CommandThreadExec {
         checkPermission(true, true, null, null);
         
         pc = entity.argList.getPlayerContainerFromArg(land,
-                new EPlayerContainerType[]{EPlayerContainerType.EVERYBODY,
-                    EPlayerContainerType.OWNER, EPlayerContainerType.VISITOR});
-        Secuboid.getThisPlugin().iPlayersCache().getUUIDWithNames(this, pc);
+                new ApiPlayerContainerType[]{ApiPlayerContainerType.EVERYBODY,
+                    ApiPlayerContainerType.OWNER, ApiPlayerContainerType.VISITOR});
+        Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
@@ -66,13 +66,13 @@ public class CommandOwner extends CommandThreadExec {
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-    		throws SecuboidCommandException {
+            throws SecuboidCommandException {
         
-    	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
         land.setOwner(pc);
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
-        Secuboid.getThisPlugin().iLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
+        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
+        Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
 
         // Cancel the selection
         new CommandCancel(entity.playerConf, true).commandExecute();

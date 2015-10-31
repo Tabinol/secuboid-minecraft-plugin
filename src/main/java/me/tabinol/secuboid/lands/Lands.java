@@ -30,23 +30,23 @@ import java.util.UUID;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.WorldConfig;
-import me.tabinol.secuboidapi.event.LandDeleteEvent;
+import me.tabinol.secuboidapi.events.LandDeleteEvent;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.AreaIndex;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.ILands;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.ApiLands;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
-import me.tabinol.secuboidapi.parameters.IFlagType;
-import me.tabinol.secuboidapi.parameters.IFlagValue;
-import me.tabinol.secuboidapi.parameters.IPermissionType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
+import me.tabinol.secuboidapi.parameters.ApiFlagType;
+import me.tabinol.secuboidapi.parameters.ApiFlagValue;
+import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -56,7 +56,7 @@ import org.bukkit.plugin.PluginManager;
 /**
  * The Class Lands.
  */
-public class Lands implements ILands {
+public class Lands implements ApiLands {
 
     /** The Constant INDEX_X1. */
     public final static int INDEX_X1 = 0;
@@ -74,10 +74,10 @@ public class Lands implements ILands {
     private final TreeMap<String, TreeSet<AreaIndex>>[] areaList; // INDEX first, Tree by worlds (then by Areas)
     
     /** The land uuid list. */
-    private final TreeMap<UUID, ILand> landUUIDList; // Lands by UUID;
+    private final TreeMap<UUID, ApiLand> landUUIDList; // Lands by UUID;
     
     /** The land list. */
-    private final TreeMap<String, ILand> landList; // Tree by name
+    private final TreeMap<String, ApiLand> landList; // Tree by name
     
     /** The outside area. */
     protected TreeMap<String, DummyLand> outsideArea; // Outside a Land (in specific worlds)
@@ -85,7 +85,7 @@ public class Lands implements ILands {
     private final DummyLand defaultConfNoType; // Default config (Type not exist or Type null)
     
     /** The default conf. */
-    private final TreeMap<IType, DummyLand> defaultConf; // Default config of a land
+    private final TreeMap<ApiType, DummyLand> defaultConf; // Default config of a land
     
     /** The pm. */
     private final PluginManager pm;
@@ -94,15 +94,15 @@ public class Lands implements ILands {
     private final ApproveList approveList;
     
     /**  List of forSale. */
-    private final HashSet<ILand> forSale;
+    private final HashSet<ApiLand> forSale;
 
     /**  List of forRent and rented. */
-    private final HashSet<ILand> forRent;
+    private final HashSet<ApiLand> forRent;
     
     /**
      * Instantiates a new lands.
      */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public Lands() {
 
         areaList = new TreeMap[4];
@@ -119,30 +119,30 @@ public class Lands implements ILands {
         this.defaultConf = worldConfig.getTypeDefaultConf();
         this.defaultConfNoType = worldConfig.getDefaultconfNoType();
 
-        landList = new TreeMap<String, ILand>();
-        landUUIDList = new TreeMap<UUID, ILand>();
+        landList = new TreeMap<String, ApiLand>();
+        landUUIDList = new TreeMap<UUID, ApiLand>();
         approveList = new ApproveList();
-        forSale = new HashSet<ILand>();
-        forRent = new HashSet<ILand>();
+        forSale = new HashSet<ApiLand>();
+        forRent = new HashSet<ApiLand>();
     }
 
-    public DummyLand getDefaultConf(IType type) {
-    	
-    	DummyLand land;
-    	
-    	// No type? Return default config
-    	if(type == null) {
-    		return defaultConfNoType;
-    	}
-    	
-    	land = defaultConf.get(type);
-    	
-    	// Type not found? Return default config
-    	if(land == null) {
-    		return defaultConfNoType;
-    	}
-    	
-    	return land;
+    public DummyLand getDefaultConf(ApiType type) {
+        
+        DummyLand land;
+        
+        // No type? Return default config
+        if(type == null) {
+            return defaultConfNoType;
+        }
+        
+        land = defaultConf.get(type);
+        
+        // Type not found? Return default config
+        if(land == null) {
+            return defaultConfNoType;
+        }
+        
+        return land;
     }
     
     /**
@@ -165,7 +165,7 @@ public class Lands implements ILands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, IPlayerContainer owner, ICuboidArea area)
+    public Land createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area)
             throws SecuboidLandException {
 
         return createLand(landName, owner, area, null, 1, null);
@@ -182,8 +182,8 @@ public class Lands implements ILands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, IPlayerContainer owner, ICuboidArea area, 
-    		me.tabinol.secuboidapi.lands.ILand parent)
+    public Land createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area,
+            ApiLand parent)
             throws SecuboidLandException {
 
         return createLand(landName, owner, area, parent, 1, null);
@@ -202,8 +202,8 @@ public class Lands implements ILands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, IPlayerContainer owner, ICuboidArea area, 
-    		me.tabinol.secuboidapi.lands.ILand parent, double price, IType type)
+    public Land createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area,
+            ApiLand parent, double price, ApiType type)
             throws SecuboidLandException {
         
         getPriceFromPlayer(area.getWorldName(), owner, price);
@@ -225,8 +225,8 @@ public class Lands implements ILands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, IPlayerContainer owner, ICuboidArea area, 
-    		me.tabinol.secuboidapi.lands.ILand parent, int areaId, UUID uuid, IType type)
+    public Land createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area,
+            ApiLand parent, int areaId, UUID uuid, ApiType type)
             throws SecuboidLandException {
 
         String landNameLower = landName.toLowerCase();
@@ -246,13 +246,13 @@ public class Lands implements ILands {
 
         if (isNameExist(landName)) {
             throw new SecuboidLandException(landName, (CuboidArea) area, 
-            		LandAction.LAND_ADD, LandError.NAME_IN_USE);
+                    LandAction.LAND_ADD, LandError.NAME_IN_USE);
         }
 
         land = new Land(landNameLower, landUUID, owner, area, genealogy, (Land) parent, areaId, type);
 
         addLandToList(land);
-        Secuboid.getThisPlugin().iLog().write("add land: " + landNameLower);
+        Secuboid.getThisPlugin().getLog().write("add land: " + landNameLower);
 
         return land;
     }
@@ -276,15 +276,13 @@ public class Lands implements ILands {
      * @throws SecuboidLandException the secuboid land exception
      */
     @SuppressWarnings("deprecation")
-	public boolean removeLand(ILand land) throws SecuboidLandException {
+    public boolean removeLand(ApiLand land) throws SecuboidLandException {
 
         if (land == null) {
             return false;
         }
 
         LandDeleteEvent landEvent = new LandDeleteEvent((Land) land);
-		me.tabinol.secuboid.event.LandDeleteEvent oldLandEvent = 
-        		new me.tabinol.secuboid.event.LandDeleteEvent((Land) land);
 
         if (!landList.containsKey(land.getName())) {
             return false;
@@ -298,21 +296,16 @@ public class Lands implements ILands {
         // Call Land Event and check if it is cancelled
         pm.callEvent(landEvent);
         
-        // Deprecated to remove
-        if(!landEvent.isCancelled()) {
-        	pm.callEvent(oldLandEvent);
-        }
-        
-        if (landEvent.isCancelled() || oldLandEvent.isCancelled()) {
+        if (landEvent.isCancelled()) {
             return false;
         }
 
         removeLandFromList((Land) land);
         if (land.getParent() != null) {
-        	((Land) land.getParent()).removeChild(land.getUUID());
+            ((Land) land.getParent()).removeChild(land.getUUID());
         }
-        Secuboid.getThisPlugin().iStorageThread().removeLand((Land) land);
-        Secuboid.getThisPlugin().iLog().write("remove land: " + land);
+        Secuboid.getThisPlugin().getStorageThread().removeLand((Land) land);
+        Secuboid.getThisPlugin().getLog().write("remove land: " + land);
         return true;
     }
 
@@ -386,8 +379,8 @@ public class Lands implements ILands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(ILand land, String newName) 
-    		throws SecuboidLandException {
+    public boolean renameLand(ApiLand land, String newName)
+            throws SecuboidLandException {
 
         String oldNameLower = land.getName();
         String newNameLower = newName.toLowerCase();
@@ -434,7 +427,7 @@ public class Lands implements ILands {
      */
     public Land getLand(Location loc) {
 
-        ICuboidArea ca;
+        ApiCuboidArea ca;
 
         if ((ca = getCuboidArea(loc)) == null) {
             return null;
@@ -447,7 +440,7 @@ public class Lands implements ILands {
      *
      * @return the lands
      */
-    public Collection<ILand> getLands() {
+    public Collection<ApiLand> getLands() {
 
         return landList.values();
     }
@@ -460,7 +453,7 @@ public class Lands implements ILands {
      */
     public DummyLand getLandOrOutsideArea(Location loc) {
 
-    	Land land;
+        Land land;
 
         if ((land = getLand(loc)) != null) {
             return land;
@@ -493,8 +486,8 @@ public class Lands implements ILands {
 
         // Not exist, create one
         if (dummyLand == null) {
-        	dummyLand = new DummyLand(worldNameLower);
-        	outsideArea.get(Config.GLOBAL).copyPermsFlagsTo(dummyLand);
+            dummyLand = new DummyLand(worldNameLower);
+            outsideArea.get(Config.GLOBAL).copyPermsFlagsTo(dummyLand);
             outsideArea.put(worldNameLower, dummyLand);
         }
 
@@ -507,13 +500,13 @@ public class Lands implements ILands {
      * @param loc the loc
      * @return the lands
      */
-    public Collection<ILand> getLands(Location loc) {
+    public Collection<ApiLand> getLands(Location loc) {
 
-        Collection<ICuboidArea> areas = getCuboidAreas(loc);
-        HashMap<String, ILand> 
-        	lands = new HashMap<String, ILand>();
+        Collection<ApiCuboidArea> areas = getCuboidAreas(loc);
+        HashMap<String, ApiLand>
+            lands = new HashMap<String, ApiLand>();
 
-        for (ICuboidArea area : areas) {
+        for (ApiCuboidArea area : areas) {
             lands.put(area.getLand().getName(), area.getLand());
         }
 
@@ -526,12 +519,12 @@ public class Lands implements ILands {
      * @param owner the owner
      * @return the lands
      */
-    public Collection<ILand> getLands(IPlayerContainer owner) {
+    public Collection<ApiLand> getLands(ApiPlayerContainer owner) {
 
-        Collection<ILand> 
-        	lands = new HashSet<ILand>();
+        Collection<ApiLand>
+            lands = new HashSet<ApiLand>();
 
-        for (ILand land : landList.values()) {
+        for (ApiLand land : landList.values()) {
             if (land.getOwner().equals(owner)) {
                 lands.add(land);
             }
@@ -546,12 +539,12 @@ public class Lands implements ILands {
      * @param type the type
      * @return the lands
      */
-    public Collection<ILand> getLands(IType type) {
-    	
-        Collection<ILand> 
-    	lands = new HashSet<ILand>();
+    public Collection<ApiLand> getLands(ApiType type) {
+        
+        Collection<ApiLand>
+        lands = new HashSet<ApiLand>();
 
-    for (ILand land : landList.values()) {
+    for (ApiLand land : landList.values()) {
         if (land.getType() == type) {
             lands.add(land);
         }
@@ -568,10 +561,10 @@ public class Lands implements ILands {
      * @param price the price
      * @return the price from player
      */
-    protected boolean getPriceFromPlayer(String worldName, IPlayerContainer pc, double price) {
+    protected boolean getPriceFromPlayer(String worldName, ApiPlayerContainer pc, double price) {
         
-        if(pc.getContainerType() == EPlayerContainerType.PLAYER && price > 0) {
-            return Secuboid.getThisPlugin().iPlayerMoney().getFromPlayer(((IPlayerContainerPlayer)pc).getOfflinePlayer(), worldName, price);
+        if(pc.getContainerType() == ApiPlayerContainerType.PLAYER && price > 0) {
+            return Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(((ApiPlayerContainerPlayer)pc).getOfflinePlayer(), worldName, price);
         }
     
     return true;
@@ -586,7 +579,7 @@ public class Lands implements ILands {
      * @param onlyInherit the only inherit
      * @return the permission in world
      */
-    protected boolean getPermissionInWorld(String worldName, Player player, IPermissionType pt, boolean onlyInherit) {
+    protected boolean getPermissionInWorld(String worldName, Player player, ApiPermissionType pt, boolean onlyInherit) {
 
         Boolean result;
         DummyLand dl;
@@ -606,9 +599,9 @@ public class Lands implements ILands {
      * @param onlyInherit the only inherit
      * @return the flag value in world
      */
-    protected IFlagValue getFlagInWorld(String worldName, IFlagType ft, boolean onlyInherit) {
+    protected ApiFlagValue getFlagInWorld(String worldName, ApiFlagType ft, boolean onlyInherit) {
 
-        IFlagValue result;
+        ApiFlagValue result;
         DummyLand dl;
 
         if ((dl = outsideArea.get(worldName.toLowerCase())) != null && (result = dl.getFlag(ft, onlyInherit)) != null) {
@@ -624,9 +617,9 @@ public class Lands implements ILands {
      * @param loc the loc
      * @return the cuboid areas
      */
-    public Collection<ICuboidArea> getCuboidAreas(Location loc) {
+    public Collection<ApiCuboidArea> getCuboidAreas(Location loc) {
 
-        Collection<ICuboidArea> areas = new ArrayList<ICuboidArea>();
+        Collection<ApiCuboidArea> areas = new ArrayList<ApiCuboidArea>();
         String worldName = loc.getWorld().getName();
         int SearchIndex;
         int nbToFind;
@@ -655,7 +648,7 @@ public class Lands implements ILands {
                 ForwardSearch = false;
             }
         }
-        Secuboid.getThisPlugin().iLog().write("Search Index dir: " + SearchIndex + ", Forward Search: " + ForwardSearch);
+        Secuboid.getThisPlugin().getLog().write("Search Index dir: " + SearchIndex + ", Forward Search: " + ForwardSearch);
 
         // Now check for area in location
         ais = areaList[SearchIndex].get(worldName);
@@ -672,11 +665,11 @@ public class Lands implements ILands {
         while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, SearchIndex)) {
 
             if (ai.getArea().isLocationInside(loc)) {
-                Secuboid.getThisPlugin().iLog().write("add this area in list for cuboid: " + ai.getArea().getLand().getName());
+                Secuboid.getThisPlugin().getLog().write("add this area in list for cuboid: " + ai.getArea().getLand().getName());
                 areas.add(ai.getArea());
             }
         }
-        Secuboid.getThisPlugin().iLog().write("Number of Areas found for location : " + areas.size());
+        Secuboid.getThisPlugin().getLog().write("Number of Areas found for location : " + areas.size());
 
         return areas;
     }
@@ -687,30 +680,30 @@ public class Lands implements ILands {
      * @param loc the loc
      * @return the cuboid area
      */
-    public ICuboidArea getCuboidArea(Location loc) {
+    public ApiCuboidArea getCuboidArea(Location loc) {
 
         int actualPrio = Short.MIN_VALUE;
         int curPrio;
         int actualGen = 0;
         int curGen;
-        ICuboidArea actualArea = null;
+        ApiCuboidArea actualArea = null;
         Location resLoc; // Resolved location
         
         // Give the position from the sky to underbedrock if the Y is greater than 255 or lower than 0
         if(loc.getBlockY() >= loc.getWorld().getMaxHeight()) {
-        	resLoc = new Location(loc.getWorld(), loc.getX(), loc.getWorld().getMaxHeight() - 1, loc.getZ()); 
+            resLoc = new Location(loc.getWorld(), loc.getX(), loc.getWorld().getMaxHeight() - 1, loc.getZ()); 
         } else if(loc.getBlockY() < 0){
-        	resLoc = new Location(loc.getWorld(), loc.getX(), 0, loc.getZ()); 
+            resLoc = new Location(loc.getWorld(), loc.getX(), 0, loc.getZ()); 
         } else resLoc = loc; 
         
-        Collection<ICuboidArea> areas = getCuboidAreas(resLoc);
+        Collection<ApiCuboidArea> areas = getCuboidAreas(resLoc);
 
-        Secuboid.getThisPlugin().iLog().write("Area check in" + resLoc.toString());
+        Secuboid.getThisPlugin().getLog().write("Area check in" + resLoc.toString());
 
         // Compare priorities of parents (or main)
-        for (ICuboidArea area : areas) {
+        for (ApiCuboidArea area : areas) {
 
-            Secuboid.getThisPlugin().iLog().write("Check for: " + area.getLand().getName()
+            Secuboid.getThisPlugin().getLog().write("Check for: " + area.getLand().getName()
                     + ", area: " + area.toString());
 
             curPrio = area.getLand().getPriority();
@@ -722,7 +715,7 @@ public class Lands implements ILands {
                 actualPrio = curPrio;
                 actualGen = area.getLand().getGenealogy();
 
-                Secuboid.getThisPlugin().iLog().write("Found, update:  actualPrio: " + actualPrio + ", actualGen: " + actualGen);
+                Secuboid.getThisPlugin().getLog().write("Found, update:  actualPrio: " + actualPrio + ", actualGen: " + actualGen);
             }
         }
 
@@ -737,7 +730,7 @@ public class Lands implements ILands {
      * @param SearchIndex the search index
      * @return true, if successful
      */
-    private boolean checkContinueSearch(ICuboidArea area, int nbToFind, int SearchIndex) {
+    private boolean checkContinueSearch(ApiCuboidArea area, int nbToFind, int SearchIndex) {
 
         switch (SearchIndex) {
             case INDEX_X1:
@@ -770,14 +763,14 @@ public class Lands implements ILands {
      *
      * @param area the area
      */
-    protected void addAreaToList(ICuboidArea area) {
+    protected void addAreaToList(ApiCuboidArea area) {
 
         if (!areaList[0].containsKey(area.getWorldName())) {
             for (int t = 0; t < 4; t++) {
                 areaList[t].put(area.getWorldName(), new TreeSet<AreaIndex>());
             }
         }
-        Secuboid.getThisPlugin().iLog().write("Add area for " + area.getLand().getName());
+        Secuboid.getThisPlugin().getLog().write("Add area for " + area.getLand().getName());
         areaList[INDEX_X1].get(area.getWorldName()).add(new AreaIndex(area.getX1(), area));
         areaList[INDEX_Z1].get(area.getWorldName()).add(new AreaIndex(area.getZ1(), area));
         areaList[INDEX_X2].get(area.getWorldName()).add(new AreaIndex(area.getX2(), area));
@@ -789,7 +782,7 @@ public class Lands implements ILands {
      *
      * @param area the area
      */
-    protected void removeAreaFromList(ICuboidArea area) {
+    protected void removeAreaFromList(ApiCuboidArea area) {
 
         areaList[INDEX_X1].get(area.getWorldName()).remove(new AreaIndex(area.getX1(), area));
         areaList[INDEX_Z1].get(area.getWorldName()).remove(new AreaIndex(area.getZ1(), area));
@@ -817,7 +810,7 @@ public class Lands implements ILands {
 
         landList.remove(land.getName());
         landUUIDList.remove(land.getUUID());
-        for (ICuboidArea area : land.getAreas()) {
+        for (ApiCuboidArea area : land.getAreas()) {
             removeAreaFromList(area);
         }
     }
@@ -828,8 +821,8 @@ public class Lands implements ILands {
      * @param land the land
      */
     protected void addForSale(Land land) {
-    	
-    	forSale.add(land);
+        
+        forSale.add(land);
     }
     
     /**
@@ -838,8 +831,8 @@ public class Lands implements ILands {
      * @param land the land
      */
     protected void removeForSale(Land land) {
-    	
-    	forSale.remove(land);
+        
+        forSale.remove(land);
     }
     
     /**
@@ -847,9 +840,9 @@ public class Lands implements ILands {
      *
      * @return the for sale
      */
-    public Collection<ILand> getForSale() {
-    	
-    	return forSale;
+    public Collection<ApiLand> getForSale() {
+        
+        return forSale;
     }
 
     /**
@@ -858,8 +851,8 @@ public class Lands implements ILands {
      * @param land the land
      */
     protected void addForRent(Land land) {
-    	
-    	forRent.add(land);
+        
+        forRent.add(land);
     }
     
     /**
@@ -868,8 +861,8 @@ public class Lands implements ILands {
      * @param land the land
      */
     protected void removeForRent(Land land) {
-    	
-    	forRent.remove(land);
+        
+        forRent.remove(land);
     }
     
     /**
@@ -877,8 +870,8 @@ public class Lands implements ILands {
      *
      * @return the for rent
      */
-    public Collection<ILand> getForRent() {
-    	
-    	return forRent;
+    public Collection<ApiLand> getForRent() {
+        
+        return forRent;
     }
 }

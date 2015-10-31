@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import me.tabinol.secuboidapi.parameters.ApiFlagValue;
 import org.bukkit.Location;
 
 import me.tabinol.secuboid.Secuboid;
@@ -26,7 +27,6 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboidapi.parameters.IFlagValue;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboidapi.utilities.StringChanges;
 
@@ -55,27 +55,27 @@ public class CommandTp extends CommandExec {
     public void commandExecute() throws SecuboidCommandException {
 
         String curArg = entity.argList.getNext();
-        land = Secuboid.getThisPlugin().iLands().getLand(curArg);
+        land = Secuboid.getThisPlugin().getLands().getLand(curArg);
         
         // Land not found
         if(land == null) {
-        	throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
+            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
         }
         
         // Check adminmod or permission TP
         checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
         // Try to get Location
-        IFlagValue value = land.getFlagAndInherit(FlagList.SPAWN.getFlagType());
+        ApiFlagValue value = land.getFlagAndInherit(FlagList.SPAWN.getFlagType());
         
         if(value.getValueString().isEmpty()) {
-        	throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");
+            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");
         }
         
         Location location = StringChanges.stringToLocation(value.getValueString());
         
         if(location == null) {
-        	throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.INVALID");
+            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.INVALID");
         }
         
         // Teleport player

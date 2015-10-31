@@ -21,10 +21,10 @@ package me.tabinol.secuboid.playercontainer;
 import java.util.UUID;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,7 +36,7 @@ import org.bukkit.entity.Player;
  * The Class PlayerContainerPlayer.
  */
 public class PlayerContainerPlayer extends PlayerContainer 
-	implements IPlayerContainerPlayer {
+    implements ApiPlayerContainerPlayer {
 
     /** The minecraft uuid. */
     private final UUID minecraftUUID;
@@ -49,7 +49,7 @@ public class PlayerContainerPlayer extends PlayerContainer
      */
     public PlayerContainerPlayer(UUID minecraftUUID) {
 
-        super("ID-" + minecraftUUID.toString(), EPlayerContainerType.PLAYER, false);
+        super("ID-" + minecraftUUID.toString(), ApiPlayerContainerType.PLAYER, false);
         this.minecraftUUID = minecraftUUID;
     }
 
@@ -57,7 +57,7 @@ public class PlayerContainerPlayer extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerPlayer &&
                 minecraftUUID.equals(((PlayerContainerPlayer) container2).minecraftUUID);
@@ -86,7 +86,7 @@ public class PlayerContainerPlayer extends PlayerContainer
     }
 
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return hasAccess(player);
     }
@@ -103,45 +103,45 @@ public class PlayerContainerPlayer extends PlayerContainer
         sb.append(ChatColor.DARK_RED).append("P:");
         
         if(playerName != null) {
-        	sb.append(ChatColor.WHITE).append(playerName);
+            sb.append(ChatColor.WHITE).append(playerName);
         } else {
-        	// Player never connected on the server, show UUID
-        	sb.append(ChatColor.DARK_GRAY).append("ID-" + minecraftUUID);
+            // Player never connected on the server, show UUID
+            sb.append(ChatColor.DARK_GRAY).append("ID-" + minecraftUUID);
         }
         
         return sb.toString();
     }
     
     public String getPlayerName() {
-    	
-    	String playerName;
-    	
-    	// Pass 1 get in Online players
-    	Player player = Bukkit.getPlayer(minecraftUUID);
-    	if(player != null) {
-    		return player.getName();
-    	}
-    	
-    	// Pass 2 get from Secuboid cache
-    	playerName = Secuboid.getThisPlugin().iPlayersCache().getNameFromUUID(minecraftUUID);
-    	if(playerName != null) {
-    		return playerName;
-    	}
-    	
-    	// Pass 3 get from offline players
-    	OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
-    	if(offlinePlayer != null) {
-    		return offlinePlayer.getName();
-    	}
-    	
-        return null;    	
+        
+        String playerName;
+        
+        // Pass 1 get in Online players
+        Player player = Bukkit.getPlayer(minecraftUUID);
+        if(player != null) {
+            return player.getName();
+        }
+        
+        // Pass 2 get from Secuboid cache
+        playerName = Secuboid.getThisPlugin().getPlayersCache().getNameFromUUID(minecraftUUID);
+        if(playerName != null) {
+            return playerName;
+        }
+        
+        // Pass 3 get from offline players
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
+        if(offlinePlayer != null) {
+            return offlinePlayer.getName();
+        }
+        
+        return null;        
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
 
     }
     
@@ -171,7 +171,7 @@ public class PlayerContainerPlayer extends PlayerContainer
      * @return the offline player
      */
     public OfflinePlayer getOfflinePlayer() {
-    	
-    	return Bukkit.getOfflinePlayer(minecraftUUID);
+        
+        return Bukkit.getOfflinePlayer(minecraftUUID);
     }
 }

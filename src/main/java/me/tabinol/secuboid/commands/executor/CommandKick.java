@@ -78,19 +78,19 @@ public class CommandKick extends CommandExec {
         }
 
         @SuppressWarnings("deprecation")
-		Player playerKick = Secuboid.getThisPlugin().getServer().getPlayer(playerKickName);
+        Player playerKick = Secuboid.getThisPlugin().getServer().getPlayer(playerKickName);
 
         // Player not in land?
         if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
-                || Secuboid.getThisPlugin().iPlayerConf().get(playerKick).isAdminMod()
+                || Secuboid.getThisPlugin().getPlayerConf().get(playerKick).isAdminMod()
                 || playerKick.hasPermission("secuboid.bypassban")) {
             throw new SecuboidCommandException("Kicked", player, "COMMAND.KICK.NOTINLAND");
         }
         
         //Kick the player
         playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
-        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
-        Secuboid.getThisPlugin().iLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
+        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
+        Secuboid.getThisPlugin().getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
     }
 }

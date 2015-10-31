@@ -19,10 +19,10 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerGroup;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerGroup;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import org.bukkit.entity.Player;
  * The Class PlayerContainerGroup.
  */
 public class PlayerContainerGroup extends PlayerContainer 
-	implements IPlayerContainerGroup {
+    implements ApiPlayerContainerGroup {
     
     /**
      * Instantiates a new player container group.
@@ -41,14 +41,14 @@ public class PlayerContainerGroup extends PlayerContainer
      */
     public PlayerContainerGroup(String groupName) {
         
-        super(groupName, EPlayerContainerType.GROUP, true);
+        super(groupName, ApiPlayerContainerType.GROUP, true);
     }
     
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerGroup &&
                 name.equalsIgnoreCase(container2.getName());
@@ -70,14 +70,14 @@ public class PlayerContainerGroup extends PlayerContainer
     public boolean hasAccess(Player player) {
         
         if(player != null) {
-            return Secuboid.getThisPlugin().iDependPlugin().getPermission().playerInGroup(player, name);
+            return Secuboid.getThisPlugin().getDependPlugin().getPermission().playerInGroup(player, name);
         } else {
             return false;
         }
     }
     
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return hasAccess(player);
     }
@@ -95,7 +95,7 @@ public class PlayerContainerGroup extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
         
     }
 }

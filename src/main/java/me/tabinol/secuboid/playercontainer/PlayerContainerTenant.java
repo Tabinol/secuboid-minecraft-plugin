@@ -19,10 +19,10 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerTenant;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerTenant;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.entity.Player;
 
@@ -31,19 +31,19 @@ import org.bukkit.entity.Player;
  * The Class PlayerContainerTenant.
  */
 public class PlayerContainerTenant extends PlayerContainer
-	implements IPlayerContainerTenant {
+    implements ApiPlayerContainerTenant {
     
     /** The land. */
-    private ILand land;
+    private ApiLand land;
     
     /**
      * Instantiates a new player container tenant.
      *
      * @param land the land
      */
-    public PlayerContainerTenant(ILand land) {
+    public PlayerContainerTenant(ApiLand land) {
         
-        super("", EPlayerContainerType.TENANT, false);
+        super("", ApiPlayerContainerType.TENANT, false);
         this.land = land;
     }
     
@@ -51,7 +51,7 @@ public class PlayerContainerTenant extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerTenant &&
                 land == ((PlayerContainerTenant)container2).land;
@@ -72,35 +72,35 @@ public class PlayerContainerTenant extends PlayerContainer
     @Override
     public boolean hasAccess(Player player) {
         
-    	return hasAccess(player, land);
+        return hasAccess(player, land);
     }
     
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
 
-    	if(land == null) {
-    		return false;
-    	}
+        if(land == null) {
+            return false;
+        }
 
-    	boolean value = land.isTenant(player);
-        ILand actual = land;
-        ILand parent;
+        boolean value = land.isTenant(player);
+        ApiLand actual = land;
+        ApiLand parent;
 
         while(!value && (parent = actual.getParent()) != null 
-    			&& actual.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
-    		
-    		value = parent.isTenant(player);
-    		actual = parent;
-    	}
-    	
-    	return value;
+                && actual.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
+            
+            value = parent.isTenant(player);
+            actual = parent;
+        }
+        
+        return value;
     }
     /**
      * Gets the land.
      *
      * @return the land
      */
-    public ILand getLand() {
+    public ApiLand getLand() {
         
         return land;
     }
@@ -109,7 +109,7 @@ public class PlayerContainerTenant extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
         
         this.land = land;
     }

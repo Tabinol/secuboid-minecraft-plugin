@@ -48,8 +48,8 @@ public class CommandSetspawn extends CommandExec {
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
-	@Override
-	public void commandExecute() throws SecuboidCommandException {
+    @Override
+    public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(true, null);
         checkPermission(true, true, null, null);
@@ -58,7 +58,7 @@ public class CommandSetspawn extends CommandExec {
         
         // If the player is not inside the land
         if(!land.isLocationInside(loc)) {
-        	throw new SecuboidCommandException("On land tp create", entity.player, "COMMAND.TP.OUTSIDE");
+            throw new SecuboidCommandException("On land tp create", entity.player, "COMMAND.TP.OUTSIDE");
         }
         
         // put player position to String
@@ -68,7 +68,7 @@ public class CommandSetspawn extends CommandExec {
         LandFlag flag = new LandFlag(FlagList.SPAWN.getFlagType(), posStr, true);
         ((Land) land).addFlag(flag);
         
-        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.TP.CREATED"));
-	}
+        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TP.CREATED"));
+    }
 
 }

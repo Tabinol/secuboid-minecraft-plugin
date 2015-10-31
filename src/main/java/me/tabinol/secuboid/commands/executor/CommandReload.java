@@ -52,8 +52,8 @@ public class CommandReload extends CommandExec {
 
         checkPermission(false, false, null, "secuboid.reload");
 
-        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RELOAD.START"));
+        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RELOAD.START"));
         Secuboid.getThisPlugin().reload();
-        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RELOAD.COMPLETE"));
+        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RELOAD.COMPLETE"));
     }
 }

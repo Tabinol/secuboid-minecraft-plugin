@@ -24,14 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.IDummyLand;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
+import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -43,22 +44,22 @@ import org.bukkit.event.Listener;
 public class AreaSelection extends RegionSelection implements Listener {
 
     /** The area. */
-    ICuboidArea area;
+    ApiCuboidArea area;
     
     /** The is collision. */
     boolean isCollision = false;
     
-    /** The by. */
-    private final byte by = 0;
-    
     /** The block list. */
     private final Map<Location, Material> blockList = new HashMap<Location, Material>();
-    
+
+    /** The block byte (option) list. */
+    private final Map<Location, Byte> blockByteList = new HashMap<Location, Byte>();
+
     /** The is from land. */
     private boolean isFromLand = false;
     
     /** Parent detected */
-    private IDummyLand parentDetected = null;
+    private ApiDummyLand parentDetected = null;
 
     /**
      * Instantiates a new area selection.
@@ -66,7 +67,7 @@ public class AreaSelection extends RegionSelection implements Listener {
      * @param player the player
      * @param area the area
      */
-    public AreaSelection(Player player, ICuboidArea area) {
+    public AreaSelection(Player player, ApiCuboidArea area) {
 
         super(SelectionType.AREA, player);
         this.area = area;
@@ -82,7 +83,7 @@ public class AreaSelection extends RegionSelection implements Listener {
      * @param area the area
      * @param isFromLand the is from land
      */
-    public AreaSelection(Player player, ICuboidArea area, boolean isFromLand) {
+    public AreaSelection(Player player, ApiCuboidArea area, boolean isFromLand) {
 
         super(SelectionType.AREA, player);
         this.area = area;
@@ -106,48 +107,48 @@ public class AreaSelection extends RegionSelection implements Listener {
      * Make visual selection.
      */
     @SuppressWarnings("deprecation")
-	final void makeVisualSelection() {
+    final void makeVisualSelection() {
 
         // Get the size (x and z) no abs (already ajusted)
         int diffX = area.getX2() - area.getX1();
         int diffZ = area.getZ2() - area.getZ1();
 
         // Do not show a too big select to avoid crash or severe lag
-        int maxSize = Secuboid.getThisPlugin().iConf().getMaxVisualSelect();
-        int maxDisPlayer = Secuboid.getThisPlugin().iConf().getMaxVisualSelectFromPlayer();
+        int maxSize = Secuboid.getThisPlugin().getConf().getMaxVisualSelect();
+        int maxDisPlayer = Secuboid.getThisPlugin().getConf().getMaxVisualSelectFromPlayer();
         Location playerLoc = player.getLocation();
         if (diffX > maxSize || diffZ > maxSize
                 || abs(area.getX1() - playerLoc.getBlockX()) > maxDisPlayer
                 || abs(area.getX2() - playerLoc.getBlockX()) > maxDisPlayer
                 || abs(area.getZ1() - playerLoc.getBlockZ()) > maxDisPlayer
                 || abs(area.getZ2() - playerLoc.getBlockZ()) > maxDisPlayer) {
-            Secuboid.getThisPlugin().iLog().write("Selection disabled!");
+            Secuboid.getThisPlugin().getLog().write("Selection disabled!");
             return;
         }
         
         // Detect the curent land from the 8 points
-        IDummyLand Land1 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
-        IDummyLand Land2 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
-        IDummyLand Land3 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
-        IDummyLand Land4 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
-        IDummyLand Land5 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
-        IDummyLand Land6 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
-        IDummyLand Land7 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
-        IDummyLand Land8 = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(new Location(
-        		area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
+        ApiDummyLand Land1 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
+        ApiDummyLand Land2 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
+        ApiDummyLand Land3 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
+        ApiDummyLand Land4 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
+        ApiDummyLand Land5 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
+        ApiDummyLand Land6 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
+        ApiDummyLand Land7 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
+        ApiDummyLand Land8 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
         
         if(Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
-        		&& Land1 == Land7 && Land1 == Land8) {
-        	parentDetected = Land1;
+                && Land1 == Land7 && Land1 == Land8) {
+            parentDetected = Land1;
         } else {
-        	parentDetected = Secuboid.getThisPlugin().iLands().getOutsideArea(Land1.getWorldName());
+            parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
         }
         
         boolean canCreate = parentDetected.checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
@@ -159,17 +160,19 @@ public class AreaSelection extends RegionSelection implements Listener {
                         || posZ == area.getZ1() || posZ == area.getZ2()) {
 
                     Location newloc = new Location(area.getWord(), posX, this.getYNearPlayer(posX, posZ) - 1, posZ);
-                    blockList.put(newloc, newloc.getBlock().getType());
+                    Block block = newloc.getBlock();
+                    blockList.put(newloc, block.getType());
+                    blockByteList.put(newloc, block.getData());
 
                     if (!isFromLand) {
 
                         // Active Selection
-                        IDummyLand testCuboidarea = Secuboid.getThisPlugin().iLands().getLandOrOutsideArea(newloc);
+                        ApiDummyLand testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
                         if (parentDetected == testCuboidarea 
-                        		&& (canCreate == true || Secuboid.getThisPlugin().iPlayerConf().get(player).isAdminMod())) {
-                            this.player.sendBlockChange(newloc, Material.SPONGE, this.by);
+                                && (canCreate == true || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMod())) {
+                            this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
                         } else {
-                            this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, this.by);
+                            this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);
                             isCollision = true;
                         }
                     } else {
@@ -185,7 +188,7 @@ public class AreaSelection extends RegionSelection implements Listener {
                                 || (posX == area.getX2() - 1 && posZ == area.getZ2())) {
 
                             // Subcorner
-                            this.player.sendBlockChange(newloc, Material.IRON_BLOCK, this.by);
+                            this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
 
                         } else if ((posX == area.getX1() && posZ == area.getZ1())
                                 || (posX == area.getX2() && posZ == area.getZ1())
@@ -193,7 +196,7 @@ public class AreaSelection extends RegionSelection implements Listener {
                                 || (posX == area.getX2() && posZ == area.getZ2())) {
 
                             // Exact corner
-                            this.player.sendBlockChange(newloc, Material.BEACON, this.by);
+                            this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
                         }
                     }
 
@@ -209,14 +212,15 @@ public class AreaSelection extends RegionSelection implements Listener {
      * @see me.tabinol.secuboid.selection.region.RegionSelection#removeSelection()
      */
     @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void removeSelection() {
 
-        for (Map.Entry<Location, Material> EntrySet : this.blockList.entrySet()) {
-            this.player.sendBlockChange(EntrySet.getKey(), EntrySet.getValue(), this.by);
+        for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
+            this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
         }
 
         blockList.clear();
+        blockByteList.clear();
     }
 
     /**
@@ -224,7 +228,7 @@ public class AreaSelection extends RegionSelection implements Listener {
      *
      * @return the cuboid area
      */
-    public ICuboidArea getCuboidArea() {
+    public ApiCuboidArea getCuboidArea() {
         
         return area;
     }
@@ -239,13 +243,13 @@ public class AreaSelection extends RegionSelection implements Listener {
         return isCollision;
     }
     
-    public ILand getParentDetected() {
-    	
-    	if(parentDetected instanceof ILand) {
-    		return (ILand) parentDetected;
-    	} else {
-    		return null;
-    	}
+    public ApiLand getParentDetected() {
+        
+        if(parentDetected instanceof ApiLand) {
+            return (ApiLand) parentDetected;
+        } else {
+            return null;
+        }
     }
     
     /**

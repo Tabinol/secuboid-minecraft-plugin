@@ -24,19 +24,19 @@ import org.bukkit.entity.Player;
  */
 public interface Chat {
 
-	/**
-	 * Checks if is spy.
-	 *
-	 * @param player the player
-	 * @return true, if is spy
-	 */
-	public boolean isSpy(Player player);
-	
-	/**
-	 * Checks if is muted.
-	 *
-	 * @param player the player
-	 * @return true, if is muted
-	 */
-	public boolean isMuted(Player player);
+    /**
+     * Checks if is spy.
+     *
+     * @param player the player
+     * @return true, if is spy
+     */
+    public boolean isSpy(Player player);
+    
+    /**
+     * Checks if is muted.
+     *
+     * @param player the player
+     * @return true, if is muted
+     */
+    public boolean isMuted(Player player);
 }

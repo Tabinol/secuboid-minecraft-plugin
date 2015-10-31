@@ -1,0 +1,28 @@
+# Factoid Inventory configuration file
+#
+# "InventoryName"
+# You give the name you want.
+# "Default" is anyware except where you have INVENTORY flag set.
+# CAUTION : Inventory name is Case Sensitive.
+# Do not remove Default inventory!
+#
+# Options:
+# SeparateCreative: (default: true) For a separate creative inventory.
+# SaveInventory: (default: true) If the inventroy is saved for futur use.
+#                                "false" means a reseted inventory each
+#                                 time the player go back to the region.
+# AllowDrop: (default: true) Item drops are allowed.
+# DisabledCommands: List of disabled commands (wihtout "/")
+
+Inventories:
+    Default:
+        SeparateCreative: true
+#    Pvp:
+#        SeparateCreative: true
+#        DisabledCommands: ['kpack']
+#    Creative:
+#        SeparateCreative: false
+#    Spleef:
+#        SeparateCreative: false
+#        SaveInventory: false
+#        AllowDrop: false

@@ -20,7 +20,7 @@ package me.tabinol.secuboid.selection.region;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -48,7 +48,7 @@ public class ActiveAreaSelection extends AreaSelection implements PlayerMoveList
      * @param player the player
      * @param area the area
      */
-    public ActiveAreaSelection(Player player, ICuboidArea area) {
+    public ActiveAreaSelection(Player player, ApiCuboidArea area) {
 
         super(player);
         this.area = area;
@@ -63,11 +63,11 @@ public class ActiveAreaSelection extends AreaSelection implements PlayerMoveList
         isCollision = false;
 
         Location loc = player.getLocation();
-        int landXr = Secuboid.getThisPlugin().iConf().getDefaultXSize() / 2;
-        int landZr = Secuboid.getThisPlugin().iConf().getDefaultZSize() / 2;
+        int landXr = Secuboid.getThisPlugin().getConf().getDefaultXSize() / 2;
+        int landZr = Secuboid.getThisPlugin().getConf().getDefaultZSize() / 2;
         area = new CuboidArea(loc.getWorld().getName(),
-                loc.getBlockX() - landXr, Secuboid.getThisPlugin().iConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-                loc.getBlockX() + landXr, Secuboid.getThisPlugin().iConf().getDefaultTop(), loc.getBlockZ() + landZr);
+                loc.getBlockX() - landXr, Secuboid.getThisPlugin().getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
+                loc.getBlockX() + landXr, Secuboid.getThisPlugin().getConf().getDefaultTop(), loc.getBlockZ() + landZr);
 
         makeVisualSelection();
     }

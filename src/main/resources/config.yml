@@ -1,18 +1,34 @@
 ##################################################################
 # Secuboid config file                                           #
 ##################################################################
-general:                             # ----General Config----
-  debug: false                       # Set to true to show DebugLog 
-  lang: english                      # english, french for now
+General:                             # ----General Config----
+  Debug: false                       # Set to true to show DebugLog
+  Lang: english                      # english, french for now (or your own)
   Storage: flat                      # Only flat is supported for now
+
   # The next value is if you want the Factoid explosion protection.
   # Set it to "False" if you prefer to disable explosions from Essentials
   # or avoiding plugin conflicts. Flags (???_DAMAGE) will be ignored.
   OverrideExplosions: true
+
   UseEconomy: false
+
+  # The players can have more than one inventory or a separate
+  # creative inventory. Do not activate this option if you have
+  # an other inventory plugin (Multiverse Inventories, ,..)
+  # If true, see inventory.yml
+  MultipleInventories: false # Need restart if changed
+
+  # Activate FLY and CREATIVE permissions. Secuboid will change automatically
+  # the game mode where those flags are active/inactive. See below for
+  # extra configuration.
+  FlyAndCreative: false # Need restart if changed
+
   InfoItem: 352                      # Item that give Land information
   SelectItem: 367                    # Item that give Land selection
-land:
+
+# Lands configuration
+Lands:
   Types:
     List:                            # land types or categories
       - admin
@@ -20,12 +36,14 @@ land:
     OnCreate:                        # Automatic categories on create
       AdminMod: admin                # On admin mode (or "-null-")
       NoneAdminMod: player           # Non admin mode (normal players or "-null-")
+
   # AllowCollision:
   # true: Collisions are permitted without verification.
   # approve: A player with permission factoid.approvecollision must approve
   #          the land created if there is a collision.
   # false: No collision permitted.
   AllowCollision: approve            # true, approve, false
+
   LandChat: true                     # Allow private chat in lands (=, < and >)
   SpectatorIsVanish: true            # true, Spectator players are not show in 
                                      # land players list 
@@ -40,9 +58,51 @@ land:
   DefaultBottom: 0
   DefaultTop: 255
   MaxLandPerPlayer: 5
-  area:
+
+  Areas:
     MaxAreaPerLand: 3
+
   OwnerCanSet:                     # What the owner can set on his land?
     Permissions: [BUILD, OPEN, USE, ANIMAL_KILL, TAMED_KILL, VILLAGER_KILL, VILLAGER_GOLEM_KILL, HORSE_KILL]
     Flags: [TNT_EXPLOSION, TNT_DAMAGE, MESSAGE_JOIN, MESSAGE_QUIT]
-  BeaconLight: false               #Set beacon light effect of an selection
+
+# Fly and Creative configuration (only if general.FlyAndCreative is activated)
+FlyCreative:
+  # Game Modes to ignore
+  IgnoredGameMode:
+    - ADVENTURE
+    - SPECTATOR
+
+  # Configuration for creative mode only
+  Creative:
+
+    # Disallow to drop any item?
+    # Override permission: secuboid.flycreative.override.nodrop
+    NoDrop: true
+
+    # Disallow to open a chest, furnace, ender chest, ...
+    # Override permission: secuboid.flycreative.override.noopenchest
+    NoOpenChest: true
+
+    # Disallow to build outside a cuboid if the player is near the border
+    # Override permission: secuboid.flycreative.override.nobuildoutside
+    NoBuildOutside: true
+
+    # List of banned items in creative mode
+    # Override permission: secuboid.flycreative.override.allowbanneditems
+    # You have a list of material names here:
+    # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+    BannedItems:
+      - EXP_BOTTLE
+      - DIAMOND_BLOCK
+      - DIAMOND_ORE
+      - DIAMOND
+      - IRON_BLOCK
+      - IRON_ORE
+      - IRON_INGOT
+      - GOLD_BLOCK
+      - GOLD_ORE
+      - GOLD_INGOT
+      - EMERALD_BLOCK
+      - EMERALD_ORE
+      - EMERALD

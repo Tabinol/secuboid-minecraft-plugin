@@ -24,15 +24,15 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.SecuboidAPI;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 
 import org.bukkit.ChatColor;
 
 @InfoCommand(name="type", forceParameter=true)
 public class CommandType extends CommandExec {
-	
-	public CommandType(CommandEntities entity) throws SecuboidCommandException {
+    
+    public CommandType(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);
     }
@@ -48,9 +48,9 @@ public class CommandType extends CommandExec {
         if (curArg.equalsIgnoreCase("list")) {
             
             StringBuilder stList = new StringBuilder();
-            for (IType type : SecuboidAPI.iTypes().getTypes()) {
-            	if (stList.length() != 0) {
-            		stList.append(" ");
+            for (ApiType type : ApiSecuboidSta.getTypes().getTypes()) {
+                if (stList.length() != 0) {
+                    stList.append(" ");
                 }
                 stList.append(ChatColor.WHITE).append(type.getName());
             stList.append(Config.NEWLINE);
@@ -58,22 +58,22 @@ public class CommandType extends CommandExec {
             new ChatPage("COMMAND.TYPES.LISTSTART", stList.toString(), entity.player, null).getPage(1);
         
         } else if(curArg.equals("remove")) {
-        	
-        	land.setType(null);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
-            Secuboid.getThisPlugin().iLog().write("Land type removed: " + land.getName());
+            
+            land.setType(null);
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
+            Secuboid.getThisPlugin().getLog().write("Land type removed: " + land.getName());
         
         } else { // Type change 
-        	
-        	IType type = SecuboidAPI.iTypes().getType(curArg);
-        	
-        	if(type == null) {
-        		throw new SecuboidCommandException("Land Types", entity.player, "COMMAND.TYPES.INVALID");
-        	}
-        	
-        	land.setType(type);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
-            Secuboid.getThisPlugin().iLog().write("Land type: " + type.getName() + " for land: " + land.getName());
+            
+            ApiType type = ApiSecuboidSta.getTypes().getType(curArg);
+            
+            if(type == null) {
+                throw new SecuboidCommandException("Land Types", entity.player, "COMMAND.TYPES.INVALID");
+            }
+            
+            land.setType(type);
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
+            Secuboid.getThisPlugin().getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
         }
     }
 }

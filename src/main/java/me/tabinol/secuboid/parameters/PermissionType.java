@@ -18,13 +18,13 @@
  */
 package me.tabinol.secuboid.parameters;
 
-import me.tabinol.secuboidapi.parameters.IPermissionType;
+import me.tabinol.secuboidapi.parameters.ApiPermissionType;
 
 
 /**
  * The Class PermissionType.
  */
-public class PermissionType extends ParameterType implements IPermissionType {
+public class PermissionType extends ParameterType implements ApiPermissionType {
     
     /** The default value. */
     private boolean defaultValue;

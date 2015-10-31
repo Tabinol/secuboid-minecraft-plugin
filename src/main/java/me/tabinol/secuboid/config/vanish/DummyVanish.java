@@ -37,7 +37,7 @@ public class DummyVanish implements Vanish {
     @Override
     public boolean isVanished(Player player) {
         
-        return Secuboid.getThisPlugin().iConf().isSpectatorIsVanish() 
-        		&& BKVersion.isSpectatorMode(player);
+        return Secuboid.getThisPlugin().getConf().isSpectatorIsVanish()
+                && BKVersion.isSpectatorMode(player);
     }
 }

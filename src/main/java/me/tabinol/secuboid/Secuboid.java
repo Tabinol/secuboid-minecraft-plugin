@@ -23,6 +23,7 @@ import java.io.IOException;
 import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.DependPlugin;
+import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
@@ -30,25 +31,19 @@ import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.types.Types;
-import me.tabinol.secuboid.listeners.ChatListener;
-import me.tabinol.secuboid.listeners.LandListener;
-import me.tabinol.secuboid.listeners.PlayerListener;
-import me.tabinol.secuboid.listeners.PlayerListener18;
-import me.tabinol.secuboid.listeners.PvpListener;
-import me.tabinol.secuboid.listeners.WorldListener;
+import me.tabinol.secuboid.listeners.*;
 import me.tabinol.secuboid.parameters.Parameters;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playerscache.PlayersCache;
-import me.tabinol.secuboid.scoreboard.ScoreBoard;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
-import me.tabinol.secuboidapi.SecuboidAPI;
-import me.tabinol.secuboidapi.ISecuboid;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboidapi.ApiSecuboid;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.MetricsLite;
@@ -56,22 +51,22 @@ import org.mcstats.MetricsLite;
 /**
  * The Class Secuboid.
  */
-public class Secuboid extends JavaPlugin implements ISecuboid {
+public class Secuboid extends JavaPlugin implements ApiSecuboid {
 
-	/**  The Economy schedule interval. */
-	public static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
-	
+    /**  The Economy schedule interval. */
+    public static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
+    
     /** The maven app properties. */
     private static MavenAppProperties mavenAppProperties;
 
     /** The this plugin. */
     private static Secuboid thisPlugin;
 
-	/** The types */
+    /** The types */
     protected static Types types;
     
     /** The lands. */
-	protected static Lands lands;
+    protected static Lands lands;
     
     /** The parameters. */
     protected static Parameters parameters;
@@ -100,6 +95,12 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
     /** The chat listener. */
     private ChatListener chatListener;
 
+    /** The inventory listener */
+    private InventoryListener inventoryListener = null;
+
+    /** The inventory listener */
+    private FlyCreativeListener flyCreativeListener = null;
+
     /**  The economy scheduler. */
     private EcoScheduler ecoScheduler;
     
@@ -114,6 +115,8 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
     
     /** The conf. */
     private Config conf;
+
+    private InventoryConfig inventoryConf = null;
     
     /** The language. */
     private Lang language;
@@ -123,9 +126,6 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
     
     /** The player money. */
     private PlayerMoney playerMoney;
-    
-    /** The Scoreboard. */
-    private ScoreBoard Scoreboard;
     
     /** The players cache. */
     private PlayersCache playersCache;
@@ -150,30 +150,6 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
         return thisPlugin;
     }
 
-    /**
-     * Gets the parameters.
-     *
-     * @return the parameters
-     * @deprecated Please use SecuboidAPI
-     */
-    @Deprecated
-    public static Parameters getParameters() {
-        
-        return parameters;
-    }
-
-    /**
-     * Gets the lands.
-     *
-     * @return the lands
-     * @deprecated Please use SecuboidAPI
-     */
-    @Deprecated
-    public static Lands getLands() {
-
-        return lands;
-    }
-    
     /* (non-Javadoc)
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
      */
@@ -185,10 +161,16 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
         // Static access to «this» Secuboid
         thisPlugin = this;
         BKVersion.initVersion();
-        SecuboidAPI.initSecuboidPluginAccess();
+        ApiSecuboidSta.initSecuboidPluginAccess();
         parameters = new Parameters();
         types = new Types();
         conf = new Config();
+
+        // For inventory config
+        if(conf.isMultipleInventories()) {
+            inventoryConf = new InventoryConfig();
+        }
+
         log = new Log();
         dependPlugin = new DependPlugin();
         if (conf.useEconomy() == true && dependPlugin.getEconomy() != null) {
@@ -205,13 +187,12 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
         worldListener = new WorldListener();
         playerListener = new PlayerListener();
         if(BKVersion.isPlayerInteractAtEntityEventExist()) {
-        	playerListener18 = new PlayerListener18();
+            playerListener18 = new PlayerListener18();
         }
         pvpListener = new PvpListener();
         landListener = new LandListener();
         chatListener = new ChatListener();
         CommandListener = new OnCommand();
-        Scoreboard = new ScoreBoard();
         approveNotif = new ApproveNotif();
         approveNotif.runApproveNotifLater();
         ecoScheduler = new EcoScheduler();
@@ -221,14 +202,26 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
         getServer().getPluginManager().registerEvents(worldListener, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
         if(BKVersion.isPlayerInteractAtEntityEventExist()) {
-        	getServer().getPluginManager().registerEvents(playerListener18, this);
+            getServer().getPluginManager().registerEvents(playerListener18, this);
         }
         getServer().getPluginManager().registerEvents(pvpListener, this);
         getServer().getPluginManager().registerEvents(landListener, this);
         getServer().getPluginManager().registerEvents(chatListener, this);
         getCommand("secuboid").setExecutor(CommandListener);
-        getCommand("faction").setExecutor(CommandListener);
-        log.write(iLanguage().getMessage("ENABLE"));
+
+        // Register events only if Inventory is active
+        if(inventoryConf != null) {
+            inventoryListener = new InventoryListener();
+            getServer().getPluginManager().registerEvents(inventoryListener, this);
+        }
+
+        // Register events only if Fly and Creative is active
+        if(conf.isFlyAndCreative()) {
+            flyCreativeListener = new FlyCreativeListener();
+            getServer().getPluginManager().registerEvents(flyCreativeListener, this);
+        }
+
+        log.write(getLanguage().getMessage("ENABLE"));
         
         // Start Plugin Metrics
         try {
@@ -247,6 +240,9 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
         types = new Types();
         // No reload of Parameters to avoid Deregistering external parameters
         conf.reloadConfig();
+        if(inventoryConf != null) {
+            inventoryConf.reloadConfig();
+        }
         if (conf.useEconomy() == true && dependPlugin.getEconomy() != null) {
             playerMoney = new PlayerMoney();
         } else {
@@ -268,7 +264,13 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
     @Override
     public void onDisable() {
 
-        log.write(iLanguage().getMessage("DISABLE"));
+        log.write(getLanguage().getMessage("DISABLE"));
+
+        // Save all inventories
+        if(inventoryListener != null) {
+            inventoryListener.removeAndSave();
+        }
+
         playersCache.stopNextRun();
         approveNotif.stopNextRun();
         storageThread.stopNextRun();
@@ -276,122 +278,139 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
     }
 
     /**
-     * I conf.
+     * Get conf.
      *
      * @return the config
      */
-    public Config iConf() {
+    public Config getConf() {
 
         return conf;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ISecuboid#iPlayerConf()
+    /**
+     * Inventory config
+     * @return the config
      */
-    public PlayerStaticConfig iPlayerConf() {
+    public InventoryConfig getInventoryConf() {
+
+        return inventoryConf;
+    }
+
+    /**
+     * Inventory Listener
+     * @return the inventory listener
+     */
+    public InventoryListener getInventoryListener() {
+
+        return inventoryListener;
+    }
+
+    /**
+     * fly and creative Listener
+     * @return the fly and creative listener
+     */
+    public FlyCreativeListener getFlyCreativeListener() {
+
+        return flyCreativeListener;
+    }
+
+    /* (non-Javadoc)
+     * @see me.tabinol.secuboidapi.ApiSecuboid#getPlayerConf()
+     */
+    public PlayerStaticConfig getPlayerConf() {
 
         return playerConf;
     }
 
     /**
-     * I language.
+     * Get language.
      *
      * @return the lang
      */
-    public Lang iLanguage() {
+    public Lang getLanguage() {
 
         return language;
     }
 
     /**
-     * I scoreboard.
-     *
-     * @return the score board
-     */
-    public ScoreBoard iScoreboard() {
-
-        return Scoreboard;
-    }
-
-    /**
-     * I log.
+     * Get log.
      *
      * @return the log
      */
-    public Log iLog() {
+    public Log getLog() {
 
         return log;
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ISecuboid#iParameters()
+     * @see me.tabinol.secuboidapi.ApiSecuboid#getParameters()
      */
-    public Parameters iParameters() {
-    	
-    	return parameters;
+    public Parameters getParameters() {
+        
+        return parameters;
     }
     
     /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ISecuboid#iLands()
+     * @see me.tabinol.secuboidapi.ApiSecuboid#getLands()
      */
-    public Lands iLands() {
-    	
-    	return lands;
+    public Lands getLands() {
+        
+        return lands;
     }
     
-    public Types iTypes() {
-    	
-    	return types;
+    public Types getTypes() {
+        
+        return types;
     }
 
     /**
-     * I storage thread.
+     * Get storage thread.
      *
      * @return the storage thread
      */
-    public StorageThread iStorageThread() {
+    public StorageThread getStorageThread() {
 
         return storageThread;
     }
 
     /**
-     * I depend plugin.
+     * Get depend plugin.
      *
      * @return the depend plugin
      */
-    public DependPlugin iDependPlugin() {
+    public DependPlugin getDependPlugin() {
 
         return dependPlugin;
     }
 
     /**
-     * I approve notif.
+     * Get approve notif.
      *
      * @return the approve notif
      */
-    public ApproveNotif iApproveNotif() {
+    public ApproveNotif getApproveNotif() {
 
         return approveNotif;
     }
 
     /**
-     * I player money.
+     * Get player money.
      *
      * @return the player money
      */
-    public PlayerMoney iPlayerMoney() {
+    public PlayerMoney getPlayerMoney() {
 
         return playerMoney;
     }
     
     /**
-     * I players cache.
+     * Get players cache.
      *
      * @return the players cache
      */
-    public PlayersCache iPlayersCache() {
-    	
-    	return playersCache;
+    public PlayersCache getPlayersCache() {
+        
+        return playersCache;
     }
     
     /*
@@ -399,21 +418,21 @@ public class Secuboid extends JavaPlugin implements ISecuboid {
      */
     
     /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ISecuboid#createPlayerContainer(me.tabinol.secuboidapi.lands.ILand, me.tabinol.secuboidapi.playercontainer.EPlayerContainerType, java.lang.String)
+     * @see me.tabinol.secuboidapi.ApiSecuboid#createPlayerContainer(me.tabinol.secuboidapi.lands.ApiLand, me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType, java.lang.String)
      */
-    public PlayerContainer createPlayerContainer(ILand land, 
-    		EPlayerContainerType pct, String name) {
-    	
-    	return PlayerContainer.create(land, pct, name);
+    public PlayerContainer createPlayerContainer(ApiLand land,
+            ApiPlayerContainerType pct, String name) {
+        
+        return PlayerContainer.create(land, pct, name);
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ISecuboid#createCuboidArea(java.lang.String, int, int, int, int, int, int)
+     * @see me.tabinol.secuboidapi.ApiSecuboid#createCuboidArea(java.lang.String, int, int, int, int, int, int)
      */
-    public ICuboidArea createCuboidArea(String worldName, int x1, int y1, 
-    		int z1, int x2, int y2, int z2) {
-    	
-    	return new CuboidArea(worldName, x1, y1, z1, x2, y2, z2);
+    public ApiCuboidArea createCuboidArea(String worldName, int x1, int y1,
+            int z1, int x2, int y2, int z2) {
+        
+        return new CuboidArea(worldName, x1, y1, z1, x2, y2, z2);
     }
     
 }

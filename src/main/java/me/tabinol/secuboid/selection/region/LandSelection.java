@@ -19,8 +19,9 @@
 package me.tabinol.secuboid.selection.region;
 
 import java.util.TreeMap;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
+
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import org.bukkit.entity.Player;
 
@@ -31,10 +32,10 @@ import org.bukkit.entity.Player;
 public class LandSelection extends RegionSelection {
 
     /** The land. */
-    private final ILand land;
+    private final ApiLand land;
     
     /** The visual areas. */
-    private final TreeMap<ICuboidArea, AreaSelection> visualAreas; // Visuals arealist
+    private final TreeMap<ApiCuboidArea, AreaSelection> visualAreas; // Visuals arealist
     
     /**
      * Instantiates a new land selection.
@@ -42,14 +43,14 @@ public class LandSelection extends RegionSelection {
      * @param player the player
      * @param land the land
      */
-    public LandSelection(Player player, ILand land) {
+    public LandSelection(Player player, ApiLand land) {
         
         super(SelectionType.LAND, player);
         this.land = land;
-        visualAreas = new TreeMap<ICuboidArea, AreaSelection>();
+        visualAreas = new TreeMap<ApiCuboidArea, AreaSelection>();
         
         // Add visual areas
-        for(ICuboidArea area : land.getAreas()) {
+        for(ApiCuboidArea area : land.getAreas()) {
             visualAreas.put(area, new AreaSelection(player, area, true));
         }
     }
@@ -59,7 +60,7 @@ public class LandSelection extends RegionSelection {
      *
      * @return the land
      */
-    public ILand getLand() {
+    public ApiLand getLand() {
         
         return land;
     }

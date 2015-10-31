@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.parameters;
 
-import me.tabinol.secuboidapi.parameters.IPermission;
+import me.tabinol.secuboidapi.parameters.ApiPermission;
 
 import org.bukkit.ChatColor;
 
@@ -26,7 +26,7 @@ import org.bukkit.ChatColor;
 /**
  * The Class Permission.
  */
-public class Permission implements IPermission {
+public class Permission implements ApiPermission {
 
     /** The perm type. */
     PermissionType permType;
@@ -52,8 +52,8 @@ public class Permission implements IPermission {
     }
 
     public Permission copyOf() {
-    	
-    	return new Permission(permType, value, heritable);
+        
+        return new Permission(permType, value, heritable);
     }
     
     /**

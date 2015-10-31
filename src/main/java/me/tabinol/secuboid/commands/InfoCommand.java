@@ -32,31 +32,31 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface InfoCommand {
 
-	/**
-	 * The command name.
-	 *
-	 * @return the string
-	 */
-	String name();
+    /**
+     * The command name.
+     *
+     * @return the string
+     */
+    String name();
 
-	/**
-	 * Aliases.
-	 *
-	 * @return the string[]
-	 */
-	String[] aliases() default {};
-	
-	/**
-	 * Allowing from console?
-	 *
-	 * @return true, if successful
-	 */
-	boolean allowConsole() default false;
-	
-	/**
-	 * Need a parameter? If "true", no parameter = help
-	 *
-	 * @return true, if successful
-	 */
-	boolean forceParameter() default false;
+    /**
+     * Aliases.
+     *
+     * @return the string[]
+     */
+    String[] aliases() default {};
+    
+    /**
+     * Allowing from console?
+     *
+     * @return true, if successful
+     */
+    boolean allowConsole() default false;
+    
+    /**
+     * Need a parameter? If "true", no parameter = help
+     *
+     * @return true, if successful
+     */
+    boolean forceParameter() default false;
 }

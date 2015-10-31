@@ -26,9 +26,9 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
 
 import org.bukkit.ChatColor;
 
@@ -39,9 +39,9 @@ import org.bukkit.ChatColor;
 @InfoCommand(name="resident", forceParameter=true)
 public class CommandResident extends CommandThreadExec {
 
-	private String fonction;
-	
-	/**
+    private String fonction;
+    
+    /**
      * Instantiates a new command resident.
      *
      * @param entity the entity
@@ -63,7 +63,7 @@ public class CommandResident extends CommandThreadExec {
        
         // Double check: The player must be resident, owner or adminmod
         if(!entity.playerConf.isAdminMod() && !land.isResident(entity.player) && !land.isOwner(entity.player)) {
-        	throw new SecuboidCommandException("No permission to do this action", entity.player, "GENERAL.MISSINGPERMISSION");
+            throw new SecuboidCommandException("No permission to do this action", entity.player, "GENERAL.MISSINGPERMISSION");
         }
         
         fonction = entity.argList.getNext();
@@ -71,21 +71,21 @@ public class CommandResident extends CommandThreadExec {
         if (fonction.equalsIgnoreCase("add")) {
             
             pc = entity.argList.getPlayerContainerFromArg(land,
-                    new EPlayerContainerType[]{EPlayerContainerType.EVERYBODY,
-                        EPlayerContainerType.OWNER, EPlayerContainerType.VISITOR,
-                        EPlayerContainerType.RESIDENT});
-            Secuboid.getThisPlugin().iPlayersCache().getUUIDWithNames(this, pc);
+                    new ApiPlayerContainerType[]{ApiPlayerContainerType.EVERYBODY,
+                        ApiPlayerContainerType.OWNER, ApiPlayerContainerType.VISITOR,
+                        ApiPlayerContainerType.RESIDENT});
+            Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
         
         } else if (fonction.equalsIgnoreCase("remove")) {
             
             pc = entity.argList.getPlayerContainerFromArg(land, null);
-            Secuboid.getThisPlugin().iPlayersCache().getUUIDWithNames(this, pc);
+            Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
         
         } else if (fonction.equalsIgnoreCase("list")) {
             
             StringBuilder stList = new StringBuilder();
             if (!land.getResidents().isEmpty()) {
-                for (IPlayerContainer pc : land.getResidents()) {
+                for (ApiPlayerContainer pc : land.getResidents()) {
                     if (stList.length() != 0) {
                         stList.append(" ");
                     }
@@ -93,7 +93,7 @@ public class CommandResident extends CommandThreadExec {
                 }
                 stList.append(Config.NEWLINE);
             } else {
-                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RESIDENT.LISTROWNULL"));
+                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RESIDENT.LISTROWNULL"));
             }
             new ChatPage("COMMAND.RESIDENT.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
         
@@ -102,28 +102,28 @@ public class CommandResident extends CommandThreadExec {
         }
     }
 
-	/* (non-Javadoc)
-	 * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
-	 */
-	@Override
-	public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-			throws SecuboidCommandException {
-		
-    	convertPcIfNeeded(playerCacheEntry);
+    /* (non-Javadoc)
+     * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
+     */
+    @Override
+    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
+            throws SecuboidCommandException {
+        
+        convertPcIfNeeded(playerCacheEntry);
 
         if (fonction.equalsIgnoreCase("add")) {
 
             land.addResident(pc);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RESIDENT.ISDONE", pc.getPrint(), land.getName()));
-            Secuboid.getThisPlugin().iLog().write("Resident added: " + pc.toString());
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RESIDENT.ISDONE", pc.getPrint(), land.getName()));
+            Secuboid.getThisPlugin().getLog().write("Resident added: " + pc.toString());
 
         } else if (fonction.equalsIgnoreCase("remove")) {
-		
+        
             if (!land.removeResident(pc)) {
                 throw new SecuboidCommandException("Resident", entity.player, "COMMAND.RESIDENT.REMOVENOTEXIST");
             }
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RESIDENT.REMOVEISDONE", pc.getPrint(), land.getName()));
-            Secuboid.getThisPlugin().iLog().write("Resident removed: " + pc.toString());
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RESIDENT.REMOVEISDONE", pc.getPrint(), land.getName()));
+            Secuboid.getThisPlugin().getLog().write("Resident removed: " + pc.toString());
         }
-	}
+    }
 }

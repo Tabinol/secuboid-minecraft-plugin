@@ -20,8 +20,8 @@ package me.tabinol.secuboid.parameters;
 
 import java.util.ArrayList;
 
+import me.tabinol.secuboidapi.parameters.ApiFlagValue;
 import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.parameters.IFlagValue;
 
 import org.bukkit.ChatColor;
 
@@ -29,48 +29,48 @@ import org.bukkit.ChatColor;
  * The Class FlagValue.
  * Represent a flag value : Boolean, Double, String and String[]
  */
-public class FlagValue implements IFlagValue {
-	
-	/** The value. */
-	private Object value;
-	
-	/**
-	 * Instantiates a new flag value.
-	 *
-	 * @param value the value
-	 */
-	public FlagValue(Object value) {
-		
-		this.value = value;
-	}
-	
-	
-	public FlagValue copyOf() {
-		
-		if(value instanceof Boolean) {
-			return new FlagValue(Boolean.valueOf((Boolean)value));
-		} else if(value instanceof Double) {
-			return new FlagValue(Double.valueOf((Double)value));
-		} else if(value instanceof String) {
-			return new FlagValue(String.valueOf((String)value));
-		} else if(value instanceof String[]) {
-			String[] newStr = new String[((String[]) value).length];
-			for(int t = 0; t < ((String[]) value).length; t ++) {
-				newStr[t] = String.valueOf(((String[]) value)[t]);
-			}
-			return new FlagValue(newStr);
-		}
-		return new FlagValue(value);
-	}
-	/**
-	 * Sets the value.
-	 *
-	 * @param value the new value
-	 */
-	public void setValue(Object value) {
-		
-		this.value = value;
-	}
+public class FlagValue implements ApiFlagValue {
+    
+    /** The value. */
+    private Object value;
+    
+    /**
+     * Instantiates a new flag value.
+     *
+     * @param value the value
+     */
+    public FlagValue(Object value) {
+        
+        this.value = value;
+    }
+    
+    
+    public FlagValue copyOf() {
+        
+        if(value instanceof Boolean) {
+            return new FlagValue(Boolean.valueOf((Boolean)value));
+        } else if(value instanceof Double) {
+            return new FlagValue(Double.valueOf((Double)value));
+        } else if(value instanceof String) {
+            return new FlagValue(String.valueOf((String)value));
+        } else if(value instanceof String[]) {
+            String[] newStr = new String[((String[]) value).length];
+            for(int t = 0; t < ((String[]) value).length; t ++) {
+                newStr[t] = String.valueOf(((String[]) value)[t]);
+            }
+            return new FlagValue(newStr);
+        }
+        return new FlagValue(value);
+    }
+    /**
+     * Sets the value.
+     *
+     * @param value the new value
+     */
+    public void setValue(Object value) {
+        
+        this.value = value;
+    }
 
     /**
      * Gets the value.
@@ -138,7 +138,7 @@ public class FlagValue implements IFlagValue {
         }
         
         if(value instanceof Double) {
-        	return ((Double) value).toString();
+            return ((Double) value).toString();
         }
         
         if(value instanceof String) {
@@ -167,34 +167,34 @@ public class FlagValue implements IFlagValue {
      * @return the flag value
      */
     public static FlagValue getFromString(String str, FlagType ft) {
-    	
+        
         FlagValue value;
-    	
-    	if(ft.isRegistered()) {
-        	if (ft.getDefaultValue().getValue() instanceof Boolean) {
+        
+        if(ft.isRegistered()) {
+            if (ft.getDefaultValue().getValue() instanceof Boolean) {
                 String[] strs = str.split(" ");
                 value = new FlagValue(Boolean.parseBoolean(strs[0]));
-        	} else if (ft.getDefaultValue().getValue() instanceof Double) {
-        		String[] strs = str.split(" ");
-        		value = new FlagValue(Double.parseDouble(strs[0]));
-        	} else if (ft.getDefaultValue().getValue() instanceof String) {
-        		value = new FlagValue(StringChanges.fromQuote(str));
-        	} else if (ft.getDefaultValue().getValue() instanceof String[]) {
-        		ArrayList<String> result = new ArrayList<String>();
-        		String[] strs = StringChanges.splitKeepQuote(str, ";");
-        		for (String st : strs) {
+            } else if (ft.getDefaultValue().getValue() instanceof Double) {
+                String[] strs = str.split(" ");
+                value = new FlagValue(Double.parseDouble(strs[0]));
+            } else if (ft.getDefaultValue().getValue() instanceof String) {
+                value = new FlagValue(StringChanges.fromQuote(str));
+            } else if (ft.getDefaultValue().getValue() instanceof String[]) {
+                ArrayList<String> result = new ArrayList<String>();
+                String[] strs = StringChanges.splitKeepQuote(str, ";");
+                for (String st : strs) {
                 result.add(StringChanges.fromQuote(st));
-        		}
-        		value = new FlagValue(result.toArray(new String[0]));
-        	} else {
-        		value = null;
-        	}
-    	}else {
-    		
-    		// not registered save raw information
-    		value = new FlagValue(str);
-    	}
-    	
-    	return value;
+                }
+                value = new FlagValue(result.toArray(new String[0]));
+            } else {
+                value = null;
+            }
+        }else {
+            
+            // not registered save raw information
+            value = new FlagValue(str);
+        }
+        
+        return value;
     }
 }

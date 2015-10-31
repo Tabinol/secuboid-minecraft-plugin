@@ -19,8 +19,7 @@
 package me.tabinol.secuboid.storage;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.factions.IFaction;
-import me.tabinol.secuboidapi.lands.ILand;
+import me.tabinol.secuboidapi.lands.ApiLand;
 
 
 /**
@@ -31,9 +30,6 @@ public abstract class Storage implements StorageInt {
     /** The Constant LAND_VERSION. */
     public static final int LAND_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("landVersion");
     
-    /** The Constant FACTION_VERSION. */
-    public static final int FACTION_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("factionVersion");
-
     /** The to resave. */
     private boolean toResave = false; // If a new version of .conf file, we need to save again
 
@@ -49,7 +45,6 @@ public abstract class Storage implements StorageInt {
     @Override
     public void loadAll() {
 
-        loadFactions();
         loadLands();
 
         // New version, we have to save all
@@ -63,14 +58,9 @@ public abstract class Storage implements StorageInt {
      */
     private void saveAll() {
 
-        for (ILand land : Secuboid.getThisPlugin().iLands().getLands()) {
+        for (ApiLand land : Secuboid.getThisPlugin().getLands().getLands()) {
 
             land.forceSave();
-        }
-
-        for (IFaction faction : Secuboid.getThisPlugin().iFactions().getFactions()) {
-
-            faction.forceSave();
         }
     }
 }

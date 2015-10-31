@@ -20,24 +20,22 @@ package me.tabinol.secuboid.playercontainer;
 
 import java.util.UUID;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.factions.Faction;
-import me.tabinol.secuboidapi.lands.ILand;
+import me.tabinol.secuboidapi.lands.ApiLand;
 import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 
 /**
  * The Class PlayerContainer.
  */
-public abstract class PlayerContainer implements IPlayerContainer, Comparable<PlayerContainer> {
+public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<PlayerContainer> {
 
     /** The name. */
     protected String name;
     
     /** The container type. */
-    protected EPlayerContainerType containerType;
+    protected ApiPlayerContainerType containerType;
 
     /**
      * Instantiates a new player container.
@@ -46,7 +44,7 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
      * @param containerType the container type
      * @param toLowerCase the to lower case
      */
-    protected PlayerContainer(String name, EPlayerContainerType containerType, boolean toLowerCase) {
+    protected PlayerContainer(String name, ApiPlayerContainerType containerType, boolean toLowerCase) {
 
         if (toLowerCase) {
             this.name = name.toLowerCase();
@@ -64,30 +62,21 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
      * @param name the name
      * @return the player container
      */
-    public static PlayerContainer create(ILand land, EPlayerContainerType pct, String name) {
+    public static PlayerContainer create(ApiLand land, ApiPlayerContainerType pct, String name) {
 
-        if (pct == EPlayerContainerType.FACTION) {
-            Faction faction = Secuboid.getThisPlugin().iFactions().getFaction(name);
-            if (faction != null) {
-                return new PlayerContainerFaction(faction);
-            } else {
-                return null;
-            }
-        } else if (pct == EPlayerContainerType.GROUP) {
+        if (pct == ApiPlayerContainerType.GROUP) {
             return new PlayerContainerGroup(name);
-        } else if (pct == EPlayerContainerType.RESIDENT) {
+        } else if (pct == ApiPlayerContainerType.RESIDENT) {
             return new PlayerContainerResident(land);
-        } else if (pct == EPlayerContainerType.VISITOR) {
+        } else if (pct == ApiPlayerContainerType.VISITOR) {
             return new PlayerContainerVisitor(land);
-        } else if (pct == EPlayerContainerType.FACTION_TERRITORY) {
-            return new PlayerContainerFactionTerritory(land);
-        } else if (pct == EPlayerContainerType.OWNER) {
+        } else if (pct == ApiPlayerContainerType.OWNER) {
             return new PlayerContainerOwner(land);
-        } else if (pct == EPlayerContainerType.EVERYBODY) {
+        } else if (pct == ApiPlayerContainerType.EVERYBODY) {
             return new PlayerContainerEverybody();
-        } else if (pct == EPlayerContainerType.NOBODY) {
+        } else if (pct == ApiPlayerContainerType.NOBODY) {
             return new PlayerContainerNobody();
-        } else if (pct == EPlayerContainerType.PLAYER || pct == EPlayerContainerType.PLAYERNAME) {
+        } else if (pct == ApiPlayerContainerType.PLAYER || pct == ApiPlayerContainerType.PLAYERNAME) {
             UUID minecraftUUID;
 
             // First check if the ID is valid or was connected to the server
@@ -96,14 +85,14 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
             } catch (IllegalArgumentException ex) {
 
                 // If there is an error, just return a temporary PlayerName
-            	return new PlayerContainerPlayerName(name);
+                return new PlayerContainerPlayerName(name);
             }
 
             // If not null, assign the value to a new PlayerContainer
             return new PlayerContainerPlayer(minecraftUUID);
-        } else if (pct == EPlayerContainerType.PERMISSION) {
+        } else if (pct == ApiPlayerContainerType.PERMISSION) {
             return new PlayerContainerPermission(name);
-        } else if (pct == EPlayerContainerType.TENANT) {
+        } else if (pct == ApiPlayerContainerType.TENANT) {
             return new PlayerContainerTenant(land);
         }
         return null;
@@ -123,7 +112,7 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
      *
      * @return the container type
      */
-    public EPlayerContainerType getContainerType() {
+    public ApiPlayerContainerType getContainerType() {
 
         return containerType;
     }
@@ -172,7 +161,7 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
     public static PlayerContainer getFromString(String string) {
 
         String strs[] = StringChanges.splitAddVoid(string, ":");
-        EPlayerContainerType type = EPlayerContainerType.getFromString(strs[0]);
+        ApiPlayerContainerType type = ApiPlayerContainerType.getFromString(strs[0]);
         return create(null, type, strs[1]);
     }
     
@@ -181,6 +170,6 @@ public abstract class PlayerContainer implements IPlayerContainer, Comparable<Pl
      *
      * @param land the new land
      */
-    public abstract void setLand(ILand land);
+    public abstract void setLand(ApiLand land);
     
 }

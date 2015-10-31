@@ -28,11 +28,11 @@ import me.tabinol.secuboid.Secuboid;
 public class FileLoadException extends Exception {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1116607352612567604L;
+     * 
+     */
+    private static final long serialVersionUID = 1116607352612567604L;
 
-	/**
+    /**
      * Instantiates a new file load exception.
      *
      * @param FileName the file name
@@ -43,7 +43,7 @@ public class FileLoadException extends Exception {
     public FileLoadException(String FileName, String Line, Integer LineNum, String message) {
 
         super("File Load Exception in:" + FileName);
-        Secuboid.getThisPlugin().iLog().write("Error: file: " + FileName + ", Line: " + Line + ", Line Nb: " + LineNum + ", msg: " + message);
+        Secuboid.getThisPlugin().getLog().write("Error: file: " + FileName + ", Line: " + Line + ", Line Nb: " + LineNum + ", msg: " + message);
         Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Error! There is an error in file: " + FileName);
         Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Line: " + LineNum);
         Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, Line);

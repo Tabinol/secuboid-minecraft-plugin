@@ -19,14 +19,14 @@
 package me.tabinol.secuboid.parameters;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboidapi.parameters.ApiLandFlag;
 import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.parameters.ILandFlag;
 
 
 /**
  * The Class LandFlag.
  */
-public class LandFlag implements ILandFlag {
+public class LandFlag implements ApiLandFlag {
     
     /** The flag type. */
     private FlagType flagType;
@@ -48,20 +48,20 @@ public class LandFlag implements ILandFlag {
         
         this.flagType = flagType;
         if(value instanceof FlagValue) {
-        	this.value = (FlagValue) value;
+            this.value = (FlagValue) value;
         } else {
-        	this.value = new FlagValue(value);
+            this.value = new FlagValue(value);
         }
         this.heritable = heritable;
         
         if(!flagType.isRegistered()) {
-        	Secuboid.getThisPlugin().iParameters().unRegisteredFlags.add(this);
+            Secuboid.getThisPlugin().getParameters().unRegisteredFlags.add(this);
         }
     }
 
     public LandFlag copyOf() {
-    	
-    	return new LandFlag(flagType, value.copyOf(), heritable);
+        
+        return new LandFlag(flagType, value.copyOf(), heritable);
     }
     
     /**
@@ -70,7 +70,7 @@ public class LandFlag implements ILandFlag {
      * @param lf2 the lf2
      * @return true, if successful
      */
-    public boolean equals(ILandFlag lf2) {
+    public boolean equals(ApiLandFlag lf2) {
         
         return flagType == lf2.getFlagType();
     }
@@ -91,8 +91,8 @@ public class LandFlag implements ILandFlag {
      * @return the value
      */
     public final FlagValue getValue() {
-    	
-    	return value;
+        
+        return value;
     }
     
     /**
@@ -101,8 +101,8 @@ public class LandFlag implements ILandFlag {
      * @param value the new value
      */
     protected void setValue(FlagValue value) {
-    	
-    	this.value = value;
+        
+        this.value = value;
     }
     
     /**
@@ -122,10 +122,10 @@ public class LandFlag implements ILandFlag {
     public String toString() {
         
         if(!flagType.isRegistered()) {
-        	return flagType.toString() + ":" + value.getValue() + ":" + heritable;
+            return flagType.toString() + ":" + value.getValue() + ":" + heritable;
         }
-    	
-    	if(value.getValue() instanceof Boolean) {
+        
+        if(value.getValue() instanceof Boolean) {
             return flagType.toString() + ":" + value.getValueBoolean() + ":" + heritable;
         }
         
@@ -155,11 +155,11 @@ public class LandFlag implements ILandFlag {
      * @return the from string
      */
     public static LandFlag getFromString(String str) {
-    	
-    	String[] multiStr = StringChanges.splitKeepQuote(str, ":");
-    	FlagType ft = Secuboid.getThisPlugin().iParameters().getFlagTypeNoValid(multiStr[0]);
-    	Object value = FlagValue.getFromString(multiStr[1], ft);
-    	
-    	return new LandFlag(ft, value, Boolean.parseBoolean(multiStr[2]));
+        
+        String[] multiStr = StringChanges.splitKeepQuote(str, ":");
+        FlagType ft = Secuboid.getThisPlugin().getParameters().getFlagTypeNoValid(multiStr[0]);
+        Object value = FlagValue.getFromString(multiStr[1], ft);
+        
+        return new LandFlag(ft, value, Boolean.parseBoolean(multiStr[2]));
     }
 }

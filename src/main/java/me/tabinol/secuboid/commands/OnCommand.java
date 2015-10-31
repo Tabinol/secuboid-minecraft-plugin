@@ -40,29 +40,29 @@ import org.reflections.Reflections;
  */
 public class OnCommand extends Thread implements CommandExecutor {
 
-	private final Map<String, Class<?>> commands;
-	
-	/**
+    private final Map<String, Class<?>> commands;
+    
+    /**
      * Instantiates a new on command.
      */
     public OnCommand() {
-    	
-    	// Create Command list
-    	commands = new TreeMap<String, Class<?>>();
-    	
-    	// Gets all annotations
-    	Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
-    	Set<Class<?>> classCommands = 
-    		    reflections.getTypesAnnotatedWith(InfoCommand.class);
-    	
-		for(Class<?> presentClass : classCommands) {
+        
+        // Create Command list
+        commands = new TreeMap<String, Class<?>>();
+        
+        // Gets all annotations
+        Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
+        Set<Class<?>> classCommands = 
+                reflections.getTypesAnnotatedWith(InfoCommand.class);
+        
+        for(Class<?> presentClass : classCommands) {
 
-			// Store commands information
-        	InfoCommand infoCommand = presentClass.getAnnotation(InfoCommand.class);
+            // Store commands information
+            InfoCommand infoCommand = presentClass.getAnnotation(InfoCommand.class);
             commands.put(infoCommand.name().toLowerCase(), presentClass);
             for(String alias : infoCommand.aliases()) {
-            	commands.put(alias.toLowerCase(), presentClass);
-        	}
+                commands.put(alias.toLowerCase(), presentClass);
+            }
         }
     }
 
@@ -74,7 +74,7 @@ public class OnCommand extends Thread implements CommandExecutor {
 
         // Others commands then /secuboid, /claim and /fd will not be send.
         
-    	ArgList argList = new ArgList(arg, sender);
+        ArgList argList = new ArgList(arg, sender);
             try {
                 // Check the command to send
                 getCommand(sender, cmd, argList);
@@ -102,12 +102,12 @@ public class OnCommand extends Thread implements CommandExecutor {
             
             // The command does not exist
             if(cv == null) {
-            	throw new SecuboidCommandException("Command not existing", sender, "COMMAND.NOTEXIST", "SECUBOID");
+                throw new SecuboidCommandException("Command not existing", sender, "COMMAND.NOTEXIST", "SECUBOID");
             }
             
             // Remove page from memory if needed
             if(cv != commands.get("page")) {
-                Secuboid.getThisPlugin().iPlayerConf().get(sender).setChatPage(null);
+                Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(null);
             }
 
             // Do the command
@@ -135,19 +135,18 @@ public class OnCommand extends Thread implements CommandExecutor {
             Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
             throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (InvocationTargetException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+            // Noting to do, it will trows SecuboidCommandException
         }
     }
     
     public InfoCommand getInfoCommand(String command) {
-    	
-    	Class<?> infoClass = commands.get(command.toLowerCase());
-    	
-    	if(infoClass == null) {
-    		return null;
-    	}
-    	
-    	return infoClass.getAnnotation(InfoCommand.class);
+        
+        Class<?> infoClass = commands.get(command.toLowerCase());
+        
+        if(infoClass == null) {
+            return null;
+        }
+        
+        return infoClass.getAnnotation(InfoCommand.class);
     }
 }

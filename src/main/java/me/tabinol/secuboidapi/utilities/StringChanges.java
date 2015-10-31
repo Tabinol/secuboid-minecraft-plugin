@@ -275,9 +275,9 @@ public class StringChanges {
      * @return the string
      */
     public static String locationToString(Location location) {
-    	
-    	return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() 
-    			+ ";" + location.getYaw() + ";" + location.getPitch();
+        
+        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() 
+                + ";" + location.getYaw() + ";" + location.getPitch();
     }
     
     /**
@@ -287,32 +287,32 @@ public class StringChanges {
      * @return the location
      */
     public static Location stringToLocation(String locStr) {
-    	
-    	String[] strs = locStr.split("\\;");
-    	
-    	// Wrong parameter
-    	if(strs.length != 6) {
-    		return null;
-    	}
-    	
-    	World world = Bukkit.getWorld(strs[0]);
-    	
-    	if(world == null) {
-    		return null;
-    	}
-    	
-    	// Get the location
-    	Location location;
-    	
-    	try {
-    		location = new Location(world, Double.parseDouble(strs[1]), Double.parseDouble(strs[2]),
-    				Double.parseDouble(strs[3]), Float.parseFloat(strs[4]), Float.parseFloat(strs[5]));
-    	} catch(NumberFormatException ex) {
-    		
-    		// if location is wrong, set null
-    		location = null;
-    	}
-    	
-    	return location;
+        
+        String[] strs = locStr.split("\\;");
+        
+        // Wrong parameter
+        if(strs.length != 6) {
+            return null;
+        }
+        
+        World world = Bukkit.getWorld(strs[0]);
+        
+        if(world == null) {
+            return null;
+        }
+        
+        // Get the location
+        Location location;
+        
+        try {
+            location = new Location(world, Double.parseDouble(strs[1]), Double.parseDouble(strs[2]),
+                    Double.parseDouble(strs[3]), Float.parseFloat(strs[4]), Float.parseFloat(strs[5]));
+        } catch(NumberFormatException ex) {
+            
+            // if location is wrong, set null
+            location = null;
+        }
+        
+        return location;
     }
 }

@@ -24,6 +24,7 @@ permissions:
             secuboid.bypassban: true
             secuboid.use: true
             secuboid.reload: true
+            secuboid.inv.*: true
     secuboid.adminmod:
         description: Can use Admin Mod
         default: op
@@ -47,4 +48,78 @@ permissions:
     secuboid.reload:
         description: Can reload the plugin
         default: op
+
+    # Inventory
+    secuboid.inv.*:
+        description: All permisions for inventory (except inventory changes)
+        default: op
+        children:
+            secuboid.inv.use: true
+            secuboid.inv.forcesave: true
+            secuboid.inv.default: true
+            secuboid.inv.loaddeath: true
+            secuboid.inv.ignoredisabledcommands: true
+    secuboid.inv.use:
+        description: Can use /finv command
+        default: true
+    secuboid.inv.forcesave:
+        description: Can use /finv forcesave command
+        default: op
+    secuboid.inv.default:
+        description: Can use /finv default command
+        default: op
+    secuboid.inv.loaddeath:
+        description: Can use /finv loaddeath command
+        default: op
+    secuboid.inv.ignorecreativeinv:
+        description: Ignore creative inventory change
+        default: false
+    secuboid.inv.ignoreinv:
+        description: Ignore inventory change
+        default: false
+        children:
+            secuboid.inv.ignorecreativeinv: true
+    secuboid.inv.ignoredisabledcommands:
+        description: Ignore disabled commands
+        default: op
+
+    # FlyCreative
+    secuboid.flycreative.*:
+        description: Gives access to all flyncrative permissions
+        default: false
+        children:
+            secuboid.flycreative.ignorefly: true
+            secuboid.flycreative.ignorecreative: true
+            secuboid.flycreative.override.*: true
+    secuboid.flycreative.override.*:
+        description: Gives access to all override permissions
+        default: false
+        children:
+            secuboid.flycreative.override.nodrop: true
+            secuboid.flycreative.override.noopenchest: true
+            secuboid.flycreative.override.nobuildoutside: true
+            secuboid.flycreative.override.allowbanneditems: true
+    secuboid.flycreative.ignorefly:
+        description: Ignore fly change in cuboid
+        default: false
+    secuboid.flycreative.ignorecreative:
+        description: Ignore creative mode change in cuboid
+        default: false
+        children:
+            secuboid.flycreative.override.nodrop: true
+            secuboid.flycreative.override.noopenchest: true
+            secuboid.flycreative.override.nobuildoutside: true
+            secuboid.flycreative.override.allowbanneditems: true
+    secuboid.flycreative.override.nodrop:
+        description: Can drop items in creative
+        default: false
+    secuboid.flycreative.override.noopenchest:
+        description: Can open chests in creative
+        default: false
+    secuboid.flycreative.override.nobuildoutside:
+        description: Can build outside the zone in creative
+        default: false
+    secuboid.flycreative.override.allowbanneditems:
+        description: Can have banned items in creative
+        default: false
 

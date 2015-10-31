@@ -47,7 +47,7 @@ public class CommandMoney extends CommandExec {
     public CommandMoney(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);
-        playerMoney = Secuboid.getThisPlugin().iPlayerMoney();
+        playerMoney = Secuboid.getThisPlugin().getPlayerMoney();
     }
 
     /* (non-Javadoc)
@@ -83,7 +83,7 @@ public class CommandMoney extends CommandExec {
     private void balance() throws SecuboidCommandException {
 
         checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
+        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
                 land.getName(), playerMoney.toFormat(land.getMoney())));
     }
 
@@ -106,7 +106,7 @@ public class CommandMoney extends CommandExec {
         // Land Deposit
         playerMoney.getFromPlayer(entity.player.getPlayer(), land.getWorldName(), amount);
         land.addMoney(amount);
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
+        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
                 playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
@@ -129,7 +129,7 @@ public class CommandMoney extends CommandExec {
         // Land Deposit
         land.substractMoney(amount);
         playerMoney.giveToPlayer(entity.player.getPlayer(), land.getWorldName(), amount);
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
+        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
                 playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 

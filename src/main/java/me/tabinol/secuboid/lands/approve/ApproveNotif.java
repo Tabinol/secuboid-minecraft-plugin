@@ -48,7 +48,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void runApproveNotifLater() {
 
-        long notifyTime = Secuboid.getThisPlugin().iConf().getApproveNotifyTime();
+        long notifyTime = Secuboid.getThisPlugin().getConf().getApproveNotifyTime();
 
         // Start only if notification is activated in configuration
         if (notifyTime != 0) {
@@ -65,7 +65,7 @@ public class ApproveNotif extends SecuboidRunnable {
 
         int lstCount;
 
-        if ((lstCount = Secuboid.getThisPlugin().iLands().getApproveList().getApproveList().size()) != 0) {
+        if ((lstCount = Secuboid.getThisPlugin().getLands().getApproveList().getApproveList().size()) != 0) {
 
             // If there is some notification to done
             notifyListApprove(lstCount);
@@ -80,7 +80,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void notifyForApprove(String landName, String playerName) {
 
-        notifyPlayer(Secuboid.getThisPlugin().iLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+        notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
     }
 
     /**
@@ -90,7 +90,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     private void notifyListApprove(int lstCount) {
 
-        notifyPlayer(Secuboid.getThisPlugin().iLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
+        notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
     }
 
     // Notify with a message

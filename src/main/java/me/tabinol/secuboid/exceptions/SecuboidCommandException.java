@@ -29,11 +29,11 @@ import org.bukkit.command.CommandSender;
 public class SecuboidCommandException extends Exception {
     
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 5585486767311219615L;
+     * 
+     */
+    private static final long serialVersionUID = 5585486767311219615L;
 
-	/**
+    /**
      * Instantiates a new secuboid command exception.
      *
      * @param logMsg the log msg
@@ -45,12 +45,12 @@ public class SecuboidCommandException extends Exception {
         
         super(logMsg);
         if (sender != null) {
-            Secuboid.getThisPlugin().iLog().write("Player: " + sender.getName() + ", Lang Msg: " + langMsg + ", " + logMsg);
+            Secuboid.getThisPlugin().getLog().write("Player: " + sender.getName() + ", Lang Msg: " + langMsg + ", " + logMsg);
         } else {
-            Secuboid.getThisPlugin().iLog().write(logMsg);
+            Secuboid.getThisPlugin().getLog().write(logMsg);
         }
         if (sender != null) {
-            sender.sendMessage(ChatColor.RED + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage(langMsg, param));
+            sender.sendMessage(ChatColor.RED + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(langMsg, param));
         }
     }
 }

@@ -18,10 +18,10 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerNobody;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerNobody;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.entity.Player;
 
@@ -29,21 +29,21 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerContainerNobody.
  */
-public class PlayerContainerNobody extends PlayerContainer implements IPlayerContainerNobody {
+public class PlayerContainerNobody extends PlayerContainer implements ApiPlayerContainerNobody {
 
     /**
      * Instantiates a new player container nobody.
      */
     public PlayerContainerNobody() {
         
-        super("", EPlayerContainerType.NOBODY, false);
+        super("", ApiPlayerContainerType.NOBODY, false);
     }
     
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerNobody;
     }
@@ -67,7 +67,7 @@ public class PlayerContainerNobody extends PlayerContainer implements IPlayerCon
     }
 
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return false;
     }
@@ -76,7 +76,7 @@ public class PlayerContainerNobody extends PlayerContainer implements IPlayerCon
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
         
     }
 }

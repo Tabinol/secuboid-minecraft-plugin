@@ -76,10 +76,10 @@ public class DependPlugin {
 
         if (plugin != null) {
             Secuboid.getThisPlugin().getServer().getPluginManager().enablePlugin(plugin);
-            Secuboid.getThisPlugin().iLog().write(pluginName + " detected!");
+            Secuboid.getThisPlugin().getLog().write(pluginName + " detected!");
             Secuboid.getThisPlugin().getLogger().log(Level.INFO, pluginName + " detected!");
         } else {
-            Secuboid.getThisPlugin().iLog().write(pluginName + " NOT detected!");
+            Secuboid.getThisPlugin().getLog().write(pluginName + " NOT detected!");
             Secuboid.getThisPlugin().getLogger().log(Level.INFO, pluginName + " IS NOT Detected!");
         }
 

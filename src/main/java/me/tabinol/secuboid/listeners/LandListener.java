@@ -24,14 +24,14 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.parameters.PermissionType;
-import me.tabinol.secuboidapi.config.players.IPlayerStaticConfig;
-import me.tabinol.secuboidapi.event.PlayerContainerAddNoEnterEvent;
-import me.tabinol.secuboidapi.event.PlayerContainerLandBanEvent;
-import me.tabinol.secuboidapi.event.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.IDummyLand;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
+import me.tabinol.secuboidapi.config.players.ApiPlayerStaticConfig;
+import me.tabinol.secuboidapi.events.PlayerContainerAddNoEnterEvent;
+import me.tabinol.secuboidapi.events.PlayerContainerLandBanEvent;
+import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
+import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,7 +54,7 @@ public class LandListener extends CommonListener implements Listener {
     private final LandHeal landHeal;
     
     /** The player conf. */
-    private final IPlayerStaticConfig playerConf;
+    private final ApiPlayerStaticConfig playerConf;
 
     /**
      * The Class LandHeal.
@@ -73,7 +73,7 @@ public class LandListener extends CommonListener implements Listener {
 
             for (Player player : playerHeal) {
                 if (!player.isDead()) {
-                    Secuboid.getThisPlugin().iLog().write("Healing: " + player.getName());
+                    Secuboid.getThisPlugin().getLog().write("Healing: " + player.getName());
                     foodLevel = player.getFoodLevel();
                     if (foodLevel < 20) {
                         foodLevel += 5;
@@ -102,30 +102,30 @@ public class LandListener extends CommonListener implements Listener {
     public LandListener() {
 
         super();
-        playerConf = Secuboid.getThisPlugin().iPlayerConf();
+        playerConf = Secuboid.getThisPlugin().getPlayerConf();
         playerHeal = new ArrayList<Player>();
         landHeal = new LandHeal();
         landHeal.runTaskTimer(Secuboid.getThisPlugin(), 20, 20);
 
     }
 
-    // Must be running before PlayerListener
+    // Must be running before FlyCreativeListener
     /**
      * On player quit.
      *
-     * @param event the event
+     * @param event the events
      */
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
 
         Player player = event.getPlayer();
 
-        IDummyLand land = playerConf.get(player).getLastLand();
+        ApiDummyLand land = playerConf.get(player).getLastLand();
 
         // Notify for quit
-        while (land instanceof ILand) {
-            notifyPlayers((ILand)land, "ACTION.PLAYEREXIT", player);
-            land = ((ILand)land).getParent();
+        while (land instanceof ApiLand) {
+            notifyPlayers((ApiLand)land, "ACTION.PLAYEREXIT", player);
+            land = ((ApiLand)land).getParent();
         }
 
         if (playerHeal.contains(player)) {
@@ -136,14 +136,14 @@ public class LandListener extends CommonListener implements Listener {
     /**
      * On player land change.
      *
-     * @param event the event
+     * @param event the events
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
         Player player = event.getPlayer();
-        ILand lastLand = event.getLastLand();
-        ILand land = event.getLand();
-        IDummyLand dummyLand;
+        ApiLand lastLand = event.getLastLand();
+        ApiLand land = event.getLand();
+        ApiDummyLand dummyLand;
         String value;
 
         if (lastLand != null) {
@@ -184,7 +184,7 @@ public class LandListener extends CommonListener implements Listener {
                         tpSpawn(player, land, message);
                         return;
                     } else {
-                        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage(message, land.getName()));
+                        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));
                         event.setCancelled(true);
                         return;
                     }
@@ -194,7 +194,7 @@ public class LandListener extends CommonListener implements Listener {
             if (!(lastLand != null && land.isDescendants(lastLand))) {
 
                 //Notify players for Enter
-                ILand landTest = land;
+                ApiLand landTest = land;
                 while (landTest != null && landTest != lastLand) {
                     notifyPlayers(landTest, "ACTION.PLAYERENTER", player);
                     landTest = landTest.getParent();
@@ -212,8 +212,7 @@ public class LandListener extends CommonListener implements Listener {
              }
              Secuboid.getThisPlugin().iScoreboard().sendScoreboard(land.getPlayersInLand(), player, land.getName());*/
         } else {
-            dummyLand = Secuboid.getThisPlugin().iLands().getOutsideArea(event.getToLoc());
-            Secuboid.getThisPlugin().iScoreboard().resetScoreboard(player);
+            dummyLand = Secuboid.getThisPlugin().getLands().getOutsideArea(event.getToLoc());
         }
 
         //Check for Healing
@@ -233,15 +232,15 @@ public class LandListener extends CommonListener implements Listener {
         permissionType = PermissionList.LAND_DEATH.getPermissionType();
         
         if (!playerConf.get(player).isAdminMod() 
-        		&& dummyLand.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
-        	player.setHealth(0);
+                && dummyLand.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
+            player.setHealth(0);
         }
     }
 
     /**
      * On player container land ban.
      *
-     * @param event the event
+     * @param event the events
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerContainerLandBan(PlayerContainerLandBanEvent event) {
@@ -252,7 +251,7 @@ public class LandListener extends CommonListener implements Listener {
     /**
      * On player container add no enter.
      *
-     * @param event the event
+     * @param event the events
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerContainerAddNoEnter(PlayerContainerAddNoEnterEvent event) {
@@ -267,9 +266,9 @@ public class LandListener extends CommonListener implements Listener {
      * @param pc the pc
      * @param message the message
      */
-    private void checkForBannedPlayers(ILand land, IPlayerContainer pc, String message) {
-    	
-    	checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
+    private void checkForBannedPlayers(ApiLand land, ApiPlayerContainer pc, String message) {
+        
+        checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
     }
 
     /**
@@ -280,11 +279,11 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param kickPlayers the kicked players list
      */
-    private void checkForBannedPlayers(ILand land, IPlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+    private void checkForBannedPlayers(ApiLand land, ApiPlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
 
-    	Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
-    	
-    	for (Player players : playersArray) {
+        Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
+        
+        for (Player players : playersArray) {
             if (pc.hasAccess(players)
                     && !land.isOwner(players)
                     && !playerConf.get(players).isAdminMod()
@@ -296,11 +295,11 @@ public class LandListener extends CommonListener implements Listener {
                 kickPlayers.add(players);
             }
         }
-    	
-    	// check for children
-    	for (ILand children : land.getChildren()) {
-    		checkForBannedPlayers(children, pc, message);
-    	}
+        
+        // check for children
+        for (ApiLand children : land.getChildren()) {
+            checkForBannedPlayers(children, pc, message);
+        }
     }
     
     // Notify players for land Enter/Exit
@@ -311,18 +310,18 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param playerIn the player in
      */
-    private void notifyPlayers(ILand land, String message, Player playerIn) {
+    private void notifyPlayers(ApiLand land, String message, Player playerIn) {
 
         Player player;
         
-        for (IPlayerContainerPlayer playerC : land.getPlayersNotify()) {
+        for (ApiPlayerContainerPlayer playerC : land.getPlayersNotify()) {
             
             player = playerC.getPlayer();
             
             if (player != null && player != playerIn
                     // Only adminmod can see vanish
                     && (!playerConf.isVanished(playerIn) || playerConf.get(player).isAdminMod())) {
-                player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage(
+                player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(
                         message, playerIn.getDisplayName(), land.getName() + ChatColor.GRAY));
             }
         }
@@ -335,9 +334,9 @@ public class LandListener extends CommonListener implements Listener {
      * @param land the land
      * @param message the message
      */
-    private void tpSpawn(Player player, ILand land, String message) {
+    private void tpSpawn(Player player, ApiLand land, String message) {
 
         player.teleport(player.getWorld().getSpawnLocation());
-        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage(message, land.getName()));
+        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));
     }
 }

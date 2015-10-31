@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.selection.region;
 
 import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -46,7 +46,7 @@ public class ExpandAreaSelection extends ActiveAreaSelection implements PlayerMo
      * @param player the player
      * @param area the area
      */
-    public ExpandAreaSelection(Player player, ICuboidArea area) {
+    public ExpandAreaSelection(Player player, ApiCuboidArea area) {
 
         super(player, area);
     }
@@ -66,13 +66,13 @@ public class ExpandAreaSelection extends ActiveAreaSelection implements PlayerMo
             ((CuboidArea) area).setX1(playerLoc.getBlockX() - 1);
         }
         if(playerLoc.getBlockX() + 1 > area.getX2()) {
-        	((CuboidArea) area).setX2(playerLoc.getBlockX() + 1);
+            ((CuboidArea) area).setX2(playerLoc.getBlockX() + 1);
         }
         if(playerLoc.getBlockZ() - 1 < area.getZ1()) {
-        	((CuboidArea) area).setZ1(playerLoc.getBlockZ() - 1);
+            ((CuboidArea) area).setZ1(playerLoc.getBlockZ() - 1);
         }
         if(playerLoc.getBlockZ() + 1 > area.getZ2()) {
-        	((CuboidArea) area).setZ2(playerLoc.getBlockZ() + 1);
+            ((CuboidArea) area).setZ2(playerLoc.getBlockZ() + 1);
         }
         
         makeVisualSelection();

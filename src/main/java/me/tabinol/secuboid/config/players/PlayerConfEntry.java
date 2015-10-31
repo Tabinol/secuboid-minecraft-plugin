@@ -22,9 +22,9 @@ package me.tabinol.secuboid.config.players;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboidapi.config.players.IPlayerConfEntry;
-import me.tabinol.secuboidapi.lands.IDummyLand;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
+import me.tabinol.secuboidapi.config.players.ApiPlayerConfEntry;
+import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
 
@@ -36,7 +36,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerConfEntry.
  */
-public class PlayerConfEntry implements IPlayerConfEntry {
+public class PlayerConfEntry implements ApiPlayerConfEntry {
 
     /** The sender. */
     private final CommandSender sender; // The player (or sender)
@@ -60,7 +60,7 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     private long lastMoveUpdate = 0; // Time of lastupdate for PlayerEvents
     
     /** The last land. */
-    private IDummyLand lastLand = null; // Last Land for player
+    private ApiDummyLand lastLand = null; // Last Land for player
     
     /** The last loc. */
     private Location lastLoc = null; // Present location
@@ -72,7 +72,7 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     private PlayerAutoCancelSelect cancelSelect = null; // Auto cancel selection system
     
     /** The pcp. */
-    private IPlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
+    private ApiPlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
 
     /**
      * Instantiates a new player conf entry.
@@ -94,28 +94,28 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getPlayerContainer()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getPlayerContainer()
+     */
     @Override
-	public IPlayerContainerPlayer getPlayerContainer() {
+    public ApiPlayerContainerPlayer getPlayerContainer() {
         
         return pcp;
     }
     
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getSender()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getSender()
+     */
     @Override
-	public CommandSender getSender() {
+    public CommandSender getSender() {
 
         return sender;
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getPlayer()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getPlayer()
+     */
     @Override
-	public Player getPlayer() {
+    public Player getPlayer() {
 
         return player;
     }
@@ -131,10 +131,10 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#isAdminMod()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#isAdminMod()
+     */
     @Override
-	public boolean isAdminMod() {
+    public boolean isAdminMod() {
 
         // Security for adminmod
         if (adminMod == true && !sender.hasPermission("secuboid.adminmod")) {
@@ -196,10 +196,10 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getLastMoveUpdate()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastMoveUpdate()
+     */
     @Override
-	public long getLastMoveUpdate() {
+    public long getLastMoveUpdate() {
 
         return lastMoveUpdate;
     }
@@ -215,10 +215,10 @@ public class PlayerConfEntry implements IPlayerConfEntry {
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getLastLand()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastLand()
+     */
     @Override
-	public IDummyLand getLastLand() {
+    public ApiDummyLand getLastLand() {
 
         return lastLand;
     }
@@ -228,16 +228,16 @@ public class PlayerConfEntry implements IPlayerConfEntry {
      *
      * @param land the new last land
      */
-    public void setLastLand(IDummyLand land) {
+    public void setLastLand(ApiDummyLand land) {
 
         lastLand = land;
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerConfEntry#getLastLoc()
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastLoc()
+     */
     @Override
-	public Location getLastLoc() {
+    public Location getLastLoc() {
 
         return lastLoc;
     }
@@ -280,7 +280,7 @@ public class PlayerConfEntry implements IPlayerConfEntry {
      */
     public void setAutoCancelSelect(boolean value) {
 
-        Long timeTick = Secuboid.getThisPlugin().iConf().getSelectAutoCancel();
+        Long timeTick = Secuboid.getThisPlugin().getConf().getSelectAutoCancel();
 
         if (timeTick == 0) {
             return;

@@ -17,26 +17,26 @@
  */ 
 package me.tabinol.secuboid.lands.types;
 
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 
-public class Type implements IType, Comparable<Type> {
+public class Type implements ApiType, Comparable<Type> {
 
-	private final String typeName;
-	
-	protected Type(String typeName) {
-		
-		this.typeName = typeName;
-	}
-	
-	@Override
+    private final String typeName;
+    
+    protected Type(String typeName) {
+        
+        this.typeName = typeName;
+    }
+    
+    @Override
     public int compareTo(Type arg0) {
-	    
-		return typeName.compareTo(arg0.typeName);
+        
+        return typeName.compareTo(arg0.typeName);
     }
 
-	@Override
-	public String getName() {
+    @Override
+    public String getName() {
 
-		return typeName;
-	}
+        return typeName;
+    }
 }

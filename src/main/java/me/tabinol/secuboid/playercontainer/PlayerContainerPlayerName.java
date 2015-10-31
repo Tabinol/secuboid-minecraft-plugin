@@ -1,8 +1,8 @@
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,14 +20,14 @@ public class PlayerContainerPlayerName extends PlayerContainer {
      */
     public PlayerContainerPlayerName(String name) {
 
-        super(name, EPlayerContainerType.PLAYERNAME, false);
+        super(name, ApiPlayerContainerType.PLAYERNAME, false);
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerPlayerName &&
                 name.equals(((PlayerContainerPlayer) container2).name);
@@ -52,7 +52,7 @@ public class PlayerContainerPlayerName extends PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return hasAccess(player);
     }
@@ -63,19 +63,14 @@ public class PlayerContainerPlayerName extends PlayerContainer {
     @Override
     public String getPrint() {
 
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(ChatColor.DARK_RED).append("P:");
-       	sb.append(ChatColor.GRAY).append(name);
-
-       	return sb.toString();
+        return "P:" + name;
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
 
     }
 }

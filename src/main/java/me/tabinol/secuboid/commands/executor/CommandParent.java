@@ -17,6 +17,7 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import me.tabinol.secuboidapi.ApiSecuboidSta;
 import org.bukkit.ChatColor;
 
 import me.tabinol.secuboid.Secuboid;
@@ -29,50 +30,49 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
 @InfoCommand(name="parent", forceParameter=true)
 public class CommandParent extends CommandExec {
-	
-	public CommandParent(CommandEntities entity) throws SecuboidCommandException {
-		
-		super(entity);
-	}
-	
-	@Override
-	@SuppressWarnings("deprecation")
-	public void commandExecute() throws SecuboidCommandException {
+    
+    public CommandParent(CommandEntities entity) throws SecuboidCommandException {
+        
+        super(entity);
+    }
+    
+    @Override
+    public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(true, null);
         checkPermission(true, true, null, null);
-    	
+        
         String curArg = entity.argList.getNext();
         Land parent = null;
         
         if(!curArg.equalsIgnoreCase("unset")) {
-        	parent = Secuboid.getLands().getLand(curArg);
-        	
+            parent = (Land) ApiSecuboidSta.getLands().getLand(curArg);
+            
             // Check if the parent exist
-        	if (parent == null) {
-        		throw new SecuboidCommandException("CommandParent", entity.player, "COMMAND.PARENT.INVALID");
-        	}
-        	
-        	// Check if the land is a children
-        	if(land.isDescendants(parent)) {
-        		throw new SecuboidCommandException("CommandParent", entity.player, "COMMAND.PARENT.NOTCHILD");
-        	}
+            if (parent == null) {
+                throw new SecuboidCommandException("CommandParent", entity.player, "COMMAND.PARENT.INVALID");
+            }
+            
+            // Check if the land is a children
+            if(land.isDescendants(parent)) {
+                throw new SecuboidCommandException("CommandParent", entity.player, "COMMAND.PARENT.NOTCHILD");
+            }
         }
         
         // Check for collision
         if (checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent, 
-        		land.getOwner(), 0, true)) {
+                land.getOwner(), 0, true)) {
             return;
         }
         
         // Set parent
         land.setParent(parent);
         if(parent == null) {
-        	entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
-        	Secuboid.getThisPlugin().iLog().write(entity.playerName + " has set land " + land.getName() + " to no parent ");
+            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
+            Secuboid.getThisPlugin().getLog().write(entity.playerName + " has set land " + land.getName() + " to no parent ");
         } else {
-        	entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
-        	Secuboid.getThisPlugin().iLog().write(entity.playerName + " has set land " + land.getName() + " to parent " + parent.getName());
+            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
+            Secuboid.getThisPlugin().getLog().write(entity.playerName + " has set land " + land.getName() + " to parent " + parent.getName());
         }
     }
 }

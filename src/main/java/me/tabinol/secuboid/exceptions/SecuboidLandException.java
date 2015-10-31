@@ -21,20 +21,20 @@ package me.tabinol.secuboid.exceptions;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.collisions.Collisions;
-import me.tabinol.secuboidapi.exceptions.ASecuboidLandException;
+import me.tabinol.secuboidapi.exceptions.ApiSecuboidLandException;
 
 
 /**
  * The Class SecuboidLandException.
  */
-public class SecuboidLandException extends ASecuboidLandException {
+public class SecuboidLandException extends ApiSecuboidLandException {
     
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4561559858019587492L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4561559858019587492L;
 
-	/**
+    /**
      * Instantiates a new secuboid land exception.
      *
      * @param landName the land name
@@ -54,6 +54,6 @@ public class SecuboidLandException extends ASecuboidLandException {
         }
         bf.append(", Action: ").append(action.toString()).append(", Error: ").append(error.toString());
 
-        Secuboid.getThisPlugin().iLog().write(bf.toString());
+        Secuboid.getThisPlugin().getLog().write(bf.toString());
     }
 }

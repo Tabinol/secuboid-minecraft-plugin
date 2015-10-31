@@ -67,7 +67,7 @@ public class CommandHelp extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandHelp(OnCommand onCommand, CommandSender sender, 
-    		String commandName) throws SecuboidCommandException {
+            String commandName) throws SecuboidCommandException {
 
         super(null);
         this.sender = sender;
@@ -91,10 +91,10 @@ public class CommandHelp extends CommandExec {
                 try {
                     InfoCommand infoCommand = onCommand.getInfoCommand(arg);
                     if(infoCommand != null) {
-                    	commandName = infoCommand.name().toUpperCase();
+                        commandName = infoCommand.name().toUpperCase();
                     } else {
-                    	// Invalid command, just arg and will run Exception with showHelp()
-                    	commandName = arg;
+                        // Invalid command, just arg and will run Exception with showHelp()
+                        commandName = arg;
                     }
                 } catch (IllegalArgumentException ex) {
                     commandName = "GENERAL";
@@ -112,7 +112,7 @@ public class CommandHelp extends CommandExec {
      */
     private void showHelp() throws SecuboidCommandException {
 
-        String help = Secuboid.getThisPlugin().iLanguage().getHelp("FACTOID", commandName);
+        String help = Secuboid.getThisPlugin().getLanguage().getHelp("SECUBOID", commandName);
         
         // If there is no help for this command
         if(help == null) {

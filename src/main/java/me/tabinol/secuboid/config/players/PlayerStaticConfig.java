@@ -30,7 +30,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.vanish.DummyVanish;
 import me.tabinol.secuboid.config.vanish.Vanish;
 import me.tabinol.secuboid.config.vanish.VanishNoPacket;
-import me.tabinol.secuboidapi.config.players.IPlayerStaticConfig;
+import me.tabinol.secuboidapi.config.players.ApiPlayerStaticConfig;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerStaticConfig.
  */
-public class PlayerStaticConfig implements IPlayerStaticConfig {
+public class PlayerStaticConfig implements ApiPlayerStaticConfig {
 
     /** The player conf list. */
     private final Map<CommandSender, PlayerConfEntry> playerConfList;
@@ -59,11 +59,11 @@ public class PlayerStaticConfig implements IPlayerStaticConfig {
         playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
 
         // Check for VanishNoPacket plugin
-        if (Secuboid.getThisPlugin().iDependPlugin().getVanishNoPacket() != null) {
+        if (Secuboid.getThisPlugin().getDependPlugin().getVanishNoPacket() != null) {
             vanish = new VanishNoPacket();
 
             // Check for Essentials plugin
-        } else if (Secuboid.getThisPlugin().iDependPlugin().getEssentials() != null) {
+        } else if (Secuboid.getThisPlugin().getDependPlugin().getEssentials() != null) {
             vanish = new VanishEssentials();
 
             // Dummy Vanish if no plugins
@@ -72,10 +72,10 @@ public class PlayerStaticConfig implements IPlayerStaticConfig {
         }
         
         // Check for Chat plugin
-        if (Secuboid.getThisPlugin().iDependPlugin().getEssentials() != null) {
-        	chat = new ChatEssentials();
+        if (Secuboid.getThisPlugin().getDependPlugin().getEssentials() != null) {
+            chat = new ChatEssentials();
         } else {
-        	chat = new ChatSecuboid();
+            chat = new ChatSecuboid();
         }
     }
 
@@ -110,10 +110,10 @@ public class PlayerStaticConfig implements IPlayerStaticConfig {
     }
 
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerStaticConfig#get(org.bukkit.command.CommandSender)
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerStaticConfig#get(org.bukkit.command.CommandSender)
+     */
     @Override
-	public PlayerConfEntry get(CommandSender sender) {
+    public PlayerConfEntry get(CommandSender sender) {
 
         return playerConfList.get(sender);
     }
@@ -147,16 +147,16 @@ public class PlayerStaticConfig implements IPlayerStaticConfig {
     }
     
     /* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.players.IPlayerStaticConfig#isVanished(org.bukkit.entity.Player)
-	 */
+     * @see me.tabinol.secuboid.config.players.ApiPlayerStaticConfig#isVanished(org.bukkit.entity.Player)
+     */
     @Override
-	public boolean isVanished(Player player) {
+    public boolean isVanished(Player player) {
         
         return vanish.isVanished(player);
     }
     
     public Chat getChat() {
-    	
-    	return chat;
+        
+        return chat;
     }
 }

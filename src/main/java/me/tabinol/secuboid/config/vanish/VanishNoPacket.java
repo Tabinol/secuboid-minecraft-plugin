@@ -40,7 +40,7 @@ public class VanishNoPacket implements Vanish {
      */
     public VanishNoPacket() {
 
-        // vanishNoPacket = (VanishPlugin) Secuboid.getThisPlugin().iDependPlugin().getVanishNoPacket();
+        // vanishNoPacket = (VanishPlugin) Secuboid.getThisPlugin().getDependPlugin().getVanishNoPacket();
     }
 
     /* (non-Javadoc)
@@ -49,12 +49,12 @@ public class VanishNoPacket implements Vanish {
     @Override
     public boolean isVanished(Player player) {
 
-        if((Secuboid.getThisPlugin().iConf().isSpectatorIsVanish() 
-        		&& BKVersion.isSpectatorMode(player))) {
-        	return true;
+        if((Secuboid.getThisPlugin().getConf().isSpectatorIsVanish()
+                && BKVersion.isSpectatorMode(player))) {
+            return true;
         }
-    	
-    	// return vanishNoPacket.getManager().isVanished(player);
+        
+        // return vanishNoPacket.getManager().isVanished(player);
         for(MetadataValue value : player.getMetadata("vanished")) {
             return value.asBoolean();
         }

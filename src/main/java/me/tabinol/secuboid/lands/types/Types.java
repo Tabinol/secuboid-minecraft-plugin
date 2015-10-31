@@ -20,49 +20,49 @@ package me.tabinol.secuboid.lands.types;
 import java.util.Collection;
 import java.util.TreeMap;
 
-import me.tabinol.secuboidapi.lands.types.IType;
-import me.tabinol.secuboidapi.lands.types.ITypes;
+import me.tabinol.secuboidapi.lands.types.ApiType;
+import me.tabinol.secuboidapi.lands.types.ApiTypes;
 
-public class Types implements ITypes {
+public class Types implements ApiTypes {
 
-	final private TreeMap<String, IType> types;
-	
-	public Types() {
-		
-		types = new TreeMap<String, IType>();
-	}
-	
-	@Override
-	public IType addOrGetType(String arg0) {
-		
-		if(arg0 == null || arg0.equals("")) {
-			return null;
-		}
-		
-		String typeName = arg0.toLowerCase();
-		
-		IType type = types.get(typeName);
-		
-		if(type != null) {
-			return type;
-		}
-		
-		// not found, create it
-		type = new Type(typeName);
-		types.put(typeName, type);
-		
-		return type;
-	}
+    final private TreeMap<String, ApiType> types;
+    
+    public Types() {
+        
+        types = new TreeMap<String, ApiType>();
+    }
+    
+    @Override
+    public ApiType addOrGetType(String arg0) {
+        
+        if(arg0 == null || arg0.equals("")) {
+            return null;
+        }
+        
+        String typeName = arg0.toLowerCase();
+        
+        ApiType type = types.get(typeName);
+        
+        if(type != null) {
+            return type;
+        }
+        
+        // not found, create it
+        type = new Type(typeName);
+        types.put(typeName, type);
+        
+        return type;
+    }
 
-	@Override
-	public IType getType(String arg0) {
+    @Override
+    public ApiType getType(String arg0) {
 
-		return types.get(arg0.toLowerCase());
-	}
+        return types.get(arg0.toLowerCase());
+    }
 
-	@Override
-	public Collection<IType> getTypes() {
+    @Override
+    public Collection<ApiType> getTypes() {
 
-		return types.values();
-	}
+        return types.values();
+    }
 }

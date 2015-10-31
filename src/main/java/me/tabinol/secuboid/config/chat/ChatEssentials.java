@@ -36,25 +36,25 @@ public class ChatEssentials implements Chat {
      */
     public ChatEssentials() {
         
-        essentials = (Essentials)Secuboid.getThisPlugin().iDependPlugin().getEssentials();
+        essentials = (Essentials)Secuboid.getThisPlugin().getDependPlugin().getEssentials();
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.config.chat.Chat#isSpy(org.bukkit.entity.Player)
      */
     @Override
-	public boolean isSpy(Player player) {
-		
-    	return essentials.getUser(player).isSocialSpyEnabled();
-	}
+    public boolean isSpy(Player player) {
+        
+        return essentials.getUser(player).isSocialSpyEnabled();
+    }
 
-	/* (non-Javadoc)
-	 * @see me.tabinol.secuboid.config.chat.Chat#isMuted(org.bukkit.entity.Player)
-	 */
-	@Override
-	public boolean isMuted(Player player) {
-		
-		return essentials.getUser(player).isMuted();
-	}
+    /* (non-Javadoc)
+     * @see me.tabinol.secuboid.config.chat.Chat#isMuted(org.bukkit.entity.Player)
+     */
+    @Override
+    public boolean isMuted(Player player) {
+        
+        return essentials.getUser(player).isMuted();
+    }
 
 }

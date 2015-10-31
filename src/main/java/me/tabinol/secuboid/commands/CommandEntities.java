@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandEntities {
     
-	/** The command. */
+    /** The command. */
     public final InfoCommand infoCommand;
     
     /** The sender. */
@@ -59,9 +59,9 @@ public class CommandEntities {
      * @param onCommand the on command
      */
     public CommandEntities(InfoCommand infoCommand, 
-    		CommandSender sender, ArgList argList, OnCommand onCommand) {
+            CommandSender sender, ArgList argList, OnCommand onCommand) {
         
-    	this.infoCommand = infoCommand;
+        this.infoCommand = infoCommand;
         this.sender = sender;
         this.argList = argList;
         this.onCommand = onCommand;
@@ -73,7 +73,7 @@ public class CommandEntities {
         }
         
         playerName = sender.getName();
-        playerConf = Secuboid.getThisPlugin().iPlayerConf().get(sender);
+        playerConf = Secuboid.getThisPlugin().getPlayerConf().get(sender);
     }
     
     

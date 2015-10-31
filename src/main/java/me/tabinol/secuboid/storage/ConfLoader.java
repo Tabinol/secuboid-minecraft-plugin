@@ -148,7 +148,7 @@ public class ConfLoader {
         if (lrt.equals("") || lrt.equals("}")) {
             return null;
         }
-        Secuboid.getThisPlugin().iLog().write("Readline: " + lrt);
+        Secuboid.getThisPlugin().getLog().write("Readline: " + lrt);
         return lrt;
     }
 

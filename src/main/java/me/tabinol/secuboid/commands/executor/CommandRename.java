@@ -73,13 +73,13 @@ public class CommandRename extends CommandExec {
         String oldName = land.getName();
 
         try {
-            Secuboid.getThisPlugin().iLands().renameLand(oldName, curArg);
+            Secuboid.getThisPlugin().getLands().renameLand(oldName, curArg);
         } catch (SecuboidLandException ex) {
             Logger.getLogger(CommandRename.class.getName()).log(Level.SEVERE, "On land rename", ex);
             throw new SecuboidCommandException("On land rename", entity.player, "GENERAL.ERROR");
         }
-        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, curArg));
-        Secuboid.getThisPlugin().iLog().write(entity.playerName + " has renamed " + oldName + " to " + curArg);
+        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, curArg));
+        Secuboid.getThisPlugin().getLog().write(entity.playerName + " has renamed " + oldName + " to " + curArg);
 
         // Cancel the selection
         new CommandCancel(entity.playerConf, true).commandExecute();

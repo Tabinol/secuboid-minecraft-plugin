@@ -18,10 +18,10 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerEverybody;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerEverybody;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.entity.Player;
 
@@ -29,21 +29,21 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerContainerEverybody.
  */
-public class PlayerContainerEverybody extends PlayerContainer implements IPlayerContainerEverybody {
+public class PlayerContainerEverybody extends PlayerContainer implements ApiPlayerContainerEverybody {
 
     /**
      * Instantiates a new player container everybody.
      */
     public PlayerContainerEverybody() {
         
-        super("", EPlayerContainerType.EVERYBODY, false);
+        super("", ApiPlayerContainerType.EVERYBODY, false);
     }
     
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
     @Override
-    public boolean equals(IPlayerContainer container2) {
+    public boolean equals(ApiPlayerContainer container2) {
         
         return container2 instanceof PlayerContainerEverybody;
     }
@@ -67,7 +67,7 @@ public class PlayerContainerEverybody extends PlayerContainer implements IPlayer
     }
     
     @Override
-    public boolean hasAccess(Player player, ILand land) {
+    public boolean hasAccess(Player player, ApiLand land) {
         
         return true;
     }
@@ -76,7 +76,7 @@ public class PlayerContainerEverybody extends PlayerContainer implements IPlayer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ILand land) {
+    public void setLand(ApiLand land) {
         
     }
 }

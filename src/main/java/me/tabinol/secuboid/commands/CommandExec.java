@@ -25,14 +25,14 @@ import me.tabinol.secuboid.commands.executor.CommandCancel;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.ILand;
+import me.tabinol.secuboidapi.lands.ApiLand;
 import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
-import me.tabinol.secuboidapi.parameters.IPermissionType;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
+import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -50,7 +50,7 @@ public abstract class CommandExec {
     protected final CommandEntities entity;
     
     /** The land. */
-    protected ILand land;
+    protected ApiLand land;
     
     /** The is executable. */
     private boolean isExecutable = true;
@@ -88,7 +88,7 @@ public abstract class CommandExec {
         // Show help if there is no more parameter and the command needs one
         if (entity.infoCommand.forceParameter() && entity.argList != null && entity.argList.isLast()) {
             new CommandHelp(entity.onCommand, entity.sender, 
-            		entity.infoCommand.name()).commandExecute();
+                    entity.infoCommand.name()).commandExecute();
             isExecutable = false;
         }
     }
@@ -126,16 +126,6 @@ public abstract class CommandExec {
             return;
         }
 
-        // "If" is not in checkSelection to save CPU
-/*
-         if (mustBeExpandMode != null) {
-         checkSelection(entity.playerConf.getExpendingLand() != null, mustBeExpandMode, "GENERAL.QUIT.EXPANDMODE", null, true);
-         }
-
-         if (mustBeExpandMode != null) {
-         checkSelection(entity.playerConf.getSetFlagUI() != null, mustBeFlagMode, "GENERAL.QUIT.FLAGMODE", null, true);
-         }
-         */
         if (mustBeSelectMode != null) {
             // Pasted to variable land, can take direcly
             checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
@@ -187,7 +177,7 @@ public abstract class CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void checkPermission(boolean mustBeAdminMod, boolean mustBeOwner,
-            IPermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
+            ApiPermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
 
@@ -227,8 +217,8 @@ public abstract class CommandExec {
      * @return true, if successful
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected boolean checkCollision(String landName, ILand land, IType type, Collisions.LandAction action,
-            int removeId, ICuboidArea newArea, ILand parent, IPlayerContainer owner, 
+    protected boolean checkCollision(String landName, ApiLand land, ApiType type, Collisions.LandAction action,
+            int removeId, ApiCuboidArea newArea, ApiLand parent, ApiPlayerContainer owner,
             double price, boolean addForApprove) throws SecuboidCommandException {
 
         // allowApprove: false: The command can absolutely not be done if there is error!
@@ -240,14 +230,14 @@ public abstract class CommandExec {
             entity.sender.sendMessage(coll.getPrints());
 
             if (addForApprove) {
-                if (Secuboid.getThisPlugin().iConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove == true) {
-                    entity.sender.sendMessage(ChatColor.RED + "[Secuboid] " + Secuboid.getThisPlugin().iLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", landName));
-                    Secuboid.getThisPlugin().iLog().write("land " + landName + " has collision and needs approval.");
-                    Secuboid.getThisPlugin().iLands().getApproveList().addApprove(new Approve(landName, type, action, removeId, newArea,
+                if (Secuboid.getThisPlugin().getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove == true) {
+                    entity.sender.sendMessage(ChatColor.RED + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", landName));
+                    Secuboid.getThisPlugin().getLog().write("land " + landName + " has collision and needs approval.");
+                    Secuboid.getThisPlugin().getLands().getApproveList().addApprove(new Approve(landName, type, action, removeId, newArea,
                             owner, parent, price, Calendar.getInstance()));
                     new CommandCancel(entity.playerConf, true).commandExecute();
                     return true;
-                } else if (Secuboid.getThisPlugin().iConf().getAllowCollision() == Config.AllowCollisionType.FALSE || allowApprove == false) {
+                } else if (Secuboid.getThisPlugin().getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || allowApprove == false) {
                     throw new SecuboidCommandException("Land collision", entity.sender, "COLLISION.GENERAL.CANNOTDONE");
                 }
             }
@@ -262,7 +252,7 @@ public abstract class CommandExec {
     protected void getLandFromCommandIfNoLandSelected() {
 
         if (land == null && !entity.argList.isLast()) {
-            land = Secuboid.getThisPlugin().iLands().getLand(entity.argList.getNext());
+            land = Secuboid.getThisPlugin().getLands().getLand(entity.argList.getNext());
         }
     }
     
@@ -270,13 +260,13 @@ public abstract class CommandExec {
      * Removes the sign from hand.
      */
     protected void removeSignFromHand() {
-    	
-    	if(entity.player.getGameMode() != GameMode.CREATIVE) {
-    		if(entity.player.getItemInHand().getAmount() == 1) {
-    			entity.player.setItemInHand(new ItemStack(Material.AIR));
-    		} else {
-    			entity.player.getItemInHand().setAmount(entity.player.getItemInHand().getAmount() - 1);
-    		}
-    	}
+        
+        if(entity.player.getGameMode() != GameMode.CREATIVE) {
+            if(entity.player.getItemInHand().getAmount() == 1) {
+                entity.player.setItemInHand(new ItemStack(Material.AIR));
+            } else {
+                entity.player.getItemInHand().setAmount(entity.player.getItemInHand().getAmount() - 1);
+            }
+        }
     }
 }

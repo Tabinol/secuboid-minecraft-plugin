@@ -18,14 +18,18 @@
  */
 package me.tabinol.secuboid.config;
 
+import java.util.EnumSet;
+import java.util.logging.Level;
 import java.util.TreeSet;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.PermissionType;
-import me.tabinol.secuboidapi.SecuboidAPI;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 
@@ -37,7 +41,7 @@ public class Config {
 
     // Global
     /** The Constant NEWLINE. */
-	public static final String NEWLINE = "\n";
+    public static final String NEWLINE = "\n";
     //public static final String NEWLINE = System.getProperty("line.separator");
     
     /** The Constant GLOBAL. */
@@ -78,7 +82,17 @@ public class Config {
      * @return true, if successful
      */
     public boolean useEconomy() { return useEconomy; }
-    
+
+    /** For multiple inventories. */
+    private boolean multipleInventories;
+
+    /**
+     * Use multiple inventories.
+     *
+     * @return true, if successful
+     */
+    public boolean isMultipleInventories() { return multipleInventories; }
+
     /** The info item. */
     private int infoItem;
     
@@ -184,11 +198,11 @@ public class Config {
      */
     public int getMaxVisualSelectFromPlayer() { return maxVisualSelectFromPlayer; }
 
-    /** The max area per land. */
+    /** The max area per Lands. */
     private int maxAreaPerLand;
     
     /**
-     * Gets the max area per land.
+     * Gets the max area per Lands.
      *
      * @return the max area per land
      */
@@ -245,16 +259,6 @@ public class Config {
     public int getDefaultTop() { return defaultTop; }
 
     
-    /** The beacon light. */
-    private boolean beaconLight;
-    
-    /**
-     * Checks if is beacon light.
-     *
-     * @return true, if is beacon light
-     */
-    public boolean isBeaconLight() { return beaconLight; }
-    
     /** The override explosions. */
     private boolean overrideExplosions;
     
@@ -286,24 +290,49 @@ public class Config {
     public TreeSet<PermissionType> getOwnerConfigPerm() { return ownerConfigPerm; }
 
     /** The type admin mod. */
-    private IType typeAdminMod;
+    private ApiType typeAdminMod;
     
     /**
      * Gets the type admin mod.
      *
      * @return the type admin mod
      */
-    public IType getTypeAdminMod() { return typeAdminMod; } 
+    public ApiType getTypeAdminMod() { return typeAdminMod; }
     
     /** The type none admin mod. */
-    private IType typeNoneAdminMod;
+    private ApiType typeNoneAdminMod;
     
     /**
      * Gets the type none admin mod.
      *
      * @return the type none admin mod
      */
-    public IType getTypeNoneAdminMod() { return typeNoneAdminMod; } 
+    public ApiType getTypeNoneAdminMod() { return typeNoneAdminMod; }
+
+    private boolean flyAndCreative;
+
+    public boolean isFlyAndCreative() { return flyAndCreative; }
+
+    // Fly and Creative specific configuration
+    private EnumSet<GameMode> ignoredGameMode;
+
+    public EnumSet<GameMode> getIgnoredGameMode() { return ignoredGameMode; }
+
+    private boolean creativeNoDrop;
+
+    public boolean isCreativeNoDrop() { return creativeNoDrop; }
+
+    private boolean creativeNoOpenChest;
+
+    public boolean isCreativeNoOpenChest() { return creativeNoOpenChest; }
+
+    private boolean creativeNoBuildOutside;
+
+    public boolean isCreativeNoBuildOutside() { return creativeNoBuildOutside; }
+
+    private EnumSet<Material> creativeBannedItems;
+
+    public EnumSet<Material> getCreativeBannedItems() { return creativeBannedItems; }
 
     /**
      * Instantiates a new config.
@@ -336,59 +365,88 @@ public class Config {
      */
     private void getConfig() {
 
-        debug = config.getBoolean("general.debug", false);
-        config.addDefault("general.worlds", new String[] {"world", "world_nether", "world_the_end"});
-        lang = config.getString("general.lang", "english");
-        useEconomy = config.getBoolean("general.UseEconomy", false);
-        infoItem = config.getInt("general.InfoItem", 352);
-        selectItem = config.getInt("general.SelectItem", 367);
+        debug = config.getBoolean("General.Debug", false);
+        config.addDefault("General.worlds", new String[] {"world", "world_nether", "world_the_end"});
+        lang = config.getString("General.Lang", "english");
+        useEconomy = config.getBoolean("General.UseEconomy", false);
+        multipleInventories = config.getBoolean("General.MultipleInventories", false);
+        infoItem = config.getInt("General.InfoItem", 352);
+        selectItem = config.getInt("General.SelectItem", 367);
         // Remove error if the parameter is not here (AllowCollision)
         try {
-            allowCollision = AllowCollisionType.valueOf(config.getString("land.AllowCollision", "approve").toUpperCase());
+            allowCollision = AllowCollisionType.valueOf(config.getString("Lands.AllowCollision", "approve").toUpperCase());
         } catch (NullPointerException ex) {
             allowCollision = AllowCollisionType.APPROVE;
         }
-        isLandChat = config.getBoolean("land.LandChat", true);
-        isSpectatorIsVanish = config.getBoolean("land.SpectatorIsVanish", true);
-        approveNotifyTime = config.getLong("land.ApproveNotifyTime", 24002);
-        selectAutoCancel = config.getLong("land.SelectAutoCancel", 12000);
-        maxVisualSelect = config.getInt("land.MaxVisualSelect", 256);
-        maxVisualSelectFromPlayer = config.getInt("land.MaxVisualSelectFromPlayer", 128);
-        defaultXSize = config.getInt("land.defaultXSize", 10);
-        defaultZSize = config.getInt("land.defaultZSize", 10);
-        defaultBottom = config.getInt("land.defaultBottom", 0);
-        defaultTop = config.getInt("land.defaultTop", 255);
-        maxAreaPerLand = config.getInt("land.area.MaxAreaPerLand", 3);
-        maxLandPerPlayer = config.getInt("land.MaxLandPerPlayer", 5);
-        beaconLight = config.getBoolean("land.BeaconLight", false);
-        overrideExplosions = config.getBoolean("general.OverrideExplosions", true);
+        isLandChat = config.getBoolean("Lands.LandChat", true);
+        isSpectatorIsVanish = config.getBoolean("Lands.SpectatorIsVanish", true);
+        approveNotifyTime = config.getLong("Lands.ApproveNotifyTime", 24002);
+        selectAutoCancel = config.getLong("Lands.SelectAutoCancel", 12000);
+        maxVisualSelect = config.getInt("Lands.MaxVisualSelect", 256);
+        maxVisualSelectFromPlayer = config.getInt("Lands.MaxVisualSelectFromPlayer", 128);
+        defaultXSize = config.getInt("Lands.defaultXSize", 10);
+        defaultZSize = config.getInt("Lands.defaultZSize", 10);
+        defaultBottom = config.getInt("Lands.defaultBottom", 0);
+        defaultTop = config.getInt("Lands.defaultTop", 255);
+        maxAreaPerLand = config.getInt("Lands.Areas.MaxAreaPerLand", 3);
+        maxLandPerPlayer = config.getInt("Lands.MaxLandPerPlayer", 5);
+        overrideExplosions = config.getBoolean("General.OverrideExplosions", true);
 
-        config.addDefault("land.OwnerCanSet.Flags", new String[] {"MESSAGE_JOIN", "MESSAGE_QUIT"});
+        config.addDefault("Lands.OwnerCanSet.Flags", new String[] {"MESSAGE_JOIN", "MESSAGE_QUIT"});
         ownerConfigFlag = new TreeSet<FlagType>();
-        for (String value : config.getStringList("land.OwnerCanSet.Flags")) {
-            ownerConfigFlag.add(Secuboid.getThisPlugin().iParameters().getFlagTypeNoValid(value.toUpperCase()));
+        for (String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
+            ownerConfigFlag.add(Secuboid.getThisPlugin().getParameters().getFlagTypeNoValid(value.toUpperCase()));
         }
-        config.addDefault("land.OwnerCanSet.Permissions", new String[] {"BUILD", "OPEN", "USE"});
+        config.addDefault("Lands.OwnerCanSet.Permissions", new String[] {"BUILD", "OPEN", "USE"});
         ownerConfigPerm = new TreeSet<PermissionType>();
-        for (String value : config.getStringList("land.OwnerCanSet.Permissions")) {
-            ownerConfigPerm.add(Secuboid.getThisPlugin().iParameters().getPermissionTypeNoValid(value.toUpperCase()));
+        for (String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
+            ownerConfigPerm.add(Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(value.toUpperCase()));
         }
-        
+
+        // Fly and creative
+        flyAndCreative = config.getBoolean("General.flyAndCreative", false);
+
+        config.addDefault("FlyCreativeListener.IgnoredGameMode", new String[] {"ADVENTURE", "SPECTATOR"});
+        ignoredGameMode = EnumSet.noneOf(GameMode.class);
+        for (String value : config.getStringList("FlyCreativeListener.IgnoredGameMode")) {
+            try {
+                ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
+            } catch(IllegalArgumentException ex) {
+                Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
+                        "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
+            }
+        }
+
+        creativeNoDrop = config.getBoolean("FlyCreativeListener.Creative.NoDrop", true);
+        creativeNoOpenChest = config.getBoolean("FlyCreativeListener.Creative.NoOpenChest", true);
+        creativeNoBuildOutside = config.getBoolean("FlyCreativeListener.Creative.NoBuildOutside", true);
+
+        config.addDefault("FlyCreativeListener.Creative.BannedItems", new String[] {"DIAMOND", "GOLD_INGOT"});
+        creativeBannedItems = EnumSet.noneOf(Material.class);
+        for (String value : config.getStringList("FlyCreativeListener.Creative.BannedItems")) {
+            try {
+                creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
+            } catch(IllegalArgumentException ex) {
+                Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
+                        "Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + " item found in Bukkit!");
+            }
+        }
+
         // Add types
-        for(String typeName : config.getStringList("land.Types.List")) {
-        	SecuboidAPI.iTypes().addOrGetType(typeName);
+        for(String typeName : config.getStringList("Lands.Types.List")) {
+            ApiSecuboidSta.getTypes().addOrGetType(typeName);
         }
-        typeAdminMod = SecuboidAPI.iTypes().addOrGetType(getStringOrNull("land.Types.OnCreate.AdminMod", "admin"));
-        typeNoneAdminMod = SecuboidAPI.iTypes().addOrGetType(getStringOrNull("land.Types.OnCreate.NoneAdminMod", "player"));
+        typeAdminMod = ApiSecuboidSta.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMod", "admin"));
+        typeNoneAdminMod = ApiSecuboidSta.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMod", "player"));
     }
     
     private String getStringOrNull(String path, String defaultSt) {
-    	
-    	String result = config.getString(path, defaultSt);
-    	if(result.equalsIgnoreCase("-null-")) {
-    		result = null;
-    	}
-    	
-    	return result;
+        
+        String result = config.getString(path, defaultSt);
+        if(result.equalsIgnoreCase("-null-")) {
+            result = null;
+        }
+        
+        return result;
     }
 }

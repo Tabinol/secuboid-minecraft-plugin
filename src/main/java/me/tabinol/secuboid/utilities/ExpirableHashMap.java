@@ -32,57 +32,57 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class ExpirableHashMap<K, V> extends HashMap<K, V> {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -8255110767996977825L;
-	
-	/** The delay in tick. */
-	private final long delay;
-	
-	/**
-	 * Instantiates a new expirable tree map.
-	 *
-	 * @param delay the delay (in ticks)
-	 */
-	public ExpirableHashMap(long delay) {
-		
-		super();
-		this.delay = delay;
-	}
-	
-	/**
-	 * The Class BestBefored.
-	 */
-	private class BestBefored extends BukkitRunnable {
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -8255110767996977825L;
+    
+    /** The delay in tick. */
+    private final long delay;
+    
+    /**
+     * Instantiates a new expirable tree map.
+     *
+     * @param delay the delay (in ticks)
+     */
+    public ExpirableHashMap(long delay) {
+        
+        super();
+        this.delay = delay;
+    }
+    
+    /**
+     * The Class BestBefored.
+     */
+    private class BestBefored extends BukkitRunnable {
 
-		/** The key. */
-		K key;
-		
-		/**
-		 * Instantiates a new best befored.
-		 *
-		 * @param key the key
-		 */
-		private BestBefored(K key) {
-			
-			this.key = key;
-		}
-		
-		/* (non-Javadoc)
-		 * @see java.lang.Runnable#run()
-		 */
-		@Override
-		public void run() {
-			remove(key);
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.util.TreeMap#put(java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public V put(K key, V value) {
-		
-		new BestBefored(key).runTaskLater(Secuboid.getThisPlugin(), delay);
-		return super.put(key, value);
-	}
+        /** The key. */
+        K key;
+        
+        /**
+         * Instantiates a new best befored.
+         *
+         * @param key the key
+         */
+        private BestBefored(K key) {
+            
+            this.key = key;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            remove(key);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.TreeMap#put(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public V put(K key, V value) {
+        
+        new BestBefored(key).runTaskLater(Secuboid.getThisPlugin(), delay);
+        return super.put(key, value);
+    }
 }

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -32,12 +31,13 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 import org.bukkit.Location;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.exceptions.FileLoadException;
-import me.tabinol.secuboid.factions.Faction;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.LandFlag;
@@ -45,12 +45,10 @@ import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboidapi.SecuboidAPI;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
 import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.parameters.ILandFlag;
-import me.tabinol.secuboidapi.parameters.IPermission;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainerPlayer;
+import me.tabinol.secuboidapi.parameters.ApiLandFlag;
+import me.tabinol.secuboidapi.parameters.ApiPermission;
 
 
 /**
@@ -60,9 +58,6 @@ public class StorageFlat extends Storage implements StorageInt {
 
     /** The Constant EXT_CONF. */
     public static final String EXT_CONF = ".conf";
-    
-    /** The factions dir. */
-    private String factionsDir;
     
     /** The lands dir. */
     private String landsDir;
@@ -82,11 +77,9 @@ public class StorageFlat extends Storage implements StorageInt {
      */
     private void createDirFiles() {
 
-        factionsDir = Secuboid.getThisPlugin().getDataFolder() + "/" + "factions" + "/";
         landsDir = Secuboid.getThisPlugin().getDataFolder() + "/" + "lands" + "/";
 
         createDir(landsDir);
-        createDir(factionsDir);
     }
 
     /**
@@ -101,17 +94,6 @@ public class StorageFlat extends Storage implements StorageInt {
         if (!file.exists()) {
             file.mkdir();
         }
-    }
-
-    /**
-     * Gets the faction file.
-     *
-     * @param faction the faction
-     * @return the faction file
-     */
-    private File getFactionFile(Faction faction) {
-
-        return new File(factionsDir + "/" + faction.getName() + EXT_CONF);
     }
 
     /**
@@ -136,28 +118,6 @@ public class StorageFlat extends Storage implements StorageInt {
 
         return new File(landsDir + "/" + landName + "." + landGenealogy + EXT_CONF);
     }
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.StorageInt#loadFactions()
-     */
-    @Override
-    public void loadFactions() {
-
-        File[] files = new File(factionsDir).listFiles();
-        int loadedfactions = 0;
-
-        if (files.length == 0) {
-            Secuboid.getThisPlugin().iLog().write(loadedfactions + " faction(s) loaded.");
-            return;
-        }
-
-        for (File file : files) {
-            if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
-                loadFaction(file);
-                loadedfactions++;
-            }
-        }
-        Secuboid.getThisPlugin().iLog().write(loadedfactions + " faction(s) loaded.");
-    }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.storage.StorageInt#loadLands()
@@ -171,7 +131,7 @@ public class StorageFlat extends Storage implements StorageInt {
         boolean empty = false;
 
         if (files.length == 0) {
-            Secuboid.getThisPlugin().iLog().write(loadedlands + " land(s) loaded.");
+            Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
             return;
         }
 
@@ -186,54 +146,7 @@ public class StorageFlat extends Storage implements StorageInt {
             }
             pass++;
         }
-        Secuboid.getThisPlugin().iLog().write(loadedlands + " land(s) loaded.");
-    }
-
-    /**
-     * Load faction.
-     *
-     * @param file the file
-     */
-    private void loadFaction(File file) {
-
-        Faction faction;
-        ConfLoader cf = null;
-        ArrayList<PlayerContainerPlayer> playerNames = new ArrayList<PlayerContainerPlayer>();
-        UUID uuid;
-
-        try {
-            cf = new ConfLoader(file);
-            String str;
-            
-            @SuppressWarnings("unused")
-			int version = cf.getVersion();
-            
-            uuid = cf.getUUID();
-            cf.readParam();
-            while ((str = cf.getNextString()) != null) {
-                playerNames.add((PlayerContainerPlayer) PlayerContainer.getFromString(str));
-            }
-
-            cf.close();
-
-            // Catch errors here
-        } catch (NullPointerException ex) {
-            try {
-                throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "Problem with parameter.");
-            } catch (FileLoadException ex2) {
-                // Catch load
-                return;
-            }
-        } catch (FileLoadException ex) {
-            // Catch load
-            return;
-        }
-
-        // Create Faction
-        faction = Secuboid.getThisPlugin().iFactions().createFaction(cf.getName(), uuid);
-        for (PlayerContainerPlayer player : playerNames) {
-            faction.addPlayer(player);
-        }
+        Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
     }
 
     /**
@@ -253,7 +166,6 @@ public class StorageFlat extends Storage implements StorageInt {
         boolean isLandCreated = false;
         PlayerContainer owner;
         String parentName;
-        String factionTerritory;
         Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
         Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
         Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
@@ -277,7 +189,7 @@ public class StorageFlat extends Storage implements StorageInt {
         PlayerContainerPlayer tenant = null;
         Timestamp lastPayment = null;
 
-        Secuboid.getThisPlugin().iLog().write("Open file : " + file.getName());
+        Secuboid.getThisPlugin().getLog().write("Open file : " + file.getName());
 
         try {
             cf = new ConfLoader(file);
@@ -286,8 +198,8 @@ public class StorageFlat extends Storage implements StorageInt {
             uuid = cf.getUUID();
             landName = cf.getName();
             if(version >= 5) {
-            	cf.readParam();
-            	type = cf.getValueString();
+                cf.readParam();
+                type = cf.getValueString();
             }
             cf.readParam();
             String ownerS = cf.getValueString();
@@ -300,8 +212,11 @@ public class StorageFlat extends Storage implements StorageInt {
 
             cf.readParam();
             parentName = cf.getValueString();
-            cf.readParam();
-            factionTerritory = cf.getValueString();
+
+            // Old Faction Territory value
+            if(version < 6) {
+                cf.readParam();
+            }
 
             cf.readParam();
 
@@ -311,7 +226,7 @@ public class StorageFlat extends Storage implements StorageInt {
                 areas.put(Integer.parseInt(multiStr[0]), CuboidArea.getFromString(multiStr[1]));
             }
             if (areas.isEmpty()) {
-            	throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
+                throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
             }
 
             cf.readParam();
@@ -333,7 +248,7 @@ public class StorageFlat extends Storage implements StorageInt {
                 String[] multiStr = str.split(":");
                 TreeMap<PermissionType, Permission> permPlayer;
                 PlayerContainer pc = PlayerContainer.getFromString(multiStr[0] + ":" + multiStr[1]);
-                PermissionType permType = Secuboid.getThisPlugin().iParameters().getPermissionTypeNoValid(multiStr[2]);
+                PermissionType permType = Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(multiStr[2]);
                 if (!permissions.containsKey(pc)) {
                     permPlayer = new TreeMap<PermissionType, Permission>();
                     permissions.put(pc, permPlayer);
@@ -366,34 +281,34 @@ public class StorageFlat extends Storage implements StorageInt {
             
             // Economy
             if(version >= 4) {
-            	cf.readParam();
-            	forSale = Boolean.parseBoolean(cf.getValueString());
-            	if(forSale) {
-            		cf.readParam();
-            		forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
-            		cf.readParam();
-            		salePrice = cf.getValueDouble();
-            	}
-            	cf.readParam();
-            	forRent = Boolean.parseBoolean(cf.getValueString());
-            	if(forRent) {
-            		cf.readParam();
-            		forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
-            		cf.readParam();
-            		rentPrice = cf.getValueDouble();
-            		cf.readParam();
-            		rentRenew = cf.getValueInt();
-            		cf.readParam();
-            		rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
-            		cf.readParam();
-            		rented = Boolean.parseBoolean(cf.getValueString());
-            		if(rented) {
-            			cf.readParam();
-            			tenant = (PlayerContainerPlayer) PlayerContainer.getFromString(cf.getValueString());
-            			cf.readParam();
-            			lastPayment = Timestamp.valueOf(cf.getValueString());
-            		}
-            	}
+                cf.readParam();
+                forSale = Boolean.parseBoolean(cf.getValueString());
+                if(forSale) {
+                    cf.readParam();
+                    forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                    cf.readParam();
+                    salePrice = cf.getValueDouble();
+                }
+                cf.readParam();
+                forRent = Boolean.parseBoolean(cf.getValueString());
+                if(forRent) {
+                    cf.readParam();
+                    forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                    cf.readParam();
+                    rentPrice = cf.getValueDouble();
+                    cf.readParam();
+                    rentRenew = cf.getValueInt();
+                    cf.readParam();
+                    rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
+                    cf.readParam();
+                    rented = Boolean.parseBoolean(cf.getValueString());
+                    if(rented) {
+                        cf.readParam();
+                        tenant = (PlayerContainerPlayer) PlayerContainer.getFromString(cf.getValueString());
+                        cf.readParam();
+                        lastPayment = Timestamp.valueOf(cf.getValueString());
+                    }
+                }
             }
 
             cf.close();
@@ -416,19 +331,19 @@ public class StorageFlat extends Storage implements StorageInt {
             if (!isLandCreated) {
                 if (parentName != null) {
 
-                    parent = Secuboid.getThisPlugin().iLands().getLand(UUID.fromString(parentName));
+                    parent = Secuboid.getThisPlugin().getLands().getLand(UUID.fromString(parentName));
 
                     try {
-                        land = Secuboid.getThisPlugin().iLands().createLand(landName, owner, entry.getValue(), parent,
-                                entry.getKey(), uuid, SecuboidAPI.iTypes().addOrGetType(type));
+                        land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(), parent,
+                                entry.getKey(), uuid, ApiSecuboidSta.getTypes().addOrGetType(type));
                     } catch (SecuboidLandException ex) {
                         Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
                         return;
                     }
                 } else {
                     try {
-                        land = Secuboid.getThisPlugin().iLands().createLand(landName, owner, entry.getValue(), 
-                        		null, entry.getKey(), uuid, SecuboidAPI.iTypes().addOrGetType(type));
+                        land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(),
+                                null, entry.getKey(), uuid, ApiSecuboidSta.getTypes().addOrGetType(type));
                     } catch (SecuboidLandException ex) {
                         Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
                         return;
@@ -441,9 +356,6 @@ public class StorageFlat extends Storage implements StorageInt {
         }
 
         // Load land params form memory
-        if (factionTerritory != null) {
-            land.setFactionTerritory(Secuboid.getThisPlugin().iFactions().getFaction(factionTerritory));
-        }
         for (PlayerContainer resident : residents) {
             land.addResident(resident);
         }
@@ -466,16 +378,16 @@ public class StorageFlat extends Storage implements StorageInt {
         
         // Economy add
         if (version >= 4) {
-        	if(forSale) {
-        		land.setForSale(true, salePrice, forSaleSignLoc);
-        	}
-        	if(forRent) {
-        		land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
-        		if(rented) {
-        			land.setRented(tenant);
-        			land.setLastPaymentTime(lastPayment);
-        		}
-        	}
+            if(forSale) {
+                land.setForSale(true, salePrice, forSaleSignLoc);
+            }
+            if(forRent) {
+                land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
+                if(rented) {
+                    land.setRented(tenant);
+                    land.setLastPaymentTime(lastPayment);
+                }
+            }
         }
     }
 
@@ -487,11 +399,11 @@ public class StorageFlat extends Storage implements StorageInt {
         try {
             ArrayList<String> strs;
 
-            if (Secuboid.getThisPlugin().iStorageThread().isInLoad()) {
+            if (Secuboid.getThisPlugin().getStorageThread().isInLoad()) {
                 return;
             }
 
-            Secuboid.getThisPlugin().iLog().write("Saving land: " + land.getName());
+            Secuboid.getThisPlugin().getLog().write("Saving land: " + land.getName());
             ConfBuilder cb = new ConfBuilder(land.getName(), land.getUUID(), getLandFile(land), LAND_VERSION);
             cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
             cb.writeParam("Owner", land.getOwner().toString());
@@ -503,13 +415,6 @@ public class StorageFlat extends Storage implements StorageInt {
                 cb.writeParam("Parent", land.getParent().getUUID().toString());
             }
 
-            //factionTerritory
-            if (land.getFactionTerritory() == null) {
-                cb.writeParam("FactionTerritory", (String) null);
-            } else {
-                cb.writeParam("FactionTerritory", land.getFactionTerritory().getName());
-            }
-
             //CuboidAreas
             strs = new ArrayList<String>();
             for (int index : land.getAreasKey()) {
@@ -519,22 +424,22 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Residents
             strs = new ArrayList<String>();
-            for (IPlayerContainer pc : land.getResidents()) {
+            for (ApiPlayerContainer pc : land.getResidents()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("Residents", strs.toArray(new String[0]));
 
             //Banneds
             strs = new ArrayList<String>();
-            for (IPlayerContainer pc : land.getBanneds()) {
+            for (ApiPlayerContainer pc : land.getBanneds()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("Banneds", strs.toArray(new String[0]));
 
             //Permissions
             strs = new ArrayList<String>();
-            for (IPlayerContainer pc : land.getSetPCHavePermission()) {
-                for (IPermission perm : land.getPermissionsForPC(pc)) {
+            for (ApiPlayerContainer pc : land.getSetPCHavePermission()) {
+                for (ApiPermission perm : land.getPermissionsForPC(pc)) {
                     strs.add(pc.toString() + ":" + perm.toString());
                 }
             }
@@ -542,7 +447,7 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Flags
             strs = new ArrayList<String>();
-            for (ILandFlag flag : land.getFlags()) {
+            for (ApiLandFlag flag : land.getFlags()) {
                 strs.add(flag.toString());
             }
             cb.writeParam("Flags", strs.toArray(new String[0]));
@@ -555,29 +460,29 @@ public class StorageFlat extends Storage implements StorageInt {
 
             // PlayersNotify
             strs = new ArrayList<String>();
-            for (IPlayerContainerPlayer pc : land.getPlayersNotify()) {
+            for (ApiPlayerContainerPlayer pc : land.getPlayersNotify()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("PlayersNotify", strs.toArray(new String[0]));
 
-        	// Economy
-        	cb.writeParam("ForSale", land.isForSale() + "");
-        	if(land.isForSale()) {
-        		cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
-        		cb.writeParam("SalePrice", land.getSalePrice());
-        	}
-        	if(land.isForRent()) {
-        		cb.writeParam("ForRent", land.isForRent() + "");
-        		cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
-        		cb.writeParam("RentPrice", land.getRentPrice());
-        		cb.writeParam("ForRenew", land.getRentRenew());
-        		cb.writeParam("ForAutoRenew", land.getRentAutoRenew() + "");
-        		cb.writeParam("Rented", land.isRented() + "");
-        		if(land.isRented()) {
-        			cb.writeParam("Tenant", land.getTenant().toString());
-        			cb.writeParam("LastPayment", land.getLastPaymentTime().toString());
-        		}
-        	}
+            // Economy
+            cb.writeParam("ForSale", land.isForSale() + "");
+            if(land.isForSale()) {
+                cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
+                cb.writeParam("SalePrice", land.getSalePrice());
+            }
+            if(land.isForRent()) {
+                cb.writeParam("ForRent", land.isForRent() + "");
+                cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
+                cb.writeParam("RentPrice", land.getRentPrice());
+                cb.writeParam("ForRenew", land.getRentRenew());
+                cb.writeParam("ForAutoRenew", land.getRentAutoRenew() + "");
+                cb.writeParam("Rented", land.isRented() + "");
+                if(land.isRented()) {
+                    cb.writeParam("Tenant", land.getTenant().toString());
+                    cb.writeParam("LastPayment", land.getLastPaymentTime().toString());
+                }
+            }
 
             cb.close();
         } catch (IOException ex) {
@@ -598,39 +503,5 @@ public class StorageFlat extends Storage implements StorageInt {
     public void removeLand(String landName, int landGenealogy) {
 
         getLandFile(landName, landGenealogy).delete();
-    }
-
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.StorageInt#saveFaction(me.tabinol.secuboid.factions.Faction)
-     */
-    @Override
-    public void saveFaction(Faction faction) {
-        try {
-            if (Secuboid.getThisPlugin().iStorageThread().isInLoad()) {
-                return;
-            }
-
-            Secuboid.getThisPlugin().iLog().write("Saving faction: " + faction.getName());
-            ConfBuilder cb = new ConfBuilder(faction.getName(), faction.getUUID(), getFactionFile(faction), FACTION_VERSION);
-
-            List<String> strs = new ArrayList<String>();
-            for (IPlayerContainerPlayer pc : faction.getPlayers()) {
-                strs.add(pc.toString());
-            }
-            cb.writeParam("Players", strs.toArray(new String[0]));
-
-            cb.close();
-        } catch (IOException ex) {
-            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on saving Faction: " + faction.getName(), ex);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.StorageInt#removeFaction(me.tabinol.secuboid.factions.Faction)
-     */
-    @Override
-    public void removeFaction(Faction faction) {
-
-        getFactionFile(faction).delete();
     }
 }

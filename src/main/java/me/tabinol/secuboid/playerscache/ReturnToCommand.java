@@ -27,37 +27,37 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
  */
 public class ReturnToCommand implements Callable<Void> {
 
-	/** The command exec. */
-	private final CommandThreadExec commandExec;
-	
-	/** The player cache entry. */
-	private final PlayerCacheEntry[] playerCacheEntry;
-	
-	/**
-	 * Instantiates a new return to command.
-	 *
-	 * @param commandExec the command exec
-	 * @param playerCacheEntry the player cache entry
-	 */
-	public ReturnToCommand(CommandThreadExec commandExec, PlayerCacheEntry[] playerCacheEntry) {
-		
-		this.commandExec = commandExec;
-		this.playerCacheEntry = playerCacheEntry;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.util.concurrent.Callable#call()
-	 */
-	@Override
-	public Void call() {
-		
-		// Return the output of the request
-		try {
-			commandExec.commandThreadExecute(playerCacheEntry);
-		} catch (SecuboidCommandException e) {
-			// Empty
-		}
-		
-		return null;
-	}
+    /** The command exec. */
+    private final CommandThreadExec commandExec;
+    
+    /** The player cache entry. */
+    private final PlayerCacheEntry[] playerCacheEntry;
+    
+    /**
+     * Instantiates a new return to command.
+     *
+     * @param commandExec the command exec
+     * @param playerCacheEntry the player cache entry
+     */
+    public ReturnToCommand(CommandThreadExec commandExec, PlayerCacheEntry[] playerCacheEntry) {
+        
+        this.commandExec = commandExec;
+        this.playerCacheEntry = playerCacheEntry;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.util.concurrent.Callable#call()
+     */
+    @Override
+    public Void call() {
+        
+        // Return the output of the request
+        try {
+            commandExec.commandThreadExecute(playerCacheEntry);
+        } catch (SecuboidCommandException e) {
+            // Empty
+        }
+        
+        return null;
+    }
 }

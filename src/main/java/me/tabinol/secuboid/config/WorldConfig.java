@@ -31,9 +31,9 @@ import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboidapi.SecuboidAPI;
-import me.tabinol.secuboidapi.lands.types.IType;
-import me.tabinol.secuboidapi.playercontainer.EPlayerContainerType;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboidapi.lands.types.ApiType;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -92,31 +92,31 @@ public class WorldConfig {
         
         // We have to take _global_ first then others
         for (String worldName : keys) {
-        	if(worldName.equalsIgnoreCase(GLOBAL)) {
-            	createConfForWorld(worldName, landList, false);
-        	}
+            if(worldName.equalsIgnoreCase(GLOBAL)) {
+                createConfForWorld(worldName, landList, false);
+            }
         }
         
         // The none-global
         for (String worldName : keys) {
-        	if(!worldName.equalsIgnoreCase(GLOBAL)) {
-            	createConfForWorld(worldName, landList, true);
-        	}
+            if(!worldName.equalsIgnoreCase(GLOBAL)) {
+                createConfForWorld(worldName, landList, true);
+            }
         }
 
         return landList;
     }
     
     private void createConfForWorld(String worldName, TreeMap<String, DummyLand> landList, boolean copyFromGlobal) {
-    	
+        
         String worldNameLower = worldName.toLowerCase();
-        Secuboid.getThisPlugin().iLog().write("Create conf for World: " + worldNameLower);
+        Secuboid.getThisPlugin().getLog().write("Create conf for World: " + worldNameLower);
         DummyLand dl = new DummyLand(worldName);
         if(copyFromGlobal) {
-        	landList.get(GLOBAL).copyPermsFlagsTo(dl);
+            landList.get(GLOBAL).copyPermsFlagsTo(dl);
         }
         landList.put(worldNameLower, landModify(dl, worldConfig, 
-        		worldName + ".ContainerPermissions", worldName + ".ContainerFlags"));
+                worldName + ".ContainerPermissions", worldName + ".ContainerFlags"));
     }
     
     /**
@@ -126,7 +126,7 @@ public class WorldConfig {
      */
     private DummyLand getLandDefaultConf() {
 
-        Secuboid.getThisPlugin().iLog().write("Create default conf for lands");
+        Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
         return landModify(new DummyLand(GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
     }
 
@@ -135,28 +135,28 @@ public class WorldConfig {
      * @return The land configuration (DummyLand)
      */
     public DummyLand getDefaultconfNoType() {
-    	
-    	return defaultConfNoType;
+        
+        return defaultConfNoType;
     }
 
     /**
      * Gets the default conf for each type
      * @return a TreeMap of default configuration
      */
-    public TreeMap<IType, DummyLand> getTypeDefaultConf() {
-    	
-        Secuboid.getThisPlugin().iLog().write("Create default conf for lands");
-    	TreeMap<IType, DummyLand> defaultConf = new TreeMap<IType, DummyLand>();
+    public TreeMap<ApiType, DummyLand> getTypeDefaultConf() {
+        
+        Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
+        TreeMap<ApiType, DummyLand> defaultConf = new TreeMap<ApiType, DummyLand>();
 
-    	for(IType type : SecuboidAPI.iTypes().getTypes()) {
-    		ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
-    		DummyLand dl = new DummyLand(type.getName());
+        for(ApiType type : ApiSecuboidSta.getTypes().getTypes()) {
+            ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
+            DummyLand dl = new DummyLand(type.getName());
             defaultConfNoType.copyPermsFlagsTo(dl);
-    		defaultConf.put(type, landModify(dl, typeConf, 
-    				"ContainerPermissions", "ContainerFlags"));
-    	}
-    	
-    	return defaultConf;
+            defaultConf.put(type, landModify(dl, typeConf, 
+                    "ContainerPermissions", "ContainerFlags"));
+        }
+        
+        return defaultConf;
     }
 
     private DummyLand landModify(DummyLand dl, ConfigurationSection fc, String perms, String flags) {
@@ -173,16 +173,16 @@ public class WorldConfig {
         if (csPerm != null) {
             for (String container : csPerm.getKeys(false)) {
                 
-                EPlayerContainerType pcType = EPlayerContainerType.getFromString(container);
+                ApiPlayerContainerType pcType = ApiPlayerContainerType.getFromString(container);
                 
                 if (pcType.hasParameter()) {
                     for (String containerName : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
                         for (String perm : fc.getConfigurationSection(perms + "." + container + "." + containerName).getKeys(false)) {
-                            Secuboid.getThisPlugin().iLog().write("Container: " + container + ":" + containerName + ", " + perm);
+                            Secuboid.getThisPlugin().getLog().write("Container: " + container + ":" + containerName + ", " + perm);
                             
                             // Remove _ if it is a Bukkit Permission
                             String containerNameLower;
-                            if(pcType == EPlayerContainerType.PERMISSION) {
+                            if(pcType == ApiPlayerContainerType.PERMISSION) {
                                 containerNameLower = containerName.toLowerCase().replaceAll("_", ".");
                             } else {
                                 containerNameLower = containerName.toLowerCase();
@@ -190,17 +190,17 @@ public class WorldConfig {
                             
                             dl.addPermission(
                                     PlayerContainer.create(null, pcType, containerNameLower),
-                                    new Permission(Secuboid.getThisPlugin().iParameters().getPermissionTypeNoValid(perm.toUpperCase()),
+                                    new Permission(Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(perm.toUpperCase()),
                                             fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
                                             fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Heritable")));
                         }
                     }
                 } else {
                     for (String perm : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
-                        Secuboid.getThisPlugin().iLog().write("Container: " + container + ", " + perm);
+                        Secuboid.getThisPlugin().getLog().write("Container: " + container + ", " + perm);
                         dl.addPermission(
                                 PlayerContainer.create(null, pcType, null),
-                                new Permission(Secuboid.getThisPlugin().iParameters().getPermissionTypeNoValid(perm.toUpperCase()),
+                                new Permission(Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(perm.toUpperCase()),
                                         fc.getBoolean(perms + "." + container + "." + perm + ".Value"),
                                         fc.getBoolean(perms + "." + container + "." + perm + ".Heritable")));
                     }
@@ -211,8 +211,8 @@ public class WorldConfig {
         // add flags
         if (csFlags != null) {
             for (String flag : csFlags.getKeys(false)) {
-                Secuboid.getThisPlugin().iLog().write("Flag: " + flag);
-                FlagType ft = Secuboid.getThisPlugin().iParameters().getFlagTypeNoValid(flag.toUpperCase());
+                Secuboid.getThisPlugin().getLog().write("Flag: " + flag);
+                FlagType ft = Secuboid.getThisPlugin().getParameters().getFlagTypeNoValid(flag.toUpperCase());
                 dl.addFlag(new LandFlag(ft,
                         FlagValue.getFromString(fc.getString(flags + "." + flag + ".Value"), ft), 
                         fc.getBoolean(flags + "." + flag + ".Heritable")));

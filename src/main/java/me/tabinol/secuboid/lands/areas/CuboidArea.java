@@ -24,7 +24,7 @@ import java.util.HashSet;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.Calculate;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,7 +33,7 @@ import org.bukkit.World;
 /**
  * The Class CuboidArea.
  */
-public class CuboidArea implements Comparable<CuboidArea>, ICuboidArea {
+public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
 
     /** The world name. */
     private String worldName;
@@ -72,7 +72,7 @@ public class CuboidArea implements Comparable<CuboidArea>, ICuboidArea {
      * @param area2 the area2
      * @return true, if successful
      */
-    public boolean equals(ICuboidArea area2) {
+    public boolean equals(ApiCuboidArea area2) {
 
         return worldName.equals(area2.getWorldName())
                 && x1 == area2.getX1() && y1 == area2.getY1() && z1 == area2.getZ1()
@@ -187,7 +187,7 @@ public class CuboidArea implements Comparable<CuboidArea>, ICuboidArea {
      * @param area2 the area2
      * @return true, if is collision
      */
-    public boolean isCollision(ICuboidArea area2) {
+    public boolean isCollision(ApiCuboidArea area2) {
 
         return (worldName.equals(area2.getWorldName())
                 && (Calculate.isInInterval(x1, area2.getX1(), area2.getX2())
@@ -217,7 +217,7 @@ public class CuboidArea implements Comparable<CuboidArea>, ICuboidArea {
      * @param area2 The second area to compare
      * @return the CuboidArea collision or null if there is no collision
      */
-    public CuboidArea getCollisionArea(ICuboidArea area2) {
+    public CuboidArea getCollisionArea(ApiCuboidArea area2) {
         
         // Return null if the world is not the same
         if (!worldName.equals(area2.getWorldName())) {
@@ -293,10 +293,10 @@ public class CuboidArea implements Comparable<CuboidArea>, ICuboidArea {
      * @param area2 Area to compare
      * @return A collection of outside areas
      */
-    public Collection<ICuboidArea> 
-    	getOutside(ICuboidArea area2) {
+    public Collection<ApiCuboidArea>
+        getOutside(ApiCuboidArea area2) {
 
-    	HashSet<ICuboidArea> areaList = new HashSet<ICuboidArea>();
+        HashSet<ApiCuboidArea> areaList = new HashSet<ApiCuboidArea>();
 
         if (!worldName.equals(area2.getWorldName())) {
             areaList.add(area2);

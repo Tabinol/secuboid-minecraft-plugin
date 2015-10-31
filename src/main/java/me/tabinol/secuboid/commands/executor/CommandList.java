@@ -26,9 +26,9 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.SecuboidAPI;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 
 import org.bukkit.ChatColor;
@@ -43,7 +43,7 @@ import org.bukkit.ChatColor;
 public class CommandList extends CommandThreadExec {
 
     private String worldName = null;
-    private IType type = null;
+    private ApiType type = null;
 
     /**
      * Instantiates a new command list.
@@ -76,18 +76,18 @@ public class CommandList extends CommandThreadExec {
                 }
 
             } else if (curArg.equalsIgnoreCase("type")) {
-            	
-            	// Get the category name
+                
+                // Get the category name
                 String typeName = entity.argList.getNext();
                 
                 if(typeName != null) {
-                	type = SecuboidAPI.iTypes().getType(typeName);
+                    type = ApiSecuboidSta.getTypes().getType(typeName);
                 }
                 
                 if(type == null) {
-                	throw new SecuboidCommandException("CommandList", entity.sender, "COMMAND.LAND.TYPENOTEXIST");
+                    throw new SecuboidCommandException("CommandList", entity.sender, "COMMAND.LAND.TYPENOTEXIST");
                 }
-            	
+                
             } else {
 
                 // Get the player Container
@@ -97,7 +97,7 @@ public class CommandList extends CommandThreadExec {
             }
         }
         
-        Secuboid.getThisPlugin().iPlayersCache().getUUIDWithNames(this, pc);
+        Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
@@ -105,27 +105,27 @@ public class CommandList extends CommandThreadExec {
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-    		throws SecuboidCommandException {
+            throws SecuboidCommandException {
         
-    	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
-    	// Check if the player is AdminMod or send only owned lands
-        Collection<ILand> lands;
+        // Check if the player is AdminMod or send only owned lands
+        Collection<ApiLand> lands;
 
         if (entity.playerConf.isAdminMod()) {
-            lands = Secuboid.getThisPlugin().iLands().getLands();
+            lands = Secuboid.getThisPlugin().getLands().getLands();
         } else {
-            lands = Secuboid.getThisPlugin().iLands().getLands(entity.playerConf.getPlayerContainer());
+            lands = Secuboid.getThisPlugin().getLands().getLands(entity.playerConf.getPlayerContainer());
         }
 
         // Get the list of the land
         StringBuilder stList = new StringBuilder();
         stList.append(ChatColor.YELLOW);
 
-        for (ILand land : lands) {
+        for (ApiLand land : lands) {
             if (((worldName != null && worldName.equals(land.getWorldName()))
-            		|| (type !=null && type == land.getType())
-            		|| (worldName == null && type == null))
+                    || (type !=null && type == land.getType())
+                    || (worldName == null && type == null))
                     && (pc == null || land.getOwner().equals(pc))) {
                 stList.append(land.getName()).append(" ");
             }

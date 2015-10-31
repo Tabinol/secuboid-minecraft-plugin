@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import me.tabinol.secuboidapi.parameters.IParameters;
+import me.tabinol.secuboidapi.parameters.ApiParameters;
 
 import org.bukkit.Material;
 
@@ -35,7 +35,7 @@ import org.bukkit.Material;
  *
  * @author Tabinol
  */
-public class Parameters implements IParameters {
+public class Parameters implements ApiParameters {
 
     /** The permissions. */
     private final TreeMap<String, PermissionType> permissions;
@@ -69,9 +69,9 @@ public class Parameters implements IParameters {
         specialPermMap = new EnumMap<SpecialPermPrefix, Map<Material, PermissionType>>(SpecialPermPrefix.class);
         
         for(SpecialPermPrefix pref : SpecialPermPrefix.values()) {
-        	Map<Material, PermissionType> matPerms = new EnumMap<Material, PermissionType>(Material.class);
+            Map<Material, PermissionType> matPerms = new EnumMap<Material, PermissionType>(Material.class);
             for(Material mat : Material.values()) {
-            	matPerms.put(mat, registerPermissionType(pref.name() + "_" + mat.name(), false));
+                matPerms.put(mat, registerPermissionType(pref.name() + "_" + mat.name(), false));
             }
             specialPermMap.put(pref, matPerms);
         }
@@ -102,18 +102,18 @@ public class Parameters implements IParameters {
      * @return the flag type
      */
     public final FlagType  registerFlagType(String flagName, 
-    		Object defaultValue) {
+            Object defaultValue) {
 
-    	FlagValue flagDefaultValue;
-    	
-    	// Check is default value is raw or is FlagDefaultValue
-    	if(defaultValue instanceof FlagValue) {
-    		flagDefaultValue = (FlagValue) defaultValue;
-    	} else {
-    		flagDefaultValue = new FlagValue(defaultValue);
-    	}
-    	
-    	String flagNameUpper = flagName.toUpperCase();
+        FlagValue flagDefaultValue;
+        
+        // Check is default value is raw or is FlagDefaultValue
+        if(defaultValue instanceof FlagValue) {
+            flagDefaultValue = (FlagValue) defaultValue;
+        } else {
+            flagDefaultValue = new FlagValue(defaultValue);
+        }
+        
+        String flagNameUpper = flagName.toUpperCase();
         FlagType flagType = getFlagTypeNoValid(flagNameUpper);
         flagType.setDefaultValue(flagDefaultValue);
         flagType.setRegistered();
@@ -123,14 +123,14 @@ public class Parameters implements IParameters {
         while (iFlag.hasNext()) {
            LandFlag flag = iFlag.next();
            if(flagType == flag.getFlagType()) {
-        	   String str = flag.getValue().getValueString();
-        	   flag.setValue(FlagValue.getFromString(str, flagType));
-        	   iFlag.remove();
+               String str = flag.getValue().getValueString();
+               flag.setValue(FlagValue.getFromString(str, flagType));
+               iFlag.remove();
            }
         }
         
         return flagType;
-    	
+        
     }
     
     /**
@@ -204,13 +204,13 @@ public class Parameters implements IParameters {
     }
     
     public final PermissionType getSpecialPermission(SpecialPermPrefix prefix, Material mat) {
-    	
-    	Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);
-    	
-    	if(matPerms == null) {
-    		return null;
-    	}
-    	
-    	return matPerms.get(mat);
+        
+        Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);
+        
+        if(matPerms == null) {
+            return null;
+        }
+        
+        return matPerms.get(mat);
     }
 }

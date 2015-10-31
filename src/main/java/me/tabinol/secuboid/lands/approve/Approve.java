@@ -24,11 +24,11 @@ import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboidapi.lands.ILand;
-import me.tabinol.secuboidapi.lands.areas.ICuboidArea;
-import me.tabinol.secuboidapi.lands.types.IType;
+import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboidapi.lands.types.ApiType;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
-import me.tabinol.secuboidapi.playercontainer.IPlayerContainer;
+import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 
 /**
@@ -43,19 +43,19 @@ public class Approve {
     private final String landName;
     
     /** The type */
-    private final IType type;
+    private final ApiType type;
     
     /** The removed area id. */
     private final int removedAreaId;
     
     /** The new area. */
-    private final ICuboidArea newArea;
+    private final ApiCuboidArea newArea;
     
     /** The owner. */
-    private final IPlayerContainer owner;
+    private final ApiPlayerContainer owner;
     
     /** The parent. */
-    private final ILand parent;
+    private final ApiLand parent;
     
     /** The price. */
     private final double price;
@@ -76,8 +76,8 @@ public class Approve {
      * @param price the price
      * @param dateTime the date time
      */
-    public Approve(String landName, IType type, LandAction action, int removedAreaId, 
-            ICuboidArea newArea, IPlayerContainer owner, ILand parent, double price,
+    public Approve(String landName, ApiType type, LandAction action, int removedAreaId,
+            ApiCuboidArea newArea, ApiPlayerContainer owner, ApiLand parent, double price,
             Calendar dateTime) {
         
         this.action = action;
@@ -116,9 +116,9 @@ public class Approve {
      *
      * @return the type
      */
-    public IType getType() {
-    	
-    	return type;
+    public ApiType getType() {
+        
+        return type;
     }
     
     /**
@@ -136,7 +136,7 @@ public class Approve {
      *
      * @return the new area
      */
-    public ICuboidArea getNewArea() {
+    public ApiCuboidArea getNewArea() {
         
         return newArea;
     }
@@ -146,7 +146,7 @@ public class Approve {
      *
      * @return the owner
      */
-    public IPlayerContainer getOwner() {
+    public ApiPlayerContainer getOwner() {
         
         return owner;
     }
@@ -156,7 +156,7 @@ public class Approve {
      *
      * @return the parent
      */
-    public ILand getParent() {
+    public ApiLand getParent() {
         
         return parent;
     }
@@ -187,25 +187,25 @@ public class Approve {
     public void createAction() {
         
         if(action == LandAction.AREA_ADD) {
-            Secuboid.getThisPlugin().iLands().getLand(landName).addArea(newArea, price);
+            Secuboid.getThisPlugin().getLands().getLand(landName).addArea(newArea, price);
         } else if(action == LandAction.AREA_REMOVE) {
-            Secuboid.getThisPlugin().iLands().getLand(landName).removeArea(removedAreaId);
+            Secuboid.getThisPlugin().getLands().getLand(landName).removeArea(removedAreaId);
         } else if(action == LandAction.AREA_MODIFY) {
-            Secuboid.getThisPlugin().iLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
+            Secuboid.getThisPlugin().getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
         } else if(action == LandAction.LAND_ADD) {
             try {
-                Secuboid.getThisPlugin().iLands().createLand(landName, owner, newArea, parent, price, type);
+                Secuboid.getThisPlugin().getLands().createLand(landName, owner, newArea, parent, price, type);
             } catch (SecuboidLandException ex) {
                 Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land create", ex);
             }
         } else if(action == LandAction.LAND_REMOVE) {
             try {
-                Secuboid.getThisPlugin().iLands().removeLand(landName);
+                Secuboid.getThisPlugin().getLands().removeLand(landName);
             } catch (SecuboidLandException ex) {
                 Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land remove", ex);
             }
         } else if(action == LandAction.LAND_PARENT) {
-        	Secuboid.getThisPlugin().iLands().getLand(landName).setParent(parent);
+            Secuboid.getThisPlugin().getLands().getLand(landName).setParent(parent);
         }
     }
 }

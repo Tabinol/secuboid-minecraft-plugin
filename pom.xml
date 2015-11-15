@@ -8,7 +8,6 @@
   <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
 
     <properties>
-        <build.number></build.number>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- *** Change Language version here here *** -->
         <langVersion>27</langVersion>
@@ -163,8 +162,6 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}${build.number}</finalName>
-        
         <resources>
             <resource>
                 <targetPath>.</targetPath>

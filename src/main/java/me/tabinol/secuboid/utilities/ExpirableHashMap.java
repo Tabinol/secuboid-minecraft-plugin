@@ -23,7 +23,6 @@ import me.tabinol.secuboid.Secuboid;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ExpirableTreeMap.
  *

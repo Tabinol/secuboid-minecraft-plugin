@@ -52,11 +52,10 @@ public class EcoScheduler extends BukkitRunnable {
                     // Unrent
                     ((Land) land).unSetRented();
                     try {
-                        new EcoSign((ApiLand) land, land.getRentSignLoc()).createSignForRent(
+                        new EcoSign(land, land.getRentSignLoc()).createSignForRent(
                                 land.getRentPrice(), land.getRentRenew(),
                                 land.getRentAutoRenew(), null);
                     } catch (SignException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 } else {

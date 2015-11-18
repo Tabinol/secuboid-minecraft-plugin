@@ -56,7 +56,7 @@ public class HttpProfileRepository implements ProfileRepository {
                 i++;
             } while (start < namesCount);
         } catch (Exception e) {
-            // TODO: logging and allowing consumer to react?
+            e.printStackTrace();
         }
 
         return profiles.toArray(new Profile[profiles.size()]);

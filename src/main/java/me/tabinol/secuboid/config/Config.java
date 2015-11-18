@@ -33,7 +33,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Config.
  */
@@ -125,7 +124,7 @@ public class Config {
         APPROVE,
         
         /** The false. */
-        FALSE;
+        FALSE
     }
     
     /** The allow collision. */
@@ -360,8 +359,6 @@ public class Config {
 
     /**
      * Gets the config.
-     *
-     * @return the config
      */
     private void getConfig() {
 

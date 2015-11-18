@@ -215,13 +215,12 @@ public class PlayersCache extends Thread {
                    // Pass 2 check in Minecraft website
                    if(!names.isEmpty()) {
                        Secuboid.getThisPlugin().getLog().write("HTTP profile request: " + names);
-                       Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[0]));
+                       Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[names.size()]));
                        for(Profile profile : profiles) {
                            // Put in the correct position
                            int compt = 0;
-                           boolean found = false;
-                           
-                           while(compt != length && !found) {
+
+                           while(compt != length) {
                                if(entries[compt] == null) {
                                    Secuboid.getThisPlugin().getLog().write("HTTP Found : " + profile.getName() + ", " + profile.getId());
                                    UUID uuid = stringToUUID(profile.getId());
@@ -251,7 +250,6 @@ public class PlayersCache extends Thread {
                 commandRequest.await();
                 Secuboid.getThisPlugin().getLog().write("PlayersCache Thread wake up!");
                } catch (InterruptedException e) {
-                   // TODO Auto-generated catch block
                    e.printStackTrace();
                }
         }
@@ -292,7 +290,6 @@ public class PlayersCache extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
         } finally {
             lock.unlock();

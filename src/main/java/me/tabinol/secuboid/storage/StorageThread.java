@@ -139,7 +139,6 @@ public class StorageThread extends Thread {
                 commandRequest.await();
                 Secuboid.getThisPlugin().getLog().write("Storage Thread wake up!");
                } catch (InterruptedException e) {
-                   // TODO Auto-generated catch block
                    e.printStackTrace();
                }
         }
@@ -162,7 +161,6 @@ public class StorageThread extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
         } finally {
             lock.unlock();

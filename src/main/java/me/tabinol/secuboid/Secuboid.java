@@ -46,7 +46,6 @@ import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
 
 /**
  * The Class Secuboid.
@@ -173,13 +172,13 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
 
         log = new Log();
         dependPlugin = new DependPlugin();
-        if (conf.useEconomy() == true && dependPlugin.getEconomy() != null) {
+        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
             playerMoney = new PlayerMoney();
         } else {
             playerMoney = null;
         }
         playerConf = new PlayerStaticConfig();
-        ((PlayerStaticConfig) playerConf).addAll();
+        playerConf.addAll();
         language = new Lang();
         storageThread = new StorageThread();
         lands = new Lands();
@@ -222,14 +221,6 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         }
 
         log.write(getLanguage().getMessage("ENABLE"));
-        
-        // Start Plugin Metrics
-        try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
     }
 
     /**
@@ -243,7 +234,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         if(inventoryConf != null) {
             inventoryConf.reloadConfig();
         }
-        if (conf.useEconomy() == true && dependPlugin.getEconomy() != null) {
+        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
             playerMoney = new PlayerMoney();
         } else {
             playerMoney = null;
@@ -274,7 +265,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         playersCache.stopNextRun();
         approveNotif.stopNextRun();
         storageThread.stopNextRun();
-        ((PlayerStaticConfig) playerConf).removeAll();
+        playerConf.removeAll();
     }
 
     /**

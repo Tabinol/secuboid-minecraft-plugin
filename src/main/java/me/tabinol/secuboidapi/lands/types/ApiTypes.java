@@ -30,7 +30,7 @@ public interface ApiTypes {
      * @param typeName the type name
      * @return the i type
      */
-    public ApiType addOrGetType(String typeName);
+    ApiType addOrGetType(String typeName);
     
     /**
      * Gets the type from the name. Return null if the type does not exist.
@@ -38,12 +38,12 @@ public interface ApiTypes {
      * @param typeName the type name
      * @return the type
      */
-    public ApiType getType(String typeName);
+    ApiType getType(String typeName);
     
     /**
      * Gets all the types.
      *
      * @return the types
      */
-    public Collection<ApiType> getTypes();
+    Collection<ApiType> getTypes();
 }

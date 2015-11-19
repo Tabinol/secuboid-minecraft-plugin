@@ -42,7 +42,7 @@ public interface ApiLands {
      * @return the land
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public ApiLand createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area)
+    ApiLand createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area)
             throws ApiSecuboidLandException;
     // For Land with parent
     /**
@@ -55,7 +55,23 @@ public interface ApiLands {
      * @return the land
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public ApiLand createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area, ApiLand parent)
+    ApiLand createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area, ApiLand parent)
+            throws ApiSecuboidLandException;
+
+    /**
+     * Creates the land with optional parent, price and type
+     *
+     * @param landName the land name
+     * @param owner the owner
+     * @param area the area
+     * @param parent the parent
+     * @param price the price
+     * @param type the type
+     * @return the land
+     * @throws ApiSecuboidLandException the secuboid land exception
+     */
+    ApiLand createLand(String landName, ApiPlayerContainer owner, ApiCuboidArea area,
+                           ApiLand parent, double price, ApiType type)
             throws ApiSecuboidLandException;
 
     /**
@@ -64,7 +80,7 @@ public interface ApiLands {
      * @param landName the land name
      * @return true, if is name exist
      */
-    public boolean isNameExist(String landName);
+    boolean isNameExist(String landName);
     
     /**
      * Removes the land.
@@ -73,7 +89,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(ApiLand land) throws ApiSecuboidLandException;
+    boolean removeLand(ApiLand land) throws ApiSecuboidLandException;
 
     /**
      * Removes the land.
@@ -82,7 +98,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(String landName) throws ApiSecuboidLandException;
+    boolean removeLand(String landName) throws ApiSecuboidLandException;
     
     /**
      * Removes the land.
@@ -91,7 +107,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(UUID uuid) throws ApiSecuboidLandException;
+    boolean removeLand(UUID uuid) throws ApiSecuboidLandException;
 
     /**
      * Rename land.
@@ -101,7 +117,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(String landName, String newName) throws ApiSecuboidLandException;
+    boolean renameLand(String landName, String newName) throws ApiSecuboidLandException;
     
     /**
      * Rename land.
@@ -111,7 +127,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(UUID uuid, String newName) throws ApiSecuboidLandException;
+    boolean renameLand(UUID uuid, String newName) throws ApiSecuboidLandException;
 
     /**
      * Rename land.
@@ -121,7 +137,7 @@ public interface ApiLands {
      * @return true, if successful
      * @throws ApiSecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(ApiLand land, String newName) throws ApiSecuboidLandException;
+    boolean renameLand(ApiLand land, String newName) throws ApiSecuboidLandException;
     
     /**
      * Gets the land from name.
@@ -129,7 +145,7 @@ public interface ApiLands {
      * @param landName the land name
      * @return the land
      */
-    public ApiLand getLand(String landName);
+    ApiLand getLand(String landName);
 
     /**
      * Gets the land from UUID.
@@ -137,7 +153,7 @@ public interface ApiLands {
      * @param uuid the uuid
      * @return the land
      */
-    public ApiLand getLand(UUID uuid);
+    ApiLand getLand(UUID uuid);
 
     /**
      * Gets the land from location.
@@ -145,14 +161,14 @@ public interface ApiLands {
      * @param loc the loc
      * @return the land
      */
-    public ApiLand getLand(Location loc);
+    ApiLand getLand(Location loc);
     
     /**
      * Gets the lands.
      *
      * @return the lands
      */
-    public Collection<ApiLand> getLands();
+    Collection<ApiLand> getLands();
     
     /**
      * Gets the land or outside area (Dummy Land World).
@@ -160,7 +176,7 @@ public interface ApiLands {
      * @param loc the loc
      * @return the land or outside area
      */
-    public ApiDummyLand getLandOrOutsideArea(Location loc);
+    ApiDummyLand getLandOrOutsideArea(Location loc);
 
     /**
      * Gets the outside area (Dummy Land World).
@@ -168,7 +184,7 @@ public interface ApiLands {
      * @param loc the loc
      * @return the outside area
      */
-    public ApiDummyLand getOutsideArea(Location loc);
+    ApiDummyLand getOutsideArea(Location loc);
 
     /**
      * Gets the outside area (Dummy Land World).
@@ -176,7 +192,7 @@ public interface ApiLands {
      * @param worldName the world name
      * @return the outside area
      */
-    public ApiDummyLand getOutsideArea(String worldName);
+    ApiDummyLand getOutsideArea(String worldName);
 
     /**
      * Gets the lands (Dummy Land World).
@@ -184,7 +200,7 @@ public interface ApiLands {
      * @param loc the loc
      * @return the lands
      */
-    public Collection<ApiLand> getLands(Location loc);
+    Collection<ApiLand> getLands(Location loc);
 
     /**
      * Gets the lands.
@@ -192,7 +208,7 @@ public interface ApiLands {
      * @param owner the owner
      * @return the lands
      */
-    public Collection<ApiLand> getLands(ApiPlayerContainer owner);
+    Collection<ApiLand> getLands(ApiPlayerContainer owner);
 
 
     /**
@@ -201,7 +217,7 @@ public interface ApiLands {
      * @param type the type
      * @return the lands
      */
-    public Collection<ApiLand> getLands(ApiType type);
+    Collection<ApiLand> getLands(ApiType type);
     
     /**
      * Gets the cuboid areas.
@@ -209,7 +225,7 @@ public interface ApiLands {
      * @param loc the loc
      * @return the cuboid areas
      */
-    public Collection<ApiCuboidArea> getCuboidAreas(Location loc);
+    Collection<ApiCuboidArea> getCuboidAreas(Location loc);
     
     /**
      * Gets the cuboid area.
@@ -217,14 +233,14 @@ public interface ApiLands {
      * @param loc the loc
      * @return the cuboid area
      */
-    public ApiCuboidArea getCuboidArea(Location loc);
+    ApiCuboidArea getCuboidArea(Location loc);
     
     /**
      * Gets the lands for sale.
      *
      * @return the lands for sale
      */
-    public Collection<ApiLand> getForSale();
+    Collection<ApiLand> getForSale();
 
     
     /**
@@ -232,5 +248,5 @@ public interface ApiLands {
      *
      * @return the lands for rent
      */
-    public Collection<ApiLand> getForRent();
+    Collection<ApiLand> getForRent();
 }

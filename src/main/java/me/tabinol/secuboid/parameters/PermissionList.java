@@ -33,10 +33,10 @@ public enum PermissionList {
     BUILD(true),
     
     /** The build place. */
-    BUILD_PLACE(true),
+    BUILD_PLACE(true, "BUILD"),
     
     /** The build destroy. */
-    BUILD_DESTROY(true),
+    BUILD_DESTROY(true, "BUILD"),
     
     /** The drop. */
     DROP(true),
@@ -51,67 +51,67 @@ public enum PermissionList {
     OPEN(true),
     
     /** The open craft. */
-    OPEN_CRAFT(true),
+    OPEN_CRAFT(true, "OPEN"),
     
     /** The open brew. */
-    OPEN_BREW(true),
+    OPEN_BREW(true, "OPEN"),
     
     /** The open furnace. */
-    OPEN_FURNACE(true),
+    OPEN_FURNACE(true, "OPEN"),
     
     /** The open chest. */
-    OPEN_CHEST(true),
+    OPEN_CHEST(true, "OPEN"),
     
     /** The open enderchest. */
-    OPEN_ENDERCHEST(true),
+    OPEN_ENDERCHEST(true, "OPEN"),
     
     /** The open beacon. */
-    OPEN_BEACON(true),
+    OPEN_BEACON(true, "OPEN"),
     
     /** The open hopper. */
-    OPEN_HOPPER(true),
+    OPEN_HOPPER(true, "OPEN"),
     
     /** The open dropper. */
-    OPEN_DROPPER(true),
+    OPEN_DROPPER(true, "OPEN"),
     
     /** The open dispenser. */
-    OPEN_DISPENSER(true),
+    OPEN_DISPENSER(true, "OPEN"),
     
     /** The open jukebox. */
-    OPEN_JUKEBOX(true),
+    OPEN_JUKEBOX(true, "OPEN"),
     
     /** The use. */
-    USE(true),
+    USE(true, "USE"),
     
     /** The use door. */
-    USE_DOOR(true),
+    USE_DOOR(true, "USE"),
     
     /** The use button. */
-    USE_BUTTON(true),
+    USE_BUTTON(true, "USE"),
     
     /** The use lever. */
-    USE_LEVER(true),
+    USE_LEVER(true, "USE"),
     
     /** The use pressureplate. */
-    USE_PRESSUREPLATE(true),
+    USE_PRESSUREPLATE(true, "USE"),
     
     /** The use trappedchest. */
-    USE_TRAPPEDCHEST(true),
+    USE_TRAPPEDCHEST(true, "USE"),
     
     /** The use string. */
-    USE_STRING(true),
+    USE_STRING(true, "USE"),
     
     /** The use enchanting table **/
-    USE_ENCHANTTABLE(true),
+    USE_ENCHANTTABLE(true, "USE"),
     
     /** The use anvil **/
-    USE_ANVIL(true),
+    USE_ANVIL(true, "USE"),
     
     /** The mob spawner **/
-    USE_MOBSPAWNER(true),
+    USE_MOBSPAWNER(true, "USE"),
     
     /** For daylight detector **/
-    USE_LIGHTDETECTOR(true), 
+    USE_LIGHTDETECTOR(true, "USE"),
     
     /** The animal kill. */
     ANIMAL_KILL(true),
@@ -221,16 +221,31 @@ public enum PermissionList {
     /** The Permission type. */
     private PermissionType PermissionType;
 
+    /** The parent permission name */
+    private String parent;
+
     /**
      * Instantiates a new permission list.
      *
      * @param baseValue the base value
      */
-    private PermissionList(boolean baseValue) {
+    PermissionList(boolean baseValue) {
 
         this.baseValue = baseValue;
+        parent = null;
     }
-    
+
+    /**
+     * Instantiates a new permission list.
+     *
+     * @param baseValue the base value
+     */
+    PermissionList(boolean baseValue, String parent) {
+
+        this.baseValue = baseValue;
+        this.parent = parent;
+    }
+
     /**
      * Sets the permission type.
      *
@@ -249,5 +264,15 @@ public enum PermissionList {
     public PermissionType getPermissionType() {
         
         return PermissionType;
+    }
+
+    /**
+     * Gets the parent permission.
+     *
+     * @return the parent
+     */
+    public String getParent() {
+
+        return parent;
     }
 }

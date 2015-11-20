@@ -277,6 +277,12 @@ public class DummyLand implements ApiDummyLand {
             }
             if (value) {
                 ApiPermission perm = permissionEntry.getValue().get(pt);
+
+                // take the parent if the permission does not exist
+                if(perm == null && pt.hasParent()) {
+                    perm = permissionEntry.getValue().get(pt.getParent());
+                }
+
                 if (perm != null) {
                     Secuboid.getThisPlugin().getLog().write("Container: " + permissionEntry.getKey().toString() + ", PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Heritable: " + perm.isHeritable());
                     if ((onlyInherit && perm.isHeritable()) || !onlyInherit) {
@@ -290,7 +296,7 @@ public class DummyLand implements ApiDummyLand {
         if(!onlyInherit && this instanceof Land) {
 
             return ((Lands) ApiSecuboidSta.getLands()).getDefaultConf(((Land) this).getType()).getPermission(
-                    player, pt, onlyInherit, (Land) this);
+                    player, pt, false, (Land) this);
         }
         
         return null;
@@ -406,7 +412,7 @@ public class DummyLand implements ApiDummyLand {
         // Check in default flags
         if(!onlyInherit && this instanceof Land) {
 
-            return ((Lands) ApiSecuboidSta.getLands()).getDefaultConf(((Land) this).getType()).getFlag(ft, onlyInherit);
+            return ((Lands) ApiSecuboidSta.getLands()).getDefaultConf(((Land) this).getType()).getFlag(ft, false);
         }
 
         return null;
@@ -418,7 +424,7 @@ public class DummyLand implements ApiDummyLand {
     protected void doSave() {
 
         if (this instanceof Land) {
-            ((Land) this).doSave();
+            this.doSave();
         }
     }
 }

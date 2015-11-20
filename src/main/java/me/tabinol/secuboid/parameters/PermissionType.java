@@ -28,19 +28,24 @@ public class PermissionType extends ParameterType implements ApiPermissionType {
     
     /** The default value. */
     private boolean defaultValue;
+
+    /** If the permission has a parent */
+    private final PermissionType parent;
     
     /**
-     * Instantiates a new permission type.
+     * Instantiates a new permission type with parent.
      *
      * @param permissionName the permission name
      * @param defaultValue the default value
+     * @param parent the parent permission (or null)
      */
-    PermissionType(String permissionName, boolean defaultValue) {
-        
+    PermissionType(String permissionName, boolean defaultValue, PermissionType parent) {
+
         super(permissionName);
         this.defaultValue = defaultValue;
+        this.parent = parent;
     }
-    
+
     /**
      * Sets the default value.
      *
@@ -59,5 +64,23 @@ public class PermissionType extends ParameterType implements ApiPermissionType {
     public boolean getDefaultValue() {
         
         return defaultValue;
+    }
+
+    /**
+     * Gets if there is a parent
+     * @return true if there is a parent
+     */
+    public boolean hasParent() {
+
+        return parent != null;
+    }
+
+    /**
+     * Gets the parent permission type
+     * @return the parent permission type
+     */
+    public PermissionType getParent() {
+
+        return parent;
     }
 }

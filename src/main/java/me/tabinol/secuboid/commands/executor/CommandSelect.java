@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class CommandSelect.
  */
-@InfoCommand(name="select")
+@InfoCommand(name="select", aliases={"sel"})
 public class CommandSelect extends CommandExec {
 
     /** The player. */
@@ -107,7 +107,7 @@ public class CommandSelect extends CommandExec {
             if (!argList.isLast()) {
 
                 curArg = argList.getNext();
-                if (curArg.equalsIgnoreCase("worldedit")) {
+                if (curArg.equalsIgnoreCase("worldedit") || curArg.equalsIgnoreCase("wd")) {
                     if (Secuboid.getThisPlugin().getDependPlugin().getWorldEdit() == null) {
                         throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
                     }

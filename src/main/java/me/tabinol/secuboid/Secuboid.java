@@ -161,7 +161,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         thisPlugin = this;
         BKVersion.initVersion();
         ApiSecuboidSta.initSecuboidPluginAccess();
-        parameters = new Parameters();
+        parameters = new Parameters(); // Must be before the configuration!
         types = new Types();
         conf = new Config();
 

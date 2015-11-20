@@ -8,7 +8,7 @@ softdepend: [WorldEdit, Essentials, VanishNoPacket]
 commands:
    secuboid:
       description: Secuboid Command
-      aliases: [sd, secuboid, fd, claim]
+      aliases: [sd, factoid, fd]
       usage: /secuboid help
       permission: secuboid.use
       permission-message: you don't have permission for that!

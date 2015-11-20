@@ -93,24 +93,24 @@ public class Config {
     public boolean isMultipleInventories() { return multipleInventories; }
 
     /** The info item. */
-    private int infoItem;
+    private Material infoItem;
     
     /**
      * Gets the info item.
      *
      * @return the info item
      */
-    public int getInfoItem() { return infoItem; }
+    public Material getInfoItem() { return infoItem; }
     
     /** The select item. */
-    private int selectItem;
+    private Material selectItem;
     
     /**
      * Gets the select item.
      *
      * @return the select item
      */
-    public int getSelectItem() { return selectItem; }
+    public Material getSelectItem() { return selectItem; }
     
     /**
      * The Enum AllowCollisionType.
@@ -367,8 +367,25 @@ public class Config {
         lang = config.getString("General.Lang", "english");
         useEconomy = config.getBoolean("General.UseEconomy", false);
         multipleInventories = config.getBoolean("General.MultipleInventories", false);
-        infoItem = config.getInt("General.InfoItem", 352);
-        selectItem = config.getInt("General.SelectItem", 367);
+
+        String infoItemS = config.getString("General.InfoItem", "BONE");
+        try {
+            infoItem = Material.valueOf(infoItemS.toUpperCase());
+        } catch(IllegalArgumentException ex) {
+            Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
+                    "Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
+            infoItem = Material.BONE;
+        }
+
+        String selectItemS = config.getString("General.SelectItem", "ROTTEN_FLESH");
+        try {
+            selectItem = Material.valueOf(selectItemS.toUpperCase());
+        } catch(IllegalArgumentException ex) {
+            Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
+                    "Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
+            selectItem = Material.ROTTEN_FLESH;
+        }
+
         // Remove error if the parameter is not here (AllowCollision)
         try {
             allowCollision = AllowCollisionType.valueOf(config.getString("Lands.AllowCollision", "approve").toUpperCase());

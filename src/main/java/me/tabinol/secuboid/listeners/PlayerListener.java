@@ -246,7 +246,6 @@ public class PlayerListener extends CommonListener implements Listener {
      * @param event
      *            the events
      */
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
 
@@ -264,10 +263,10 @@ public class PlayerListener extends CommonListener implements Listener {
 
         // For infoItem
         if (player.getItemInHand() != null && action == Action.LEFT_CLICK_BLOCK
-                && player.getItemInHand().getTypeId() == conf.getInfoItem()) {
+                && player.getItemInHand().getType() == conf.getInfoItem()) {
             try {
-                new CommandInfo(player, 
-                        (CuboidArea) Secuboid.getThisPlugin().getLands().getCuboidArea(
+                new CommandInfo(player,
+                        Secuboid.getThisPlugin().getLands().getCuboidArea(
                         event.getClickedBlock().getLocation()))
                         .commandExecute();
             } catch (SecuboidCommandException ex) {
@@ -279,7 +278,7 @@ public class PlayerListener extends CommonListener implements Listener {
             // For Select
         } else if (player.getItemInHand() != null
                 && action == Action.LEFT_CLICK_BLOCK
-                && player.getItemInHand().getTypeId() == conf.getSelectItem()) {
+                && player.getItemInHand().getType() == conf.getSelectItem()) {
 
             try {
                 new CommandSelect(player, new ArgList(new String[] { "here" },
@@ -294,7 +293,7 @@ public class PlayerListener extends CommonListener implements Listener {
             // For Select Cancel
         } else if (player.getItemInHand() != null
                 && action == Action.RIGHT_CLICK_BLOCK
-                && player.getItemInHand().getTypeId() == conf.getSelectItem()
+                && player.getItemInHand().getType() == conf.getSelectItem()
                 && (entry = playerConf.get(player)).getSelection()
                         .hasSelection()) {
 
@@ -321,13 +320,13 @@ public class PlayerListener extends CommonListener implements Listener {
                     if (trueLand.getSaleSignLoc() != null
                             && trueLand.getSaleSignLoc().getBlock().equals(loc.getBlock())) {
                         event.setCancelled(true);
-                        new CommandEcosign(playerConf.get(player), (Land) trueLand,
+                        new CommandEcosign(playerConf.get(player), trueLand,
                                 action, SignType.SALE).commandExecute();
                         
                     } else if (trueLand.getRentSignLoc() != null
                             && trueLand.getRentSignLoc().getBlock().equals(loc.getBlock())) {
                         event.setCancelled(true);
-                        new CommandEcosign(playerConf.get(player), (Land)trueLand,
+                        new CommandEcosign(playerConf.get(player), trueLand,
                                 action, SignType.RENT).commandExecute();
                     }
                 } catch (SecuboidCommandException ex) {
@@ -558,7 +557,7 @@ public class PlayerListener extends CommonListener implements Listener {
         if (!playerConf.get(event.getPlayer()).isAdminMod()
                 && event.getRightClicked() instanceof ItemFrame) {
 
-            Player player = (Player) event.getPlayer();
+            Player player = event.getPlayer();
             ApiDummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
                     event.getRightClicked().getLocation());
 
@@ -758,7 +757,7 @@ public class PlayerListener extends CommonListener implements Listener {
                                     land, player,
                                     PermissionList.HORSE_KILL
                                             .getPermissionType())) || (entity instanceof Tameable
-                            && ((Tameable) entity).isTamed() == true
+                            && ((Tameable) entity).isTamed()
                             && ((Tameable) entity).getOwner() != player && !checkPermission(
                                 land, player,
                                 PermissionList.TAMED_KILL
@@ -1087,7 +1086,7 @@ public class PlayerListener extends CommonListener implements Listener {
         land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
 
         if (newPlayer) {
-            entry.setLastLand((DummyLand) (landOld = land));
+            entry.setLastLand(landOld = land);
         } else {
             landOld = entry.getLastLand();
         }
@@ -1096,7 +1095,7 @@ public class PlayerListener extends CommonListener implements Listener {
             // First parameter : If it is a new player, it is null, if not new
             // player, it is "landOld"
             landEvent = new PlayerLandChangeEvent(newPlayer ? null : (DummyLand) landOld,
-                    (DummyLand) land, player, entry.getLastLoc(), loc, isTp);
+                    land, player, entry.getLastLoc(), loc, isTp);
             pm.callEvent(landEvent);
             
             if (landEvent.isCancelled()) {
@@ -1104,7 +1103,7 @@ public class PlayerListener extends CommonListener implements Listener {
                     ((PlayerTeleportEvent) event).setCancelled(true);
                     return;
                 }
-                if (land == landOld || newPlayer) {
+                if (land == landOld) {
                     player.teleport(player.getWorld().getSpawnLocation());
                 } else {
                     Location retLoc = entry.getLastLoc();
@@ -1115,7 +1114,7 @@ public class PlayerListener extends CommonListener implements Listener {
                 entry.setTpCancel(true);
                 return;
             }
-            entry.setLastLand((me.tabinol.secuboid.lands.DummyLand) land);
+            entry.setLastLand(land);
 
             // Update player in the lands
             if (landOld instanceof ApiLand && landOld != land) {

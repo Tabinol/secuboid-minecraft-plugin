@@ -24,8 +24,10 @@ General:                             # ----General Config----
   # extra configuration.
   FlyAndCreative: false # Need restart if changed
 
-  InfoItem: 352                      # Item that give Land information
-  SelectItem: 367                    # Item that give Land selection
+  # For material list:
+  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+  InfoItem: BONE                     # Item that give Land information
+  SelectItem: ROTTEN_FLESH           # Item that give Land selection
 
 # Lands configuration
 Lands:

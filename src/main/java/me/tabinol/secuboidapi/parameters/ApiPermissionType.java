@@ -28,21 +28,21 @@ public interface ApiPermissionType {
      *
      * @return the name
      */
-    public String getName();
+    String getName();
     
     /**
      * Gets the default value.
      *
      * @return the default value
      */
-    public boolean getDefaultValue();
+    boolean getDefaultValue();
 
     /**
      * Gets the prints format.
      *
      * @return the prints the format
      */
-    public String getPrint();
+    String getPrint();
     
     /**
      * Checks if is the permission type is registered from Secuboid or any other
@@ -50,6 +50,17 @@ public interface ApiPermissionType {
      *
      * @return true, if is registered
      */
-    public boolean isRegistered();
-    
+    boolean isRegistered();
+
+    /**
+     * Gets if there is a parent
+     * @return true if there is a parent
+     */
+    boolean hasParent();
+
+    /**
+     * Gets the parent permission type
+     * @return the parent permission type
+     */
+    ApiPermissionType getParent();
 }

@@ -72,12 +72,10 @@ public class PlayerListener18 extends CommonListener implements Listener {
             
             // Remove and add an item from an armor stand
             if(BKVersion.isArmorStand(et)) {
-                if (((!checkPermission(land, event.getPlayer(), PermissionList.BUILD.getPermissionType())
-                        || !checkPermission(land, event.getPlayer(), PermissionList.BUILD_DESTROY.getPermissionType()))
+                if ((!checkPermission(land, event.getPlayer(), PermissionList.BUILD_DESTROY.getPermissionType())
                         && mat == Material.AIR)
-                        || ((!checkPermission(land, event.getPlayer(), PermissionList.BUILD.getPermissionType())
-                                || !checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType()))
-                                && mat != Material.AIR)) {
+                        || (!checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType())
+                        && mat != Material.AIR)) {
                     messagePermission(player);
                     event.setCancelled(true);
                 }

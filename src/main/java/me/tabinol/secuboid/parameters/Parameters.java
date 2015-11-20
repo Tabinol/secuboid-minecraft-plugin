@@ -60,7 +60,13 @@ public class Parameters implements ApiParameters {
 
         // Add flags and permissions
         for (PermissionList permissionList : PermissionList.values()) {
-            permissionList.setPermissionType(registerPermissionType(permissionList.name(), permissionList.baseValue));
+            if(permissionList.getParent() != null) {
+                permissionList.setPermissionType(registerPermissionType(permissionList.name(),
+                        permissionList.baseValue, getPermissionType(permissionList.getParent())));
+            } else {
+                permissionList.setPermissionType(registerPermissionType(permissionList.name(),
+                        permissionList.baseValue));
+            }
         }
         for (FlagList flagList : FlagList.values()) {
             flagList.setFlagType(registerFlagType(flagList.name(), flagList.baseValue));
@@ -86,11 +92,25 @@ public class Parameters implements ApiParameters {
      */
     public final PermissionType registerPermissionType(String permissionName, boolean defaultValue) {
 
+        return registerPermissionType(permissionName, defaultValue, null);
+    }
+
+    /**
+     * Register permission type.
+     *
+     * @param permissionName the permission name
+     * @param defaultValue the default value
+     * @param parent the parent permission
+     * @return the permission type
+     */
+    private PermissionType registerPermissionType(String permissionName, boolean defaultValue,
+                                                        PermissionType parent) {
+
         String permissionNameUpper = permissionName.toUpperCase();
-        PermissionType permissionType = getPermissionTypeNoValid(permissionNameUpper);
+        PermissionType permissionType = getPermissionTypeNoValid(permissionNameUpper, parent);
         permissionType.setDefaultValue(defaultValue);
         permissionType.setRegistered();
-        
+
         return permissionType;
     }
 
@@ -175,10 +195,22 @@ public class Parameters implements ApiParameters {
      */
     public final PermissionType getPermissionTypeNoValid(String permissionName) {
 
+        return getPermissionTypeNoValid(permissionName, null);
+    }
+
+    /**
+     * Gets the permission type no valid.
+     *
+     * @param permissionName the permission name
+     * @param parent the parent permission (or null)
+     * @return the permission type no valid
+     */
+    public final PermissionType getPermissionTypeNoValid(String permissionName, PermissionType parent) {
+
         PermissionType pt = permissions.get(permissionName);
         
         if(pt == null) {
-            pt = new PermissionType(permissionName, false);
+            pt = new PermissionType(permissionName, false, parent);
             permissions.put(permissionName, pt);
         }
         
@@ -196,7 +228,7 @@ public class Parameters implements ApiParameters {
         FlagType ft = flags.get(flagName);
         
         if(ft == null) {
-            ft = new FlagType(flagName, new String());
+            ft = new FlagType(flagName, "");
             flags.put(flagName, ft);
         }
         

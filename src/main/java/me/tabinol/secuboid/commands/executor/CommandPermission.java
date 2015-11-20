@@ -44,7 +44,7 @@ import org.bukkit.ChatColor;
 /**
  * The Class CommandPermission.
  */
-@InfoCommand(name="permission", forceParameter=true)
+@InfoCommand(name="permission", aliases={"perm"}, forceParameter=true)
 public class CommandPermission extends CommandThreadExec {
 
     private LinkedList<ApiDummyLand> precDL; // Listed Precedent lands (no duplicates)
@@ -94,7 +94,7 @@ public class CommandPermission extends CommandThreadExec {
             
             // For default Type
             if(land.getType() != null) {
-                stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+                stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
                         land.getType().getName())).append(Config.NEWLINE);
                 importDisplayPermsFrom(((Lands) ApiSecuboidSta.getLands()).getDefaultConf(land.getType()), false);
             }
@@ -102,13 +102,13 @@ public class CommandPermission extends CommandThreadExec {
             // For parent (if exist)
             ApiLand parLand = land;
             while((parLand = parLand.getParent()) != null) {
-                stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
+                stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
                         ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
                 importDisplayPermsFrom(parLand, true);
             }
             
             // For world
-            stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
+            stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
                     land.getWorldName())).append(Config.NEWLINE);
             importDisplayPermsFrom(((Lands) ApiSecuboidSta.getLands()).getOutsideArea(land.getWorldName()), true);
             

@@ -36,7 +36,7 @@ import org.bukkit.ChatColor;
 /**
  * The Class CommandResident.
  */
-@InfoCommand(name="resident", forceParameter=true)
+@InfoCommand(name="resident", aliases={"res"}, forceParameter=true)
 public class CommandResident extends CommandThreadExec {
 
     private String fonction;

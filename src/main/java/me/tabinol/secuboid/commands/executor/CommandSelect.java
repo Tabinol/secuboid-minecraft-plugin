@@ -107,7 +107,7 @@ public class CommandSelect extends CommandExec {
             if (!argList.isLast()) {
 
                 curArg = argList.getNext();
-                if (curArg.equalsIgnoreCase("worldedit") || curArg.equalsIgnoreCase("wd")) {
+                if (curArg.equalsIgnoreCase("worldedit") || curArg.equalsIgnoreCase("we")) {
                     if (Secuboid.getThisPlugin().getDependPlugin().getWorldEdit() == null) {
                         throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
                     }

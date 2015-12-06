@@ -27,88 +27,88 @@ package me.tabinol.secuboid.parameters;
 public enum FlagList {
     
     /** The undefined. */
-    UNDEFINED(new String()),
+    UNDEFINED(""),
     
     /** The firespread. */
-    FIRESPREAD(new Boolean(true)),
+    FIRESPREAD(true),
     
     /** The fire. */
-    FIRE(new Boolean(true)),
+    FIRE(true),
     
     /** The explosion. */
-    EXPLOSION(new Boolean(true)),
+    EXPLOSION(true),
     
     /** The creeper explosion. */
-    CREEPER_EXPLOSION(new Boolean(true)),
+    CREEPER_EXPLOSION(true),
     
     /** The tnt explosion. */
-    TNT_EXPLOSION(new Boolean(true)),
+    TNT_EXPLOSION(true),
     
     /** The creeper damage. */
-    CREEPER_DAMAGE(new Boolean(true)),
+    CREEPER_DAMAGE(true),
     
     /** The enderman damage. */
-    ENDERMAN_DAMAGE(new Boolean(true)),
+    ENDERMAN_DAMAGE(true),
     
     /** The wither damage. */
-    WITHER_DAMAGE(new Boolean(true)),
+    WITHER_DAMAGE(true),
     
     /** The ghast damage. */
-    GHAST_DAMAGE(new Boolean(true)),
+    GHAST_DAMAGE(true),
     
     /** The enderdragon damage. */
-    ENDERDRAGON_DAMAGE(new Boolean(true)),
+    ENDERDRAGON_DAMAGE(true),
     
     /** The tnt damage. */
-    TNT_DAMAGE(new Boolean(true)),
+    TNT_DAMAGE(true),
     
     /** The mob spawn. */
-    MOB_SPAWN(new Boolean(true)),
+    MOB_SPAWN(true),
     
     /** The animal spawn. */
-    ANIMAL_SPAWN(new Boolean(true)),
+    ANIMAL_SPAWN(true),
     
     /** The leaves decay */
-    LEAF_DECAY(new Boolean(true)),
+    LEAF_DECAY(true),
     
     /** The crop trample */
-    CROP_TRAMPLE(new Boolean(true)),
+    CROP_TRAMPLE(true),
 
     /** The lava flow */
-    LAVA_FLOW(new Boolean(true)),
+    LAVA_FLOW(true),
 
     /** The water flow */
-    WATER_FLOW(new Boolean(true)),
+    WATER_FLOW(true),
 
     /** The full pvp. */
-    FULL_PVP(new Boolean(true)),
+    FULL_PVP(true),
     
     /** The faction pvp. */
-    FACTION_PVP(new Boolean(true)),
+    FACTION_PVP(true),
 
     /** The message join. */
-    MESSAGE_JOIN(new String()),
+    MESSAGE_JOIN(""),
     
     /** The message quit. */
-    MESSAGE_QUIT(new String()),
+    MESSAGE_QUIT(""),
     
     /** The eco block price. */
-    ECO_BLOCK_PRICE(new Double(0)),
+    ECO_BLOCK_PRICE(0d),
     
     /** The exclude commands. */
     EXCLUDE_COMMANDS(new String[] {}),
     
     /**  The spawn and teleport point. */
-    SPAWN(new String("")),
+    SPAWN(""),
     
     /** Inherit from parent owner */
-    INHERIT_OWNER(new Boolean(true)),
+    INHERIT_OWNER(true),
     
     /** Inherit from parent residents */
-    INHERIT_RESIDENTS(new Boolean(true)),
+    INHERIT_RESIDENTS(true),
     
     /** Inherit from parent tenant */
-    INHERIT_TENANT(new Boolean(true));
+    INHERIT_TENANT(true);
 
     /** The base value. */
     final FlagValue baseValue;
@@ -121,7 +121,7 @@ public enum FlagList {
      *
      * @param baseValue the base value
      */
-    private FlagList(Object baseValue) {
+    FlagList(Object baseValue) {
 
         this.baseValue = new FlagValue(baseValue);
     }

@@ -16,6 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package me.tabinol.secuboid.lands.areas;
 
 import java.util.Collection;
@@ -24,25 +25,18 @@ import java.util.HashSet;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboidapi.lands.areas.ApiAreaType;
 import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 
+import me.tabinol.secuboidapi.lands.areas.ApiCylinderArea;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 
 /**
- * The Class CuboidArea.
+ * Represents a Cuboid area type.
  */
-public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
-
-    /** The world name. */
-    private String worldName;
-    
-    /** The z2. */
-    private int x1, y1, z1, x2, y2, z2;
-    
-    /** The land. */
-    private Land land = null;
+public class CuboidArea extends Area implements ApiCuboidArea {
 
     /**
      * Instantiates a new cuboid area.
@@ -57,26 +51,7 @@ public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
      */
     public CuboidArea(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 
-        this.worldName = worldName;
-        this.x1 = Calculate.lowerInt(x1, x2);
-        this.x2 = Calculate.greaterInt(x1, x2);
-        this.y1 = Calculate.lowerInt(y1, y2);
-        this.y2 = Calculate.greaterInt(y1, y2);
-        this.z1 = Calculate.lowerInt(z1, z2);
-        this.z2 = Calculate.greaterInt(z1, z2);
-    }
-
-    /**
-     * Equals.
-     *
-     * @param area2 the area2
-     * @return true, if successful
-     */
-    public boolean equals(ApiCuboidArea area2) {
-
-        return worldName.equals(area2.getWorldName())
-                && x1 == area2.getX1() && y1 == area2.getY1() && z1 == area2.getZ1()
-                && x2 == area2.getX2() && y2 == area2.getY2() && z2 == area2.getZ2();
+        super(ApiAreaType.CUBOID, worldName, x1, y1, z1, x2, y2, z2);
     }
 
     /**
@@ -89,98 +64,16 @@ public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
         return new CuboidArea(worldName, x1, y1, z1, x2, y2, z2);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(CuboidArea t) {
-
-        int worldCompare = worldName.compareTo(t.worldName);
-        if (worldCompare != 0) {
-            return worldCompare;
-        }
-        if (x1 < t.x1) {
-            return -1;
-        }
-        if (x1 > t.x1) {
-            return 1;
-        }
-        if (z1 < t.z1) {
-            return -1;
-        }
-        if (z1 > t.z1) {
-            return 1;
-        }
-        if (y1 < t.y1) {
-            return -1;
-        }
-        if (y1 > t.y1) {
-            return 1;
-        }
-        if (x2 < t.x2) {
-            return -1;
-        }
-        if (x2 > t.x2) {
-            return 1;
-        }
-        if (z2 < t.z2) {
-            return -1;
-        }
-        if (z2 > t.z2) {
-            return 1;
-        }
-        if (y2 < t.y2) {
-            return -1;
-        }
-        if (y2 > t.y2) {
-            return 1;
-        }
-        return 0;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-
-        return worldName + ":" + x1 + ":" + y1 + ":" + z1 + ":" + x2 + ":" + y2 + ":" + z2;
-    }
-
     /**
-     * Gets the prints the.
+     * Gets the volume.
      *
-     * @return the prints the
+     * @return the volume (in block)
      */
-    public String getPrint() {
+    public long getVolume() {
 
-        return worldName + ":(" + x1 + ", " + y1 + ", " + z1 + ")-(" + x2 + ", " + y2 + ", " + z2 + ")";
-    }
-
-    /**
-     * Gets the key.
-     *
-     * @return the key
-     */
-    public Integer getKey() {
-
-        if (land != null) {
-            return land.getAreaKey(this);
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets the total block.
-     *
-     * @return the total block
-     */
-    public long getTotalBlock() {
-        
         return (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1);
     }
-    
+
     /**
      * Checks if is collision.
      *
@@ -196,6 +89,17 @@ public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
                 || Calculate.isInInterval(area2.getY1(), y1, y2)))
                 && ((Calculate.isInInterval(z1, area2.getZ1(), area2.getZ2())
                 || Calculate.isInInterval(area2.getZ1(), z1, z2)));
+    }
+
+    /**
+     * Checks if is collision with Cylinder.
+     *
+     * @param area2 the area2
+     * @return true, if is collision
+     */
+    public boolean isCollision(ApiCylinderArea area2) {
+
+        return area2.isCollision(this);
     }
 
     /**
@@ -397,194 +301,5 @@ public class CuboidArea implements Comparable<CuboidArea>, ApiCuboidArea {
         }
 
         return areaList;
-    }
-    
-    /**
-     * Sets the land.
-     *
-     * @param land the new land
-     */
-    public final void setLand(Land land) {
-
-        this.land = land;
-    }
-
-    /**
-     * Sets the world name.
-     *
-     * @param worldName the new world name
-     */
-    public void setWorldName(String worldName) {
-
-        this.worldName = worldName;
-    }
-
-    /**
-     * Sets the x1.
-     *
-     * @param x1 the new x1
-     */
-    public void setX1(int x1) {
-
-        this.x1 = x1;
-    }
-
-    /**
-     * Sets the y1.
-     *
-     * @param y1 the new y1
-     */
-    public void setY1(int y1) {
-
-        this.y1 = y1;
-    }
-
-    /**
-     * Sets the z1.
-     *
-     * @param z1 the new z1
-     */
-    public void setZ1(int z1) {
-
-        this.z1 = z1;
-    }
-
-    /**
-     * Sets the x2.
-     *
-     * @param x2 the new x2
-     */
-    public void setX2(int x2) {
-
-        this.x2 = x2;
-    }
-
-    /**
-     * Sets the y2.
-     *
-     * @param y2 the new y2
-     */
-    public void setY2(int y2) {
-
-        this.y2 = y2;
-    }
-
-    /**
-     * Sets the z2.
-     *
-     * @param z2 the new z2
-     */
-    public void setZ2(int z2) {
-
-        this.z2 = z2;
-    }
-
-    /**
-     * Gets the land.
-     *
-     * @return the land
-     */
-    public Land getLand() {
-
-        return land;
-    }
-
-    /**
-     * Gets the world name.
-     *
-     * @return the world name
-     */
-    public String getWorldName() {
-
-        return worldName;
-    }
-
-    /**
-     * Gets the word.
-     *
-     * @return the word
-     */
-    public World getWord() {
-
-        return Secuboid.getThisPlugin().getServer().getWorld(worldName);
-    }
-
-    /**
-     * Gets the x1.
-     *
-     * @return the x1
-     */
-    public int getX1() {
-
-        return x1;
-    }
-
-    /**
-     * Gets the y1.
-     *
-     * @return the y1
-     */
-    public int getY1() {
-
-        return y1;
-    }
-
-    /**
-     * Gets the z1.
-     *
-     * @return the z1
-     */
-    public int getZ1() {
-
-        return z1;
-    }
-
-    /**
-     * Gets the x2.
-     *
-     * @return the x2
-     */
-    public int getX2() {
-
-        return x2;
-    }
-
-    /**
-     * Gets the y2.
-     *
-     * @return the y2
-     */
-    public int getY2() {
-
-        return y2;
-    }
-
-    /**
-     * Gets the z2.
-     *
-     * @return the z2
-     */
-    public int getZ2() {
-
-        return z2;
-    }
-
-    /**
-     * Gets the from string.
-     *
-     * @param str the str
-     * @return the from string
-     */
-    public static CuboidArea getFromString(String str) {
-
-        String[] multiStr = str.split(":");
-
-        return new CuboidArea(multiStr[0],
-                Integer.parseInt(multiStr[1]),
-                Integer.parseInt(multiStr[2]),
-                Integer.parseInt(multiStr[3]),
-                Integer.parseInt(multiStr[4]),
-                Integer.parseInt(multiStr[5]),
-                Integer.parseInt(multiStr[6]));
     }
 }

@@ -16,6 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package me.tabinol.secuboidapi.lands.areas;
 
 import java.util.Collection;
@@ -26,9 +27,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
- * The Interface ApiCuboidArea. Represent a 3 dimensions cuboid area.
+ * Represents a Cuboid area type.
  */
-public interface ApiCuboidArea {
+public interface ApiCuboidArea extends ApiArea {
 
     /**
      * Equals.

@@ -18,15 +18,13 @@
  */
 package me.tabinol.secuboid.parameters;
 
-import me.tabinol.secuboidapi.parameters.ApiPermission;
-
 import org.bukkit.ChatColor;
 
 
 /**
  * The Class Permission.
  */
-public class Permission implements ApiPermission {
+public class Permission {
 
     /** The perm type. */
     PermissionType permType;

@@ -19,10 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
-import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 
@@ -33,7 +30,7 @@ import org.bukkit.ChatColor;
  * The Class CommandRemove.
  */
 @InfoCommand(name="remove")
-public class CommandRemove extends CommandExec {
+public class CommandRemove extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command remove.
@@ -56,8 +53,15 @@ public class CommandRemove extends CommandExec {
         checkPermission(true, true, null, null);
 
         // Check for collision
-        if (checkCollision(land.getName(), land, null, Collisions.LandAction.LAND_REMOVE, 
-                0, null, land.getParent(), land.getOwner(), 0, true)) {
+        checkCollision(land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
+                0, null, land.getParent(), land.getOwner(), true);
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
+        // Check for collision
+        if (collisions.hasCollisions()) {
             return;
         }
 

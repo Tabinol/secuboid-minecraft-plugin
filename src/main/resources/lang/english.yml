@@ -214,7 +214,7 @@ COMMAND:
     WORLDEDIT:
       NOTLOAD: " WorldEdit is not Loaded."
       SELECTIONNED: " you have selectioned your land with WorldEdit!"
-      NOSELECTIONNED: " No WorldEdit selection or not a cuboid region!"
+      NOSELECTIONNED: " No WorldEdit selection or not a cuboid or cylinder region!"
       SELECTIONINCOMPLET: " The WorldEdit selection is incomplete!"
     INFO:
       INFO1: "Selection: %"

@@ -19,9 +19,8 @@
 package me.tabinol.secuboid.exceptions;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
-import me.tabinol.secuboidapi.exceptions.ApiSecuboidLandException;
 
 
 /**
@@ -42,7 +41,7 @@ public class SecuboidLandException extends ApiSecuboidLandException {
      * @param action the action
      * @param error the error
      */
-    public SecuboidLandException(String landName, CuboidArea area, Collisions.LandAction action, Collisions.LandError error) {
+    public SecuboidLandException(String landName, Area area, Collisions.LandAction action, Collisions.LandError error) {
         
         super("Secuboid Land Exception");
         

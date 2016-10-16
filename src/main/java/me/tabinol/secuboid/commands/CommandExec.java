@@ -18,24 +18,14 @@
  */
 package me.tabinol.secuboid.commands;
 
-import java.util.Calendar;
-
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.executor.CommandCancel;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
-import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.lands.types.ApiType;
-import me.tabinol.secuboid.lands.collisions.Collisions;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +40,7 @@ public abstract class CommandExec {
     protected final CommandEntities entity;
     
     /** The land. */
-    protected ApiLand land;
+    protected Land land;
     
     /** The is executable. */
     private boolean isExecutable = true;
@@ -132,7 +122,7 @@ public abstract class CommandExec {
                     entity != null && entity.playerConf.getSelection().getLand() != null);
         }
         if (mustBeAreaSelected != null) {
-            checkSelection(entity.playerConf.getSelection().getCuboidArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
+            checkSelection(entity.playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
         }
     }
 
@@ -177,7 +167,7 @@ public abstract class CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void checkPermission(boolean mustBeAdminMod, boolean mustBeOwner,
-            ApiPermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
+            PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
 
@@ -198,51 +188,6 @@ public abstract class CommandExec {
         if (canDo == false) {
             throw new SecuboidCommandException("No permission to do this action", entity.player, "GENERAL.MISSINGPERMISSION");
         }
-    }
-
-    // Why Land paramater? The land can be an other land, not the land stored here.
-    /**
-     * Check collision.
-     *
-     * @param landName the land name
-     * @param land the land
-     * @param type the type
-     * @param action the action
-     * @param removeId the remove id
-     * @param newArea the new area
-     * @param parent the parent
-     * @param owner the owner of the land (PlayerContainer)
-     * @param price the price
-     * @param addForApprove the add for approve
-     * @return true, if successful
-     * @throws SecuboidCommandException the secuboid command exception
-     */
-    protected boolean checkCollision(String landName, ApiLand land, ApiType type, Collisions.LandAction action,
-            int removeId, ApiCuboidArea newArea, ApiLand parent, ApiPlayerContainer owner,
-            double price, boolean addForApprove) throws SecuboidCommandException {
-
-        // allowApprove: false: The command can absolutely not be done if there is error!
-        Collisions coll = new Collisions(landName, land, action, removeId, newArea, parent,
-                owner, price, !addForApprove);
-        boolean allowApprove = coll.getAllowApprove();
-
-        if (coll.hasCollisions()) {
-            entity.sender.sendMessage(coll.getPrints());
-
-            if (addForApprove) {
-                if (Secuboid.getThisPlugin().getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove == true) {
-                    entity.sender.sendMessage(ChatColor.RED + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", landName));
-                    Secuboid.getThisPlugin().getLog().write("land " + landName + " has collision and needs approval.");
-                    Secuboid.getThisPlugin().getLands().getApproveList().addApprove(new Approve(landName, type, action, removeId, newArea,
-                            owner, parent, price, Calendar.getInstance()));
-                    new CommandCancel(entity.playerConf, true).commandExecute();
-                    return true;
-                } else if (Secuboid.getThisPlugin().getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || allowApprove == false) {
-                    throw new SecuboidCommandException("Land collision", entity.sender, "COLLISION.GENERAL.CANNOTDONE");
-                }
-            }
-        }
-        return false;
     }
 
     // The name says what it does!!!

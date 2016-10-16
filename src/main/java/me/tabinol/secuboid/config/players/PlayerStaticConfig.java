@@ -30,7 +30,6 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.vanish.DummyVanish;
 import me.tabinol.secuboid.config.vanish.Vanish;
 import me.tabinol.secuboid.config.vanish.VanishNoPacket;
-import me.tabinol.secuboidapi.config.players.ApiPlayerStaticConfig;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -40,8 +39,8 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerStaticConfig.
  */
-public class PlayerStaticConfig implements ApiPlayerStaticConfig {
-
+public class PlayerStaticConfig {
+    
     /** The player conf list. */
     private final Map<CommandSender, PlayerConfEntry> playerConfList;
     
@@ -109,10 +108,6 @@ public class PlayerStaticConfig implements ApiPlayerStaticConfig {
         playerConfList.remove(sender);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerStaticConfig#get(org.bukkit.command.CommandSender)
-     */
-    @Override
     public PlayerConfEntry get(CommandSender sender) {
 
         return playerConfList.get(sender);
@@ -146,10 +141,6 @@ public class PlayerStaticConfig implements ApiPlayerStaticConfig {
         playerConfList.clear();
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerStaticConfig#isVanished(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean isVanished(Player player) {
         
         return vanish.isVanished(player);

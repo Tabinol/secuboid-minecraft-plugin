@@ -24,8 +24,7 @@ import java.util.Calendar;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,7 +38,7 @@ public class EcoScheduler extends BukkitRunnable {
         Calendar now = Calendar.getInstance();
         
         // Check for rent renew
-        for(ApiLand land : Secuboid.getThisPlugin().getLands().getForRent()) {
+        for(Land land : Secuboid.getThisPlugin().getLands().getForRent()) {
             
             long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
             
@@ -63,8 +62,8 @@ public class EcoScheduler extends BukkitRunnable {
                     // renew rent
                     Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
                         land.getWorldName(), land.getRentPrice());
-                    if(land.getOwner() instanceof ApiPlayerContainerPlayer) {
-                        Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((ApiPlayerContainerPlayer)land.getOwner()).getOfflinePlayer(),
+                    if(land.getOwner() instanceof PlayerContainerPlayer) {
+                        Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((PlayerContainerPlayer)land.getOwner()).getOfflinePlayer(),
                             land.getWorldName(), land.getRentPrice());
                     }
                     ((Land) land).setLastPaymentTime(new Timestamp(now.getTime().getTime()));

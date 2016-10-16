@@ -18,65 +18,44 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerNobody;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-
+import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
 
 /**
  * The Class PlayerContainerNobody.
  */
-public class PlayerContainerNobody extends PlayerContainer implements ApiPlayerContainerNobody {
+public class PlayerContainerNobody extends PlayerContainer {
 
     /**
      * Instantiates a new player container nobody.
      */
     public PlayerContainerNobody() {
         
-        super("", ApiPlayerContainerType.NOBODY, false);
+        super("", PlayerContainerType.NOBODY, false);
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
         
         return container2 instanceof PlayerContainerNobody;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
         
         return new PlayerContainerNobody();
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean hasAccess(Player player) {
         
         return false;
     }
 
-    @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
         
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
-    @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
         
     }
 }

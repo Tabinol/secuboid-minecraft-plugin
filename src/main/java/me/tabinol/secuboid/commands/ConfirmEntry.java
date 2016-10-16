@@ -18,8 +18,7 @@
  */
 package me.tabinol.secuboid.commands;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Class ConfirmEntry.
@@ -46,7 +45,7 @@ public class ConfirmEntry {
     public final ConfirmType confirmType;
     
     /** The land. */
-    public final ApiLand land;
+    public final Land land;
     
     /** The area nb. */
     public final int areaNb;
@@ -58,7 +57,7 @@ public class ConfirmEntry {
      * @param land the land
      * @param areaNb the area nb
      */
-    public ConfirmEntry(ConfirmType confirmType, ApiLand land, int areaNb) {
+    public ConfirmEntry(ConfirmType confirmType, Land land, int areaNb) {
 
         this.confirmType = confirmType;
         this.land = land;

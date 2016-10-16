@@ -21,10 +21,7 @@ package me.tabinol.secuboid.playercontainer;
 import java.util.UUID;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboid.lands.Land;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -35,8 +32,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerContainerPlayer.
  */
-public class PlayerContainerPlayer extends PlayerContainer 
-    implements ApiPlayerContainerPlayer {
+public class PlayerContainerPlayer extends PlayerContainer {
 
     /** The minecraft uuid. */
     private final UUID minecraftUUID;
@@ -49,33 +45,21 @@ public class PlayerContainerPlayer extends PlayerContainer
      */
     public PlayerContainerPlayer(UUID minecraftUUID) {
 
-        super("ID-" + minecraftUUID.toString(), ApiPlayerContainerType.PLAYER, false);
+        super("ID-" + minecraftUUID.toString(), PlayerContainerType.PLAYER, false);
         this.minecraftUUID = minecraftUUID;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
         
         return container2 instanceof PlayerContainerPlayer &&
                 minecraftUUID.equals(((PlayerContainerPlayer) container2).minecraftUUID);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
         
         return new PlayerContainerPlayer(minecraftUUID);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean hasAccess(Player player) {
         
         if(player != null) {
@@ -85,16 +69,11 @@ public class PlayerContainerPlayer extends PlayerContainer
         }
     }
 
-    @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
         
         return hasAccess(player);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainer#getPrint()
-     */
-    @Override
     public String getPrint() {
 
         StringBuilder sb = new StringBuilder();
@@ -137,11 +116,7 @@ public class PlayerContainerPlayer extends PlayerContainer
         return null;        
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
-    @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
 
     }
     

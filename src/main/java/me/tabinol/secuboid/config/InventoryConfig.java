@@ -27,10 +27,9 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
-import me.tabinol.secuboidapi.parameters.ApiFlagValue;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.parameters.FlagType;
+import me.tabinol.secuboid.parameters.FlagValue;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -47,7 +46,7 @@ public class InventoryConfig {
     public static final String PERM_IGNORE_INV = "secuboid.inv.ignoreinv";
     public static final String PERM_IGNORE_DISABLED_COMMANDS = "secuboid.inv.ignoredisabledcommands";
     public static final String INVENTORY_CONFIG_FILE = "inventory.yml";
-    private final ApiFlagType invFlag; // Registered inventory Flag (Factoid)
+    private final FlagType invFlag; // Registered inventory Flag (Factoid)
     private final Secuboid thisPlugin;
     private FileConfiguration config;
     private HashMap<String, InventorySpec> invList; // World-->Land-->Inventory
@@ -62,7 +61,7 @@ public class InventoryConfig {
         }
 
         // Connect to the data file and register flag to Factoid
-        invFlag = ApiSecuboidSta.getParameters().registerFlagType("INVENTORY", new String());
+        invFlag = Secuboid.getThisPlugin().getParameters().registerFlagType("INVENTORY", new String());
 
         reloadConfig();
     }
@@ -95,9 +94,9 @@ public class InventoryConfig {
         invList.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
-    public InventorySpec getInvSpec(ApiDummyLand dummyLand) {
+    public InventorySpec getInvSpec(DummyLand dummyLand) {
 
-        ApiFlagValue invFlagValue = dummyLand.getFlagAndInherit(invFlag);
+        FlagValue invFlagValue = dummyLand.getFlagAndInherit(invFlag);
         
         // If the flag is not set
         if(invFlagValue.getValueString().isEmpty()) {

@@ -21,14 +21,15 @@ package me.tabinol.secuboid.commands;
 // Work with command arguments
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
 import org.bukkit.command.CommandSender;
 
@@ -210,8 +211,8 @@ public class ArgList {
      * @return the player container from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PlayerContainer getPlayerContainerFromArg(ApiLand land,
-            ApiPlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
+    public PlayerContainer getPlayerContainerFromArg(Land land,
+            PlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
 
         String curArg = getNext();
         String param = null;
@@ -221,16 +222,16 @@ public class ArgList {
             throw new SecuboidCommandException("PlayerContainer Error", player, "COMMAND.CONTAINERTYPE.TYPENULL");
         }
 
-        ApiPlayerContainerType pcType = ApiPlayerContainerType.getFromString(curArg);
+        PlayerContainerType pcType = PlayerContainerType.getFromString(curArg);
 
         if (pcType == null) {
             // Type player if it is the player directly
-            pcType = ApiPlayerContainerType.PLAYER;
+            pcType = PlayerContainerType.PLAYER;
             param = curArg;
         }
 
         if (bannedPCTList != null) {
-            for (ApiPlayerContainerType bPCT : bannedPCTList) {
+            for (PlayerContainerType bPCT : bannedPCTList) {
                 if (pcType == bPCT) {
                     throw new SecuboidCommandException("PlayerContainer Error", player, "COMMAND.CONTAINERTYPE.NOTPERMITTED");
                 }
@@ -249,7 +250,7 @@ public class ArgList {
             pc = PlayerContainer.create(land, pcType, "");
         }
 
-        if (pcType == ApiPlayerContainerType.PLAYER && pc == null) {
+        if (pcType == PlayerContainerType.PLAYER && pc == null) {
 
             // this player doesn't exist
             throw new SecuboidCommandException("Player not exist Error", player, "COMMAND.CONTAINER.PLAYERNOTEXIST");

@@ -23,12 +23,11 @@ import java.util.Collection;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandThreadExec;
+import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.types.ApiType;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 
 import org.bukkit.ChatColor;
@@ -40,10 +39,10 @@ import org.bukkit.ChatColor;
  * @author Tabinol
  */
 @InfoCommand(name="list")
-public class CommandList extends CommandThreadExec {
+public class CommandList extends CommandPlayerThreadExec {
 
     private String worldName = null;
-    private ApiType type = null;
+    private Type type = null;
 
     /**
      * Instantiates a new command list.
@@ -81,7 +80,7 @@ public class CommandList extends CommandThreadExec {
                 String typeName = entity.argList.getNext();
                 
                 if(typeName != null) {
-                    type = ApiSecuboidSta.getTypes().getType(typeName);
+                    type = Secuboid.getThisPlugin().getTypes().getType(typeName);
                 }
                 
                 if(type == null) {
@@ -101,7 +100,7 @@ public class CommandList extends CommandThreadExec {
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
+     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
@@ -110,7 +109,7 @@ public class CommandList extends CommandThreadExec {
         convertPcIfNeeded(playerCacheEntry);
 
         // Check if the player is AdminMod or send only owned lands
-        Collection<ApiLand> lands;
+        Collection<Land> lands;
 
         if (entity.playerConf.isAdminMod()) {
             lands = Secuboid.getThisPlugin().getLands().getLands();
@@ -122,7 +121,7 @@ public class CommandList extends CommandThreadExec {
         StringBuilder stList = new StringBuilder();
         stList.append(ChatColor.YELLOW);
 
-        for (ApiLand land : lands) {
+        for (Land land : lands) {
             if (((worldName != null && worldName.equals(land.getWorldName()))
                     || (type !=null && type == land.getType())
                     || (worldName == null && type == null))

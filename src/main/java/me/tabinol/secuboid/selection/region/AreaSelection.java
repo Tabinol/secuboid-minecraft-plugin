@@ -18,261 +18,87 @@
  */
 package me.tabinol.secuboid.selection.region;
 
-import static java.lang.Math.abs;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
+import me.tabinol.secuboid.selection.visual.VisualSelection;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-
 
 /**
  * The Class AreaSelection.
  */
-public class AreaSelection extends RegionSelection implements Listener {
+public class AreaSelection extends RegionSelection {
 
+    /**
+     * Move Type.
+     */
+    public enum MoveType { // ACTIVE = move with the player, PASSIVE = fixed
+
+        PASSIVE,
+        ACTIVE,
+        EXPAND
+        
+    }
+    
+    private final MoveType moveType;
+    
     /** The area. */
-    ApiCuboidArea area;
+    private final VisualSelection visualSelection;
     
-    /** The is collision. */
-    boolean isCollision = false;
-    
-    /** The block list. */
-    private final Map<Location, Material> blockList = new HashMap<Location, Material>();
-
-    /** The block byte (option) list. */
-    private final Map<Location, Byte> blockByteList = new HashMap<Location, Byte>();
-
-    /** The is from land. */
-    private boolean isFromLand = false;
-    
-    /** Parent detected */
-    private ApiDummyLand parentDetected = null;
-
     /**
      * Instantiates a new area selection.
      *
      * @param player the player
-     * @param area the area
+     * @param area the area (null will create the area from player)
+     * @param isFromLand is from land or must be false
+     * @param areaType area type (can be null if the area is not null)
+     * @param moveType move type
      */
-    public AreaSelection(Player player, ApiCuboidArea area) {
+    public AreaSelection(Player player, Area area, boolean isFromLand,
+            AreaType areaType, MoveType moveType) {
 
         super(SelectionType.AREA, player);
-        this.area = area;
+        this.moveType = moveType;
         
-        makeVisualSelection();
-    }
-
-    // Called from Land Selection list
-    /**
-     * Instantiates a new area selection.
-     *
-     * @param player the player
-     * @param area the area
-     * @param isFromLand the is from land
-     */
-    public AreaSelection(Player player, ApiCuboidArea area, boolean isFromLand) {
-
-        super(SelectionType.AREA, player);
-        this.area = area;
-        this.isFromLand = isFromLand;
-        
-        makeVisualSelection();
-    }
-
-    // Called from ActiveAreaSelection
-    /**
-     * Instantiates a new area selection.
-     *
-     * @param player the player
-     */
-    AreaSelection(Player player) {
-
-        super(SelectionType.AREA, player);
-    }
-
-    /**
-     * Make visual selection.
-     */
-    @SuppressWarnings("deprecation")
-    final void makeVisualSelection() {
-
-        // Get the size (x and z) no abs (already ajusted)
-        int diffX = area.getX2() - area.getX1();
-        int diffZ = area.getZ2() - area.getZ1();
-
-        // Do not show a too big select to avoid crash or severe lag
-        int maxSize = Secuboid.getThisPlugin().getConf().getMaxVisualSelect();
-        int maxDisPlayer = Secuboid.getThisPlugin().getConf().getMaxVisualSelectFromPlayer();
-        Location playerLoc = player.getLocation();
-        if (diffX > maxSize || diffZ > maxSize
-                || abs(area.getX1() - playerLoc.getBlockX()) > maxDisPlayer
-                || abs(area.getX2() - playerLoc.getBlockX()) > maxDisPlayer
-                || abs(area.getZ1() - playerLoc.getBlockZ()) > maxDisPlayer
-                || abs(area.getZ2() - playerLoc.getBlockZ()) > maxDisPlayer) {
-            Secuboid.getThisPlugin().getLog().write("Selection disabled!");
-            return;
-        }
-        
-        // Detect the curent land from the 8 points
-        ApiDummyLand Land1 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
-        ApiDummyLand Land2 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
-        ApiDummyLand Land3 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
-        ApiDummyLand Land4 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
-        ApiDummyLand Land5 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
-        ApiDummyLand Land6 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
-        ApiDummyLand Land7 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
-        ApiDummyLand Land8 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
-        
-        if(Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
-                && Land1 == Land7 && Land1 == Land8) {
-            parentDetected = Land1;
+        if(area == null) {
+            visualSelection = VisualSelection.createVisualSelection(areaType, 
+                    isFromLand, player);
+            visualSelection.setActiveSelection();
         } else {
-            parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
-        }
-        
-        boolean canCreate = parentDetected.checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
-
-        //MakeSquare
-        for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
-                if (posX == area.getX1() || posX == area.getX2()
-                        || posZ == area.getZ1() || posZ == area.getZ2()) {
-
-                    Location newloc = new Location(area.getWord(), posX, this.getYNearPlayer(posX, posZ) - 1, posZ);
-                    Block block = newloc.getBlock();
-                    blockList.put(newloc, block.getType());
-                    blockByteList.put(newloc, block.getData());
-
-                    if (!isFromLand) {
-
-                        // Active Selection
-                        ApiDummyLand testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
-                        if (parentDetected == testCuboidarea 
-                                && (canCreate == true || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMod())) {
-                            this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
-                        } else {
-                            this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);
-                            isCollision = true;
-                        }
-                    } else {
-
-                        // Passive Selection (created area)
-                        if ((posX == area.getX1() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX1() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX2() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX2() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX1() + 1 && posZ == area.getZ1())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ1())
-                                || (posX == area.getX1() + 1 && posZ == area.getZ2())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ2())) {
-
-                            // Subcorner
-                            this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
-
-                        } else if ((posX == area.getX1() && posZ == area.getZ1())
-                                || (posX == area.getX2() && posZ == area.getZ1())
-                                || (posX == area.getX1() && posZ == area.getZ2())
-                                || (posX == area.getX2() && posZ == area.getZ2())) {
-
-                            // Exact corner
-                            this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
-                        }
-                    }
-
-                } else {
-                    // Square center, skip!
-                    posZ = area.getZ2() - 1;
-                }
-            }
+            visualSelection = VisualSelection.createVisualSelection(area, 
+                    isFromLand, player);
+            visualSelection.makeVisualSelection();
         }
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.selection.region.RegionSelection#removeSelection()
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
-
-        for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-            this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
-        }
-
-        blockList.clear();
-        blockByteList.clear();
+        
+        visualSelection.removeSelection();
     }
 
     /**
-     * Gets the cuboid area.
+     * Gets the visual selection.
      *
-     * @return the cuboid area
+     * @return the visual selection
      */
-    public ApiCuboidArea getCuboidArea() {
+    public VisualSelection getVisualSelection() {
         
-        return area;
+        return visualSelection;
     }
     
-    /**
-     * Gets the collision.
-     *
-     * @return the collision
-     */
-    public boolean getCollision() {
+    public MoveType getMoveType() {
         
-        return isCollision;
+        return moveType;
     }
     
-    public ApiLand getParentDetected() {
+    // Called from then player listenner
+    public void playerMove() {
         
-        if(parentDetected instanceof ApiLand) {
-            return (ApiLand) parentDetected;
-        } else {
-            return null;
-        }
-    }
-    
-    /**
-      * Gets the y near player before air.
-      *
-      * @param x the x
-      * @param z the z
-      * @return the y near player
-      */
-     private int getYNearPlayer(int x, int z) {
-
-        Location loc = new Location(player.getWorld(), x, player.getLocation().getY() - 1, z);
-
-        if (loc.getBlock().getType() == Material.AIR) {
-            while (loc.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR
-                    && loc.getBlockY() > 1) {
-                loc.subtract(0, 1, 0);
-            }
-        } else {
-            while (loc.getBlock().getType() != Material.AIR && loc.getBlockY() < player.getWorld().getMaxHeight()) {
-                loc.add(0, 1, 0);
-            }
-        }
-        return loc.getBlockY();
+        visualSelection.playerMove(moveType);
     }
 }

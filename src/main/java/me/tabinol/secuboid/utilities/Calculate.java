@@ -66,7 +66,7 @@ public class Calculate {
      */
     public static boolean isInInterval(int nbSource, int nb1, int nb2) {
         
-        return nbSource >= nb1 && nbSource <= nb2;
+        return nbSource >= lowerInt(nb1, nb2) && nbSource <= greaterInt(nb1, nb2);
     }
     
     // -1 before, 0 inside, +1 after

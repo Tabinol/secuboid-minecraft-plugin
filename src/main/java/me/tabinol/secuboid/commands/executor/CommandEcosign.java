@@ -20,14 +20,13 @@ package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboidapi.config.players.ApiPlayerConfEntry;
-import me.tabinol.secuboidapi.lands.ApiLand;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -43,12 +42,12 @@ public class CommandEcosign extends CommandExec {
     private final Player player;
 
     /** The player conf. */
-    private final ApiPlayerConfEntry playerConf;
+    private final PlayerConfEntry playerConf;
     private final Action action;
     private final SignType signType;
 
     // Called from FlyCreativeListener (right or leftclick)
-    public CommandEcosign(ApiPlayerConfEntry entry, ApiLand land, Action action,
+    public CommandEcosign(PlayerConfEntry entry, Land land, Action action,
             SignType signType) throws SecuboidCommandException {
 
         super(null);
@@ -78,10 +77,10 @@ public class CommandEcosign extends CommandExec {
                 }
                 Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(player,
                         land.getWorldName(), land.getSalePrice());
-                if (land.getOwner() instanceof ApiPlayerContainerPlayer) {
+                if (land.getOwner() instanceof PlayerContainerPlayer) {
                     Secuboid.getThisPlugin().getPlayerMoney()
                             .giveToPlayer(
-                                    ((ApiPlayerContainerPlayer) land.getOwner())
+                                    ((PlayerContainerPlayer) land.getOwner())
                                             .getOfflinePlayer(),
                                     land.getWorldName(), land.getSalePrice());
                 }
@@ -130,10 +129,10 @@ public class CommandEcosign extends CommandExec {
                     }
                     Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(player,
                             land.getWorldName(), land.getRentPrice());
-                    if (land.getOwner() instanceof ApiPlayerContainerPlayer) {
+                    if (land.getOwner() instanceof PlayerContainerPlayer) {
                         Secuboid.getThisPlugin().getPlayerMoney()
                                 .giveToPlayer(
-                                        ((ApiPlayerContainerPlayer) land
+                                        ((PlayerContainerPlayer) land
                                                 .getOwner()).getOfflinePlayer(),
                                         land.getWorldName(),
                                         land.getRentPrice());

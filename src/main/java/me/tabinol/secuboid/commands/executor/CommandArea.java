@@ -21,17 +21,14 @@ package me.tabinol.secuboid.commands.executor;
 import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
-import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 
 import org.bukkit.ChatColor;
 
@@ -40,7 +37,9 @@ import org.bukkit.ChatColor;
  * The Class CommandArea.
  */
 @InfoCommand(name="area", forceParameter=true)
-public class CommandArea extends CommandExec {
+public class CommandArea extends CommandCollisionsThreadExec {
+
+    private String fonction;
 
     /**
      * Instantiates a new command area.
@@ -59,31 +58,20 @@ public class CommandArea extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = entity.argList.getNext();
+        fonction = entity.argList.getNext();
 
-        if (curArg.equalsIgnoreCase("add")) {
+        if (fonction.equalsIgnoreCase("add")) {
 
             checkPermission(true, true, null, null);
             checkSelections(true, true);
 
-            ApiCuboidArea area = entity.playerConf.getSelection().getCuboidArea();
-            double price = entity.playerConf.getSelection().getAreaAddPrice();
+            Area area = entity.playerConf.getSelection().getArea();
 
             // Check for collision
-            if (checkCollision(land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(), 
-                    land.getOwner(), price, true)) {
-                return;
-            }
+            checkCollision(land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(),
+                    land.getOwner(), true);
 
-            // Add Area
-            ((Land) land).addArea(area, price);
-
-            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-            Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + " at position " + land.getAreas().toString());
-            new CommandCancel(entity.playerConf, false).commandExecute();
-            entity.playerConf.getSelection().refreshLand();
-
-        } else if (curArg.equalsIgnoreCase("remove") || curArg.equalsIgnoreCase("replace")) {
+        } else if (fonction.equalsIgnoreCase("remove") || fonction.equalsIgnoreCase("replace")) {
 
             checkPermission(true, true, null, null);
             checkSelections(true, null);
@@ -93,7 +81,7 @@ public class CommandArea extends CommandExec {
             int areaNb = 0;
 
             // check here if there is an area to replace
-            ApiCuboidArea areaToReplace = entity.playerConf.getSelection().getAreaToReplace();
+            Area areaToReplace = entity.playerConf.getSelection().getAreaToReplace();
             if (areaToReplace != null) {
                 areaNb = areaToReplace.getKey();
             }
@@ -119,52 +107,30 @@ public class CommandArea extends CommandExec {
             }
 
             // Only for a remove
-            if (curArg.equalsIgnoreCase("remove")) {
+            if (fonction.equalsIgnoreCase("remove")) {
 
                 // Check for collision
-                if (checkCollision(curArg, land, null, LandAction.AREA_REMOVE, areaNb, null, land.getParent(), 
-                        land.getOwner(), 0, true)) {
-                    return;
-                }
-
-                // Check if exist
-                if (land.getArea(areaNb) == null) {
-                    throw new SecuboidCommandException("Area", entity.sender, "COMMAND.REMOVE.AREA.INVALID");
-                }
-
-                entity.playerConf.setConfirm(new ConfirmEntry(
-                        ConfirmType.REMOVE_AREA, land, areaNb));
-                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CONFIRM"));
+                checkCollision(fonction, land, null, LandAction.AREA_REMOVE, areaNb, null, land.getParent(),
+                        land.getOwner(), true);
 
             } else {
 
                 //Only for a replace
                 checkSelections(true, true);
 
-                ApiCuboidArea area = entity.playerConf.getSelection().getCuboidArea();
-                double price = entity.playerConf.getSelection().getAreaReplacePrice(areaNb);
+                Area area = entity.playerConf.getSelection().getArea();
 
                 // Check for collision
-                if (checkCollision(land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area, land.getParent(), 
-                        land.getOwner(), price,  true)) {
-                    return;
-                }
-
-                // Replace Area
-                ((Land) land).replaceArea(areaNb, area, price);
-
-                entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-                Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + " at position " + land.getAreas().toString());
-                new CommandCancel(entity.playerConf, false).commandExecute();
-                entity.playerConf.getSelection().refreshLand();
+                checkCollision(land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area, land.getParent(),
+                        land.getOwner(), true);
             }
 
-        } else if (curArg.equalsIgnoreCase("list")) {
+        } else if (fonction.equalsIgnoreCase("list")) {
 
             checkSelections(true, null);
             StringBuilder stList = new StringBuilder();
-            for (Map.Entry<Integer, ApiCuboidArea> entry : land.getIdsAndAreas().entrySet()) {
-                stList.append("ID: " + entry.getKey() + ", " + entry.getValue().getPrint() + Config.NEWLINE);
+            for (Map.Entry<Integer, Area> entry : land.getIdsAndAreas().entrySet()) {
+                stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint()).append(Config.NEWLINE);
             }
             new ChatPage("COMMAND.AREA.LISTSTART", stList.toString(), entity.sender, land.getName()).getPage(1);
         } else {
@@ -172,4 +138,44 @@ public class CommandArea extends CommandExec {
         }
     }
 
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
+        if (collisions.hasCollisions()) {
+            return;
+        }
+
+        if (fonction.equalsIgnoreCase("add")) {
+
+            // Add Area
+            ((Land) land).addArea(newArea, collisions.getPrice());
+
+            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+            Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + " at position " + land.getAreas().toString());
+            new CommandCancel(entity.playerConf, false).commandExecute();
+            entity.playerConf.getSelection().refreshLand();
+        } else if (fonction.equalsIgnoreCase("remove")) {
+
+            // Check if exist
+            if (land.getArea(removeId) == null) {
+                throw new SecuboidCommandException("Area", entity.sender, "COMMAND.REMOVE.AREA.INVALID");
+            }
+
+            entity.playerConf.setConfirm(new ConfirmEntry(
+                    ConfirmType.REMOVE_AREA, land, removeId));
+            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CONFIRM"));
+
+        } else if (fonction.equalsIgnoreCase("replace")) {
+
+            // Replace Area
+            ((Land) land).replaceArea(removeId, newArea, collisions.getPrice());
+
+            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+            Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + " at position " + land.getAreas().toString());
+            new CommandCancel(entity.playerConf, false).commandExecute();
+            entity.playerConf.getSelection().refreshLand();
+        }
+
+
+        }
 }

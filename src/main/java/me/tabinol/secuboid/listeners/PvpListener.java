@@ -21,12 +21,12 @@ package me.tabinol.secuboid.listeners;
 import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.utilities.ExpirableHashMap;
-import me.tabinol.secuboidapi.config.players.ApiPlayerConfEntry;
-import me.tabinol.secuboidapi.config.players.ApiPlayerStaticConfig;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,10 +53,10 @@ public class PvpListener extends CommonListener implements Listener {
     public final static long FIRE_EXPIRE = 20 * 30;
 
     /** The player conf. */
-    private ApiPlayerStaticConfig playerConf;
+    private PlayerStaticConfig playerConf;
 
     /** The player fire location. */
-    private ExpirableHashMap<Location, ApiPlayerContainerPlayer> playerFireLocation;
+    private ExpirableHashMap<Location, PlayerContainerPlayer> playerFireLocation;
 
     /**
      * Instantiates a new pvp listener.
@@ -65,7 +65,7 @@ public class PvpListener extends CommonListener implements Listener {
 
         super();
         playerConf = Secuboid.getThisPlugin().getPlayerConf();
-        playerFireLocation = new ExpirableHashMap<Location, ApiPlayerContainerPlayer>(FIRE_EXPIRE);
+        playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(FIRE_EXPIRE);
     }
 
     /**
@@ -76,14 +76,14 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 
-        ApiPlayerConfEntry entry;
-        ApiPlayerConfEntry entryVictim;
+        PlayerConfEntry entry;
+        PlayerConfEntry entryVictim;
 
         // Check if a player break a ItemFrame
         Player player = getSourcePlayer(event.getDamager());
 
         if (player != null) {
-            ApiDummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
+            DummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
                     event.getEntity().getLocation());
             Entity entity = event.getEntity();
 
@@ -135,7 +135,7 @@ public class PvpListener extends CommonListener implements Listener {
     public void onBlockSpread(BlockSpreadEvent event) {
         
         Block blockSource = event.getSource();
-        ApiPlayerContainerPlayer pc = playerFireLocation.get(blockSource.getLocation());
+        PlayerContainerPlayer pc = playerFireLocation.get(blockSource.getLocation());
         
         if(pc != null) {
             
@@ -158,14 +158,14 @@ public class PvpListener extends CommonListener implements Listener {
                 || event.getCause() == DamageCause.FIRE_TICK)) {
             
             Player player = (Player) event.getEntity();
-            ApiPlayerConfEntry entry = playerConf.get(player);
+            PlayerConfEntry entry = playerConf.get(player);
             
             if(entry != null) {
                 Location loc = player.getLocation();
-                ApiDummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+                DummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
                 
                 // Check for fire near the player
-                for(Map.Entry<Location, ApiPlayerContainerPlayer> fireEntry : playerFireLocation.entrySet()) {
+                for(Map.Entry<Location, PlayerContainerPlayer> fireEntry : playerFireLocation.entrySet()) {
                     
                     if(loc.getWorld() == fireEntry.getKey().getWorld() 
                             && loc.distanceSquared(fireEntry.getKey()) < 5) {
@@ -196,12 +196,12 @@ public class PvpListener extends CommonListener implements Listener {
      */
     private void checkForPvpFire(BlockEvent event, Player player) {
         
-        ApiPlayerConfEntry entry;
+        PlayerConfEntry entry;
         
         if (player != null && (entry = playerConf.get(player)) != null) {
 
             Location loc = event.getBlock().getLocation();
-            ApiDummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+            DummyLand land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
 
             if (land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false
                     || land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {
@@ -220,8 +220,8 @@ public class PvpListener extends CommonListener implements Listener {
      * @param victim the victim
      * @return true, if is pvp valid
      */
-    private boolean isPvpValid(ApiDummyLand land, ApiPlayerContainerPlayer attacker,
-            ApiPlayerContainerPlayer victim) {
+    private boolean isPvpValid(DummyLand land, PlayerContainerPlayer attacker,
+            PlayerContainerPlayer victim) {
         
         if (land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {
             return false;

@@ -18,14 +18,10 @@
  */
 package me.tabinol.secuboid.parameters;
 
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
-
-
-
 /**
  * The Class FlagType.
  */
-public class FlagType extends ParameterType implements ApiFlagType {
+public class FlagType extends ParameterType {
 
     /** The default value. */
     private FlagValue defaultValue;

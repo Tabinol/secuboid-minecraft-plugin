@@ -24,18 +24,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
-import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.approve.ApproveList;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 
 import org.bukkit.ChatColor;
 
@@ -44,7 +41,11 @@ import org.bukkit.ChatColor;
  * The Class CommandApprove.
  */
 @InfoCommand(name="approve", allowConsole=true, forceParameter=true)
-public class CommandApprove extends CommandExec {
+public class CommandApprove extends CommandCollisionsThreadExec {
+
+    private final ApproveList approveList;
+    private boolean confirm = false;
+    Approve approve = null;
 
     /**
      * Instantiates a new command approve.
@@ -55,6 +56,7 @@ public class CommandApprove extends CommandExec {
     public CommandApprove(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);
+        approveList = Secuboid.getThisPlugin().getLands().getApproveList();
     }
 
     /* (non-Javadoc)
@@ -64,7 +66,6 @@ public class CommandApprove extends CommandExec {
     public void commandExecute() throws SecuboidCommandException {
 
         String curArg = entity.argList.getNext();
-        ApproveList approveList = Secuboid.getThisPlugin().getLands().getApproveList();
         boolean isApprover = entity.sender.hasPermission("secuboid.collisionapprove");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -92,7 +93,7 @@ public class CommandApprove extends CommandExec {
             for(Map.Entry<Date,Approve> approveEntry : approveTree.descendingMap().entrySet()) {
                 Approve app = approveEntry.getValue();
                 if (app != null && (isApprover || app.getOwner().hasAccess(entity.player))) {
-                    stList.append(ChatColor.WHITE + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LIST",
+                    stList.append(ChatColor.WHITE).append(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LIST",
                             ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
                             ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
                             app.getOwner().getPrint() + ChatColor.WHITE,
@@ -118,7 +119,7 @@ public class CommandApprove extends CommandExec {
                 throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
             }
 
-            Approve approve = approveList.getApprove(param);
+            approve = approveList.getApprove(param);
 
             if (approve == null) {
                 throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
@@ -131,13 +132,13 @@ public class CommandApprove extends CommandExec {
                 throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
             }
 
-            ApiLand land = Secuboid.getThisPlugin().getLands().getLand(param);
+            Land apprLand = Secuboid.getThisPlugin().getLands().getLand(param);
             Collisions.LandAction action = approve.getAction();
             int removeId = approve.getRemovedAreaId();
-            ApiCuboidArea newArea = approve.getNewArea();
-            ApiLand parent = approve.getParent();
+            Area newArea = approve.getNewArea();
+            Land parent = approve.getParent();
             Double price = approve.getPrice();
-            ApiPlayerContainer owner = approve.getOwner();
+            PlayerContainer owner = approve.getOwner();
 
             if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
 
@@ -145,17 +146,14 @@ public class CommandApprove extends CommandExec {
                 if(newArea != null) {
                     entity.sender.sendMessage(newArea.getPrint());
                 }
-                
-                // Info on the specified land (Collision)
-                checkCollision(param, land, null, action, removeId, newArea, parent, owner, price, false);
 
                 if (curArg.equalsIgnoreCase("confirm")) {
-
-                    // Create the action (if it is possible)
-                    approveList.removeApprove(approve);
-                    approve.createAction();
-                    entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.DONE"));
+                    // Paste to the After Thread
+                    confirm = true;
                 }
+                // Info on the specified land (Collision)
+                checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
+
             } else if (curArg.equalsIgnoreCase("cancel")) {
 
                 // Remove in approve list
@@ -166,6 +164,18 @@ public class CommandApprove extends CommandExec {
             }
         } else {
             throw new SecuboidCommandException("Missing information command", entity.sender, "GENERAL.MISSINGINFO");
+        }
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
+        if (confirm) {
+
+            // Create the action (if it is possible)
+            approveList.removeApprove(approve);
+            approve.createAction();
+            entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.DONE"));
         }
     }
 }

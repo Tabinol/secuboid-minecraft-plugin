@@ -25,10 +25,9 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.flycreative.Creative;
 import me.tabinol.secuboid.flycreative.Fly;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.events.LandModifyEvent;
-import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.DummyLand;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -70,7 +69,7 @@ public class FlyCreativeListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         setFlyCreative(event, event.getPlayer(), 
-        		ApiSecuboidSta.getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
+        		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -97,7 +96,7 @@ public class FlyCreativeListener implements Listener {
     			public void run() {
     				if(player.isOnline()) {
     					setFlyCreative(null, player, 
-    							ApiSecuboidSta.getLands().getLandOrOutsideArea(player.getLocation()));
+    							Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
     				}
     			}
     			}, 1);
@@ -127,14 +126,14 @@ public class FlyCreativeListener implements Listener {
         	
         	// Land area change, all players in the world affected
         	for(Player player : event.getLand().getWorld().getPlayers()) {
-            	setFlyCreative(event, player, ApiSecuboidSta.getLands().getLandOrOutsideArea(player.getLocation()));
+            	setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
             }
     	} else if(reason != LandModifyEvent.LandModifyReason.FLAG_SET && reason != LandModifyEvent.LandModifyReason.FLAG_UNSET
     			&& reason != LandModifyEvent.LandModifyReason.RENAME) {
     	
     		// No land resize or area replace, only players in the land affected
     		for(Player player : event.getLand().getPlayersInLandAndChildren()) {
-    			setFlyCreative(event, player, ApiSecuboidSta.getLands().getLandOrOutsideArea(player.getLocation()));
+    			setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
     		}
     	}
     }
@@ -185,7 +184,7 @@ public class FlyCreativeListener implements Listener {
 
     }
 
-    private void setFlyCreative(Event event, Player player, ApiDummyLand dummyLand) {
+    private void setFlyCreative(Event event, Player player, DummyLand dummyLand) {
 
         if (!conf.getIgnoredGameMode().contains(player.getGameMode())
         		&& !creative.creative(event, player, dummyLand)) {

@@ -22,7 +22,7 @@ import java.util.HashSet;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboidapi.lands.ApiLand;
+import me.tabinol.secuboid.lands.Land;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,7 +42,7 @@ import org.bukkit.inventory.ItemStack;
 public class EcoSign {
 
     /** The land. */
-    private final ApiLand land;
+    private final Land land;
 
     /** The location. */
     private final Location location;
@@ -61,7 +61,7 @@ public class EcoSign {
      * @param player            the player
      * @throws SignException the sign exception
      */
-    public EcoSign(ApiLand land, Player player) throws SignException {
+    public EcoSign(Land land, Player player) throws SignException {
 
         @SuppressWarnings("deprecation")
         Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, 10);
@@ -110,7 +110,7 @@ public class EcoSign {
      * @param location the location
      * @throws SignException the sign exception
      */
-    public EcoSign(ApiLand land, Location location) throws SignException {
+    public EcoSign(Land land, Location location) throws SignException {
         
         this.land = land;
         this.location = location;

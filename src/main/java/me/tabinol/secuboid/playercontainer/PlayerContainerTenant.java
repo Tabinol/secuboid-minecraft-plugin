@@ -18,11 +18,8 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerTenant;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.entity.Player;
 
@@ -30,37 +27,28 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerContainerTenant.
  */
-public class PlayerContainerTenant extends PlayerContainer
-    implements ApiPlayerContainerTenant {
+public class PlayerContainerTenant extends PlayerContainer {
     
     /** The land. */
-    private ApiLand land;
+    private Land land;
     
     /**
      * Instantiates a new player container tenant.
      *
      * @param land the land
      */
-    public PlayerContainerTenant(ApiLand land) {
+    public PlayerContainerTenant(Land land) {
         
-        super("", ApiPlayerContainerType.TENANT, false);
+        super("", PlayerContainerType.TENANT, false);
         this.land = land;
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
         
         return container2 instanceof PlayerContainerTenant &&
                 land == ((PlayerContainerTenant)container2).land;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
         
         return new PlayerContainerTenant(land);
@@ -76,15 +64,15 @@ public class PlayerContainerTenant extends PlayerContainer
     }
     
     @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
 
         if(land == null) {
             return false;
         }
 
         boolean value = land.isTenant(player);
-        ApiLand actual = land;
-        ApiLand parent;
+        Land actual = land;
+        Land parent;
 
         while(!value && (parent = actual.getParent()) != null 
                 && actual.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
@@ -100,7 +88,7 @@ public class PlayerContainerTenant extends PlayerContainer
      *
      * @return the land
      */
-    public ApiLand getLand() {
+    public Land getLand() {
         
         return land;
     }
@@ -109,7 +97,7 @@ public class PlayerContainerTenant extends PlayerContainer
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
         
         this.land = land;
     }

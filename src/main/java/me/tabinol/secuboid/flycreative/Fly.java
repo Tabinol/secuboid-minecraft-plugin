@@ -19,10 +19,10 @@
 
 package me.tabinol.secuboid.flycreative;
 
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.parameters.PermissionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -32,15 +32,15 @@ import org.bukkit.event.Event;
 public class Fly {
 
     public final static String FLY_IGNORE_PERM = "secuboid.flycreative.ignorefly";
-    private final ApiPermissionType permissionType;
+    private final PermissionType permissionType;
 
     public Fly() {
 
         // Register flags
-        permissionType = ApiSecuboidSta.getParameters().registerPermissionType("FLY", false);
+        permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("FLY", false);
     }
 
-    public void fly(Event event, Player player, ApiDummyLand dummyLand) {
+    public void fly(Event event, Player player, DummyLand dummyLand) {
 
         if (!player.hasPermission(FLY_IGNORE_PERM)) {
             if (askFlyFlag(player, dummyLand)) {
@@ -73,7 +73,7 @@ public class Fly {
         }
     }
 
-    private boolean askFlyFlag(Player player, ApiDummyLand dummyLand) {
+    private boolean askFlyFlag(Player player, DummyLand dummyLand) {
 
     	return dummyLand.checkPermissionAndInherit(player, permissionType);
     }

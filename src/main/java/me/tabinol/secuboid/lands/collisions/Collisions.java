@@ -21,21 +21,24 @@ package me.tabinol.secuboid.lands.collisions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.ApiLands;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.parameters.FlagType;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.utilities.Calculate;
+import org.bukkit.Location;
 
 
 /**
- * The Class Collisions.
+ * The Class Collisions. This class is created for async calculation and price
  */
 public class Collisions {
 
@@ -102,14 +105,14 @@ public class Collisions {
         MUST_HAVE_AT_LEAST_ONE_AREA(false);
 
         /** The can be approved. */
-        public final boolean canBeApproved; // False = No approve is possible
+        final boolean canBeApproved; // False = No approve is possible
 
         /**
          * Instantiates a new land error.
          *
          * @param canBeApproved the can be approved
          */
-        private LandError(boolean canBeApproved) {
+        LandError(boolean canBeApproved) {
             this.canBeApproved = canBeApproved;
         }
     }
@@ -118,13 +121,13 @@ public class Collisions {
     private final List<CollisionsEntry> coll;
     
     /** The lands. */
-    private final ApiLands lands;
+    private final Lands lands;
     
     /** The land name. */
     private final String landName;
     
     /** The land. */
-    private final ApiLand land;
+    private final Land land;
     
     /** The action. */
     private final LandAction action;
@@ -133,13 +136,29 @@ public class Collisions {
     private final int removedAreaId;
     
     /** The new area. */
-    private final ApiCuboidArea newArea;
+    private final Area newArea;
     
     /** The parent. */
-    private final ApiLand parent;
-    
+    private final Land parent;
+
+    /** The owner */
+    private final PlayerContainer owner;
+
+    /** Is free */
+    private final boolean isFree;
+
+    /** Check approve list */
+    private final boolean checkApproveList;
+
+    private final HashSet<Area> landCollisionsList;
+    private final HashSet<Land> childOutsideLand;
+    private boolean outsideParent;
+    private double priceArea;
+    private double priceLand;
+
     /** The allow approve. */
     private boolean allowApprove;
+
 
     /**
      * Instantiates a new collisions.
@@ -151,11 +170,11 @@ public class Collisions {
      * @param newArea the new area
      * @param parent the parent
      * @param owner the owner
-     * @param price the price
+     * @param isFree if the land is free or not
      * @param checkApproveList the check approve list
      */
-    public Collisions(String landName, ApiLand land, LandAction action, int removedAreaId, ApiCuboidArea newArea, ApiLand parent,
-            ApiPlayerContainer owner, double price, boolean checkApproveList) {
+    public Collisions(String landName, Land land, LandAction action, int removedAreaId, Area newArea, Land parent,
+            PlayerContainer owner, boolean isFree, boolean checkApproveList) {
 
         coll = new ArrayList<CollisionsEntry>();
         lands = Secuboid.getThisPlugin().getLands();
@@ -165,6 +184,24 @@ public class Collisions {
         this.removedAreaId = removedAreaId;
         this.newArea = newArea;
         this.parent = parent;
+        this.owner = owner;
+        this.isFree = isFree;
+        this.checkApproveList = checkApproveList;
+
+        landCollisionsList = new HashSet<Area>();
+        childOutsideLand = new HashSet<Land>();
+        outsideParent = false;
+        priceArea = 0;
+        priceLand = 0;
+    }
+
+    // Called from this package only
+    void doCollisionCheck() {
+
+        // Pass 0 get collision information for the next passes
+        if(action != LandAction.LAND_RENAME) {
+            doDotByDotCollisionInfo();
+        }
 
         // Pass 1 check if there is a collision
         if (action == LandAction.LAND_ADD || action == LandAction.AREA_ADD || action == LandAction.AREA_MODIFY) {
@@ -174,16 +211,8 @@ public class Collisions {
         // Pass 2 check if the the cuboid is inside the parent
         if(parent != null) {
             if (action == LandAction.LAND_ADD || action == LandAction.AREA_ADD 
-                    || action == LandAction.AREA_MODIFY) {
-                checkIfInsideParent(newArea);
-            } else if(action == LandAction.LAND_PARENT) {
-                Iterator<ApiCuboidArea> areaIt = land.getAreas().iterator();
-                boolean exitLoop = false;
-                while(areaIt.hasNext() && !exitLoop) {
-                    if(!checkIfInsideParent(areaIt.next())) {
-                        exitLoop = true;
-                    }
-                }
+                    || action == LandAction.AREA_MODIFY || action == LandAction.LAND_PARENT) {
+                checkIfInsideParent();
             }
         }
         
@@ -199,34 +228,37 @@ public class Collisions {
         }
 
         // Pass 5 check if the name is already existing
-        if (action == LandAction.LAND_ADD || action == LandAction.LAND_RENAME) {
+        if (landName != null && (action == LandAction.LAND_ADD || action == LandAction.LAND_RENAME)) {
             checkIfNameExist();
         }
 
         // Pass 6 check if the name is already in Approve List
-        if (!checkApproveList && 
+        if (landName != null && !checkApproveList && 
                 ((me.tabinol.secuboid.lands.Lands) lands).getApproveList().isInApprove(landName)) {
             coll.add(new CollisionsEntry(LandError.IN_APPROVE_LIST, null, 0));
         }
         
-        if(owner.getContainerType() == ApiPlayerContainerType.PLAYER) {
+        if(owner.getContainerType() == PlayerContainerType.PLAYER) {
             
             // Pass 7 check if the player has enough money
-            if(price > 0 && newArea != null) {
+            if((priceArea > 0 || priceLand > 0) && newArea != null) {
                 double playerBalance = Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(
-                        ((ApiPlayerContainerPlayer)owner).getOfflinePlayer(), newArea.getWorldName());
-                if(playerBalance < price) {
-                    coll.add(new CollisionsEntry(LandError.NOT_ENOUGH_MONEY, null, 0));
+                        ((PlayerContainerPlayer)owner).getOfflinePlayer(), newArea.getWorldName());
+                if(action == LandAction.LAND_ADD) {
+                    if ((action == LandAction.LAND_ADD && playerBalance < priceLand) || playerBalance < priceArea) {
+                        coll.add(new CollisionsEntry(LandError.NOT_ENOUGH_MONEY, null, 0));
+                    }
                 }
             }
         
             // Pass 8 check if the land has more than the maximum number of areas
-            if(action == LandAction.AREA_ADD && land.getAreas().size() >= Secuboid.getThisPlugin().getConf().getMaxAreaPerLand()) {
+            if(land != null && action == LandAction.AREA_ADD 
+            		&& land.getAreas().size() >= Secuboid.getThisPlugin().getConf().getMaxAreaPerLand()) {
                 coll.add(new CollisionsEntry(LandError.MAX_AREA_FOR_LAND, land, 0));
             }
         
             // Pass 9 check if the player has more than the maximum number of land
-            if(action == LandAction.LAND_ADD && owner != null 
+            if(action == LandAction.LAND_ADD 
                     && Secuboid.getThisPlugin().getLands().getLands(owner).size() >= Secuboid.getThisPlugin().getConf().getMaxLandPerPlayer()) {
                 coll.add(new CollisionsEntry(LandError.MAX_LAND_FOR_PLAYER, null, 0));
             }
@@ -247,19 +279,130 @@ public class Collisions {
         }
     }
 
+    private void doDotByDotCollisionInfo() {
+
+        // Prepare for land calculation
+        double priceLandFlag = 0;
+        double priceAreaFlag = 0;
+        FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
+        if(newArea != null) {
+            if (land == null) {
+                priceLandFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(newArea.getWorldName())
+                        .getFlagAndInherit(flagType).getValueDouble();
+
+            } else {
+                priceLandFlag = land.getFlagAndInherit(flagType).getValueDouble();
+            }
+            if(land != null) {
+                if (land.getParent() == null) {
+                    priceAreaFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(newArea.getWorldName())
+                            .getFlagAndInherit(flagType).getValueDouble();
+                } else {
+                    priceAreaFlag = land.getParent().getFlagAndInherit(flagType).getValueDouble();
+                }
+            }
+        }
+
+        // Loop for Land first
+        if(land != null) {
+            int x1 = Integer.MAX_VALUE;
+            int y1 = Integer.MAX_VALUE;
+            int z1 = Integer.MAX_VALUE;
+            int x2 = Integer.MAX_VALUE;
+            int y2 = Integer.MAX_VALUE;
+            int z2 = Integer.MAX_VALUE;
+            for (Area area : land.getAreas()) {
+                x1 = Calculate.lowerInt(area.getX1(), x1);
+                y1 = Calculate.lowerInt(area.getY1(), y1);
+                z1 = Calculate.lowerInt(area.getZ1(), z1);
+                x2 = Calculate.greaterInt(area.getX2(), x2);
+                y2 = Calculate.greaterInt(area.getY2(), y2);
+                z2 = Calculate.greaterInt(area.getZ2(), z2);
+            }
+            for(int x = x1; x <= x2; x ++) {
+                for(int y = y1; y <= y2; y ++) {
+                    for (int z = z1; z <= z2; z++) {
+                        Location loc = new Location(land.getWorld(), x, y, z);
+                        if(land.isLocationInside(loc)) {
+                            for (Area area2 : lands.getAreas(loc)) {
+                                Land land2 = area2.getLand();
+                                if (land != land2 && !isDescendants(land, land2) && !isDescendants(land2, parent)) {
+                                    landCollisionsList.add(area2);
+                                }
+                            }
+                            if(!lands.getLands(loc).contains(parent)) {
+                                outsideParent = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // The new area
+        if(newArea != null && land != null) {
+            for(int x = newArea.getX1(); x <= newArea.getX2(); x ++) {
+                for(int y = newArea.getY1(); y <= newArea.getY2(); y ++) {
+                    for (int z = newArea.getZ1(); z <= newArea.getZ2(); z++) {
+                        Location loc = new Location(land.getWorld(), x, y, z);
+                        if (newArea.isLocationInside(loc)) {
+                            Collection<Land> lands2 = lands.getLands(loc);
+                            if (parent != null && !lands2.contains(parent)) {
+                                outsideParent = true;
+                            }
+                            if (!isFree) {
+                                priceLand += priceLandFlag;
+                                if (land == null || !lands2.contains(land)) {
+                                    priceArea += priceAreaFlag;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Children outside
+        if(land != null) {
+            HashSet<Area> areaList = new HashSet<Area>();
+
+            if (action != LandAction.LAND_REMOVE) {
+                for(Area area : land.getAreas()) {
+                    if(area.getKey() != removedAreaId) {
+                        areaList.add(area);
+                    }
+                }
+            }
+            if (newArea != null) {
+                areaList.add(newArea);
+            }
+
+            for(Area areaC : areaList) {
+                for(int x = areaC.getX1(); x <= areaC.getX2(); x ++) {
+                    for(int y = areaC.getY1(); y <= areaC.getY2(); y ++) {
+                        for (int z = areaC.getZ1(); z <= areaC.getZ2(); z++) {
+                            Location loc = new Location(land.getWorld(), x, y, z);
+                            if (areaC.isLocationInside(loc)) {
+                                for (Land child : land.getChildren()) {
+                                    if(!child.isLocationInside(loc)) {
+                                        childOutsideLand.add(child);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Check collisions.
      */
     private void checkCollisions() {
 
-        for (ApiLand land2 : lands.getLands()) {
-            if (land != land2 && !isDescendants(land, land2) && !isDescendants(land2, parent)) {
-                for (int areaId2 : land2.getAreasKey()) {
-                    if (newArea.isCollision(land2.getArea(areaId2))) {
-                        coll.add(new CollisionsEntry(LandError.COLLISION, land2, areaId2));
-                    }
-                }
-            }
+        for (Area areaCol : landCollisionsList) {
+            coll.add(new CollisionsEntry(LandError.COLLISION, areaCol.getLand(), areaCol.getKey()));
         }
     }
 
@@ -270,26 +413,21 @@ public class Collisions {
      * @param land2 the land2
      * @return true, if is descendants
      */
-    private boolean isDescendants(ApiLand land1, ApiLand land2) {
-        
+    private boolean isDescendants(Land land1, Land land2) {
+
         if(land1 == null || land2 == null) {
             return false;
         }
-        if (land1.isDescendants(land2)) {
-            return true;
-        }
-
-        return false;
+        return land1.isDescendants(land2);
     }
     
     /**
      * Check if inside parent and adds an error if not.
-     * @param area the area to check
      * @return true if inside the parent
      */
-    private boolean checkIfInsideParent(ApiCuboidArea area) {
+    private boolean checkIfInsideParent() {
 
-        if (checkIfAreaOutsideParent(area, parent.getAreas())) {
+        if (outsideParent) {
             coll.add(new CollisionsEntry(LandError.OUT_OF_PARENT, parent, 0));
             return false;
         }
@@ -302,23 +440,8 @@ public class Collisions {
      */
     private void checkIfChildrenOutside() {
 
-        HashSet<ApiCuboidArea> areaList = new HashSet<ApiCuboidArea>();
-
-        // If this is a Land remove, the list must be empty
-        if (action != LandAction.LAND_REMOVE) {
-            areaList.addAll(land.getAreas());
-            areaList.remove(land.getArea(removedAreaId));
-        }
-        if (newArea != null) {
-            areaList.add(newArea);
-        }
-
-        for (ApiLand child : land.getChildren()) {
-            for (ApiCuboidArea childArea : child.getAreas()) {
-                if (checkIfAreaOutsideParent(childArea, areaList)) {
-                    coll.add(new CollisionsEntry(LandError.CHILD_OUT_OF_BORDER, child, 0));
-                }
-            }
+        for (Land child : childOutsideLand) {
+            coll.add(new CollisionsEntry(LandError.CHILD_OUT_OF_BORDER, child, 0));
         }
     }
 
@@ -327,7 +450,7 @@ public class Collisions {
      */
     private void checkIfLandHasChildren() {
 
-        for (ApiLand child : land.getChildren()) {
+        for (Land child : land.getChildren()) {
             coll.add(new CollisionsEntry(LandError.HAS_CHILDREN, child, 0));
         }
     }
@@ -340,39 +463,6 @@ public class Collisions {
         if (lands.isNameExist(landName)) {
             coll.add(new CollisionsEntry(LandError.NAME_IN_USE, null, 0));
         }
-    }
-
-    // Called from checkIfInsideParent and checkIfChildrenOutside
-    /**
-     * Check if area outside parent.
-     *
-     * @param childArea the child area
-     * @param parentAreas the parent areas
-     * @return true, if successful
-     */
-    private boolean checkIfAreaOutsideParent(ApiCuboidArea childArea, Collection<ApiCuboidArea> parentAreas) {
-
-        // area = this new area, areas2 = areas of parents
-        Collection<ApiCuboidArea> childAreas = new HashSet<ApiCuboidArea>();
-        childAreas.add(childArea);
-        Iterator<ApiCuboidArea> iterator = parentAreas.iterator();
-
-        while (iterator.hasNext()) {
-            ApiCuboidArea parentArea = iterator.next();
-            Collection<ApiCuboidArea> childAreasNew = new HashSet<ApiCuboidArea>();
-            for (ApiCuboidArea areaC : childAreas) {
-                childAreasNew.addAll(parentArea.getOutside(areaC));
-            }
-
-            // Exit if no areas is returned (the child area is inside)
-            if (childAreasNew.isEmpty()) {
-                return false;
-            }
-
-            childAreas = childAreasNew;
-        }
-
-        return true;
     }
 
     /**
@@ -421,4 +511,36 @@ public class Collisions {
         return allowApprove;
     }
 
+    /**
+     * Is the player free?
+     * @return false if the player must pay
+     */
+    public boolean isFree() {
+
+        return isFree;
+    }
+
+    public String getLandName() {
+
+        return landName;
+    }
+
+    public double getPriceLand() {
+
+        return priceLand;
+    }
+
+    public double getPriceArea() {
+
+        return priceArea;
+    }
+
+    public double getPrice() {
+
+        if(action == LandAction.LAND_ADD) {
+            return priceLand;
+        }
+
+        return priceArea;
+    }
 }

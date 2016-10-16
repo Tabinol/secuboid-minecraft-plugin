@@ -23,10 +23,9 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.InventoryStorage;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.events.LandModifyEvent;
-import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.DummyLand;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -125,7 +124,7 @@ public class InventoryListener extends CommonListener implements Listener {
         	// Land area change, all players in the world affected
         	for(Player player : event.getLand().getWorld().getPlayers()) {
                 inventoryStorage.switchInventory(player,
-                		ApiSecuboidSta.getLands().getLandOrOutsideArea(player.getLocation()),
+                		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()),
                 		player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
             }
     	} else if(reason != LandModifyEvent.LandModifyReason.PERMISSION_SET && reason != LandModifyEvent.LandModifyReason.PERMISSION_SET
@@ -134,7 +133,7 @@ public class InventoryListener extends CommonListener implements Listener {
     		// No land resize or area replace, only players in the land affected
     		for(Player player : event.getLand().getPlayersInLandAndChildren()) {
                 inventoryStorage.switchInventory(player,
-                		ApiSecuboidSta.getLands().getLandOrOutsideArea(player.getLocation()),
+                		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()),
                 		player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
     		}
     	}
@@ -206,9 +205,9 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
-    public ApiDummyLand getDummyLand(Location location) {
+    public DummyLand getDummyLand(Location location) {
         
-        return ApiSecuboidSta.getLands().getLandOrOutsideArea(location);
+        return Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(location);
     }
     
     public PlayerInvEntry getPlayerInvEntry(Player player) {

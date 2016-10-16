@@ -22,20 +22,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ArgList;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
-import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.lands.types.ApiType;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 
@@ -46,7 +44,7 @@ import org.bukkit.ChatColor;
  * The Class CommandCreate.
  */
 @InfoCommand(name="create", forceParameter=true)
-public class CommandCreate extends CommandExec {
+public class CommandCreate extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command create.
@@ -70,9 +68,8 @@ public class CommandCreate extends CommandExec {
 
         AreaSelection select = (AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA);
 
-        ApiCuboidArea area = select.getCuboidArea();
-        Double price = entity.playerConf.getSelection().getLandCreatePrice();
-        ApiLand parent;
+        Area area = select.getVisualSelection().getArea();
+        Land parent;
 
         // Quit select mod
         // entity.playerConf.setAreaSelection(null);
@@ -107,7 +104,7 @@ public class CommandCreate extends CommandExec {
         } else {
 
             // Autodetect parent
-            parent = select.getParentDetected();
+            parent = select.getVisualSelection().getParentDetected();
         }
 
         // Not complicated! The player must be AdminMod, or access to create (in world) 
@@ -119,8 +116,8 @@ public class CommandCreate extends CommandExec {
         }
 
         // If the player is adminmod, the owner is nobody, and set type
-        ApiPlayerContainer owner;
-        ApiType type;
+        PlayerContainer owner;
+        Type type;
         if(entity.playerConf.isAdminMod()) {
             owner = new PlayerContainerNobody();
             type = Secuboid.getThisPlugin().getConf().getTypeAdminMod();
@@ -129,27 +126,33 @@ public class CommandCreate extends CommandExec {
             type = Secuboid.getThisPlugin().getConf().getTypeNoneAdminMod();
         }
 
+        checkCollision(curArg, null, type, LandAction.LAND_ADD, 0, area, parent, owner, true);
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
         // Check for collision
-        if (checkCollision(curArg, null, type, LandAction.LAND_ADD, 0, area, parent, owner, price, true)) {
+        if (collisions.hasCollisions()) {
             new CommandCancel(entity.playerConf, true).commandExecute();
             return;
         }
 
         // Create Land
-        ApiLand land = null;
-        
         try {
-            land = Secuboid.getThisPlugin().getLands().createLand(curArg, owner, area, parent, price, type);
+            Land cLand = Secuboid.getThisPlugin().getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
+
+            entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.DONE"));
+            Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create a land named " + cLand.getName() + " at position " + cLand.getAreas().toString());
+
+            // Cancel and select the land
+            new CommandCancel(entity.playerConf, true).commandExecute();
+            new CommandSelect(entity.player, new ArgList(new String[] {cLand.getName()},
+                    entity.player), null).commandExecute();
+
         } catch (SecuboidLandException ex) {
             Logger.getLogger(CommandCreate.class.getName()).log(Level.SEVERE, "On land create", ex);
         }
 
-        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.DONE"));
-        Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create a land named " + land.getName() + " at position " + land.getAreas().toString());
-        
-        // Cancel and select the land
-        new CommandCancel(entity.playerConf, true).commandExecute();
-        new CommandSelect(entity.player, new ArgList(new String[] {land.getName()}, 
-                entity.player), null).commandExecute();
     }
 }

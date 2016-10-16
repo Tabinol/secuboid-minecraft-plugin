@@ -38,14 +38,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandThreadExec;
+import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.Bukkit;
 
-import com.mojang.api.profiles.HttpProfileRepository;
-import com.mojang.api.profiles.Profile;
+import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
+import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
 
 
 /**
@@ -95,7 +95,7 @@ public class PlayersCache extends Thread {
     private class OutputRequest {
         
         /** The command exec. */
-        CommandThreadExec commandExec;
+        CommandPlayerThreadExec commandExec;
         
         /** The player names. */
         String[] playerNames;
@@ -106,7 +106,7 @@ public class PlayersCache extends Thread {
          * @param commandExec the command exec
          * @param playerNames the player names
          */
-        OutputRequest(CommandThreadExec commandExec, String[] playerNames) {
+        OutputRequest(CommandPlayerThreadExec commandExec, String[] playerNames) {
             
             this.commandExec = commandExec;
             this.playerNames = playerNames;
@@ -159,7 +159,7 @@ public class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param pc the pc
      */
-    public void getUUIDWithNames(CommandThreadExec commandExec, ApiPlayerContainer pc) {
+    public void getUUIDWithNames(CommandPlayerThreadExec commandExec, PlayerContainer pc) {
         
         if(pc != null && pc instanceof PlayerContainerPlayerName) {
             getUUIDWithNames(commandExec, pc.getName());
@@ -175,7 +175,7 @@ public class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param playerNames the player names
      */
-    public void getUUIDWithNames(CommandThreadExec commandExec, String... playerNames) {
+    public void getUUIDWithNames(CommandPlayerThreadExec commandExec, String... playerNames) {
         
         outputList.add(new OutputRequest(commandExec, playerNames));
         lock.lock();
@@ -236,7 +236,7 @@ public class PlayersCache extends Thread {
                        }
                    }
                    // Return the output of the request on the main thread
-                   ReturnToCommand returnToCommand = new ReturnToCommand(outputRequest.commandExec, entries);
+                   ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec, entries);
                   Bukkit.getScheduler().callSyncMethod(Secuboid.getThisPlugin(), returnToCommand);
                }
                

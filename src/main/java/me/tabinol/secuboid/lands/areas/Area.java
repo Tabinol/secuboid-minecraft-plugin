@@ -19,30 +19,32 @@
 
 package me.tabinol.secuboid.lands.areas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.utilities.Calculate;
-import me.tabinol.secuboidapi.lands.areas.ApiArea;
-import me.tabinol.secuboidapi.lands.areas.ApiAreaType;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
  * Represents a area of any type (abstract).
  */
-public abstract class Area implements Comparable<Area>, ApiArea {
+public abstract class Area implements Comparable<Area> {
 
     /** The world name. */
     protected final String worldName;
 
-    /** The z2. */
-    protected final int x1, y1, z1, x2, y2, z2;
+    /** The values. */
+    protected int x1, y1, z1, x2, y2, z2;
 
     /** The land. */
     protected Land land = null;
 
     /** The area type. */
-    private final ApiAreaType areaType;
+    protected final AreaType areaType;
 
     /**
      * Instantiates a new area.
@@ -56,7 +58,7 @@ public abstract class Area implements Comparable<Area>, ApiArea {
      * @param y2 the y2
      * @param z2 the z2
      */
-    Area(ApiAreaType areaType, String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
+    Area(AreaType areaType, String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 
         this.areaType = areaType;
         this.worldName = worldName;
@@ -67,14 +69,14 @@ public abstract class Area implements Comparable<Area>, ApiArea {
         this.z1 = Calculate.lowerInt(z1, z2);
         this.z2 = Calculate.greaterInt(z1, z2);
     }
-
+    
     /**
      * Equals.
      *
      * @param area2 the area2
      * @return true, if successful
      */
-    public boolean equals(ApiCuboidArea area2) {
+    public boolean equals(CuboidArea area2) {
 
         return areaType == areaType && worldName.equals(area2.getWorldName())
                 && x1 == area2.getX1() && y1 == area2.getY1() && z1 == area2.getZ1()
@@ -82,7 +84,7 @@ public abstract class Area implements Comparable<Area>, ApiArea {
     }
 
     @Override
-    public int compareTo(CuboidArea t) {
+    public int compareTo(Area t) {
 
         int worldCompare = worldName.compareTo(t.worldName);
         if (worldCompare != 0) {
@@ -140,10 +142,15 @@ public abstract class Area implements Comparable<Area>, ApiArea {
      */
     public String getPrint() {
 
-        return worldName + areaType.toString().substring(0, 4).toLowerCase()
+        return areaType.toString().substring(0, 3).toLowerCase()
                 + ":(" + x1 + ", " + y1 + ", " + z1 + ")-(" + x2 + ", " + y2 + ", " + z2 + ")";
     }
 
+    public AreaType getAreaType() {
+        
+        return areaType;
+    }
+    
     /**
      * Gets the key.
      *
@@ -165,17 +172,7 @@ public abstract class Area implements Comparable<Area>, ApiArea {
      */
     public final void setLand(Land land) {
 
-        this.land = land;
-    }
-
-    /**
-     * Sets the world name.
-     *
-     * @param worldName the new world name
-     */
-    public void setWorldName(String worldName) {
-
-        this.worldName = worldName;
+        this.land = (Land) land;
     }
 
     /**
@@ -267,6 +264,15 @@ public abstract class Area implements Comparable<Area>, ApiArea {
 
         return z2;
     }
+    
+    public abstract long getVolume();
+
+    public abstract boolean isLocationInside(String worldName, int x, int y, int z);
+    
+    public boolean isLocationInside(Location loc) {
+
+        return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    }
 
     /**
      * Gets the from string.
@@ -278,6 +284,7 @@ public abstract class Area implements Comparable<Area>, ApiArea {
 
         String[] multiStr = str.split(":");
 
+        // TODO Lines
         // Create CuboidArea
         if(multiStr[0].equals("CUBOID")) {
             return new CuboidArea(multiStr[1],
@@ -300,6 +307,44 @@ public abstract class Area implements Comparable<Area>, ApiArea {
                     Integer.parseInt(multiStr[7]));
         }
 
+        // Create CylinderArea
+        if(multiStr[0].equals("LINES")) {
+            List<LineLine> lines = new ArrayList<LineLine>();
+
+            // Do the first
+            lines.add(new LineLine(
+                    Integer.parseInt(multiStr[2]),
+                    Integer.parseInt(multiStr[3]),
+                    Integer.parseInt(multiStr[4]),
+                    Integer.parseInt(multiStr[5]),
+                    Integer.parseInt(multiStr[6]),
+                    Integer.parseInt(multiStr[7]),
+                    Integer.parseInt(multiStr[8]),
+                    Integer.parseInt(multiStr[9]),
+                    Integer.parseInt(multiStr[10]),
+                    Integer.parseInt(multiStr[11])
+            ));
+
+            // Do the next lines (if exist)
+            if(multiStr.length > 12) {
+                for (int t = 12; t < multiStr.length; t += 10) {
+                    lines.add(new LineLine(
+                            Integer.parseInt(multiStr[t - 7]),
+                            Integer.parseInt(multiStr[t - 6]),
+                            Integer.parseInt(multiStr[t - 5]),
+                            Integer.parseInt(multiStr[t]),
+                            Integer.parseInt(multiStr[t + 1]),
+                            Integer.parseInt(multiStr[t + 2]),
+                            Integer.parseInt(multiStr[t + 3]),
+                            Integer.parseInt(multiStr[t + 4]),
+                            Integer.parseInt(multiStr[t + 5]),
+                            Integer.parseInt(multiStr[t + 6])
+                    ));
+                }
+            }
+            return new LinesArea(multiStr[1], lines);
+        }
+
         // Create CuboidArea (old version)
         return new CuboidArea(multiStr[0],
                 Integer.parseInt(multiStr[1]),
@@ -309,4 +354,6 @@ public abstract class Area implements Comparable<Area>, ApiArea {
                 Integer.parseInt(multiStr[5]),
                 Integer.parseInt(multiStr[6]));
     }
+    
+    public abstract Area copyOf();
 }

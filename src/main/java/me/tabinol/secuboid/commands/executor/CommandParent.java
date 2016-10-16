@@ -17,25 +17,25 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboidapi.ApiSecuboidSta;
+import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import org.bukkit.ChatColor;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
 @InfoCommand(name="parent", forceParameter=true)
-public class CommandParent extends CommandExec {
+public class CommandParent extends CommandCollisionsThreadExec {
     
     public CommandParent(CommandEntities entity) throws SecuboidCommandException {
         
         super(entity);
     }
-    
+
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
@@ -46,7 +46,7 @@ public class CommandParent extends CommandExec {
         Land parent = null;
         
         if(!curArg.equalsIgnoreCase("unset")) {
-            parent = (Land) ApiSecuboidSta.getLands().getLand(curArg);
+            parent = (Land) Secuboid.getThisPlugin().getLands().getLand(curArg);
             
             // Check if the parent exist
             if (parent == null) {
@@ -60,11 +60,18 @@ public class CommandParent extends CommandExec {
         }
         
         // Check for collision
-        if (checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent, 
-                land.getOwner(), 0, true)) {
+        checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
+                land.getOwner(), true);
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
+        // Check for collision
+        if (collisions.hasCollisions()) {
             return;
         }
-        
+
         // Set parent
         land.setParent(parent);
         if(parent == null) {

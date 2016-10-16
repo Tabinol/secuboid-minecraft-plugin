@@ -24,8 +24,7 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.types.ApiType;
+import me.tabinol.secuboid.lands.types.Type;
 
 import org.bukkit.ChatColor;
 
@@ -48,7 +47,7 @@ public class CommandType extends CommandExec {
         if (curArg.equalsIgnoreCase("list")) {
             
             StringBuilder stList = new StringBuilder();
-            for (ApiType type : ApiSecuboidSta.getTypes().getTypes()) {
+            for (Type type : Secuboid.getThisPlugin().getTypes().getTypes()) {
                 if (stList.length() != 0) {
                     stList.append(" ");
                 }
@@ -65,7 +64,7 @@ public class CommandType extends CommandExec {
         
         } else { // Type change 
             
-            ApiType type = ApiSecuboidSta.getTypes().getType(curArg);
+            Type type = Secuboid.getThisPlugin().getTypes().getType(curArg);
             
             if(type == null) {
                 throw new SecuboidCommandException("Land Types", entity.player, "COMMAND.TYPES.INVALID");

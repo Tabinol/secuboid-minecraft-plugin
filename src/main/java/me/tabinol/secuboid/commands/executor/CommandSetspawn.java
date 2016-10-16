@@ -29,7 +29,7 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.LandFlag;
-import me.tabinol.secuboidapi.utilities.StringChanges;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 @InfoCommand(name="setspawn")
 public class CommandSetspawn extends CommandExec {

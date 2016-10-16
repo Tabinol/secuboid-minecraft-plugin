@@ -31,24 +31,19 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
 import org.bukkit.Location;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.exceptions.FileLoadException;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.parameters.ApiLandFlag;
-import me.tabinol.secuboidapi.parameters.ApiPermission;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 
 /**
@@ -162,7 +157,7 @@ public class StorageFlat extends Storage implements StorageInt {
         String landName;
         String type = null;
         Land land = null;
-        Map<Integer, CuboidArea> areas = new TreeMap<Integer, CuboidArea>();
+        Map<Integer, Area> areas = new TreeMap<Integer, Area>();
         boolean isLandCreated = false;
         PlayerContainer owner;
         String parentName;
@@ -223,7 +218,7 @@ public class StorageFlat extends Storage implements StorageInt {
             // Create areas
             while ((str = cf.getNextString()) != null) {
                 String[] multiStr = str.split(":", 2);
-                areas.put(Integer.parseInt(multiStr[0]), CuboidArea.getFromString(multiStr[1]));
+                areas.put(Integer.parseInt(multiStr[0]), Area.getFromString(multiStr[1]));
             }
             if (areas.isEmpty()) {
                 throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
@@ -316,7 +311,9 @@ public class StorageFlat extends Storage implements StorageInt {
             // Catch errors here
         } catch (NullPointerException ex) {
             try {
-                throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "Problem with parameter.");
+                throw new FileLoadException(file.getName(), 
+                        cf != null ? cf.getLine() : "-NOT FOUND-", 
+                        cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
             } catch (FileLoadException ex2) {
                 // Catch load
                 return;
@@ -327,7 +324,7 @@ public class StorageFlat extends Storage implements StorageInt {
         }
 
         // Create land
-        for (Map.Entry<Integer, CuboidArea> entry : areas.entrySet()) {
+        for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
             if (!isLandCreated) {
                 if (parentName != null) {
 
@@ -335,7 +332,7 @@ public class StorageFlat extends Storage implements StorageInt {
 
                     try {
                         land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(), parent,
-                                entry.getKey(), uuid, ApiSecuboidSta.getTypes().addOrGetType(type));
+                                entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
                     } catch (SecuboidLandException ex) {
                         Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
                         return;
@@ -343,7 +340,7 @@ public class StorageFlat extends Storage implements StorageInt {
                 } else {
                     try {
                         land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(),
-                                null, entry.getKey(), uuid, ApiSecuboidSta.getTypes().addOrGetType(type));
+                                null, entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
                     } catch (SecuboidLandException ex) {
                         Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
                         return;
@@ -351,8 +348,17 @@ public class StorageFlat extends Storage implements StorageInt {
                 }
                 isLandCreated = true;
             } else {
+                if(land == null) {
+                    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+                    return;
+                }
                 land.addArea(entry.getValue(), entry.getKey());
             }
+        }
+
+        if(land == null) {
+            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+            return;
         }
 
         // Load land params form memory
@@ -424,22 +430,22 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Residents
             strs = new ArrayList<String>();
-            for (ApiPlayerContainer pc : land.getResidents()) {
+            for (PlayerContainer pc : land.getResidents()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("Residents", strs.toArray(new String[0]));
 
             //Banneds
             strs = new ArrayList<String>();
-            for (ApiPlayerContainer pc : land.getBanneds()) {
+            for (PlayerContainer pc : land.getBanneds()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("Banneds", strs.toArray(new String[0]));
 
             //Permissions
             strs = new ArrayList<String>();
-            for (ApiPlayerContainer pc : land.getSetPCHavePermission()) {
-                for (ApiPermission perm : land.getPermissionsForPC(pc)) {
+            for (PlayerContainer pc : land.getSetPCHavePermission()) {
+                for (Permission perm : land.getPermissionsForPC(pc)) {
                     strs.add(pc.toString() + ":" + perm.toString());
                 }
             }
@@ -447,7 +453,7 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Flags
             strs = new ArrayList<String>();
-            for (ApiLandFlag flag : land.getFlags()) {
+            for (LandFlag flag : land.getFlags()) {
                 strs.add(flag.toString());
             }
             cb.writeParam("Flags", strs.toArray(new String[0]));
@@ -460,7 +466,7 @@ public class StorageFlat extends Storage implements StorageInt {
 
             // PlayersNotify
             strs = new ArrayList<String>();
-            for (ApiPlayerContainerPlayer pc : land.getPlayersNotify()) {
+            for (PlayerContainerPlayer pc : land.getPlayersNotify()) {
                 strs.add(pc.toString());
             }
             cb.writeParam("PlayersNotify", strs.toArray(new String[0]));

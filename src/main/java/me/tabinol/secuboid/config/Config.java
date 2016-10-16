@@ -23,10 +23,9 @@ import java.util.logging.Level;
 import java.util.TreeSet;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.PermissionType;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.types.ApiType;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -289,24 +288,24 @@ public class Config {
     public TreeSet<PermissionType> getOwnerConfigPerm() { return ownerConfigPerm; }
 
     /** The type admin mod. */
-    private ApiType typeAdminMod;
+    private Type typeAdminMod;
     
     /**
      * Gets the type admin mod.
      *
      * @return the type admin mod
      */
-    public ApiType getTypeAdminMod() { return typeAdminMod; }
+    public Type getTypeAdminMod() { return typeAdminMod; }
     
     /** The type none admin mod. */
-    private ApiType typeNoneAdminMod;
+    private Type typeNoneAdminMod;
     
     /**
      * Gets the type none admin mod.
      *
      * @return the type none admin mod
      */
-    public ApiType getTypeNoneAdminMod() { return typeNoneAdminMod; }
+    public Type getTypeNoneAdminMod() { return typeNoneAdminMod; }
 
     private boolean flyAndCreative;
 
@@ -448,10 +447,10 @@ public class Config {
 
         // Add types
         for(String typeName : config.getStringList("Lands.Types.List")) {
-            ApiSecuboidSta.getTypes().addOrGetType(typeName);
+            Secuboid.getThisPlugin().getTypes().addOrGetType(typeName);
         }
-        typeAdminMod = ApiSecuboidSta.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMod", "admin"));
-        typeNoneAdminMod = ApiSecuboidSta.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMod", "player"));
+        typeAdminMod = Secuboid.getThisPlugin().getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMod", "admin"));
+        typeNoneAdminMod = Secuboid.getThisPlugin().getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMod", "player"));
     }
     
     private String getStringOrNull(String path, String defaultSt) {

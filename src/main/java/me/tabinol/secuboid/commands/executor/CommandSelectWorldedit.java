@@ -22,12 +22,16 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.selection.region.AreaSelection;
+import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -74,17 +78,28 @@ public class CommandSelectWorldedit {
         try {
             Region sel;
             if (session.getSelectionWorld() == null
-                    || !((sel = session.getSelection(session.getSelectionWorld())) != null && sel instanceof CuboidRegion)) {
+                    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
+                    || sel instanceof CylinderRegion))) {
                 throw new SecuboidCommandException("CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
             }
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
             Secuboid.getThisPlugin().getLog().write(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
             
-            AreaSelection select = new AreaSelection(player, new CuboidArea(player.getWorld().getName(), 
-                    sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-                    sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(), 
-                    sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()));
+            AreaSelection select;
+            if(sel instanceof CuboidRegion) {
+                select = new AreaSelection(player, new CuboidArea(player.getWorld().getName(), 
+                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(), 
+                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                        false, AreaType.CUBOID, MoveType.PASSIVE);
+            } else {
+                select = new AreaSelection(player, new CylinderArea(player.getWorld().getName(), 
+                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(), 
+                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                        false, AreaType.CYLINDER, MoveType.PASSIVE);
+            }
             
             entry.getSelection().addSelection(select);
             entry.setAutoCancelSelect(true);

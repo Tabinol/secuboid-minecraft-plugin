@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import me.tabinol.secuboidapi.parameters.ApiParameters;
-
 import org.bukkit.Material;
 
 
@@ -35,7 +33,25 @@ import org.bukkit.Material;
  *
  * @author Tabinol
  */
-public class Parameters implements ApiParameters {
+public class Parameters {
+
+    /**
+     *  Prefix of specials permissions (ex: PLACE_SIGN).
+     */
+    public enum SpecialPermPrefix {
+        
+        /** Place a block */
+        PLACE,
+        
+        /** Prevent place a block */
+        NOPLACE,
+        
+        /** Destroy a block */
+        DESTROY,
+        
+        /** Prevent destroy a block */
+        NODESTROY
+    }
 
     /** The permissions. */
     private final TreeMap<String, PermissionType> permissions;

@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.InventoryConfig;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
+import me.tabinol.secuboid.lands.DummyLand;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -336,7 +336,7 @@ public class InventoryStorage {
         }
     }
 
-    public void switchInventory(Player player, ApiDummyLand dummyLand, boolean toIsCreative, PlayerAction playerAction) {
+    public void switchInventory(Player player, DummyLand dummyLand, boolean toIsCreative, PlayerAction playerAction) {
 
         PlayerInvEntry invEntry = null;
         boolean fromIsCreative = false;

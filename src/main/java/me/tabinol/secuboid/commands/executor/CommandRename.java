@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -37,7 +38,7 @@ import org.bukkit.ChatColor;
  * The Class CommandRename.
  */
 @InfoCommand(name="rename", forceParameter=true)
-public class CommandRename extends CommandExec {
+public class CommandRename extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command rename.
@@ -58,28 +59,36 @@ public class CommandRename extends CommandExec {
 
         checkSelections(true, null);
         checkPermission(true, true, null, null);
-        
+
         String curArg = entity.argList.getNext();
         if (BannedWords.isBannedWord(curArg)) {
             throw new SecuboidCommandException("CommandRename", entity.player, "COMMAND.RENAME.HINTUSE");
         }
 
         // Check for collision
-        if (checkCollision(curArg, land, null, Collisions.LandAction.LAND_RENAME, 0, 
-                null, land.getParent(), land.getOwner(), 0, true)) {
+        checkCollision(curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
+                null, land.getParent(), land.getOwner(), true);
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+
+        // Check for collision
+        if (collisions.hasCollisions()) {
             return;
         }
 
         String oldName = land.getName();
+        String newName = collisions.getLandName();
 
         try {
-            Secuboid.getThisPlugin().getLands().renameLand(oldName, curArg);
+            Secuboid.getThisPlugin().getLands().renameLand(oldName, newName);
         } catch (SecuboidLandException ex) {
             Logger.getLogger(CommandRename.class.getName()).log(Level.SEVERE, "On land rename", ex);
             throw new SecuboidCommandException("On land rename", entity.player, "GENERAL.ERROR");
         }
-        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, curArg));
-        Secuboid.getThisPlugin().getLog().write(entity.playerName + " has renamed " + oldName + " to " + curArg);
+        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, newName));
+        Secuboid.getThisPlugin().getLog().write(entity.playerName + " has renamed " + oldName + " to " + newName);
 
         // Cancel the selection
         new CommandCancel(entity.playerConf, true).commandExecute();

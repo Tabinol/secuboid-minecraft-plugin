@@ -20,8 +20,7 @@ package me.tabinol.secuboid.parameters;
 
 import java.util.ArrayList;
 
-import me.tabinol.secuboidapi.parameters.ApiFlagValue;
-import me.tabinol.secuboidapi.utilities.StringChanges;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 import org.bukkit.ChatColor;
 
@@ -29,7 +28,7 @@ import org.bukkit.ChatColor;
  * The Class FlagValue.
  * Represent a flag value : Boolean, Double, String and String[]
  */
-public class FlagValue implements ApiFlagValue {
+public class FlagValue {
     
     /** The value. */
     private Object value;

@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboidapi.parameters.ApiFlagValue;
 import org.bukkit.Location;
 
 import me.tabinol.secuboid.Secuboid;
@@ -27,8 +26,9 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.utilities.StringChanges;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 
 /**
@@ -66,7 +66,7 @@ public class CommandTp extends CommandExec {
         checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
         // Try to get Location
-        ApiFlagValue value = land.getFlagAndInherit(FlagList.SPAWN.getFlagType());
+        FlagValue value = land.getFlagAndInherit(FlagList.SPAWN.getFlagType());
         
         if(value.getValueString().isEmpty()) {
             throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");

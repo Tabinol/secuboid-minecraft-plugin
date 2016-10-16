@@ -18,8 +18,6 @@
  */ 
 package me.tabinol.secuboid;
 
-import java.io.IOException;
-
 import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.DependPlugin;
@@ -28,8 +26,10 @@ import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.*;
 import me.tabinol.secuboid.parameters.Parameters;
@@ -39,18 +39,17 @@ import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.ApiSecuboid;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
 /**
  * The Class Secuboid.
  */
-public class Secuboid extends JavaPlugin implements ApiSecuboid {
+public class Secuboid extends JavaPlugin {
 
     /**  The Economy schedule interval. */
     public static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
@@ -108,6 +107,9 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
     
     /** The storage thread. */
     private StorageThread storageThread = null;
+
+    /** The Lands manager thread */
+    private CollisionsManagerThread collisionsManagerThread = null;
     
     /** The log. */
     private Log log;
@@ -149,6 +151,25 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         return thisPlugin;
     }
 
+    /**
+     * Gets the configuration folder for this plugin
+     * @return a File instance of the data folder
+     */
+    public static File getConfigFolder() {
+
+        return thisPlugin.getDataFolder();
+    }
+
+    public static Parameters getStaticParameters() {
+
+        return thisPlugin.getParameters();
+    }
+
+    public static Types getStaticTypes() {
+
+        return thisPlugin.getTypes();
+    }
+
     /* (non-Javadoc)
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
      */
@@ -160,7 +181,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         // Static access to «this» Secuboid
         thisPlugin = this;
         BKVersion.initVersion();
-        ApiSecuboidSta.initSecuboidPluginAccess();
+        // TODO Ractivate API ApiSecuboidSta.initSecuboidPluginAccess();
         parameters = new Parameters(); // Must be before the configuration!
         types = new Types();
         conf = new Config();
@@ -182,6 +203,8 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         language = new Lang();
         storageThread = new StorageThread();
         lands = new Lands();
+        collisionsManagerThread = new CollisionsManagerThread();
+        collisionsManagerThread.start();
         storageThread.loadAllAndStart();
         worldListener = new WorldListener();
         playerListener = new PlayerListener();
@@ -243,7 +266,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         language.reloadConfig();
         lands = new Lands();
         storageThread.stopNextRun();
-        storageThread= new StorageThread();
+        storageThread = new StorageThread();
         storageThread.loadAllAndStart();
         approveNotif.stopNextRun();
         approveNotif.runApproveNotifLater();
@@ -262,6 +285,7 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
             inventoryListener.removeAndSave();
         }
 
+        collisionsManagerThread.stopNextRun();
         playersCache.stopNextRun();
         approveNotif.stopNextRun();
         storageThread.stopNextRun();
@@ -305,9 +329,6 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         return flyCreativeListener;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ApiSecuboid#getPlayerConf()
-     */
     public PlayerStaticConfig getPlayerConf() {
 
         return playerConf;
@@ -333,17 +354,11 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         return log;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ApiSecuboid#getParameters()
-     */
     public Parameters getParameters() {
         
         return parameters;
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ApiSecuboid#getLands()
-     */
     public Lands getLands() {
         
         return lands;
@@ -362,6 +377,15 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
     public StorageThread getStorageThread() {
 
         return storageThread;
+    }
+
+    /**
+     * Get the lands manager thread for calculations
+     * @return the lands manager thread
+     */
+    public CollisionsManagerThread getCollisionsManagerThread() {
+
+        return collisionsManagerThread;
     }
 
     /**
@@ -403,27 +427,26 @@ public class Secuboid extends JavaPlugin implements ApiSecuboid {
         
         return playersCache;
     }
-    
+
     /*
      * Creators to forward
      */
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ApiSecuboid#createPlayerContainer(me.tabinol.secuboidapi.lands.ApiLand, me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType, java.lang.String)
-     */
-    public PlayerContainer createPlayerContainer(ApiLand land,
-            ApiPlayerContainerType pct, String name) {
+    public PlayerContainer createPlayerContainer(Land land,
+            PlayerContainerType pct, String name) {
         
         return PlayerContainer.create(land, pct, name);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.ApiSecuboid#createCuboidArea(java.lang.String, int, int, int, int, int, int)
-     */
-    public ApiCuboidArea createCuboidArea(String worldName, int x1, int y1,
+    public CuboidArea createCuboidArea(String worldName, int x1, int y1,
             int z1, int x2, int y2, int z2) {
         
         return new CuboidArea(worldName, x1, y1, z1, x2, y2, z2);
     }
     
+    public CylinderArea createCylinderArea(String worldName, int x1, int y1,
+            int z1, int x2, int y2, int z2) {
+        
+        return new CylinderArea(worldName, x1, y1, z1, x2, y2, z2);
+    }
 }

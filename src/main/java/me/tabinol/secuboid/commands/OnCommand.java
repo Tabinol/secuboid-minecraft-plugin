@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +31,6 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.reflections.Reflections;
 
 
 /**
@@ -50,18 +48,12 @@ public class OnCommand extends Thread implements CommandExecutor {
         // Create Command list
         commands = new TreeMap<String, Class<?>>();
         
-        // Gets all annotations
-        Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
-        Set<Class<?>> classCommands = 
-                reflections.getTypesAnnotatedWith(InfoCommand.class);
-        
-        for(Class<?> presentClass : classCommands) {
-
+        for(CommandClassList presentClass : CommandClassList.values()) {
             // Store commands information
-            InfoCommand infoCommand = presentClass.getAnnotation(InfoCommand.class);
-            commands.put(infoCommand.name().toLowerCase(), presentClass);
+            InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
+            commands.put(infoCommand.name().toLowerCase(), presentClass.getCommandClass());
             for(String alias : infoCommand.aliases()) {
-                commands.put(alias.toLowerCase(), presentClass);
+                commands.put(alias.toLowerCase(), presentClass.getCommandClass());
             }
         }
     }

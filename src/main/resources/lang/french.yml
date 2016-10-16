@@ -214,7 +214,7 @@ COMMAND:
     WORLDEDIT:
       NOTLOAD: " WorldEdit n'est pas chargé."
       SELECTIONNED: " Vous avez sélectionné un terrain avec WorldEdit !"
-      NOSELECTIONNED: " Pas de sélection WorldEdit ou pas de type cuboïd !"
+      NOSELECTIONNED: " Pas de sélection WorldEdit ou pas de type cuboïd ou cylindre!"
       SELECTIONINCOMPLET: " La sélection WorldEdit est incomplète !"
     INFO:
       INFO1: "Sélection: %"

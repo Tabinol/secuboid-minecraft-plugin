@@ -18,65 +18,44 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerEverybody;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-
+import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
 
 /**
  * The Class PlayerContainerEverybody.
  */
-public class PlayerContainerEverybody extends PlayerContainer implements ApiPlayerContainerEverybody {
+public class PlayerContainerEverybody extends PlayerContainer {
 
     /**
      * Instantiates a new player container everybody.
      */
     public PlayerContainerEverybody() {
         
-        super("", ApiPlayerContainerType.EVERYBODY, false);
+        super("", PlayerContainerType.EVERYBODY, false);
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
         
         return container2 instanceof PlayerContainerEverybody;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
         
         return new PlayerContainerEverybody();
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean hasAccess(Player player) {
         
         return true;
     }
     
-    @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
         
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
-    @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
         
     }
 }

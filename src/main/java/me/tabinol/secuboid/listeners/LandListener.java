@@ -21,17 +21,17 @@ package me.tabinol.secuboid.listeners;
 import java.util.ArrayList;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.parameters.PermissionType;
-import me.tabinol.secuboidapi.config.players.ApiPlayerStaticConfig;
-import me.tabinol.secuboidapi.events.PlayerContainerAddNoEnterEvent;
-import me.tabinol.secuboidapi.events.PlayerContainerLandBanEvent;
-import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
+import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,7 +54,7 @@ public class LandListener extends CommonListener implements Listener {
     private final LandHeal landHeal;
     
     /** The player conf. */
-    private final ApiPlayerStaticConfig playerConf;
+    private final PlayerStaticConfig playerConf;
 
     /**
      * The Class LandHeal.
@@ -120,12 +120,12 @@ public class LandListener extends CommonListener implements Listener {
 
         Player player = event.getPlayer();
 
-        ApiDummyLand land = playerConf.get(player).getLastLand();
+        DummyLand land = playerConf.get(player).getLastLand();
 
         // Notify for quit
-        while (land instanceof ApiLand) {
-            notifyPlayers((ApiLand)land, "ACTION.PLAYEREXIT", player);
-            land = ((ApiLand)land).getParent();
+        while (land instanceof Land) {
+            notifyPlayers((Land)land, "ACTION.PLAYEREXIT", player);
+            land = ((Land)land).getParent();
         }
 
         if (playerHeal.contains(player)) {
@@ -141,9 +141,9 @@ public class LandListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
         Player player = event.getPlayer();
-        ApiLand lastLand = event.getLastLand();
-        ApiLand land = event.getLand();
-        ApiDummyLand dummyLand;
+        Land lastLand = event.getLastLand();
+        Land land = event.getLand();
+        DummyLand dummyLand;
         String value;
 
         if (lastLand != null) {
@@ -194,7 +194,7 @@ public class LandListener extends CommonListener implements Listener {
             if (!(lastLand != null && land.isDescendants(lastLand))) {
 
                 //Notify players for Enter
-                ApiLand landTest = land;
+                Land landTest = land;
                 while (landTest != null && landTest != lastLand) {
                     notifyPlayers(landTest, "ACTION.PLAYERENTER", player);
                     landTest = landTest.getParent();
@@ -266,7 +266,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param pc the pc
      * @param message the message
      */
-    private void checkForBannedPlayers(ApiLand land, ApiPlayerContainer pc, String message) {
+    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message) {
         
         checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
     }
@@ -279,7 +279,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param kickPlayers the kicked players list
      */
-    private void checkForBannedPlayers(ApiLand land, ApiPlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
 
         Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
         
@@ -297,7 +297,7 @@ public class LandListener extends CommonListener implements Listener {
         }
         
         // check for children
-        for (ApiLand children : land.getChildren()) {
+        for (Land children : land.getChildren()) {
             checkForBannedPlayers(children, pc, message);
         }
     }
@@ -310,11 +310,11 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param playerIn the player in
      */
-    private void notifyPlayers(ApiLand land, String message, Player playerIn) {
+    private void notifyPlayers(Land land, String message, Player playerIn) {
 
         Player player;
         
-        for (ApiPlayerContainerPlayer playerC : land.getPlayersNotify()) {
+        for (PlayerContainerPlayer playerC : land.getPlayersNotify()) {
             
             player = playerC.getPlayer();
             
@@ -334,7 +334,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param land the land
      * @param message the message
      */
-    private void tpSpawn(Player player, ApiLand land, String message) {
+    private void tpSpawn(Player player, Land land, String message) {
 
         player.teleport(player.getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));

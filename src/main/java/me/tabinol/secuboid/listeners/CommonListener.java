@@ -20,9 +20,9 @@
 package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboid.parameters.PermissionType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -50,8 +50,8 @@ public class CommonListener {
      *            the pt
      * @return true, if successful
      */
-    protected boolean checkPermission(ApiDummyLand land, Player player,
-            ApiPermissionType pt) {
+    protected boolean checkPermission(DummyLand land, Player player,
+            PermissionType pt) {
 
         return land.checkPermissionAndInherit(player, pt) == pt
                 .getDefaultValue();

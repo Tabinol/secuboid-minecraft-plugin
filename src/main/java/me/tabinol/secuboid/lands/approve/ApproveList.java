@@ -28,14 +28,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.types.ApiType;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -158,15 +157,15 @@ public class ApproveList {
         }
         
         String typeName = section.getString("Type");
-        ApiType type = null;
+        Type type = null;
         if(typeName != null) {
-            type = ApiSecuboidSta.getTypes().addOrGetType(typeName);
+            type = Secuboid.getThisPlugin().getTypes().addOrGetType(typeName);
         }
 
         String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        PlayerContainer pc = PlayerContainer.create(null, ApiPlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
-        ApiLand parent = null;
-        CuboidArea newArea = null;
+        PlayerContainer pc = PlayerContainer.create(null, PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        Land parent = null;
+        Area newArea = null;
         
         if (section.contains("Parent")) {
             parent = Secuboid.getThisPlugin().getLands().getLand(section.getString("Parent"));
@@ -179,7 +178,7 @@ public class ApproveList {
         }
         
         if(section.contains("NewArea")) {
-            newArea = CuboidArea.getFromString(section.getString("NewArea"));
+            newArea = Area.getFromString(section.getString("NewArea"));
         }
         
         LandAction action = LandAction.valueOf(section.getString("Action"));

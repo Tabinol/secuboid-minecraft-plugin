@@ -22,8 +22,8 @@ import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,7 +54,7 @@ public class PlayerListener18 extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
 
-        ApiDummyLand land;
+        DummyLand land;
         EntityType et = event.getRightClicked().getType();
         Player player = event.getPlayer();
         Material mat = player.getItemInHand().getType();

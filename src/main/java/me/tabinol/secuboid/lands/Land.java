@@ -29,23 +29,19 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboidapi.events.LandModifyEvent;
-import me.tabinol.secuboidapi.events.LandModifyEvent.LandModifyReason;
-import me.tabinol.secuboidapi.events.PlayerContainerLandBanEvent;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.lands.types.ApiType;
-import me.tabinol.secuboidapi.parameters.*;
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.LandModifyEvent.LandModifyReason;
+import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
+import me.tabinol.secuboid.lands.types.Type;
+import me.tabinol.secuboid.parameters.FlagValue;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -54,7 +50,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class Land.
  */
-public class Land extends DummyLand implements ApiLand {
+public final class Land extends DummyLand {
 
     /** The Constant DEFAULT_PRIORITY. */
     public static final short DEFAULT_PRIORITY = 10;
@@ -72,14 +68,14 @@ public class Land extends DummyLand implements ApiLand {
     private String name;
     
     /** The type. */
-    private ApiType type = null;
+    private Type type = null;
     
     /** The areas. */
-    private Map<Integer, ApiCuboidArea> areas = new TreeMap<Integer, ApiCuboidArea>();
+    private final Map<Integer, Area> areas = new TreeMap<Integer, Area>();
     
     /** The children. */
-    private Map<UUID, ApiLand>
-        children = new TreeMap<UUID, ApiLand>();
+    private final Map<UUID, Land>
+        children = new TreeMap<UUID, Land>();
     
     /** The priority. */
     private short priority = DEFAULT_PRIORITY; // Do not put more then 100000!!!!
@@ -88,16 +84,16 @@ public class Land extends DummyLand implements ApiLand {
     private int genealogy = 0; // 0 = first, 1 = child, 2 = child of child, ...
     
     /** The parent. */
-    private ApiLand parent = null;
+    private Land parent = null;
     
     /** The owner. */
-    private ApiPlayerContainer owner;
+    private PlayerContainer owner;
     
     /** The residents. */
-    private Set<ApiPlayerContainer> residents = new TreeSet<ApiPlayerContainer>();
+    private Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
     
     /** The banneds. */
-    private Set<ApiPlayerContainer> banneds = new TreeSet<ApiPlayerContainer>();
+    private final Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
     
     /** The auto save. */
     private boolean autoSave = true;
@@ -106,7 +102,7 @@ public class Land extends DummyLand implements ApiLand {
     private double money = 0L;
     
     /** The player notify. */
-    private Set<ApiPlayerContainerPlayer> playerNotify = new TreeSet<ApiPlayerContainerPlayer>();
+    private Set<PlayerContainerPlayer> playerNotify = new TreeSet<PlayerContainerPlayer>();
     
     /** The players in land. */
     private final Set<Player> playersInLand = new HashSet<Player>();
@@ -139,7 +135,7 @@ public class Land extends DummyLand implements ApiLand {
     private boolean rented = false;
     
     /** The tenant. */
-    private ApiPlayerContainerPlayer tenant = null;
+    private PlayerContainerPlayer tenant = null;
     
     /** The last payment. */
     private Timestamp lastPayment = new Timestamp(0);
@@ -157,8 +153,8 @@ public class Land extends DummyLand implements ApiLand {
      * @param areaId the area id
      * @param type the type
      */
-    protected Land(String landName, UUID uuid, ApiPlayerContainer owner,
-            ApiCuboidArea area, int genealogy, Land parent, int areaId, ApiType type) {
+    protected Land(String landName, UUID uuid, PlayerContainer owner,
+            Area area, int genealogy, Land parent, int areaId, Type type) {
 
         super(area.getWorldName().toLowerCase());
         this.uuid = uuid;
@@ -166,22 +162,19 @@ public class Land extends DummyLand implements ApiLand {
         this.type = type;
         if (parent != null) {
             this.parent = parent;
-            parent.addChild(this);
+            parent.addChild((Land) this);
         }
         this.owner = owner;
         this.genealogy = genealogy;
         addArea(area, areaId);
     }
 
-    /**
-     * Sets the default.
-     */
     public void setDefault() {
         owner = new PlayerContainerNobody();
-        residents = new TreeSet<ApiPlayerContainer>();
-        playerNotify = new TreeSet<ApiPlayerContainerPlayer>();
-        permissions = new TreeMap<ApiPlayerContainer, TreeMap<ApiPermissionType, ApiPermission>>();
-        flags = new TreeMap<ApiFlagType, ApiLandFlag>();
+        residents = new TreeSet<PlayerContainer>();
+        playerNotify = new TreeSet<PlayerContainerPlayer>();
+        permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
+        flags = new TreeMap<FlagType, LandFlag>();
         doSave();
     }
 
@@ -191,7 +184,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param area the area
      */
-    public void addArea(ApiCuboidArea area) {
+    public void addArea(Area area) {
 
         int nextKey = 0;
 
@@ -216,7 +209,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param area the area
      * @param price the price
      */
-    public void addArea(ApiCuboidArea area, double price) {
+    public void addArea(Area area, double price) {
 
         if(price > 0) {
             Secuboid.getThisPlugin().getLands().getPriceFromPlayer(worldName, owner, price);
@@ -230,16 +223,20 @@ public class Land extends DummyLand implements ApiLand {
      * @param area the area
      * @param key the key
      */
-    public void addArea(ApiCuboidArea area, int key) {
+    public void addArea(Area area, int key) {
 
-        ((CuboidArea) area).setLand(this);
+        ((Area) area).setLand(this);
         areas.put(key, area);
-        Secuboid.getThisPlugin().getLands().addAreaToList(area);
+        if(Secuboid.getThisPlugin() != null){
+            Secuboid.getThisPlugin().getLands().addAreaToList(area);
+        }
         doSave();
         
         // Start Event
-        Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
-                new LandModifyEvent(this, LandModifyReason.AREA_ADD, area));
+        if(Secuboid.getThisPlugin() != null) {
+            Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+                    new LandModifyEvent(this, LandModifyReason.AREA_ADD, area));
+        }
     }
 
     /**
@@ -250,7 +247,7 @@ public class Land extends DummyLand implements ApiLand {
      */
     public boolean removeArea(int key) {
 
-        ApiCuboidArea area;
+        Area area;
 
         if ((area = areas.remove(key)) != null) {
             Secuboid.getThisPlugin().getLands().removeAreaFromList(area);
@@ -272,7 +269,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param area the area
      * @return true, if successful
      */
-    public boolean removeArea(ApiCuboidArea area) {
+    public boolean removeArea(Area area) {
 
         Integer key = getAreaKey(area);
 
@@ -291,7 +288,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param price the price
      * @return true, if successful
      */
-    public boolean replaceArea(int key, ApiCuboidArea newArea, double price) {
+    public boolean replaceArea(int key, Area newArea, double price) {
 
         if (price > 0) {
             Secuboid.getThisPlugin().getLands().getPriceFromPlayer(worldName, owner, price);
@@ -307,13 +304,13 @@ public class Land extends DummyLand implements ApiLand {
      * @param newArea the new area
      * @return true, if successful
      */
-    public boolean replaceArea(int key, ApiCuboidArea newArea) {
+    public boolean replaceArea(int key, Area newArea) {
 
-        ApiCuboidArea area;
+        Area area;
 
         if ((area = areas.remove(key)) != null) {
             Secuboid.getThisPlugin().getLands().removeAreaFromList(area);
-            ((CuboidArea) newArea).setLand(this);
+            ((Area) newArea).setLand(this);
             areas.put(key, newArea);
             Secuboid.getThisPlugin().getLands().addAreaToList(newArea);
             doSave();
@@ -334,7 +331,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param key the key
      * @return the area
      */
-    public ApiCuboidArea getArea(int key) {
+    public Area getArea(int key) {
 
         return areas.get(key);
     }
@@ -345,9 +342,9 @@ public class Land extends DummyLand implements ApiLand {
      * @param area the area
      * @return the area key
      */
-    public Integer getAreaKey(ApiCuboidArea area) {
+    public Integer getAreaKey(Area area) {
 
-        for (Map.Entry<Integer, ApiCuboidArea> entry : areas.entrySet()) {
+        for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
             if (entry.getValue() == area) {
                 return entry.getKey();
             }
@@ -371,7 +368,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the ids and areas
      */
-    public Map<Integer, ApiCuboidArea> getIdsAndAreas() {
+    public Map<Integer, Area> getIdsAndAreas() {
 
         return areas;
     }
@@ -381,66 +378,25 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the areas
      */
-    public Collection<ApiCuboidArea> getAreas() {
+    public Collection<Area> getAreas() {
 
         return areas.values();
     }
 
-    /**
-     * Checks if is location inside.
-     *
-     * @param loc the loc
-     * @return true, if is location inside
-     */
     public boolean isLocationInside(Location loc) {
 
-        for (ApiCuboidArea area1 : areas.values()) {
-            if (area1.isLocationInside(loc)) {
+        return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    }
+
+    public boolean isLocationInside(String worldName, int x, int y, int z) {
+
+        for (Area area1 : areas.values()) {
+            if (area1.isLocationInside(worldName, x, y, z)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * Gets the nb blocks outside.
-     *
-     * @param areaComp the area comp
-     * @return the nb blocks outside
-     */
-    public long getNbBlocksOutside(ApiCuboidArea areaComp) {
-
-        // Get the Volume of the area
-        long volume = areaComp.getTotalBlock();
-
-        // Put the list of areas in the land to an array
-        ApiCuboidArea[] areaAr = areas.values().toArray(new ApiCuboidArea[0]);
-
-        for (int t = 0; t < areaAr.length; t++) {
-
-            // Get the result collision cuboid
-            ApiCuboidArea colArea = areaAr[t].getCollisionArea(areaComp);
-
-            if (colArea != null) {
-
-                // Substract the volume of collision
-                volume -= colArea.getTotalBlock();
-
-                // Compare each next areas to the collision area and add
-                // the collision of the collision to cancel multiple subtracts
-                for (int a = t + 1; a < areaAr.length; a++) {
-
-                    ApiCuboidArea colAreaToNextArea = areaAr[a].getCollisionArea(colArea);
-
-                    if (colAreaToNextArea != null) {
-                        volume += colAreaToNextArea.getTotalBlock();
-                    }
-                }
-            }
-        }
-
-        return volume;
     }
 
     /**
@@ -486,7 +442,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the owner
      */
-    public ApiPlayerContainer getOwner() {
+    public PlayerContainer getOwner() {
 
         return owner;
     }
@@ -507,7 +463,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param owner the new owner
      */
-    public void setOwner(ApiPlayerContainer owner) {
+    public void setOwner(PlayerContainer owner) {
 
         this.owner = owner;
         doSave();
@@ -522,7 +478,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param resident the resident
      */
-    public void addResident(ApiPlayerContainer resident) {
+    public void addResident(PlayerContainer resident) {
 
         ((PlayerContainer) resident).setLand(this);
         residents.add(resident);
@@ -539,7 +495,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param resident the resident
      * @return true, if successful
      */
-    public boolean removeResident(ApiPlayerContainer resident) {
+    public boolean removeResident(PlayerContainer resident) {
 
         if (residents.remove(resident)) {
             doSave();
@@ -559,7 +515,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the residents
      */
-    public final Set<ApiPlayerContainer> getResidents() {
+    public final Set<PlayerContainer> getResidents() {
 
         return residents;
     }
@@ -572,7 +528,7 @@ public class Land extends DummyLand implements ApiLand {
      */
     public boolean isResident(Player player) {
 
-        for (ApiPlayerContainer resident : residents) {
+        for (PlayerContainer resident : residents) {
             if (resident.hasAccess(player)) {
                 return true;
             }
@@ -585,8 +541,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param banned the banned
      */
-    @SuppressWarnings("deprecation")
-    public void addBanned(ApiPlayerContainer banned) {
+    public void addBanned(PlayerContainer banned) {
 
         ((PlayerContainer) banned).setLand(this);
         banneds.add(banned);
@@ -603,7 +558,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param banned the banned
      * @return true, if successful
      */
-    public boolean removeBanned(ApiPlayerContainer banned) {
+    public boolean removeBanned(PlayerContainer banned) {
 
         if (banneds.remove(banned)) {
             doSave();
@@ -618,7 +573,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the banneds
      */
-    public final Set<ApiPlayerContainer> getBanneds() {
+    public final Set<PlayerContainer> getBanneds() {
 
         return banneds;
     }
@@ -631,7 +586,7 @@ public class Land extends DummyLand implements ApiLand {
      */
     public boolean isBanned(Player player) {
 
-        for (ApiPlayerContainer banned : banneds) {
+        for (PlayerContainer banned : banneds) {
             if (banned.hasAccess(player)) {
                 return true;
             }
@@ -685,7 +640,7 @@ public class Land extends DummyLand implements ApiLand {
         return (Land) parent;
     }
 
-    public void setParent(ApiLand newParent) {
+    public void setParent(Land newParent) {
         
         // Remove files
         removeChildFiles();
@@ -717,7 +672,7 @@ public class Land extends DummyLand implements ApiLand {
     
     private void removeChildFiles() {
         
-        for(ApiLand child : children.values()) {
+        for(Land child : children.values()) {
             child.setAutoSave(false);
             Secuboid.getThisPlugin().getStorageThread().removeLand((Land)child);
             ((Land)child).removeChildFiles();
@@ -726,7 +681,7 @@ public class Land extends DummyLand implements ApiLand {
 
     private void saveChildFiles() {
         
-        for(ApiLand child : children.values()) {
+        for(Land child : children.values()) {
             child.setPriority(priority);
             ((Land)child).genealogy = genealogy + 1;
             child.setAutoSave(true);
@@ -758,13 +713,13 @@ public class Land extends DummyLand implements ApiLand {
      * @param land the land
      * @return true, if is descendants
      */
-    public boolean isDescendants(ApiLand land) {
+    public boolean isDescendants(Land land) {
 
         if (land == this) {
             return true;
         }
 
-        for (ApiLand landT : children.values()) {
+        for (Land landT : children.values()) {
             if (landT.isDescendants(land) == true) {
                 return true;
             }
@@ -811,7 +766,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the children
      */
-    public Collection<ApiLand> getChildren() {
+    public Collection<Land> getChildren() {
 
         return children.values();
     }
@@ -831,13 +786,14 @@ public class Land extends DummyLand implements ApiLand {
      */
     public void forceSave() {
 
-        Secuboid.getThisPlugin().getStorageThread().saveLand(this);
+        if(Secuboid.getThisPlugin() != null) {
+            Secuboid.getThisPlugin().getStorageThread().saveLand(this);
+        }
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.lands.DummyLand#doSave()
      */
-    @Override
     protected void doSave() {
 
         if (autoSave) {
@@ -848,7 +804,7 @@ public class Land extends DummyLand implements ApiLand {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.lands.ApiLand#addPermission(me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer, me.tabinol.secuboidapi.parameters.ApiPermissionType, boolean, boolean)
      */
-    public void addPermission(ApiPlayerContainer pc, ApiPermissionType permType,
+    public void addPermission(PlayerContainer pc, PermissionType permType,
             boolean value, boolean inheritance) {
         
         addPermission(pc, new Permission((PermissionType) permType, value, inheritance));
@@ -857,7 +813,7 @@ public class Land extends DummyLand implements ApiLand {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.lands.ApiLand#addFlag(me.tabinol.secuboidapi.parameters.ApiFlagType, java.lang.Object, boolean)
      */
-    public void addFlag(ApiFlagType flagType, Object value, boolean inheritance) {
+    public void addFlag(FlagType flagType, Object value, boolean inheritance) {
 
         addFlag(new LandFlag((FlagType) flagType, value, inheritance));
     }
@@ -870,7 +826,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param onlyInherit the only inherit
      * @return the boolean
      */
-    protected Boolean checkLandPermissionAndInherit(Player player, ApiPermissionType pt, boolean onlyInherit) {
+    protected Boolean checkLandPermissionAndInherit(Player player, PermissionType pt, boolean onlyInherit) {
 
         Boolean permValue;
 
@@ -890,9 +846,9 @@ public class Land extends DummyLand implements ApiLand {
      * @param onlyInherit the only inherit
      * @return the land flag value
      */
-    protected ApiFlagValue getLandFlagAndInherit(ApiFlagType ft, boolean onlyInherit) {
+    protected FlagValue getLandFlagAndInherit(FlagType ft, boolean onlyInherit) {
 
-        ApiFlagValue flagValue;
+        FlagValue flagValue;
 
         if ((flagValue = getFlag(ft, onlyInherit)) != null) {
             return flagValue;
@@ -940,7 +896,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param player the player
      */
-    public void addPlayerNotify(ApiPlayerContainerPlayer player) {
+    public void addPlayerNotify(PlayerContainerPlayer player) {
 
         playerNotify.add(player);
         doSave();
@@ -952,7 +908,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param player the player
      * @return true, if successful
      */
-    public boolean removePlayerNotify(ApiPlayerContainerPlayer player) {
+    public boolean removePlayerNotify(PlayerContainerPlayer player) {
 
         boolean ret = playerNotify.remove(player);
         doSave();
@@ -966,7 +922,7 @@ public class Land extends DummyLand implements ApiLand {
      * @param player the player
      * @return true, if is player notify
      */
-    public boolean isPlayerNotify(ApiPlayerContainerPlayer player) {
+    public boolean isPlayerNotify(PlayerContainerPlayer player) {
 
         return playerNotify.contains(player);
     }
@@ -976,7 +932,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the players notify
      */
-    public Set<ApiPlayerContainerPlayer> getPlayersNotify() {
+    public Set<PlayerContainerPlayer> getPlayersNotify() {
 
         return playerNotify;
     }
@@ -1030,7 +986,7 @@ public class Land extends DummyLand implements ApiLand {
         }
 
         // Check Chidren
-        for (ApiLand landChild : children.values()) {
+        for (Land landChild : children.values()) {
             if (landChild.isPlayerinLandNoVanish(player, fromPlayer)) {
                 return true;
             }
@@ -1060,7 +1016,7 @@ public class Land extends DummyLand implements ApiLand {
         
         playLandChild.addAll(playersInLand);
         
-        for(ApiLand child : children.values()) {
+        for(Land child : children.values()) {
             playLandChild.addAll(child.getPlayersInLandAndChildren());
         }
         
@@ -1082,7 +1038,7 @@ public class Land extends DummyLand implements ApiLand {
                 playerList.add(player);
             }
         }
-        for (ApiLand landChild : children.values()) {
+        for (Land landChild : children.values()) {
             playerList.addAll(landChild.getPlayersInLandNoVanish(fromPlayer));
         }
 
@@ -1241,7 +1197,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @param tenant the new rented
      */
-    public void setRented(ApiPlayerContainerPlayer tenant) {
+    public void setRented(PlayerContainerPlayer tenant) {
 
         rented = true;
         this.tenant = tenant;
@@ -1273,7 +1229,7 @@ public class Land extends DummyLand implements ApiLand {
      *
      * @return the tenant
      */
-    public ApiPlayerContainerPlayer getTenant() {
+    public PlayerContainerPlayer getTenant() {
 
         return tenant;
     }
@@ -1310,14 +1266,12 @@ public class Land extends DummyLand implements ApiLand {
         return lastPayment;
     }
 
-    @Override
-    public ApiType getType() {
+    public Type getType() {
 
         return type;
     }
 
-    @Override
-    public void setType(ApiType arg0) {
+    public void setType(Type arg0) {
         
         type = arg0;
         doSave();

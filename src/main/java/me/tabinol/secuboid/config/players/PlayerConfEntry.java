@@ -22,9 +22,7 @@ package me.tabinol.secuboid.config.players;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboidapi.config.players.ApiPlayerConfEntry;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPlayer;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
 
@@ -36,7 +34,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerConfEntry.
  */
-public class PlayerConfEntry implements ApiPlayerConfEntry {
+public class PlayerConfEntry {
 
     /** The sender. */
     private final CommandSender sender; // The player (or sender)
@@ -60,7 +58,7 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
     private long lastMoveUpdate = 0; // Time of lastupdate for PlayerEvents
     
     /** The last land. */
-    private ApiDummyLand lastLand = null; // Last Land for player
+    private DummyLand lastLand = null; // Last Land for player
     
     /** The last loc. */
     private Location lastLoc = null; // Present location
@@ -72,7 +70,7 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
     private PlayerAutoCancelSelect cancelSelect = null; // Auto cancel selection system
     
     /** The pcp. */
-    private ApiPlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
+    private PlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
 
     /**
      * Instantiates a new player conf entry.
@@ -93,28 +91,16 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
         }
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getPlayerContainer()
-     */
-    @Override
-    public ApiPlayerContainerPlayer getPlayerContainer() {
+    public PlayerContainerPlayer getPlayerContainer() {
         
         return pcp;
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getSender()
-     */
-    @Override
     public CommandSender getSender() {
 
         return sender;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getPlayer()
-     */
-    @Override
     public Player getPlayer() {
 
         return player;
@@ -130,10 +116,6 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
         return playerSelection;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#isAdminMod()
-     */
-    @Override
     public boolean isAdminMod() {
 
         // Security for adminmod
@@ -195,10 +177,6 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
         chatPage = page;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastMoveUpdate()
-     */
-    @Override
     public long getLastMoveUpdate() {
 
         return lastMoveUpdate;
@@ -214,11 +192,7 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
         lastMoveUpdate = lastMove;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastLand()
-     */
-    @Override
-    public ApiDummyLand getLastLand() {
+    public DummyLand getLastLand() {
 
         return lastLand;
     }
@@ -228,15 +202,11 @@ public class PlayerConfEntry implements ApiPlayerConfEntry {
      *
      * @param land the new last land
      */
-    public void setLastLand(ApiDummyLand land) {
+    public void setLastLand(DummyLand land) {
 
         lastLand = land;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.players.ApiPlayerConfEntry#getLastLoc()
-     */
-    @Override
     public Location getLastLoc() {
 
         return lastLoc;

@@ -17,9 +17,7 @@
  */ 
 package me.tabinol.secuboid.lands.types;
 
-import me.tabinol.secuboidapi.lands.types.ApiType;
-
-public class Type implements ApiType, Comparable<Type> {
+public class Type implements Comparable<Type> {
 
     private final String typeName;
     
@@ -34,7 +32,6 @@ public class Type implements ApiType, Comparable<Type> {
         return typeName.compareTo(arg0.typeName);
     }
 
-    @Override
     public String getName() {
 
         return typeName;

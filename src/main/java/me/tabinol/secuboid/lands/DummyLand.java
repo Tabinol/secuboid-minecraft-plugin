@@ -26,14 +26,14 @@ import java.util.TreeMap;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.events.LandModifyEvent;
-import me.tabinol.secuboidapi.events.LandModifyEvent.LandModifyReason;
-import me.tabinol.secuboidapi.events.PlayerContainerAddNoEnterEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.parameters.*;
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.LandModifyEvent.LandModifyReason;
+import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
+import me.tabinol.secuboid.parameters.FlagType;
+import me.tabinol.secuboid.parameters.FlagValue;
+import me.tabinol.secuboid.parameters.LandFlag;
+import me.tabinol.secuboid.parameters.Permission;
+import me.tabinol.secuboid.parameters.PermissionType;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -42,13 +42,13 @@ import org.bukkit.entity.Player;
 /**
  * The Class DummyLand.
  */
-public class DummyLand implements ApiDummyLand {
+public class DummyLand {
 
     /** The permissions. */
-    protected TreeMap<ApiPlayerContainer, TreeMap<ApiPermissionType, ApiPermission>> permissions; // String for playerName
+    protected TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>> permissions; // String for playerName
     
     /** The flags. */
-    protected TreeMap<ApiFlagType, ApiLandFlag> flags;
+    protected TreeMap<FlagType, LandFlag> flags;
     
     /** The world name. */
     protected String worldName;
@@ -60,8 +60,8 @@ public class DummyLand implements ApiDummyLand {
      */
     public DummyLand(String worldName) {
 
-        permissions = new TreeMap<ApiPlayerContainer, TreeMap<ApiPermissionType, ApiPermission>>();
-        flags = new TreeMap<ApiFlagType, ApiLandFlag>();
+        permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
+        flags = new TreeMap<FlagType, LandFlag>();
         this.worldName = worldName;
     }
 
@@ -85,20 +85,20 @@ public class DummyLand implements ApiDummyLand {
         return Secuboid.getThisPlugin().getServer().getWorld(worldName);
     }
 
-    public void copyPermsFlagsTo(ApiDummyLand desLand) {
+    public void copyPermsFlagsTo(DummyLand desLand) {
         
         // copy permissions
-        for(Map.Entry<ApiPlayerContainer, TreeMap<ApiPermissionType, ApiPermission>> pcEntry : permissions.entrySet()) {
+        for(Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> pcEntry : permissions.entrySet()) {
             
-            TreeMap<ApiPermissionType, ApiPermission> perms = new TreeMap<ApiPermissionType, ApiPermission>();
-            for(Map.Entry<ApiPermissionType, ApiPermission> permEntry : pcEntry.getValue().entrySet()) {
+            TreeMap<PermissionType, Permission> perms = new TreeMap<PermissionType, Permission>();
+            for(Map.Entry<PermissionType, Permission> permEntry : pcEntry.getValue().entrySet()) {
                 perms.put(permEntry.getKey(), permEntry.getValue().copyOf());
             }
             ((DummyLand) desLand).permissions.put(pcEntry.getKey(), perms);
         }
 
         // copy flags
-        for(Map.Entry<ApiFlagType, ApiLandFlag> flagEntry : flags.entrySet()) {
+        for(Map.Entry<FlagType, LandFlag> flagEntry : flags.entrySet()) {
             
             ((DummyLand) desLand).flags.put(flagEntry.getKey(), flagEntry.getValue().copyOf());
         }
@@ -110,16 +110,16 @@ public class DummyLand implements ApiDummyLand {
      * @param pc the pc
      * @param perm the perm
      */
-    public void addPermission(ApiPlayerContainer pc, ApiPermission perm) {
+    public void addPermission(PlayerContainer pc, Permission perm) {
 
-        TreeMap<ApiPermissionType, ApiPermission> permPlayer;
+        TreeMap<PermissionType, Permission> permPlayer;
 
         if (this instanceof Land) {
             ((PlayerContainer)pc).setLand((Land) this);
         }
         
         if (!permissions.containsKey(pc)) {
-            permPlayer = new TreeMap<ApiPermissionType, ApiPermission>();
+            permPlayer = new TreeMap<PermissionType, Permission>();
             permissions.put(pc, permPlayer);
         } else {
             permPlayer = permissions.get(pc);
@@ -149,11 +149,11 @@ public class DummyLand implements ApiDummyLand {
      * @param permType the perm type
      * @return true, if successful
      */
-    public boolean removePermission(ApiPlayerContainer pc,
-            ApiPermissionType permType) {
+    public boolean removePermission(PlayerContainer pc,
+            PermissionType permType) {
 
-        TreeMap<ApiPermissionType, ApiPermission> permPlayer;
-        ApiPermission perm;
+        TreeMap<PermissionType, Permission> permPlayer;
+        Permission perm;
 
         if (!permissions.containsKey(pc)) {
             return false;
@@ -185,7 +185,7 @@ public class DummyLand implements ApiDummyLand {
      *
      * @return the sets the pc have permission
      */
-    public final Set<ApiPlayerContainer> getSetPCHavePermission() {
+    public final Set<PlayerContainer> getSetPCHavePermission() {
 
         return permissions.keySet();
     }
@@ -196,7 +196,7 @@ public class DummyLand implements ApiDummyLand {
      * @param pc the pc
      * @return the permissions for pc
      */
-    public final Collection<ApiPermission> getPermissionsForPC(ApiPlayerContainer pc) {
+    public final Collection<Permission> getPermissionsForPC(PlayerContainer pc) {
 
         return permissions.get(pc).values();
     }
@@ -209,7 +209,7 @@ public class DummyLand implements ApiDummyLand {
      * @return the boolean
      */
     public boolean checkPermissionAndInherit(Player player, 
-            ApiPermissionType pt) {
+            PermissionType pt) {
 
         return checkPermissionAndInherit(player, pt, false);
     }
@@ -222,7 +222,7 @@ public class DummyLand implements ApiDummyLand {
      * @return the boolean
      */
     public boolean checkPermissionNoInherit(Player player, 
-            ApiPermissionType pt) {
+            PermissionType pt) {
 
         Boolean value = getPermission(player, pt, false);
         
@@ -242,7 +242,7 @@ public class DummyLand implements ApiDummyLand {
      * @return the boolean
      */
     protected Boolean checkPermissionAndInherit(Player player, 
-            ApiPermissionType pt, boolean onlyInherit) {
+            PermissionType pt, boolean onlyInherit) {
 
         if (this instanceof Land) {
             return ((Land) this).checkLandPermissionAndInherit(player, pt, onlyInherit);
@@ -259,16 +259,16 @@ public class DummyLand implements ApiDummyLand {
      * @return the permission
      */
     protected Boolean getPermission(Player player, 
-            ApiPermissionType pt, boolean onlyInherit) {
+            PermissionType pt, boolean onlyInherit) {
         
         return getPermission(player, pt, onlyInherit, null);
     }
     
     // Land parameter is only to paste to default parameters for a land
     private Boolean getPermission(Player player, 
-            ApiPermissionType pt, boolean onlyInherit, Land land) {
+            PermissionType pt, boolean onlyInherit, Land land) {
 
-        for (Map.Entry<ApiPlayerContainer, TreeMap<ApiPermissionType, ApiPermission>> permissionEntry : permissions.entrySet()) {
+        for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
             boolean value;
             if(land != null) {
                 value = permissionEntry.getKey().hasAccess(player, land);
@@ -276,7 +276,7 @@ public class DummyLand implements ApiDummyLand {
                 value = permissionEntry.getKey().hasAccess(player);
             }
             if (value) {
-                ApiPermission perm = permissionEntry.getValue().get(pt);
+                Permission perm = permissionEntry.getValue().get(pt);
 
                 // take the parent if the permission does not exist
                 if(perm == null && pt.hasParent()) {
@@ -295,7 +295,7 @@ public class DummyLand implements ApiDummyLand {
         // Check in default permissions
         if(!onlyInherit && this instanceof Land) {
 
-            return ((Lands) ApiSecuboidSta.getLands()).getDefaultConf(((Land) this).getType()).getPermission(
+            return ((Lands) Secuboid.getThisPlugin().getLands()).getDefaultConf(((Land) this).getType()).getPermission(
                     player, pt, false, (Land) this);
         }
         
@@ -307,7 +307,7 @@ public class DummyLand implements ApiDummyLand {
      *
      * @param flag the flag
      */
-    public void addFlag(ApiLandFlag flag) {
+    public void addFlag(LandFlag flag) {
 
         flags.put(flag.getFlagType(), flag);
         doSave();
@@ -325,9 +325,9 @@ public class DummyLand implements ApiDummyLand {
      * @param flagType the flag type
      * @return true, if successful
      */
-    public boolean removeFlag(ApiFlagType flagType) {
+    public boolean removeFlag(FlagType flagType) {
 
-        ApiLandFlag flag = flags.remove(flagType);
+        LandFlag flag = flags.remove(flagType);
         
         if (flag == null) {
             return false;
@@ -348,12 +348,12 @@ public class DummyLand implements ApiDummyLand {
      *
      * @return the flags value or default
      */
-    public Collection<ApiLandFlag> getFlags() {
+    public Collection<LandFlag> getFlags() {
 
         return flags.values();
     }
 
-    public ApiFlagValue getFlagAndInherit(ApiFlagType ft) {
+    public FlagValue getFlagAndInherit(FlagType ft) {
 
         return getFlagAndInherit(ft, false);
     }
@@ -364,9 +364,9 @@ public class DummyLand implements ApiDummyLand {
      * @param ft the ft
      * @return the flag value or default
      */
-    public ApiFlagValue getFlagNoInherit(ApiFlagType ft) {
+    public FlagValue getFlagNoInherit(FlagType ft) {
 
-        ApiFlagValue value = getFlag(ft, false);
+        FlagValue value = getFlag(ft, false);
         
         if(value != null) {
             return value;
@@ -382,7 +382,7 @@ public class DummyLand implements ApiDummyLand {
      * @param onlyInherit the only inherit
      * @return the flag and inherit
      */
-    protected ApiFlagValue getFlagAndInherit(ApiFlagType ft,
+    protected FlagValue getFlagAndInherit(FlagType ft,
             boolean onlyInherit) {
 
         if (this instanceof Land) {
@@ -398,9 +398,9 @@ public class DummyLand implements ApiDummyLand {
      * @param onlyInherit the only inherit
      * @return the flag value
      */
-    protected ApiFlagValue getFlag(ApiFlagType ft, boolean onlyInherit) {
+    protected FlagValue getFlag(FlagType ft, boolean onlyInherit) {
 
-        ApiLandFlag flag = flags.get(ft);
+        LandFlag flag = flags.get(ft);
         if (flag != null) {
             Secuboid.getThisPlugin().getLog().write("Flag: " + flag.toString());
 
@@ -412,7 +412,7 @@ public class DummyLand implements ApiDummyLand {
         // Check in default flags
         if(!onlyInherit && this instanceof Land) {
 
-            return ((Lands) ApiSecuboidSta.getLands()).getDefaultConf(((Land) this).getType()).getFlag(ft, false);
+            return ((Lands) Secuboid.getThisPlugin().getLands()).getDefaultConf(((Land) this).getType()).getFlag(ft, false);
         }
 
         return null;

@@ -22,10 +22,9 @@ package me.tabinol.secuboid.flycreative;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.listeners.FlyCreativeListener;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.events.PlayerLandChangeEvent;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.parameters.PermissionType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -47,7 +46,7 @@ public class Creative {
     public final static String OVERRIDE_NOBUILDOUTSIDE_PERM = "secuboid.flycreative.override.nobuildoutside";
     public final static String OVERRIDE_BANNEDITEMS_PERM = "secuboid.flycreative.override.allowbanneditems";
     private final Config conf;
-    private final ApiPermissionType permissionType;
+    private final PermissionType permissionType;
     private final FlyCreativeListener flyCreativeListener;
 
     public Creative() {
@@ -55,12 +54,12 @@ public class Creative {
         conf = Secuboid.getThisPlugin().getConf();
 
         // Register flags
-        permissionType = ApiSecuboidSta.getParameters().registerPermissionType("CREATIVE", false);
+        permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("CREATIVE", false);
 
         flyCreativeListener = Secuboid.getThisPlugin().getFlyCreativeListener();
     }
 
-    public boolean creative(Event event, Player player, ApiDummyLand dummyLand) {
+    public boolean creative(Event event, Player player, DummyLand dummyLand) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
             if (askCreativeFlag(player, dummyLand)) {
@@ -133,7 +132,7 @@ public class Creative {
             } else {
                 blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
             }
-            if (!askCreativeFlag(player, ApiSecuboidSta.getLands().getLandOrOutsideArea(blockLoc))) {
+            if (!askCreativeFlag(player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(blockLoc))) {
 
                 return true;
             }
@@ -151,7 +150,7 @@ public class Creative {
         }
     }
 
-    private boolean askCreativeFlag(Player player, ApiDummyLand dummyLand) {
+    private boolean askCreativeFlag(Player player, DummyLand dummyLand) {
 
         return dummyLand.checkPermissionAndInherit(player, permissionType);
     }

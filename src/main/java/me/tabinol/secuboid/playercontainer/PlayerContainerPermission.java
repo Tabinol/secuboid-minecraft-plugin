@@ -18,10 +18,8 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerPermission;
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.Land;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,8 +29,7 @@ import org.bukkit.permissions.Permission;
 /**
  * The Class PlayerContainerPermission.
  */
-public class PlayerContainerPermission extends PlayerContainer 
-    implements ApiPlayerContainerPermission {
+public class PlayerContainerPermission extends PlayerContainer {
 
     /** The perm. */
     private Permission perm;
@@ -44,40 +41,31 @@ public class PlayerContainerPermission extends PlayerContainer
      */
     public PlayerContainerPermission(String bukkitPermission) {
 
-        super(bukkitPermission, ApiPlayerContainerType.PERMISSION, true);
-        perm = new Permission(bukkitPermission);
+        super(bukkitPermission, PlayerContainerType.PERMISSION, true);
+        if(Secuboid.getThisPlugin() != null){
+            perm = new Permission(bukkitPermission);
+        } else {
+            perm = null;
+        }
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
 
         return container2 instanceof PlayerContainerPermission
                 && name.equalsIgnoreCase(container2.getName());
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
 
         return new PlayerContainerPermission(name);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean hasAccess(Player player) {
 
         return player.hasPermission(perm);
     }
 
-    @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
         
         return hasAccess(player);
     }
@@ -91,11 +79,7 @@ public class PlayerContainerPermission extends PlayerContainer
         return ChatColor.GRAY + "B:" + ChatColor.WHITE + name;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
-    @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
 
     }
 }

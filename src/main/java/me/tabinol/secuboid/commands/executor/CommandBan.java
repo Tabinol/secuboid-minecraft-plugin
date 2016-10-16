@@ -21,13 +21,13 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandThreadExec;
+import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 
 import org.bukkit.ChatColor;
@@ -37,7 +37,7 @@ import org.bukkit.ChatColor;
  * The Class CommandBan.
  */
 @InfoCommand(name="ban", forceParameter=true)
-public class CommandBan extends CommandThreadExec {
+public class CommandBan extends CommandPlayerThreadExec {
 
     private String fonction;
 
@@ -66,9 +66,9 @@ public class CommandBan extends CommandThreadExec {
         if (fonction.equalsIgnoreCase("add")) {
 
             pc = entity.argList.getPlayerContainerFromArg(land,
-                    new ApiPlayerContainerType[]{ApiPlayerContainerType.EVERYBODY,
-                        ApiPlayerContainerType.OWNER, ApiPlayerContainerType.VISITOR,
-                        ApiPlayerContainerType.RESIDENT});
+                    new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                        PlayerContainerType.OWNER, PlayerContainerType.VISITOR,
+                        PlayerContainerType.RESIDENT});
             Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("remove")) {
@@ -80,7 +80,7 @@ public class CommandBan extends CommandThreadExec {
 
             StringBuilder stList = new StringBuilder();
             if (!land.getBanneds().isEmpty()) {
-                for (ApiPlayerContainer pc : land.getBanneds()) {
+                for (PlayerContainer pc : land.getBanneds()) {
                     if (stList.length() != 0) {
                         stList.append(" ");
                     }
@@ -98,12 +98,12 @@ public class CommandBan extends CommandThreadExec {
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
+     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
      */
     @Override
     public synchronized void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
             throws SecuboidCommandException {
-    
+
         convertPcIfNeeded(playerCacheEntry);
 
         if (fonction.equalsIgnoreCase("add")) {

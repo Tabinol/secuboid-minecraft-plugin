@@ -19,8 +19,7 @@
 package me.tabinol.secuboid.storage;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.lands.ApiLand;
-
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Class Storage.
@@ -58,7 +57,7 @@ public abstract class Storage implements StorageInt {
      */
     private void saveAll() {
 
-        for (ApiLand land : Secuboid.getThisPlugin().getLands().getLands()) {
+        for (Land land : Secuboid.getThisPlugin().getLands().getLands()) {
 
             land.forceSave();
         }

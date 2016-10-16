@@ -26,10 +26,10 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import static me.tabinol.secuboid.config.Config.NEWLINE;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
+import me.tabinol.secuboid.parameters.PermissionType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -43,7 +43,7 @@ import org.bukkit.entity.Player;
 public class CommandInfo extends CommandExec {
 
     /** The area. */
-    private ApiCuboidArea area;
+    private Area area;
     
     /** The player. */
     private final Player player;
@@ -62,7 +62,7 @@ public class CommandInfo extends CommandExec {
         super(entity);
         player = entity.player;
         Location playerloc = entity.player.getLocation();
-        area = Secuboid.getThisPlugin().getLands().getCuboidArea(playerloc);
+        area = Secuboid.getThisPlugin().getLands().getArea(playerloc);
         argList = entity.argList;
     }
 
@@ -74,7 +74,7 @@ public class CommandInfo extends CommandExec {
      * @param area the area
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandInfo(Player player, ApiCuboidArea area) throws SecuboidCommandException {
+    public CommandInfo(Player player, Area area) throws SecuboidCommandException {
 
         super(null);
         this.player = player;
@@ -111,35 +111,35 @@ public class CommandInfo extends CommandExec {
         if (land != null) {
             // Create list
             StringBuilder stList = new StringBuilder();
-            stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
+            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
                     ChatColor.GREEN + land.getName() + ChatColor.YELLOW, ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
+            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
             if(land.isForSale()) {
-                stList.append(ChatColor.RED + " " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
+                stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
             }
             if(land.isForRent() && !land.isRented()) {
-                stList.append(ChatColor.RED + " " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
+                stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
             }
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
+            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
                     land.getType() != null ? land.getType().getName() : "-null-"));
             if(land.getParent() != null) {
-                  stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
+                  stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
             }
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
+            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
             if(land.isRented()) {
-                stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
+                stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
             }
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
+            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
                     getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
-                    + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
-                    + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
+                            + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
+                            + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
             stList.append(NEWLINE);
             if (area != null) {
-                stList.append(ChatColor.YELLOW + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
+                stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
                         "ID: " + area.getKey() + ", " + area.getPrint()));
                 stList.append(NEWLINE);
             }
@@ -158,7 +158,7 @@ public class CommandInfo extends CommandExec {
      * @param pt the pt
      * @return the permission in col for pl
      */
-    private String getPermissionInColForPl(ApiLand land, ApiPermissionType pt) {
+    private String getPermissionInColForPl(Land land, PermissionType pt) {
 
         boolean result = land.checkPermissionAndInherit(player, pt);
 

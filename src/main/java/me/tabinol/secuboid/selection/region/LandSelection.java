@@ -19,10 +19,11 @@
 package me.tabinol.secuboid.selection.region;
 
 import java.util.TreeMap;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
+import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.entity.Player;
 
 
@@ -32,10 +33,10 @@ import org.bukkit.entity.Player;
 public class LandSelection extends RegionSelection {
 
     /** The land. */
-    private final ApiLand land;
+    private final Land land;
     
     /** The visual areas. */
-    private final TreeMap<ApiCuboidArea, AreaSelection> visualAreas; // Visuals arealist
+    private final TreeMap<Area, AreaSelection> visualAreas; // Visuals arealist
     
     /**
      * Instantiates a new land selection.
@@ -43,15 +44,16 @@ public class LandSelection extends RegionSelection {
      * @param player the player
      * @param land the land
      */
-    public LandSelection(Player player, ApiLand land) {
+    public LandSelection(Player player, Land land) {
         
         super(SelectionType.LAND, player);
         this.land = land;
-        visualAreas = new TreeMap<ApiCuboidArea, AreaSelection>();
+        visualAreas = new TreeMap<Area, AreaSelection>();
         
         // Add visual areas
-        for(ApiCuboidArea area : land.getAreas()) {
-            visualAreas.put(area, new AreaSelection(player, area, true));
+        for(Area area : land.getAreas()) {
+            visualAreas.put(area, new AreaSelection(player, area, true, 
+                    null, MoveType.PASSIVE));
         }
     }
     
@@ -60,7 +62,7 @@ public class LandSelection extends RegionSelection {
      *
      * @return the land
      */
-    public ApiLand getLand() {
+    public Land getLand() {
         
         return land;
     }

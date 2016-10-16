@@ -20,11 +20,11 @@ package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandThreadExec;
+import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
 
 import org.bukkit.ChatColor;
 
@@ -33,7 +33,7 @@ import org.bukkit.ChatColor;
  * The Class CommandOwner.
  */
 @InfoCommand(name="owner", forceParameter=true)
-public class CommandOwner extends CommandThreadExec {
+public class CommandOwner extends CommandPlayerThreadExec {
 
     /**
      * Instantiates a new command owner.
@@ -56,13 +56,13 @@ public class CommandOwner extends CommandThreadExec {
         checkPermission(true, true, null, null);
         
         pc = entity.argList.getPlayerContainerFromArg(land,
-                new ApiPlayerContainerType[]{ApiPlayerContainerType.EVERYBODY,
-                    ApiPlayerContainerType.OWNER, ApiPlayerContainerType.VISITOR});
+                new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                    PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
         Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
+     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)

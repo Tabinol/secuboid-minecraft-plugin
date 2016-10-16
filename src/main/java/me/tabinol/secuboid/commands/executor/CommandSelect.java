@@ -19,18 +19,16 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ArgList;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
-import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.areas.AreaType;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
-import me.tabinol.secuboid.selection.region.ActiveAreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
 
@@ -43,7 +41,7 @@ import org.bukkit.entity.Player;
  * The Class CommandSelect.
  */
 @InfoCommand(name="select", aliases={"sel"})
-public class CommandSelect extends CommandExec {
+public class CommandSelect extends CommandCollisionsThreadExec {
 
     /** The player. */
     private final Player player;
@@ -101,7 +99,7 @@ public class CommandSelect extends CommandExec {
 
         String curArg;
 
-        if (playerConf.getSelection().getCuboidArea() == null) {
+        if (playerConf.getSelection().getArea() == null) {
             Secuboid.getThisPlugin().getLog().write(player.getName() + " join select mode");
 
             if (!argList.isLast()) {
@@ -115,7 +113,7 @@ public class CommandSelect extends CommandExec {
 
                 } else {
 
-                    ApiLand landtest;
+                    Land landtest;
                     if (curArg.equalsIgnoreCase("here")) {
 
                         // add select Here to select the the cuboid
@@ -138,7 +136,7 @@ public class CommandSelect extends CommandExec {
                         throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.NOLAND");
 
                     }
-                    ApiPlayerContainer owner = landtest.getOwner();
+                    PlayerContainer owner = landtest.getOwner();
 
                     if (!owner.hasAccess(player) && !playerConf.isAdminMod()
                             && !(landtest.checkPermissionAndInherit(player, PermissionList.RESIDENT_MANAGER.getPermissionType())
@@ -160,7 +158,7 @@ public class CommandSelect extends CommandExec {
 
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
                 player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
-                ActiveAreaSelection select = new ActiveAreaSelection(player);
+                AreaSelection select = new AreaSelection(player, null, false, AreaType.CUBOID, AreaSelection.MoveType.ACTIVE);
                 playerConf.getSelection().addSelection(select);
                 playerConf.setAutoCancelSelect(true);
             }
@@ -193,10 +191,11 @@ public class CommandSelect extends CommandExec {
         checkSelections(null, true);
 
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
-        playerConf.getSelection().addSelection(new AreaSelection(player, select.getCuboidArea()));
+        playerConf.getSelection().addSelection(new AreaSelection(player, select.getVisualSelection().getArea(),
+                false, null, AreaSelection.MoveType.PASSIVE));
         playerConf.setAutoCancelSelect(true);
 
-        if (!select.getCollision()) {
+        if (!select.getVisualSelection().getCollision()) {
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
                     + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
@@ -215,23 +214,33 @@ public class CommandSelect extends CommandExec {
 
         checkSelections(null, true);
 
-        double price;
-
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
-        ApiCuboidArea area = select.getCuboidArea();
+        Area area = select.getVisualSelection().getArea();
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO1",
                 area.getPrint()));
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO2",
-                area.getTotalBlock() + ""));
+        if(area.getVolume() != 0) {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO2",
+                    area.getVolume() + ""));
+        }
+
+        checkCollision(null, null, null, Collisions.LandAction.LAND_ADD,
+                0, playerConf.getSelection().getArea(), null, entity.playerConf.getPlayerContainer(), true);
+    }
+
+    @Override
+    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+        // Info only
+
+        double price;
 
         // Price (economy)
-        price = playerConf.getSelection().getLandCreatePrice();
+        price = collisions.getPriceLand();
         if (price != 0L) {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
                     Secuboid.getThisPlugin().getPlayerMoney().toFormat(price)));
         }
-        price = playerConf.getSelection().getAreaAddPrice();
+        price = collisions.getPriceArea();
         if (price != 0L) {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
                     Secuboid.getThisPlugin().getPlayerMoney().toFormat(price)));

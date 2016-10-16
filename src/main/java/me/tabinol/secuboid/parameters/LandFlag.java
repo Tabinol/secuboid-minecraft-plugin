@@ -19,14 +19,13 @@
 package me.tabinol.secuboid.parameters;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.parameters.ApiLandFlag;
-import me.tabinol.secuboidapi.utilities.StringChanges;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 
 /**
  * The Class LandFlag.
  */
-public class LandFlag implements ApiLandFlag {
+public class LandFlag {
     
     /** The flag type. */
     private FlagType flagType;
@@ -70,7 +69,7 @@ public class LandFlag implements ApiLandFlag {
      * @param lf2 the lf2
      * @return true, if successful
      */
-    public boolean equals(ApiLandFlag lf2) {
+    public boolean equals(LandFlag lf2) {
         
         return flagType == lf2.getFlagType();
     }

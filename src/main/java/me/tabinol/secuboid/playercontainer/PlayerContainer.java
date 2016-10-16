@@ -19,23 +19,21 @@
 package me.tabinol.secuboid.playercontainer;
 
 import java.util.UUID;
+import me.tabinol.secuboid.lands.Land;
 
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.utilities.StringChanges;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-
+import me.tabinol.secuboid.utilities.StringChanges;
+import org.bukkit.entity.Player;
 
 /**
  * The Class PlayerContainer.
  */
-public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<PlayerContainer> {
+public abstract class PlayerContainer implements Comparable<PlayerContainer> {
 
     /** The name. */
     protected String name;
     
     /** The container type. */
-    protected ApiPlayerContainerType containerType;
+    protected PlayerContainerType containerType;
 
     /**
      * Instantiates a new player container.
@@ -44,7 +42,7 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
      * @param containerType the container type
      * @param toLowerCase the to lower case
      */
-    protected PlayerContainer(String name, ApiPlayerContainerType containerType, boolean toLowerCase) {
+    protected PlayerContainer(String name, PlayerContainerType containerType, boolean toLowerCase) {
 
         if (toLowerCase) {
             this.name = name.toLowerCase();
@@ -62,21 +60,21 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
      * @param name the name
      * @return the player container
      */
-    public static PlayerContainer create(ApiLand land, ApiPlayerContainerType pct, String name) {
+    public static PlayerContainer create(Land land, PlayerContainerType pct, String name) {
 
-        if (pct == ApiPlayerContainerType.GROUP) {
+        if (pct == PlayerContainerType.GROUP) {
             return new PlayerContainerGroup(name);
-        } else if (pct == ApiPlayerContainerType.RESIDENT) {
+        } else if (pct == PlayerContainerType.RESIDENT) {
             return new PlayerContainerResident(land);
-        } else if (pct == ApiPlayerContainerType.VISITOR) {
+        } else if (pct == PlayerContainerType.VISITOR) {
             return new PlayerContainerVisitor(land);
-        } else if (pct == ApiPlayerContainerType.OWNER) {
+        } else if (pct == PlayerContainerType.OWNER) {
             return new PlayerContainerOwner(land);
-        } else if (pct == ApiPlayerContainerType.EVERYBODY) {
+        } else if (pct == PlayerContainerType.EVERYBODY) {
             return new PlayerContainerEverybody();
-        } else if (pct == ApiPlayerContainerType.NOBODY) {
+        } else if (pct == PlayerContainerType.NOBODY) {
             return new PlayerContainerNobody();
-        } else if (pct == ApiPlayerContainerType.PLAYER || pct == ApiPlayerContainerType.PLAYERNAME) {
+        } else if (pct == PlayerContainerType.PLAYER || pct == PlayerContainerType.PLAYERNAME) {
             UUID minecraftUUID;
 
             // First check if the ID is valid or was connected to the server
@@ -90,18 +88,14 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
 
             // If not null, assign the value to a new PlayerContainer
             return new PlayerContainerPlayer(minecraftUUID);
-        } else if (pct == ApiPlayerContainerType.PERMISSION) {
+        } else if (pct == PlayerContainerType.PERMISSION) {
             return new PlayerContainerPermission(name);
-        } else if (pct == ApiPlayerContainerType.TENANT) {
+        } else if (pct == PlayerContainerType.TENANT) {
             return new PlayerContainerTenant(land);
         }
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#getName()
-     */
-    @Override
     public String getName() {
 
         return name;
@@ -112,11 +106,15 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
      *
      * @return the container type
      */
-    public ApiPlayerContainerType getContainerType() {
+    public PlayerContainerType getContainerType() {
 
         return containerType;
     }
 
+    public abstract boolean hasAccess(Player player);
+    
+    public abstract boolean hasAccess(Player player, Land land);
+    
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#compareTo(me.tabinol.secuboid.playercontainer.PlayerContainer)
      */
@@ -143,10 +141,6 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
         return containerType.toString() + ":" + name;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#getPrint()
-     */
-    @Override
     public String getPrint() {
 
         return containerType.toString();
@@ -161,7 +155,7 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
     public static PlayerContainer getFromString(String string) {
 
         String strs[] = StringChanges.splitAddVoid(string, ":");
-        ApiPlayerContainerType type = ApiPlayerContainerType.getFromString(strs[0]);
+        PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
         return create(null, type, strs[1]);
     }
     
@@ -170,6 +164,6 @@ public abstract class PlayerContainer implements ApiPlayerContainer, Comparable<
      *
      * @param land the new land
      */
-    public abstract void setLand(ApiLand land);
+    public abstract void setLand(Land land);
     
 }

@@ -20,13 +20,10 @@ package me.tabinol.secuboid.selection;
 
 import java.util.Collection;
 import java.util.EnumMap;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboidapi.config.players.ApiPlayerConfEntry;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
 import me.tabinol.secuboid.selection.region.RegionSelection;
@@ -50,20 +47,20 @@ public class PlayerSelection {
     }
 
     /** The player conf entry. */
-    private final ApiPlayerConfEntry playerConfEntry;
+    private final PlayerConfEntry playerConfEntry;
     
     /** The selection list. */
     private final EnumMap<SelectionType, RegionSelection> selectionList; // SelectionList for the player
     
     /** The area to replace. */
-    ApiCuboidArea areaToReplace; // If it is an areaToReplace with an expand
+    Area areaToReplace; // If it is an areaToReplace with an expand
 
     /**
      * Instantiates a new player selection.
      *
      * @param playerConfEntry the player conf entry
      */
-    public PlayerSelection(ApiPlayerConfEntry playerConfEntry) {
+    public PlayerSelection(PlayerConfEntry playerConfEntry) {
 
         this.playerConfEntry = playerConfEntry;
         selectionList = new EnumMap<SelectionType, RegionSelection>(SelectionType.class);
@@ -137,7 +134,7 @@ public class PlayerSelection {
      */
     public void refreshLand() {
         
-        ApiLand land = getLand();
+        Land land = getLand();
         
         if(land !=null) {
             removeSelection(SelectionType.LAND);
@@ -150,7 +147,7 @@ public class PlayerSelection {
      *
      * @return the land
      */
-    public ApiLand getLand() {
+    public Land getLand() {
 
         LandSelection sel = (LandSelection) selectionList.get(SelectionType.LAND);
         if (sel != null) {
@@ -161,15 +158,15 @@ public class PlayerSelection {
     }
 
     /**
-     * Gets the cuboid area.
+     * Gets the area.
      *
      * @return the cuboid area
      */
-    public ApiCuboidArea getCuboidArea() {
+    public Area getArea() {
 
         AreaSelection sel = (AreaSelection) selectionList.get(SelectionType.AREA);
         if (sel != null) {
-            return sel.getCuboidArea();
+            return sel.getVisualSelection().getArea();
         } else {
             return null;
         }
@@ -180,7 +177,7 @@ public class PlayerSelection {
      *
      * @param areaToReplace the new area to replace
      */
-    public void setAreaToReplace(ApiCuboidArea areaToReplace) {
+    public void setAreaToReplace(Area areaToReplace) {
 
         this.areaToReplace = areaToReplace;
     }
@@ -190,113 +187,8 @@ public class PlayerSelection {
      *
      * @return the area to replace
      */
-    public ApiCuboidArea getAreaToReplace() {
+    public Area getAreaToReplace() {
 
         return areaToReplace;
-    }
-
-    /**
-     * Gets the land create price.
-     *
-     * @return the land create price
-     */
-    public double getLandCreatePrice() {
-
-        if(!isPlayerMustPay()) {
-            return 0;
-        }
-
-        ApiLand land = getLand();
-        ApiCuboidArea area = getCuboidArea();
-        Double priceFlag;
-        ApiFlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
-        
-        // Get land price
-        if (land == null) {
-            priceFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(area.getWorldName())
-                    .getFlagAndInherit(flagType).getValueDouble();
-                    
-        } else {
-            priceFlag = land.getFlagAndInherit(flagType).getValueDouble();
-        }
-
-        // Not set, return 0
-        if (priceFlag == 0D) {
-            return 0;
-        }
-
-        return priceFlag * area.getTotalBlock();
-    }
-
-    /**
-     * Gets the area add price.
-     *
-     * @return the area add price
-     */
-    public double getAreaAddPrice() {
-
-        if(!isPlayerMustPay()) {
-            return 0;
-        }
-
-        ApiLand land = getLand();
-        ApiCuboidArea area = getCuboidArea();
-        double priceFlag;
-        ApiFlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
-
-        if(land == null) {
-            return 0;
-        }
-
-        // The area is from parent ask parent
-        if (land.getParent() == null) {
-            priceFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(area.getWorldName())
-                    .getFlagAndInherit(flagType).getValueDouble();
-        } else {
-            priceFlag = land.getParent().getFlagAndInherit(flagType).getValueDouble();
-        }
-
-        // Not set, return 0
-        if (priceFlag == 0D) {
-            return 0;
-        }
-
-        // get total areas cube
-        long nbCube = land.getNbBlocksOutside(area);
-
-        return priceFlag * nbCube;
-    }
-
-    /**
-     * Gets the area replace price.
-     *
-     * @param areaId the area id
-     * @return the area replace price
-     */
-    public double getAreaReplacePrice(int areaId) {
-
-        if(!isPlayerMustPay()) {
-            return 0;
-        }
-
-        // Check only with Area add. No refound for reduced area.
-        return getAreaAddPrice();
-    }
-    
-    /**
-     * Checks if is player must pay.
-     *
-     * @return true, if is player must pay
-     */
-    private boolean isPlayerMustPay() {
-        
-        // Is Economy?
-        if (Secuboid.getThisPlugin().getPlayerMoney() == null
-                || !Secuboid.getThisPlugin().getConf().useEconomy()
-                || playerConfEntry.isAdminMod()) {
-            return false;
-        }
-
-        return true;
     }
 }

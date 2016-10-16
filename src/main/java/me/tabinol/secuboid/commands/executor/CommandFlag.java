@@ -27,13 +27,11 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.parameters.ApiFlagType;
-import me.tabinol.secuboidapi.parameters.ApiLandFlag;
+import me.tabinol.secuboid.parameters.FlagType;
+import me.tabinol.secuboid.parameters.LandFlag;
 
 import org.bukkit.ChatColor;
 
@@ -44,7 +42,7 @@ import org.bukkit.ChatColor;
 @InfoCommand(name="flag", forceParameter=true)
 public class CommandFlag extends CommandExec {
     
-    private LinkedList<ApiDummyLand> precDL; // Listed Precedent lands (no duplicates)
+    private LinkedList<DummyLand> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;
 
     /**
@@ -85,7 +83,7 @@ public class CommandFlag extends CommandExec {
 
             // Permission check is on getFlagFromArg
             
-            ApiLandFlag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+            LandFlag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
             
             if(!landFlag.getFlagType().isRegistered()) {
                 throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
@@ -100,7 +98,7 @@ public class CommandFlag extends CommandExec {
 
         } else if (curArg.equalsIgnoreCase("unset")) {
         
-            ApiFlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+            FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
             if (!land.removeFlag(flagType)) {
                 throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
@@ -109,7 +107,7 @@ public class CommandFlag extends CommandExec {
         
         } else if (curArg.equalsIgnoreCase("list")) {
 
-            precDL = new LinkedList<ApiDummyLand>();
+            precDL = new LinkedList<DummyLand>();
             stList = new StringBuilder();
             
             // For the actual land
@@ -119,11 +117,11 @@ public class CommandFlag extends CommandExec {
             if(land.getType() != null) {
                 stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
                         land.getType().getName())).append(Config.NEWLINE);
-                importDisplayFlagsFrom(((Lands) ApiSecuboidSta.getLands()).getDefaultConf(land.getType()), false);
+                importDisplayFlagsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getDefaultConf(land.getType()), false);
             }
             
             // For parent (if exist)
-            ApiLand parLand = land;
+            Land parLand = land;
             while((parLand = parLand.getParent()) != null) {
                 stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
                         ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
@@ -133,7 +131,7 @@ public class CommandFlag extends CommandExec {
             // For world
             stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
                     land.getWorldName())).append(Config.NEWLINE);
-            importDisplayFlagsFrom(((Lands) ApiSecuboidSta.getLands()).getOutsideArea(land.getWorldName()), true);
+            importDisplayFlagsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getOutsideArea(land.getWorldName()), true);
                 
             new ChatPage("COMMAND.FLAGS.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
 
@@ -142,10 +140,10 @@ public class CommandFlag extends CommandExec {
         }
     }
     
-    private void importDisplayFlagsFrom(ApiDummyLand land, boolean onlyInherit) {
+    private void importDisplayFlagsFrom(DummyLand land, boolean onlyInherit) {
         
         StringBuilder stSubList = new StringBuilder();
-        for (ApiLandFlag flag : land.getFlags()) {
+        for (LandFlag flag : land.getFlags()) {
             if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
                 stSubList.append(" ");
             }
@@ -160,10 +158,10 @@ public class CommandFlag extends CommandExec {
         }
     }
     
-    private boolean flagInList(ApiLandFlag flag) {
+    private boolean flagInList(LandFlag flag) {
         
-        for(ApiDummyLand listLand : precDL) {
-            for(ApiLandFlag listFlag : listLand.getFlags()) {
+        for(DummyLand listLand : precDL) {
+            for(LandFlag listFlag : listLand.getFlags()) {
                 if(flag.getFlagType() == listFlag.getFlagType()) {
                     return true;
                 }

@@ -20,21 +20,16 @@
 package me.tabinol.secuboid.lands.areas;
 
 import me.tabinol.secuboid.utilities.Calculate;
-import me.tabinol.secuboidapi.lands.areas.ApiAreaType;
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-import me.tabinol.secuboidapi.lands.areas.ApiCylinderArea;
-import org.bukkit.Location;
 
 /**
  * Represents a cylinder area.
  */
-public class CylinderArea extends Area implements ApiCylinderArea {
+public final class CylinderArea extends Area {
 
-    private final int rX;
-    private final int rZ;
-    private final int originH;
-    private final int originK;
-
+    private double rX;
+    private double rZ;
+    private double originH;
+    private double originK;
 
     /**
      * Instantiates a new cylinder area.
@@ -49,11 +44,97 @@ public class CylinderArea extends Area implements ApiCylinderArea {
      */
     public CylinderArea(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 
-        super(ApiAreaType.CYLINDER, worldName, x1, y1, z1, x2, y2, z2);
-        rX = this.x2 - this.x1 + 1;
-        rZ = this.z2 - this.z1 + 1;
-        originH = this.x1 + (rX / 2);
-        originK = this.z1 + (rZ / 2);
+        super(AreaType.CYLINDER, worldName, x1, y1, z1, x2, y2, z2);
+        updatePos();
+    }
+    
+    /**
+     * Sets the x1
+     * @param x1 x1
+     */
+    public void setX1(int x1) {
+
+        this.x1 = x1;
+        updatePos();
+    }
+
+    /**
+     * Sets the x2
+     * @param x2 x2
+     */
+    public void setX2(int x2) {
+
+        this.x2 = x2;
+        updatePos();
+    }
+
+    /**
+     * Sets the y1
+     * @param y1 y1
+     */
+    public void setY1(int y1) {
+
+        this.y1 = y1;
+        updatePos();
+    }
+
+    /**
+     * Sets the y2
+     * @param y2 y2
+     */
+    public void setY2(int y2) {
+
+        this.y2 = y2;
+        updatePos();
+    }
+
+    /**
+     * Sets the z1
+     * @param z1 z1
+     */
+    public void setZ1(int z1) {
+
+        this.z1 = z1;
+        updatePos();
+    }
+
+    /**
+     * Sets the z2
+     * @param z2 z2
+     */
+    public void setZ2(int z2) {
+
+        this.z2 = z2;
+        updatePos();
+    }
+
+    public double getRX() {
+        
+        return rX;
+    }
+    
+    public double getRZ() {
+        
+        return rZ;
+    }
+    
+    public double getOriginH() {
+        
+        return originH;
+    }
+    
+    public double getOriginK() {
+        
+        return originK;
+    }
+
+    private void updatePos() {
+
+        // Use "this", x2 must be greater of x1, etc.
+        rX = (double) (x2 - x1 + 1) / 2;
+        rZ = (double) (z2 - z1 + 1) / 2;
+        originH = x1 + (rX);
+        originK = z1 + (rZ);
     }
 
     /**
@@ -66,6 +147,18 @@ public class CylinderArea extends Area implements ApiCylinderArea {
         return new CylinderArea(worldName, x1, y1, z1, x2, y2, z2);
     }
 
+    public int getZPosFromX(int x) {
+        
+        return (int) ((rX * originK + rZ *
+                Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
+    }
+    
+    public int getZNegFromX(int x) {
+        
+        return (int) -((-rX * originK + rZ * 
+                Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
+    }
+    
     /**
      * Gets the volume.
      *
@@ -76,40 +169,10 @@ public class CylinderArea extends Area implements ApiCylinderArea {
         return (long) (rX * (y2 - y1 + 1) * rZ * Math.PI);
     }
 
-    /**
-     * Checks if is collision.
-     *
-     * @param area2 the area2
-     * @return true, if is collision
-     */
-    public boolean isCollision(ApiCuboidArea area2) {
+    public boolean isLocationInside(String worldName, int x, int y, int z) {
 
-        // TODO collision
-        return false;
-    }
-
-    /**
-     * Checks if is collision with Cylinder.
-     *
-     * @param area2 the area2
-     * @return true, if is collision
-     */
-    public boolean isCollision(ApiCylinderArea area2) {
-
-        // TODO collision
-        return false;
-    }
-
-    /**
-     * Checks if is location inside.
-     *
-     * @param loc the loc
-     * @return true, if is location inside
-     */
-    public boolean isLocationInside(Location loc) {
-
-        return loc.getWorld().getName().equals(worldName)
-                && Calculate.isInInterval(loc.getBlockY(), y1, y2)
-                && ((((loc.getBlockX() - originH) ^ 2) / (rX ^ 2)) + (((loc.getBlockZ() - originK) ^ 2) / (rZ ^ 2))) <= 1;
+        return worldName.equals(worldName)
+                && Calculate.isInInterval(y, y1, y2)
+                && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }
 }

@@ -18,11 +18,8 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainerOwner;
 
 import org.bukkit.entity.Player;
 
@@ -30,55 +27,42 @@ import org.bukkit.entity.Player;
 /**
  * The Class PlayerContainerOwner.
  */
-public class PlayerContainerOwner extends PlayerContainer implements ApiPlayerContainerOwner {
+public class PlayerContainerOwner extends PlayerContainer {
 
     /** The land. */
-    private ApiLand land;
+    private Land land;
     
     /**
      * Instantiates a new player container owner.
      *
      * @param land the land
      */
-    public PlayerContainerOwner(ApiLand land) {
+    public PlayerContainerOwner(Land land) {
         
-        super("", ApiPlayerContainerType.OWNER, false);
+        super("", PlayerContainerType.OWNER, false);
         this.land = land;
     }
     
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#equals(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public boolean equals(ApiPlayerContainer container2) {
+    public boolean equals(PlayerContainer container2) {
         
         return container2 instanceof PlayerContainerOwner &&
                 land == ((PlayerContainerOwner)container2).land;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#copyOf()
-     */
-    @Override
     public PlayerContainer copyOf() {
         
         return new PlayerContainerOwner(land);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
-    @Override
     public boolean hasAccess(Player player) {
         
         return hasAccess(player, land);
     }
         
-    @Override
-    public boolean hasAccess(Player player, ApiLand land) {
+    public boolean hasAccess(Player player, Land land) {
         
         boolean value;
-        ApiLand parent;
+        Land parent;
         
         if(land == null) {
             return false;
@@ -101,7 +85,7 @@ public class PlayerContainerOwner extends PlayerContainer implements ApiPlayerCo
      *
      * @return the land
      */
-    public ApiLand getLand() {
+    public Land getLand() {
         
         return land;
     }
@@ -110,7 +94,7 @@ public class PlayerContainerOwner extends PlayerContainer implements ApiPlayerCo
      * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void setLand(ApiLand land) {
+    public void setLand(Land land) {
 
         this.land = land;
     }

@@ -18,19 +18,16 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboidapi.lands.areas.ApiCuboidArea;
-
-
 /**
  * The Class AreaIndex.
  */
 public class AreaIndex implements Comparable<AreaIndex> {
     
     /** The index nb. */
-    private int indexNb;
+    private final int indexNb;
     
     /** The area. */
-    private ApiCuboidArea area;
+    private final Area area;
     
     /**
      * Instantiates a new area index.
@@ -38,7 +35,7 @@ public class AreaIndex implements Comparable<AreaIndex> {
      * @param indexNb the index nb
      * @param area the area
      */
-    public AreaIndex(int indexNb, ApiCuboidArea area) {
+    public AreaIndex(int indexNb, Area area) {
         
         this.indexNb = indexNb;
         this.area = area;
@@ -76,7 +73,7 @@ public class AreaIndex implements Comparable<AreaIndex> {
         if(indexNb > t.indexNb) {
             return 1;
         }
-        return ((CuboidArea) area).compareTo((CuboidArea) t.area);
+        return ((Area) area).compareTo((Area) t.area);
     }
     
     /**
@@ -94,8 +91,8 @@ public class AreaIndex implements Comparable<AreaIndex> {
      *
      * @return the area
      */
-    public CuboidArea getArea() {
+    public Area getArea() {
         
-        return (CuboidArea) area;
+        return (Area) area;
     }
 }

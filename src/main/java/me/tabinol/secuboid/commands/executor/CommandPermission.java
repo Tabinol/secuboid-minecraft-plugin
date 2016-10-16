@@ -23,20 +23,18 @@ import java.util.LinkedList;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandThreadExec;
+import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import me.tabinol.secuboidapi.ApiSecuboidSta;
-import me.tabinol.secuboidapi.lands.ApiDummyLand;
-import me.tabinol.secuboidapi.lands.ApiLand;
-import me.tabinol.secuboidapi.parameters.ApiPermission;
-import me.tabinol.secuboidapi.parameters.ApiPermissionType;
-import me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer;
 
 import org.bukkit.ChatColor;
 
@@ -45,9 +43,9 @@ import org.bukkit.ChatColor;
  * The Class CommandPermission.
  */
 @InfoCommand(name="permission", aliases={"perm"}, forceParameter=true)
-public class CommandPermission extends CommandThreadExec {
+public class CommandPermission extends CommandPlayerThreadExec {
 
-    private LinkedList<ApiDummyLand> precDL; // Listed Precedent lands (no duplicates)
+    private LinkedList<DummyLand> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;
 
     private String fonction;
@@ -86,7 +84,7 @@ public class CommandPermission extends CommandThreadExec {
 
         } else if (fonction.equalsIgnoreCase("list")) {
 
-            precDL = new LinkedList<ApiDummyLand>();
+            precDL = new LinkedList<DummyLand>();
             stList = new StringBuilder();
 
             // For the actual land
@@ -96,11 +94,11 @@ public class CommandPermission extends CommandThreadExec {
             if(land.getType() != null) {
                 stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
                         land.getType().getName())).append(Config.NEWLINE);
-                importDisplayPermsFrom(((Lands) ApiSecuboidSta.getLands()).getDefaultConf(land.getType()), false);
+                importDisplayPermsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getDefaultConf(land.getType()), false);
             }
             
             // For parent (if exist)
-            ApiLand parLand = land;
+            Land parLand = land;
             while((parLand = parLand.getParent()) != null) {
                 stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
                         ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
@@ -110,7 +108,7 @@ public class CommandPermission extends CommandThreadExec {
             // For world
             stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
                     land.getWorldName())).append(Config.NEWLINE);
-            importDisplayPermsFrom(((Lands) ApiSecuboidSta.getLands()).getOutsideArea(land.getWorldName()), true);
+            importDisplayPermsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getOutsideArea(land.getWorldName()), true);
             
             new ChatPage("COMMAND.PERMISSION.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
 
@@ -119,14 +117,14 @@ public class CommandPermission extends CommandThreadExec {
         }
     }
 
-    private void importDisplayPermsFrom(ApiDummyLand land, boolean onlyInherit) {
+    private void importDisplayPermsFrom(DummyLand land, boolean onlyInherit) {
         
         boolean addToList = false;
         
-        for (ApiPlayerContainer pc : land.getSetPCHavePermission()) {
+        for (PlayerContainer pc : land.getSetPCHavePermission()) {
             StringBuilder stSubList = new StringBuilder();
             
-            for (ApiPermission perm : land.getPermissionsForPC(pc)) {
+            for (Permission perm : land.getPermissionsForPC(pc)) {
                 if((!onlyInherit || perm.isHeritable()) && !permInList(pc, perm)) {
                     addToList = true;
                     stSubList.append(" ").append(perm.getPermType().getPrint()).append(":").append(perm.getValuePrint());
@@ -146,12 +144,12 @@ public class CommandPermission extends CommandThreadExec {
         }
     }
     
-    private boolean permInList(ApiPlayerContainer pc, ApiPermission perm) {
+    private boolean permInList(PlayerContainer pc, Permission perm) {
         
-        for(ApiDummyLand listLand : precDL) {
+        for(DummyLand listLand : precDL) {
             
             if(listLand.getSetPCHavePermission().contains(pc)) {
-                for(ApiPermission listPerm : listLand.getPermissionsForPC(pc)) {
+                for(Permission listPerm : listLand.getPermissionsForPC(pc)) {
                     if(perm.getPermType() == listPerm.getPermType()) {
                         return true;
                     }
@@ -163,7 +161,7 @@ public class CommandPermission extends CommandThreadExec {
     }
 
     /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
+     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
@@ -173,7 +171,7 @@ public class CommandPermission extends CommandThreadExec {
 
         if (fonction.equalsIgnoreCase("set")) {
 
-            ApiPermission perm = entity.argList.getPermissionFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+            Permission perm = entity.argList.getPermissionFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
 
             if(!perm.getPermType().isRegistered()) {
                 throw new SecuboidCommandException("Permission not registered", entity.player, "COMMAND.PERMISSIONTYPE.TYPENULL");
@@ -191,7 +189,7 @@ public class CommandPermission extends CommandThreadExec {
 
         } else if (fonction.equalsIgnoreCase("unset")) {
 
-            ApiPermissionType pt = entity.argList.getPermissionTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+            PermissionType pt = entity.argList.getPermissionTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
             if (!land.removePermission(pc, pt)) {
                 throw new SecuboidCommandException("Permission", entity.player, "COMMAND.PERMISSION.REMOVENOTEXIST");
             }

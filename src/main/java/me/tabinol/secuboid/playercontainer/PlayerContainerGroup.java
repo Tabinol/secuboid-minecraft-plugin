@@ -23,6 +23,11 @@ import me.tabinol.secuboid.lands.Land;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a bukkit group.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerGroup implements PlayerContainer {
 
     String groupName;

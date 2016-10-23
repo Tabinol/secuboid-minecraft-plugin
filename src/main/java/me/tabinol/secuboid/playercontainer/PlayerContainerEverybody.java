@@ -21,24 +21,28 @@ package me.tabinol.secuboid.playercontainer;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
-
+/**
+ * Represents every players.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerEverybody implements PlayerContainer {
 
     @Override
     public boolean hasAccess(Player player) {
-        return true;
+	return true;
     }
-    
+
     @Override
     public boolean hasAccess(Player player, Land land) {
-        return true;
+	return true;
     }
 
     @Override
     public Land getLand() {
 	return null;
     }
-    
+
     @Override
     public void setLand(Land land) {
     }

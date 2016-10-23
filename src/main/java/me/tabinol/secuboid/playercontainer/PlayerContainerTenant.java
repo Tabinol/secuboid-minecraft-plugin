@@ -22,9 +22,13 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
 import org.bukkit.entity.Player;
 
-
+/**
+ * Represents a land tenant.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerTenant implements PlayerContainer {
-    
+
     private Land land;
 
     public PlayerContainerTenant(Land land) {
@@ -39,22 +43,22 @@ public class PlayerContainerTenant implements PlayerContainer {
     @Override
     public boolean hasAccess(Player player, Land land) {
 
-        if(land == null) {
-            return false;
-        }
+	if (land == null) {
+	    return false;
+	}
 
-        boolean value = land.isTenant(player);
-        Land actual = land;
-        Land parent;
+	boolean value = land.isTenant(player);
+	Land actual = land;
+	Land parent;
 
-        while(!value && (parent = actual.getParent()) != null 
-                && actual.getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean() == true) {
-            
-            value = parent.isTenant(player);
-            actual = parent;
-        }
-        
-        return value;
+	while (!value && (parent = actual.getParent()) != null
+		&& actual.getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean() == true) {
+
+	    value = parent.isTenant(player);
+	    actual = parent;
+	}
+
+	return value;
     }
 
     @Override

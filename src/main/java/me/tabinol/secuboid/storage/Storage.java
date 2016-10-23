@@ -22,44 +22,44 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 
 /**
- * The Class Storage.
+ * The Interface Storage.
  */
-public abstract class Storage implements StorageInt {
-
-    /** The Constant LAND_VERSION. */
-    public static final int LAND_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("landVersion");
-    
-    /** The to resave. */
-    private boolean toResave = false; // If a new version of .conf file, we need to save again
+public interface Storage {
 
     /**
-     * Instantiates a new storage.
+     * The Constant LAND_VERSION.
      */
-    public Storage() {
-    }
-    
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.StorageInt#loadAll()
-     */
-    @Override
-    public void loadAll() {
-
-        loadLands();
-
-        // New version, we have to save all
-        if (toResave) {
-            saveAll();
-        }
-    }
+    static final int LAND_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("landVersion");
 
     /**
-     * Save all.
+     * Load all.
      */
-    private void saveAll() {
+    void loadAll();
 
-        for (Land land : Secuboid.getThisPlugin().getLands().getLands()) {
+    /**
+     * Save land.
+     *
+     * @param land the land
+     */
+    void saveLand(Land land);
 
-            land.forceSave();
-        }
-    }
+    /**
+     * Removes the land.
+     *
+     * @param land the land
+     */
+    void removeLand(Land land);
+
+    /**
+     * Removes the land.
+     *
+     * @param landName the land name
+     * @param landGenealogy The land genealogy
+     */
+    void removeLand(String landName, int landGenealogy);
+
+    /**
+     * Load lands.
+     */
+    void loadLands();
 }

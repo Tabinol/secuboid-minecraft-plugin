@@ -23,6 +23,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+/**
+ * Represents a bukkit permission.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerPermission implements PlayerContainer {
 
     private final Permission perm;

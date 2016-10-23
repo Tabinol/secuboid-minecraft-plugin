@@ -26,6 +26,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a player.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerPlayer implements PlayerContainer {
 
     private final UUID minecraftUUID;

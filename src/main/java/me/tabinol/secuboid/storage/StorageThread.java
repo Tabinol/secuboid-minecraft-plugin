@@ -18,6 +18,7 @@
  */ 
 package me.tabinol.secuboid.storage;
 
+import me.tabinol.secuboid.storage.flat.StorageFlat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

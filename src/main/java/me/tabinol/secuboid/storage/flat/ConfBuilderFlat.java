@@ -16,7 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage;
+package me.tabinol.secuboid.storage.flat;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,13 +24,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
 
-
 /**
  * The Class ConfBuilder.
  */
-public class ConfBuilder {
+class ConfBuilderFlat {
 
-    /** The br. */
+    /**
+     * The br.
+     */
     private final BufferedWriter br;
 
     /**
@@ -42,13 +43,13 @@ public class ConfBuilder {
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public ConfBuilder(String name, UUID uuid, File file, int version) throws IOException {
+    ConfBuilderFlat(String name, UUID uuid, File file, int version) throws IOException {
 
-        FileWriter fr = new FileWriter(file, false);
-        br = new BufferedWriter(fr);
-        writeVersion(version);
-        writeUUID(uuid);
-        writeName(name);
+	FileWriter fr = new FileWriter(file, false);
+	br = new BufferedWriter(fr);
+	writeVersion(version);
+	writeUUID(uuid);
+	writeName(name);
     }
 
     /**
@@ -57,9 +58,9 @@ public class ConfBuilder {
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeVersion(int version) throws IOException {
+    void writeVersion(int version) throws IOException {
 
-        writeParam("Version", version);
+	writeParam("Version", version);
     }
 
     /**
@@ -68,9 +69,9 @@ public class ConfBuilder {
      * @param uuid the uuid
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeUUID(UUID uuid) throws IOException {
+    void writeUUID(UUID uuid) throws IOException {
 
-        writeParam("UUID", uuid.toString());
+	writeParam("UUID", uuid.toString());
     }
 
     /**
@@ -79,9 +80,9 @@ public class ConfBuilder {
      * @param name the name
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeName(String name) throws IOException {
+    void writeName(String name) throws IOException {
 
-        writeParam("Name", name);
+	writeParam("Name", name);
     }
 
     /**
@@ -90,10 +91,10 @@ public class ConfBuilder {
      * @param string the string
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeln(String string) throws IOException {
+    void writeln(String string) throws IOException {
 
-        br.write(string);
-        br.newLine();
+	br.write(string);
+	br.newLine();
     }
 
     /**
@@ -103,13 +104,13 @@ public class ConfBuilder {
      * @param param the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeParam(String paramName, String param) throws IOException {
+    void writeParam(String paramName, String param) throws IOException {
 
-        if (param == null) {
-            writeln(paramName + ":-null-");
-        } else {
-            writeln(paramName + ":" + param);
-        }
+	if (param == null) {
+	    writeln(paramName + ":-null-");
+	} else {
+	    writeln(paramName + ":" + param);
+	}
     }
 
     /**
@@ -119,9 +120,9 @@ public class ConfBuilder {
      * @param param the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeParam(String paramName, int param) throws IOException {
+    void writeParam(String paramName, int param) throws IOException {
 
-        writeln(paramName + ":" + param);
+	writeln(paramName + ":" + param);
     }
 
     /**
@@ -131,9 +132,9 @@ public class ConfBuilder {
      * @param param the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeParam(String paramName, short param) throws IOException {
+    void writeParam(String paramName, short param) throws IOException {
 
-        writeln(paramName + ":" + param);
+	writeln(paramName + ":" + param);
     }
 
     /**
@@ -143,9 +144,9 @@ public class ConfBuilder {
      * @param param the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeParam(String paramName, double param) throws IOException {
+    void writeParam(String paramName, double param) throws IOException {
 
-        writeln(paramName + ":" + param);
+	writeln(paramName + ":" + param);
     }
 
     /**
@@ -155,16 +156,16 @@ public class ConfBuilder {
      * @param params the params
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void writeParam(String ParamName, String[] params) throws IOException {
+    void writeParam(String ParamName, String[] params) throws IOException {
 
-        if (params == null) {
-            return;
-        }
-        writeln(ParamName + "{");
-        for (String param : params) {
-            writeln("  " + param);
-        }
-        writeln("}");
+	if (params == null) {
+	    return;
+	}
+	writeln(ParamName + "{");
+	for (String param : params) {
+	    writeln("  " + param);
+	}
+	writeln("}");
     }
 
     /**
@@ -172,8 +173,8 @@ public class ConfBuilder {
      *
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    public void close() throws IOException {
-        
-        br.close();
+    void close() throws IOException {
+
+	br.close();
     }
 }

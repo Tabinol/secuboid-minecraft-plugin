@@ -3,6 +3,11 @@ package me.tabinol.secuboid.playercontainer;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a player from his name. Used only before UUID discover.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerPlayerName implements PlayerContainer {
 
     private final String name;

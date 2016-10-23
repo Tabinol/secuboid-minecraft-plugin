@@ -22,6 +22,11 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
 import org.bukkit.entity.Player;
 
+/**
+ * Represents a land resident.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerResident implements PlayerContainer {
 
     private Land land;

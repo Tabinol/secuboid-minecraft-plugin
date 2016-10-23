@@ -16,20 +16,27 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.tabinol.secuboid.lands.areas;
 
 /**
- * Represents the type of area : CUBOID or CYLINDER
+ * Represents the type of area
  */
 public enum AreaType {
 
-    /** Cuboid type */
+    /**
+     * Infinite (entire world)
+     */
+    INFINITE,
+    /**
+     * Cuboid type
+     */
     CUBOID,
-
-    /** Cylinder type */
+    /**
+     * Cylinder type
+     */
     CYLINDER,
-    
-    /** line type */
+    /**
+     * line type
+     */
     LINES
 }

@@ -20,7 +20,6 @@ package me.tabinol.secuboid.utilities;
 
 import java.util.HashMap;
 import me.tabinol.secuboid.Secuboid;
-
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -78,6 +77,14 @@ public class ExpirableHashMap<K, V> extends HashMap<K, V> {
     /* (non-Javadoc)
      * @see java.util.TreeMap#put(java.lang.Object, java.lang.Object)
      */
+
+    /**
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+
     @Override
     public V put(K key, V value) {
         

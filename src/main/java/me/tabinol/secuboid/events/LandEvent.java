@@ -57,6 +57,12 @@ public class LandEvent extends Event {
     /* (non-Javadoc)
      * @see org.bukkit.events.Event#getHandlers()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public HandlerList getHandlers() {
 

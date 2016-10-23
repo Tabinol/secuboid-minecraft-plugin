@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
@@ -28,7 +27,6 @@ import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-
 import org.bukkit.ChatColor;
 
 

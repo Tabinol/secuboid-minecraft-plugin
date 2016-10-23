@@ -25,7 +25,6 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.Calculate;
-
 import org.bukkit.ChatColor;
 
 

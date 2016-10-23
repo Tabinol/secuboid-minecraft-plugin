@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

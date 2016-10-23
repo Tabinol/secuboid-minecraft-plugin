@@ -29,17 +29,33 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+/**
+ *
+ * @author michel
+ */
 public class Fly {
 
+    /**
+     *
+     */
     public final static String FLY_IGNORE_PERM = "secuboid.flycreative.ignorefly";
     private final PermissionType permissionType;
 
+    /**
+     *
+     */
     public Fly() {
 
         // Register flags
         permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("FLY", false);
     }
 
+    /**
+     *
+     * @param event
+     * @param player
+     * @param dummyLand
+     */
     public void fly(Event event, Player player, DummyLand dummyLand) {
 
         if (!player.hasPermission(FLY_IGNORE_PERM)) {
@@ -66,6 +82,10 @@ public class Fly {
         }
     }
 
+    /**
+     *
+     * @param player
+     */
     public void removeFly(Player player) {
 
         if (!player.hasPermission(FLY_IGNORE_PERM)) {

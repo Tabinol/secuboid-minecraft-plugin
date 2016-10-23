@@ -19,20 +19,18 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.ArrayList;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
-import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
@@ -30,7 +27,13 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.utilities.StringChanges;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 
+/**
+ *
+ * @author michel
+ */
 @InfoCommand(name="setspawn")
 public class CommandSetspawn extends CommandExec {
 

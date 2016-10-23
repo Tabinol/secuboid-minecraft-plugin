@@ -18,10 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
@@ -31,10 +27,22 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.PermissionList;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 
+/**
+ *
+ * @author michel
+ */
 @InfoCommand(name="sale", forceParameter=true)
 public class CommandSale extends CommandExec {
 
+    /**
+     *
+     * @param entity
+     * @throws SecuboidCommandException
+     */
     public CommandSale(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);

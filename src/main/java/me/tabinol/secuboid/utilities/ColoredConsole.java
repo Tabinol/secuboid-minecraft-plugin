@@ -5,12 +5,15 @@ package me.tabinol.secuboid.utilities;
 
 import java.util.EnumMap;
 import java.util.Map;
-
 import org.bukkit.ChatColor;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.Ansi.Attribute;
+import org.fusesource.jansi.AnsiConsole;
 
+/**
+ *
+ * @author michel
+ */
 public class ColoredConsole {
 
     private static final Map<ChatColor, String> ansicolors = new EnumMap<ChatColor, String>(
@@ -89,6 +92,10 @@ public class ColoredConsole {
 
     private static String OS = System.getProperty("os.name").toLowerCase();
 
+    /**
+     *
+     * @param msg
+     */
     public static void info(String msg) {
         if (OS.indexOf("win") >= 0) {
             AnsiConsole.out.print(colorize(msg)

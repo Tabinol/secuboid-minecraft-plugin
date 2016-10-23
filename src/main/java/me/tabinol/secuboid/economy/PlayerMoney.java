@@ -18,10 +18,9 @@
  */
 package me.tabinol.secuboid.economy;
 
-import org.bukkit.OfflinePlayer;
-
 import me.tabinol.secuboid.Secuboid;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.OfflinePlayer;
 
 
 /**

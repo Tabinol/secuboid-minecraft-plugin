@@ -108,21 +108,37 @@ public final class CylinderArea extends Area {
         updatePos();
     }
 
+    /**
+     *
+     * @return
+     */
     public double getRX() {
         
         return rX;
     }
     
+    /**
+     *
+     * @return
+     */
     public double getRZ() {
         
         return rZ;
     }
     
+    /**
+     *
+     * @return
+     */
     public double getOriginH() {
         
         return originH;
     }
     
+    /**
+     *
+     * @return
+     */
     public double getOriginK() {
         
         return originK;
@@ -147,12 +163,22 @@ public final class CylinderArea extends Area {
         return new CylinderArea(worldName, x1, y1, z1, x2, y2, z2);
     }
 
+    /**
+     *
+     * @param x
+     * @return
+     */
     public int getZPosFromX(int x) {
         
         return (int) ((rX * originK + rZ *
                 Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
     }
     
+    /**
+     *
+     * @param x
+     * @return
+     */
     public int getZNegFromX(int x) {
         
         return (int) -((-rX * originK + rZ * 
@@ -169,6 +195,14 @@ public final class CylinderArea extends Area {
         return (long) (rX * (y2 - y1 + 1) * rZ * Math.PI);
     }
 
+    /**
+     *
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
         return worldName.equals(worldName)

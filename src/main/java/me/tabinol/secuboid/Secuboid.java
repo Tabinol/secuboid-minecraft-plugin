@@ -18,6 +18,7 @@
  */ 
 package me.tabinol.secuboid;
 
+import java.io.File;
 import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.DependPlugin;
@@ -25,26 +26,23 @@ import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
+import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.*;
 import me.tabinol.secuboid.parameters.Parameters;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayersCache;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
-
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
 /**
  * The Class Secuboid.
@@ -160,11 +158,19 @@ public class Secuboid extends JavaPlugin {
         return thisPlugin.getDataFolder();
     }
 
+    /**
+     *
+     * @return
+     */
     public static Parameters getStaticParameters() {
 
         return thisPlugin.getParameters();
     }
 
+    /**
+     *
+     * @return
+     */
     public static Types getStaticTypes() {
 
         return thisPlugin.getTypes();
@@ -173,6 +179,11 @@ public class Secuboid extends JavaPlugin {
     /* (non-Javadoc)
      * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
      */
+
+    /**
+     *
+     */
+
     @Override
     public void onEnable() {
 
@@ -275,6 +286,11 @@ public class Secuboid extends JavaPlugin {
     /* (non-Javadoc)
      * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
      */
+
+    /**
+     *
+     */
+
     @Override
     public void onDisable() {
 
@@ -329,6 +345,10 @@ public class Secuboid extends JavaPlugin {
         return flyCreativeListener;
     }
 
+    /**
+     *
+     * @return
+     */
     public PlayerStaticConfig getPlayerConf() {
 
         return playerConf;
@@ -354,16 +374,28 @@ public class Secuboid extends JavaPlugin {
         return log;
     }
 
+    /**
+     *
+     * @return
+     */
     public Parameters getParameters() {
         
         return parameters;
     }
     
+    /**
+     *
+     * @return
+     */
     public Lands getLands() {
         
         return lands;
     }
     
+    /**
+     *
+     * @return
+     */
     public Types getTypes() {
         
         return types;
@@ -426,27 +458,5 @@ public class Secuboid extends JavaPlugin {
     public PlayersCache getPlayersCache() {
         
         return playersCache;
-    }
-
-    /*
-     * Creators to forward
-     */
-    
-    public PlayerContainer createPlayerContainer(Land land,
-            PlayerContainerType pct, String name) {
-        
-        return PlayerContainer.create(land, pct, name);
-    }
-
-    public CuboidArea createCuboidArea(String worldName, int x1, int y1,
-            int z1, int x2, int y2, int z2) {
-        
-        return new CuboidArea(worldName, x1, y1, z1, x2, y2, z2);
-    }
-    
-    public CylinderArea createCylinderArea(String worldName, int x1, int y1,
-            int z1, int x2, int y2, int z2) {
-        
-        return new CylinderArea(worldName, x1, y1, z1, x2, y2, z2);
     }
 }

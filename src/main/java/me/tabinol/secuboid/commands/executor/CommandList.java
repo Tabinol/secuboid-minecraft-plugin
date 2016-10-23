@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Collection;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
@@ -29,7 +28,6 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-
 import org.bukkit.ChatColor;
 
 

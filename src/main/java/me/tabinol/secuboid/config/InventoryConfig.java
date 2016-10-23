@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.lands.DummyLand;
@@ -34,23 +33,69 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+/**
+ *
+ * @author michel
+ */
 public class InventoryConfig {
 
+    /**
+     *
+     */
     public static final String GLOBAL = "Default"; // Means it is assigned to all
+
+    /**
+     *
+     */
     public static final String PERM_USE = "secuboid.inv.use";
+
+    /**
+     *
+     */
     public static final String PERM_RELOAD = "secuboid.inv.reload";
+
+    /**
+     *
+     */
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
+
+    /**
+     *
+     */
     public static final String PERM_DEFAULT = "secuboid.inv.default";
+
+    /**
+     *
+     */
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";
+
+    /**
+     *
+     */
     public static final String PERM_IGNORE_CREATIVE_INV = "secuboid.inv.ignorecreativeinv";
+
+    /**
+     *
+     */
     public static final String PERM_IGNORE_INV = "secuboid.inv.ignoreinv";
+
+    /**
+     *
+     */
     public static final String PERM_IGNORE_DISABLED_COMMANDS = "secuboid.inv.ignoredisabledcommands";
+
+    /**
+     *
+     */
     public static final String INVENTORY_CONFIG_FILE = "inventory.yml";
     private final FlagType invFlag; // Registered inventory Flag (Factoid)
     private final Secuboid thisPlugin;
     private FileConfiguration config;
     private HashMap<String, InventorySpec> invList; // World-->Land-->Inventory
 
+    /**
+     *
+     */
     public InventoryConfig() {
 
         thisPlugin = Secuboid.getThisPlugin();
@@ -66,6 +111,9 @@ public class InventoryConfig {
         reloadConfig();
     }
 
+    /**
+     *
+     */
     public void reloadConfig() {
 
         config = YamlConfiguration.loadConfiguration(new File(thisPlugin.getDataFolder(), INVENTORY_CONFIG_FILE));
@@ -94,6 +142,11 @@ public class InventoryConfig {
         invList.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
+    /**
+     *
+     * @param dummyLand
+     * @return
+     */
     public InventorySpec getInvSpec(DummyLand dummyLand) {
 
         FlagValue invFlagValue = dummyLand.getFlagAndInherit(invFlag);
@@ -115,6 +168,11 @@ public class InventoryConfig {
         return invSpec;
     }
 
+    /**
+     *
+     * @param invName
+     * @return
+     */
     public InventorySpec getFromString(String invName) {
 
         InventorySpec invSpec = invList.get(invName);

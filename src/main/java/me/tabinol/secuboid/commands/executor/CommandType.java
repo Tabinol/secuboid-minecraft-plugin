@@ -25,12 +25,20 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.types.Type;
-
 import org.bukkit.ChatColor;
 
+/**
+ *
+ * @author michel
+ */
 @InfoCommand(name="type", forceParameter=true)
 public class CommandType extends CommandExec {
     
+    /**
+     *
+     * @param entity
+     * @throws SecuboidCommandException
+     */
     public CommandType(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);

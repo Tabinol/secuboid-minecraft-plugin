@@ -19,14 +19,12 @@
 package me.tabinol.secuboid.config;
 
 import java.util.EnumSet;
-import java.util.logging.Level;
 import java.util.TreeSet;
-
+import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.PermissionType;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -309,27 +307,51 @@ public class Config {
 
     private boolean flyAndCreative;
 
+    /**
+     *
+     * @return
+     */
     public boolean isFlyAndCreative() { return flyAndCreative; }
 
     // Fly and Creative specific configuration
     private EnumSet<GameMode> ignoredGameMode;
 
+    /**
+     *
+     * @return
+     */
     public EnumSet<GameMode> getIgnoredGameMode() { return ignoredGameMode; }
 
     private boolean creativeNoDrop;
 
+    /**
+     *
+     * @return
+     */
     public boolean isCreativeNoDrop() { return creativeNoDrop; }
 
     private boolean creativeNoOpenChest;
 
+    /**
+     *
+     * @return
+     */
     public boolean isCreativeNoOpenChest() { return creativeNoOpenChest; }
 
     private boolean creativeNoBuildOutside;
 
+    /**
+     *
+     * @return
+     */
     public boolean isCreativeNoBuildOutside() { return creativeNoBuildOutside; }
 
     private EnumSet<Material> creativeBannedItems;
 
+    /**
+     *
+     * @return
+     */
     public EnumSet<Material> getCreativeBannedItems() { return creativeBannedItems; }
 
     /**

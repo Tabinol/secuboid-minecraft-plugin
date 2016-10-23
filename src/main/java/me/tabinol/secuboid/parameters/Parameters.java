@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import org.bukkit.Material;
 
 
@@ -251,6 +250,12 @@ public class Parameters {
         return ft;
     }
     
+    /**
+     *
+     * @param prefix
+     * @param mat
+     * @return
+     */
     public final PermissionType getSpecialPermission(SpecialPermPrefix prefix, Material mat) {
         
         Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);

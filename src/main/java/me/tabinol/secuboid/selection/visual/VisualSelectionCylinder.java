@@ -30,10 +30,20 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author michel
+ */
 public class VisualSelectionCylinder extends VisualSelection {
     
     private CylinderArea area;
     
+    /**
+     *
+     * @param area
+     * @param isFromLand
+     * @param player
+     */
     public VisualSelectionCylinder(CylinderArea area, 
             boolean isFromLand, Player player) {
         
@@ -41,6 +51,10 @@ public class VisualSelectionCylinder extends VisualSelection {
         this.area = area;
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public Area getArea() {
         
@@ -159,6 +173,10 @@ public class VisualSelectionCylinder extends VisualSelection {
         }
     }
     
+    /**
+     *
+     * @param moveType
+     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
         

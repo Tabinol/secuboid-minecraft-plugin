@@ -20,13 +20,12 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.ArrayList;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.flycreative.Creative;
-import me.tabinol.secuboid.flycreative.Fly;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.flycreative.Creative;
+import me.tabinol.secuboid.flycreative.Fly;
 import me.tabinol.secuboid.lands.DummyLand;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -45,6 +44,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+/**
+ *
+ * @author michel
+ */
 public class FlyCreativeListener implements Listener {
 
     private final Fly fly;
@@ -52,6 +55,9 @@ public class FlyCreativeListener implements Listener {
     private final Config conf;
     private final ArrayList<Player> ignoredGMPlayers;
 
+    /**
+     *
+     */
     public FlyCreativeListener() {
 
         fly = new Fly();
@@ -60,11 +66,19 @@ public class FlyCreativeListener implements Listener {
         ignoredGMPlayers = new ArrayList<Player>();
     }
 
+    /**
+     *
+     * @param player
+     */
     public void addIgnoredGMPlayers(Player player) {
     	
     	ignoredGMPlayers.add(player);
     }
     
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
@@ -72,6 +86,10 @@ public class FlyCreativeListener implements Listener {
         		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
 
@@ -79,6 +97,10 @@ public class FlyCreativeListener implements Listener {
         ignoredGMPlayers.remove(event.getPlayer());
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
 
@@ -86,6 +108,11 @@ public class FlyCreativeListener implements Listener {
     }
 
     // Bugfix when tp is from an other worlds
+
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
     	
@@ -103,6 +130,10 @@ public class FlyCreativeListener implements Listener {
     	}
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
 
@@ -115,6 +146,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public void onLandModify(LandModifyEvent event) {
 
@@ -138,6 +173,10 @@ public class FlyCreativeListener implements Listener {
     	}
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
@@ -147,6 +186,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
 
@@ -155,6 +198,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
 
@@ -165,6 +212,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
 
@@ -175,6 +226,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClose(InventoryCloseEvent event) {
 
@@ -192,6 +247,10 @@ public class FlyCreativeListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Creative getCreative() {
 
         return creative;

@@ -29,6 +29,12 @@ import java.util.List;
 
 /*
  */
+
+/**
+ *
+ * @author michel
+ */
+
 public class HttpClient {
 
     private static HttpClient instance;
@@ -36,6 +42,10 @@ public class HttpClient {
     private HttpClient() {
     }
 
+    /**
+     *
+     * @return
+     */
     public static HttpClient getInstance() {
         if (instance == null) {
             instance = new HttpClient();
@@ -43,10 +53,27 @@ public class HttpClient {
         return instance;
     }
 
+    /**
+     *
+     * @param url
+     * @param body
+     * @param headers
+     * @return
+     * @throws IOException
+     */
     public String post(URL url, String body, List<HttpHeader> headers) throws IOException {
         return post(url, null, body, headers);
     }
 
+    /**
+     *
+     * @param url
+     * @param proxy
+     * @param body
+     * @param headers
+     * @return
+     * @throws IOException
+     */
     public String post(URL url, Proxy proxy, String body, List<HttpHeader> headers) throws IOException {
         if (proxy == null) proxy = Proxy.NO_PROXY;
         HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);

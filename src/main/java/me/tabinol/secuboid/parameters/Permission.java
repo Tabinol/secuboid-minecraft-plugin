@@ -49,6 +49,10 @@ public class Permission {
         this.heritable = heritable;
     }
 
+    /**
+     *
+     * @return
+     */
     public Permission copyOf() {
         
         return new Permission(permType, value, heritable);
@@ -101,6 +105,12 @@ public class Permission {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public String toString() {
 

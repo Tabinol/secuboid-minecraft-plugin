@@ -18,31 +18,57 @@
  */
 package me.tabinol.secuboid.commands;
 
+import java.util.Calendar;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboid.lands.collisions.Collisions;
-import org.bukkit.ChatColor;
-
-import java.util.Calendar;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import org.bukkit.ChatColor;
 
 /**
  * Can create a command and calculate the collisions in a thread.
  */
 public abstract class CommandCollisionsThreadExec extends CommandExec {
 
+    /**
+     *
+     */
     protected boolean addForApprove = false;
+
+    /**
+     *
+     */
     protected Type type = null;
+
+    /**
+     *
+     */
     protected Collisions.LandAction action = null;
+
+    /**
+     *
+     */
     protected int removeId = 0;
+
+    /**
+     *
+     */
     protected Area newArea = null;
+
+    /**
+     *
+     */
     protected PlayerContainer owner = null;
+
+    /**
+     *
+     */
     protected Land parent = null;
 
     /**

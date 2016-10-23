@@ -18,8 +18,8 @@
  */
 package me.tabinol.secuboid.commands;
 
-import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.ChatPaginator;

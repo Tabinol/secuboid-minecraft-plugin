@@ -55,7 +55,19 @@ public class LineLine {
     private final int leftDist;
     private final int rightDist;
 
-
+    /**
+     *
+     * @param x1
+     * @param y1
+     * @param z1
+     * @param x2
+     * @param y2
+     * @param z2
+     * @param upDist
+     * @param downDist
+     * @param leftDist
+     * @param rightDist
+     */
     public LineLine(int x1, int y1, int z1, int x2, int y2, int z2,
             int upDist, int downDist, int leftDist, int rightDist) {
 
@@ -105,12 +117,21 @@ public class LineLine {
 
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
 
         return toString(true);
     }
 
+    /**
+     *
+     * @param isFirst
+     * @return
+     */
     public String toString(boolean isFirst) {
 
         if(isFirst) {
@@ -121,11 +142,20 @@ public class LineLine {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPrint() {
 
         return getPrint(true);
     }
 
+    /**
+     *
+     * @param isFirst
+     * @return
+     */
     public String getPrint(boolean isFirst) {
 
         if(isFirst) {
@@ -137,6 +167,10 @@ public class LineLine {
         }
     }
 
+    /**
+     *
+     * @param apiLine2
+     */
     public void resolveIntersection(LineLine apiLine2) {
 
         LineLine line2 = (LineLine) apiLine2;
@@ -164,6 +198,10 @@ public class LineLine {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public long getVolume() {
 
         double leftLength = Math.sqrt((leftX2 - leftX1)^2 + (leftZ2 - leftZ1)^2);
@@ -172,12 +210,23 @@ public class LineLine {
         return (long) ((leftLength + rightLength) * (leftDist + rightDist) / 2 * (y2 - y1));
     }
 
+    /**
+     *
+     * @param loc
+     * @return
+     */
     public boolean isLocationInside(Location loc) {
 
         return isLocationInside(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
-
+    /**
+     *
+     * @param locX
+     * @param locY
+     * @param locZ
+     * @return
+     */
     public boolean isLocationInside(int locX, int locY, int locZ) {
 
         int pos1;
@@ -214,81 +263,145 @@ public class LineLine {
         return true;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getX1() {
         
         return x1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getY1() {
         
         return y1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getZ1() {
         
         return z1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getX2() {
         
         return x2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int gety2() {
         
         return y2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getZ2() {
         
         return z2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeftX1() {
 
         return leftX1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRightX1() {
         
         return rightX1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeftZ1() {
 
         return leftZ1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRightZ1() {
         
         return rightZ1;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeftX2() {
 
         return leftX2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRightX2() {
         
         return rightX2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getLeftZ2() {
 
         return leftZ2;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getRightZ2() {
         
         return rightZ2;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getA() {
 
         return a;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getB() {
 
         return b;

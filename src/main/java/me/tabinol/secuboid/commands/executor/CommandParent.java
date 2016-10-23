@@ -17,20 +17,28 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
-import me.tabinol.secuboid.lands.collisions.Collisions;
-import org.bukkit.ChatColor;
-
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
+import org.bukkit.ChatColor;
 
+/**
+ *
+ * @author michel
+ */
 @InfoCommand(name="parent", forceParameter=true)
 public class CommandParent extends CommandCollisionsThreadExec {
     
+    /**
+     *
+     * @param entity
+     * @throws SecuboidCommandException
+     */
     public CommandParent(CommandEntities entity) throws SecuboidCommandException {
         
         super(entity);

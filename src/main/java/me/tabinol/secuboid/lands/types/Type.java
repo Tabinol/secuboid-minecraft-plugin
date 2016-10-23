@@ -17,21 +17,38 @@
  */ 
 package me.tabinol.secuboid.lands.types;
 
+/**
+ *
+ * @author michel
+ */
 public class Type implements Comparable<Type> {
 
     private final String typeName;
     
+    /**
+     *
+     * @param typeName
+     */
     protected Type(String typeName) {
         
         this.typeName = typeName;
     }
     
+    /**
+     *
+     * @param arg0
+     * @return
+     */
     @Override
     public int compareTo(Type arg0) {
         
         return typeName.compareTo(arg0.typeName);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getName() {
 
         return typeName;

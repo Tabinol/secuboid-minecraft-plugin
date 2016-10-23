@@ -19,31 +19,25 @@
 package me.tabinol.secuboid.lands.areas;
 
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
- * Represents a cuboid area.
+ * Represents an entire world area.
  */
-public final class CuboidArea implements Area {
+public class InfiniteArea implements Area {
 
     private final AreaCommon areaCommon;
 
     /**
-     * Instantiates a new cuboid area.
+     * Instantiates an infinite area.
      *
      * @param worldName the world name
-     * @param x1 the x1
-     * @param y1 the y1
-     * @param z1 the z1
-     * @param x2 the x2
-     * @param y2 the y2
-     * @param z2 the z2
      */
-    public CuboidArea(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
+    public InfiniteArea(String worldName) {
 
-	areaCommon = new AreaCommon(this, worldName, x1, y1, z1, x2, y2, z2);
+	areaCommon = new AreaCommon(this, worldName, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE,
+		Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
 
     /**
@@ -107,67 +101,13 @@ public final class CuboidArea implements Area {
     }
 
     /**
-     * Sets the x1. Do not use if the area is already in a land.
-     *
-     * @param x1 x1
-     */
-    public void setX1(int x1) {
-	areaCommon.setX1(x1);
-    }
-
-    /**
-     * Sets the y1. Do not use if the area is already in a land.
-     *
-     * @param y1 y1
-     */
-    public void setY1(int y1) {
-	areaCommon.setY1(y1);
-    }
-
-    /**
-     * Sets the z1. Do not use if the area is already in a land.
-     *
-     * @param z1 z1
-     */
-    public void setZ1(int z1) {
-	areaCommon.setZ1(z1);
-    }
-
-    /**
-     * Sets the x2. Do not use if the area is already in a land.
-     *
-     * @param x2 x2
-     */
-    public void setX2(int x2) {
-	areaCommon.setX2(x2);
-    }
-
-    /**
-     * Sets the y2. Do not use if the area is already in a land.
-     *
-     * @param y2 y2
-     */
-    public void setY2(int y2) {
-	areaCommon.setY2(y2);
-    }
-
-    /**
-     * Sets the z2. Do not use if the area is already in a land.
-     *
-     * @param z2 z2
-     */
-    public void setZ2(int z2) {
-	areaCommon.setZ2(z2);
-    }
-
-    /**
      * Gets the volume.
      *
      * @return the volume (in block)
      */
     @Override
     public long getVolume() {
-	return (getX2() - getX1() + 1) * (getY2() - getY1() + 1) * (getZ2() - getZ1() + 1);
+	return Long.MAX_VALUE;
     }
 
     /**
@@ -180,10 +120,10 @@ public final class CuboidArea implements Area {
      */
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-	return worldName.equals(areaCommon.getWorldName())
-		&& Calculate.isInInterval(x, getX1(), getX2())
-		&& Calculate.isInInterval(y, getY1(), getY2())
-		&& Calculate.isInInterval(z, getZ1(), getZ2());
+	if (getWorldName() == null) {
+	    return true;
+	}
+	return worldName.equals(areaCommon.getWorldName());
     }
 
     @Override
@@ -193,8 +133,7 @@ public final class CuboidArea implements Area {
 
     @Override
     public String toFileFormat() {
-	return AreaType.CUBOID + ":" + areaCommon.getWorldName()
-		+ ":" + getX1() + ":" + getY1() + ":" + getZ1() + ":" + getX2() + ":" + getY2() + ":" + getZ2();
+	return AreaType.INFINITE + ":" + areaCommon.getWorldName() == null ? null : areaCommon.getWorldName();
     }
 
     /**
@@ -204,14 +143,12 @@ public final class CuboidArea implements Area {
      */
     @Override
     public String getPrint() {
-	return AreaType.CUBOID.toString().substring(0, 3).toLowerCase()
-		+ ":(" + getX1() + ", " + getY1() + ", " + getZ1() + ")-("
-		+ getX2() + ", " + getY2() + ", " + getZ2() + ")";
+	return AreaType.INFINITE.toString().toLowerCase();
     }
 
     @Override
     public AreaType getAreaType() {
-	return AreaType.CUBOID;
+	return AreaType.INFINITE;
     }
 
     @Override
@@ -246,6 +183,6 @@ public final class CuboidArea implements Area {
 
     @Override
     public Area copyOf() {
-	return new CuboidArea(getWorldName(), getX1(), getY1(), getZ1(), getX2(), getY2(), getZ2());
+	return new InfiniteArea(getWorldName());
     }
 }

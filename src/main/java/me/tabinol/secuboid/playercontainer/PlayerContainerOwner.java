@@ -22,48 +22,52 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
 import org.bukkit.entity.Player;
 
-
+/**
+ * Represents the land owner.
+ *
+ * @author tabinol
+ */
 public class PlayerContainerOwner implements PlayerContainer {
 
     private Land land;
-    
+
     public PlayerContainerOwner(Land land) {
-        this.land = land;
+	this.land = land;
     }
-    
+
     @Override
     public boolean hasAccess(Player player) {
-        return hasAccess(player, land);
+	return hasAccess(player, land);
     }
-        
+
     @Override
     public boolean hasAccess(Player player, Land land) {
-        boolean value;
-        Land parent;
-        
-        if(land == null) {
-            return false;
-        }
-        
-        value = land.getOwner().hasAccess(player);
-        
-        if(!value && (parent = land.getParent()) != null 
-                && land.getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean() == true) {
-            
-            return parent.getOwner().hasAccess(player);
-        }
-        
-        return value;
+	boolean value;
+	Land parent;
+
+	if (land == null) {
+	    return false;
+	}
+
+	value = land.getOwner().hasAccess(player);
+
+	if (!value && (parent = land.getParent()) != null
+		&& land.getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean() == true) {
+
+	    return parent.getOwner().hasAccess(player);
+	}
+
+	return value;
     }
 
     @Override
     public Land getLand() {
-        return land;
+	return land;
     }
 
     @Override
     public void setLand(Land land) {
-        this.land = land;
+	this.land = land;
     }
 
     @Override

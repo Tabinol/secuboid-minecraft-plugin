@@ -22,7 +22,9 @@ import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
 /**
- * The Class PlayerContainerVisitor.
+ * Represents a land visitor (not owner, resident or tenant).
+ *
+ * @author tabinol
  */
 public class PlayerContainerVisitor implements PlayerContainer {
 

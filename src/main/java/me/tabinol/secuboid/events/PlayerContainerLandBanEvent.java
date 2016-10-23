@@ -50,6 +50,12 @@ public class PlayerContainerLandBanEvent extends LandEvent {
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.events.LandEvent#getHandlers()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public HandlerList getHandlers() {
 

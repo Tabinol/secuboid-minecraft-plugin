@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
@@ -36,7 +35,6 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
-
 import org.bukkit.ChatColor;
 
 

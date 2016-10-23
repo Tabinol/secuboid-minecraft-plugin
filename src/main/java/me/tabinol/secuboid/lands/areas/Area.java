@@ -21,7 +21,6 @@ package me.tabinol.secuboid.lands.areas;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
@@ -83,6 +82,11 @@ public abstract class Area implements Comparable<Area> {
                 && x2 == area2.getX2() && y2 == area2.getY2() && z2 == area2.getZ2();
     }
 
+    /**
+     *
+     * @param t
+     * @return
+     */
     @Override
     public int compareTo(Area t) {
 
@@ -129,6 +133,10 @@ public abstract class Area implements Comparable<Area> {
         return 0;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
 
@@ -146,6 +154,10 @@ public abstract class Area implements Comparable<Area> {
                 + ":(" + x1 + ", " + y1 + ", " + z1 + ")-(" + x2 + ", " + y2 + ", " + z2 + ")";
     }
 
+    /**
+     *
+     * @return
+     */
     public AreaType getAreaType() {
         
         return areaType;
@@ -265,10 +277,27 @@ public abstract class Area implements Comparable<Area> {
         return z2;
     }
     
+    /**
+     *
+     * @return
+     */
     public abstract long getVolume();
 
+    /**
+     *
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     public abstract boolean isLocationInside(String worldName, int x, int y, int z);
     
+    /**
+     *
+     * @param loc
+     * @return
+     */
     public boolean isLocationInside(Location loc) {
 
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
@@ -355,5 +384,9 @@ public abstract class Area implements Comparable<Area> {
                 Integer.parseInt(multiStr[6]));
     }
     
+    /**
+     *
+     * @return
+     */
     public abstract Area copyOf();
 }

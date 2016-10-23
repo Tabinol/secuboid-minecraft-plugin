@@ -36,16 +36,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
-
-import org.bukkit.Bukkit;
-
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
 import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
+import org.bukkit.Bukkit;
 
 
 /**
@@ -142,6 +139,11 @@ public class PlayersCache extends Thread {
         lock.unlock();
     }
     
+    /**
+     *
+     * @param uuid
+     * @return
+     */
     public String getNameFromUUID(UUID uuid) {
         
         PlayerCacheEntry entry = playersRevCacheList.get(uuid);
@@ -187,6 +189,11 @@ public class PlayersCache extends Thread {
     /* (non-Javadoc)
      * @see java.lang.Thread#run()
      */
+
+    /**
+     *
+     */
+
     @Override
     public void run() {
         

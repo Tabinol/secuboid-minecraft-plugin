@@ -23,11 +23,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -61,6 +59,16 @@ public class OnCommand extends Thread implements CommandExecutor {
     /* (non-Javadoc)
      * @see org.bukkit.command.CommandExecutor#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
      */
+
+    /**
+     *
+     * @param sender
+     * @param cmd
+     * @param label
+     * @param arg
+     * @return
+     */
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] arg) {
 
@@ -131,6 +139,11 @@ public class OnCommand extends Thread implements CommandExecutor {
         }
     }
     
+    /**
+     *
+     * @param command
+     * @return
+     */
     public InfoCommand getInfoCommand(String command) {
         
         Class<?> infoClass = commands.get(command.toLowerCase());

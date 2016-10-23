@@ -19,9 +19,8 @@
 package me.tabinol.secuboid.commands;
 
 // Work with command arguments
-import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
@@ -30,7 +29,7 @@ import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-
+import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import org.bukkit.command.CommandSender;
 
 
@@ -245,9 +244,9 @@ public class ArgList {
             if (param == null) {
                 throw new SecuboidCommandException("PlayerContainer Error", player, "COMMAND.CONTAINER.CONTAINERNULL");
             }
-            pc = PlayerContainer.create(land, pcType, param);
+            pc = PlayerContainerUtil.create(land, pcType, param);
         } else {
-            pc = PlayerContainer.create(land, pcType, "");
+            pc = PlayerContainerUtil.create(land, pcType, "");
         }
 
         if (pcType == PlayerContainerType.PLAYER && pc == null) {

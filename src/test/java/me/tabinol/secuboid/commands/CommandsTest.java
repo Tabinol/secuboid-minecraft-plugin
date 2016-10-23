@@ -20,14 +20,14 @@ package me.tabinol.secuboid.commands;
 
 import org.junit.Test;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 /**
  * Test for commands annotations
  */
 public class CommandsTest {
 
+    /**
+     *
+     */
     @Test
     public void AnnotationsTest() {
         // Create Command list

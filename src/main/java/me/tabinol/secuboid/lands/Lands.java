@@ -26,15 +26,14 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.events.LandDeleteEvent;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.approve.ApproveList;
-import me.tabinol.secuboid.lands.areas.AreaIndex;
 import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.areas.AreaIndex;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
 import me.tabinol.secuboid.lands.types.Type;
@@ -44,7 +43,6 @@ import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -131,6 +129,11 @@ public class Lands {
         forRent = new HashSet<Land>();
     }
 
+    /**
+     *
+     * @param type
+     * @return
+     */
     public DummyLand getDefaultConf(Type type) {
         
         DummyLand land;

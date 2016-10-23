@@ -19,9 +19,7 @@
 package me.tabinol.secuboid.parameters;
 
 import java.util.ArrayList;
-
 import me.tabinol.secuboid.utilities.StringChanges;
-
 import org.bukkit.ChatColor;
 
 /**
@@ -43,7 +41,10 @@ public class FlagValue {
         this.value = value;
     }
     
-    
+    /**
+     *
+     * @return
+     */
     public FlagValue copyOf() {
         
         if(value instanceof Boolean) {

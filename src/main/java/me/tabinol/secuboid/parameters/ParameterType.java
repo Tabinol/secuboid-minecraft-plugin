@@ -47,6 +47,13 @@ public class ParameterType implements Comparable<ParameterType> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+
+    /**
+     *
+     * @param t
+     * @return
+     */
+
     @Override
     public int compareTo(ParameterType t) {
         
@@ -77,6 +84,12 @@ public class ParameterType implements Comparable<ParameterType> {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public String toString() {
         

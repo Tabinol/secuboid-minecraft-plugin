@@ -18,12 +18,10 @@
  */
 package me.tabinol.secuboid.parameters;
 
-import org.bukkit.Material;
-import org.bukkit.event.Listener;
-import org.bukkit.entity.Player;
-
 import me.tabinol.secuboid.lands.areas.CuboidArea;
-
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 

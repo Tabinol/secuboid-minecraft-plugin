@@ -19,10 +19,8 @@
 package me.tabinol.secuboid.config.vanish;
 
 import com.earth2me.essentials.Essentials;
-
 import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
-
 import org.bukkit.entity.Player;
 
 

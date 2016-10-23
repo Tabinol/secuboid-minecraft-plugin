@@ -22,10 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.LandModifyEvent.LandModifyReason;
 import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
@@ -33,8 +30,9 @@ import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
+import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.parameters.PermissionType;
-
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -85,6 +83,10 @@ public class DummyLand {
         return Secuboid.getThisPlugin().getServer().getWorld(worldName);
     }
 
+    /**
+     *
+     * @param desLand
+     */
     public void copyPermsFlagsTo(DummyLand desLand) {
         
         // copy permissions
@@ -353,6 +355,11 @@ public class DummyLand {
         return flags.values();
     }
 
+    /**
+     *
+     * @param ft
+     * @return
+     */
     public FlagValue getFlagAndInherit(FlagType ft) {
 
         return getFlagAndInherit(ft, false);

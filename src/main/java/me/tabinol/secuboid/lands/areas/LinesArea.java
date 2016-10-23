@@ -22,14 +22,22 @@ package me.tabinol.secuboid.lands.areas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.utilities.Calculate;
 
+/**
+ *
+ * @author michel
+ */
 public final class LinesArea extends Area {
     
     private final List<LineLine> lines;
     
+    /**
+     *
+     * @param worldName
+     * @param lines
+     */
     public LinesArea(String worldName, Collection<LineLine> lines) {
         
         super(AreaType.LINES, worldName, 0, 0, 0, 0, 0, 0);
@@ -49,6 +57,10 @@ public final class LinesArea extends Area {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
 
@@ -85,6 +97,10 @@ public final class LinesArea extends Area {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param line
+     */
     public void addLine(LineLine line) {
 
         // Modify the previous line x2/y2/z2
@@ -105,16 +121,28 @@ public final class LinesArea extends Area {
                 Calculate.greaterInt(line.getRightZ1(), line.getRightZ2()));
     }
 
+    /**
+     *
+     * @return
+     */
     public Collection<LineLine> getLines() {
 
         return lines;
     }
 
+    /**
+     *
+     * @return
+     */
     public Area copyOf() {
         
         return new LinesArea(worldName, lines);
     }
 
+    /**
+     *
+     * @return
+     */
     public long getVolume() {
         
         long volume = 0;
@@ -126,6 +154,14 @@ public final class LinesArea extends Area {
         return volume;
     }
 
+    /**
+     *
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
         if(worldName.equals(worldName)) {

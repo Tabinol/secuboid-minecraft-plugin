@@ -30,10 +30,20 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author michel
+ */
 public class VisualSelectionCuboid extends VisualSelection {
     
     private CuboidArea area;
     
+    /**
+     *
+     * @param area
+     * @param isFromLand
+     * @param player
+     */
     public VisualSelectionCuboid(CuboidArea area, 
             boolean isFromLand, Player player) {
         
@@ -41,6 +51,10 @@ public class VisualSelectionCuboid extends VisualSelection {
         this.area = area;
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public Area getArea() {
         
@@ -165,6 +179,10 @@ public class VisualSelectionCuboid extends VisualSelection {
         }
     }
 
+    /**
+     *
+     * @param moveType
+     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
         

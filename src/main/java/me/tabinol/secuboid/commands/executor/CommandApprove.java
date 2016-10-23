@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.Config;
@@ -33,7 +32,6 @@ import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-
 import org.bukkit.ChatColor;
 
 

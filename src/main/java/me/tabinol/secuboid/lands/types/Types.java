@@ -20,15 +20,27 @@ package me.tabinol.secuboid.lands.types;
 import java.util.Collection;
 import java.util.TreeMap;
 
+/**
+ *
+ * @author michel
+ */
 public class Types {
 
     final private TreeMap<String, Type> types;
     
+    /**
+     *
+     */
     public Types() {
         
         types = new TreeMap<String, Type>();
     }
     
+    /**
+     *
+     * @param arg0
+     * @return
+     */
     public Type addOrGetType(String arg0) {
         
         if(arg0 == null || arg0.equals("")) {
@@ -50,11 +62,20 @@ public class Types {
         return type;
     }
 
+    /**
+     *
+     * @param arg0
+     * @return
+     */
     public Type getType(String arg0) {
 
         return types.get(arg0.toLowerCase());
     }
 
+    /**
+     *
+     * @return
+     */
     public Collection<Type> getTypes() {
 
         return types.values();

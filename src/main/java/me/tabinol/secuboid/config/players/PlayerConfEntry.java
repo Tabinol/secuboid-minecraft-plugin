@@ -25,7 +25,6 @@ import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
-
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -91,16 +90,28 @@ public class PlayerConfEntry {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public PlayerContainerPlayer getPlayerContainer() {
         
         return pcp;
     }
     
+    /**
+     *
+     * @return
+     */
     public CommandSender getSender() {
 
         return sender;
     }
 
+    /**
+     *
+     * @return
+     */
     public Player getPlayer() {
 
         return player;
@@ -116,6 +127,10 @@ public class PlayerConfEntry {
         return playerSelection;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isAdminMod() {
 
         // Security for adminmod
@@ -177,6 +192,10 @@ public class PlayerConfEntry {
         chatPage = page;
     }
 
+    /**
+     *
+     * @return
+     */
     public long getLastMoveUpdate() {
 
         return lastMoveUpdate;
@@ -192,6 +211,10 @@ public class PlayerConfEntry {
         lastMoveUpdate = lastMove;
     }
 
+    /**
+     *
+     * @return
+     */
     public DummyLand getLastLand() {
 
         return lastLand;
@@ -207,6 +230,10 @@ public class PlayerConfEntry {
         lastLand = land;
     }
 
+    /**
+     *
+     * @return
+     */
     public Location getLastLoc() {
 
         return lastLoc;

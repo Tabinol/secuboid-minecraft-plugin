@@ -19,17 +19,15 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Map;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.collisions.Collisions;
-import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
-
+import me.tabinol.secuboid.lands.collisions.Collisions;
+import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import org.bukkit.ChatColor;
 
 

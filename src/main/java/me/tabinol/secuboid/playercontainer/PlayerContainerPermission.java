@@ -18,68 +18,64 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 
+public class PlayerContainerPermission implements PlayerContainer {
 
-/**
- * The Class PlayerContainerPermission.
- */
-public class PlayerContainerPermission extends PlayerContainer {
+    private final Permission perm;
 
-    /** The perm. */
-    private Permission perm;
-    
-    /**
-     * Instantiates a new player container permission.
-     *
-     * @param bukkitPermission the bukkit permission
-     */
     public PlayerContainerPermission(String bukkitPermission) {
-
-        super(bukkitPermission, PlayerContainerType.PERMISSION, true);
-        if(Secuboid.getThisPlugin() != null){
-            perm = new Permission(bukkitPermission);
-        } else {
-            perm = null;
-        }
+	perm = new Permission(bukkitPermission);
     }
 
-    public boolean equals(PlayerContainer container2) {
-
-        return container2 instanceof PlayerContainerPermission
-                && name.equalsIgnoreCase(container2.getName());
-    }
-
-    public PlayerContainer copyOf() {
-
-        return new PlayerContainerPermission(name);
-    }
-
+    @Override
     public boolean hasAccess(Player player) {
-
-        return player.hasPermission(perm);
+	return player.hasPermission(perm);
     }
 
+    @Override
     public boolean hasAccess(Player player, Land land) {
-        
-        return hasAccess(player);
+	return hasAccess(player);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainer#getPrint()
-     */
     @Override
     public String getPrint() {
-
-        return ChatColor.GRAY + "B:" + ChatColor.WHITE + name;
+	return ChatColor.GRAY + "B:" + ChatColor.WHITE + perm.getName();
     }
 
+    @Override
     public void setLand(Land land) {
+    }
 
+    @Override
+    public String getName() {
+	return perm.getName();
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.PERMISSION;
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.PERMISSION + ":" + perm.getName();
+    }
+
+    @Override
+    public Land getLand() {
+	return null;
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	int result = PlayerContainerType.PERMISSION.compareTo(t.getContainerType());
+	if (result == 0) {
+	    return result;
+	}
+	return perm.getName().compareTo(t.getName());
     }
 }

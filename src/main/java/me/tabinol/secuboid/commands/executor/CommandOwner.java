@@ -25,7 +25,6 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-
 import org.bukkit.ChatColor;
 
 

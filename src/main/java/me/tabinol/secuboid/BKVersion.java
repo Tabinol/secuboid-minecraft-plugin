@@ -19,7 +19,6 @@
 package me.tabinol.secuboid;
 
 import java.util.EnumSet;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -35,13 +34,15 @@ public class BKVersion {
     
     private static GameMode spectatorMode = null;
     
-    private static EnumSet<Material> doors = EnumSet.noneOf(Material.class);
+    private static final EnumSet<Material> doors = EnumSet.noneOf(Material.class);
     
     private static Material armorStand = null;
     
     private static EntityType armorStandEntity = null;
     
-    
+    /**
+     *
+     */
     protected static void initVersion() {
         
         // org.bukkit.events.player.PlayerInteractAtEntityEvent (for ArmorStand)
@@ -91,26 +92,50 @@ public class BKVersion {
         
     }
     
+    /**
+     *
+     * @return
+     */
     public static boolean isPlayerInteractAtEntityEventExist() {
         
         return existPlayerInteractAtEntityEvent;
     }
     
+    /**
+     *
+     * @param player
+     * @return
+     */
     public static boolean isSpectatorMode(Player player) {
         
         return player.getGameMode() == spectatorMode;
     }
     
+    /**
+     *
+     * @param material
+     * @return
+     */
     public static boolean isDoor(Material material) {
         
         return doors.contains(material);
     }
     
+    /**
+     *
+     * @param material
+     * @return
+     */
     public static boolean isArmorStand(Material material) {
         
         return armorStand != null ? material == armorStand : false;
     }
 
+    /**
+     *
+     * @param entityType
+     * @return
+     */
     public static boolean isArmorStand(EntityType entityType) {
         
         return armorStandEntity != null ? entityType == armorStandEntity : false;

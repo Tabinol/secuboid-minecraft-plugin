@@ -25,34 +25,149 @@ import me.tabinol.secuboid.commands.executor.*;
  */
 public enum CommandClassList {
 
+    /**
+     *
+     */
     CommandAdminmod(CommandAdminmod.class),
+
+    /**
+     *
+     */
     CommandApprove(CommandApprove.class),
+
+    /**
+     *
+     */
     CommandArea(CommandArea.class),
+
+    /**
+     *
+     */
     CommandKick(CommandKick.class),
+
+    /**
+     *
+     */
     CommandRent(CommandRent.class),
+
+    /**
+     *
+     */
     CommandBan(CommandBan.class),
+
+    /**
+     *
+     */
     CommandList(CommandList.class),
+
+    /**
+     *
+     */
     CommandResident(CommandResident.class),
+
+    /**
+     *
+     */
     CommandCancel(CommandCancel.class),
+
+    /**
+     *
+     */
     CommandMoney(CommandMoney.class),
+
+    /**
+     *
+     */
     CommandSale(CommandSale.class),
+
+    /**
+     *
+     */
     CommandConfirm(CommandConfirm.class),
+
+    /**
+     *
+     */
     CommandNotify(CommandNotify.class),
+
+    /**
+     *
+     */
     CommandSelect(CommandSelect.class),
+
+    /**
+     *
+     */
     CommandCreate(CommandCreate.class),
+
+    /**
+     *
+     */
     CommandOwner(CommandOwner.class),
+
+    /**
+     *
+     */
     CommandDefault(CommandDefault.class),
+
+    /**
+     *
+     */
     CommandPage(CommandPage.class),
+
+    /**
+     *
+     */
     CommandSetspawn(CommandSetspawn.class),
+
+    /**
+     *
+     */
     CommandParent(CommandParent.class),
+
+    /**
+     *
+     */
     CommandTp(CommandTp.class),
+
+    /**
+     *
+     */
     CommandExpand(CommandExpand.class),
+
+    /**
+     *
+     */
     CommandPermission(CommandPermission.class),
+
+    /**
+     *
+     */
     CommandType(CommandType.class),
+
+    /**
+     *
+     */
     CommandFlag(CommandFlag.class),
+
+    /**
+     *
+     */
     CommandPriority(CommandPriority.class),
+
+    /**
+     *
+     */
     CommandWho(CommandWho.class),
+
+    /**
+     *
+     */
     CommandHelp(CommandHelp.class),
+
+    /**
+     *
+     */
     CommandReload(CommandReload.class);
 
     private Class<?> commandClass;
@@ -62,6 +177,10 @@ public enum CommandClassList {
         this.commandClass = commandClass;
     }
 
+    /**
+     *
+     * @return
+     */
     public Class<?> getCommandClass() {
 
         return commandClass;

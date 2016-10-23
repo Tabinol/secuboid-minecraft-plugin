@@ -21,65 +21,69 @@ package me.tabinol.secuboid.playercontainer;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
-
 /**
  * The Class PlayerContainerVisitor.
  */
-public class PlayerContainerVisitor extends PlayerContainer {
-    
-    /** The land. */
+public class PlayerContainerVisitor implements PlayerContainer {
+
     private Land land;
-    
-    /**
-     * Instantiates a new player container visitor.
-     *
-     * @param land the land
-     */
+
     public PlayerContainerVisitor(Land land) {
-        
-        super("", PlayerContainerType.VISITOR, false);
-        this.land = land;
+	this.land = land;
     }
-    
-    public boolean equals(PlayerContainer container2) {
-        
-        return container2 instanceof PlayerContainerVisitor
-                && land == ((PlayerContainerVisitor) container2).land;
-    }
-    
-    public PlayerContainer copyOf() {
-        
-        return new PlayerContainerVisitor(land);
-    }
-    
+
+    @Override
     public boolean hasAccess(Player player) {
-        
-        return hasAccess(player, land);
+	return hasAccess(player, land);
     }
-    
+
+    @Override
     public boolean hasAccess(Player player, Land land) {
+	if (land == null) {
+	    return false;
+	}
 
-        if(land == null) {
-            return false;
-        }
-
-        return !land.getOwner().hasAccess(player)
-                && !land.isResident(player)
-                && !land.isTenant(player);
+	return !land.getOwner().hasAccess(player)
+		&& !land.isResident(player)
+		&& !land.isTenant(player);
     }
-    
-    /**
-     * Gets the land.
-     *
-     * @return the land
-     */
+
+    @Override
     public Land getLand() {
-        
-        return land;
+	return land;
     }
 
+    @Override
     public void setLand(Land land) {
-    
-        this.land = land;
+	this.land = land;
+    }
+
+    @Override
+    public String getName() {
+	return "";
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.VISITOR;
+    }
+
+    @Override
+    public String getPrint() {
+	return PlayerContainerType.VISITOR.getPrint();
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.VISITOR.getPrint() + ":";
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	int result = PlayerContainerType.VISITOR.compareTo(t.getContainerType());
+	if (result == 0) {
+	    return result;
+	}
+	return land.compareTo(t.getLand());
     }
 }

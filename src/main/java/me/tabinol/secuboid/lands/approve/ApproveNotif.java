@@ -19,10 +19,8 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.logging.Level;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.utilities.SecuboidRunnable;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -60,6 +58,11 @@ public class ApproveNotif extends SecuboidRunnable {
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
+
+    /**
+     *
+     */
+
     @Override
     public void run() {
 

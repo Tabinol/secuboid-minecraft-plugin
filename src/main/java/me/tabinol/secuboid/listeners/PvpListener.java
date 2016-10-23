@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.Map;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
@@ -27,7 +26,6 @@ import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.utilities.ExpirableHashMap;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

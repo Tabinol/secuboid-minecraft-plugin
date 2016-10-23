@@ -58,6 +58,10 @@ public class LandFlag {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public LandFlag copyOf() {
         
         return new LandFlag(flagType, value.copyOf(), heritable);
@@ -117,6 +121,12 @@ public class LandFlag {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public String toString() {
         

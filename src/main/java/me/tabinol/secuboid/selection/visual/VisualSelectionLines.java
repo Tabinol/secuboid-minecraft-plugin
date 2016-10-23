@@ -18,7 +18,10 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
+import static java.lang.Math.abs;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.LinesArea;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.parameters.PermissionList;
@@ -29,10 +32,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import static java.lang.Math.abs;
-import me.tabinol.secuboid.lands.DummyLand;
-import me.tabinol.secuboid.lands.areas.Area;
-
+/**
+ *
+ * @author michel
+ */
 public class VisualSelectionLines extends VisualSelection {
 
     private final LinesArea area;
@@ -46,6 +49,16 @@ public class VisualSelectionLines extends VisualSelection {
     private int rightDist;
     private boolean canCreate;
 
+    /**
+     *
+     * @param area
+     * @param isFromLand
+     * @param player
+     * @param upDist
+     * @param downDist
+     * @param leftDist
+     * @param rightDist
+     */
     public VisualSelectionLines(LinesArea area, boolean isFromLand, Player player,
                                 int upDist, int downDist, int leftDist, int rightDist) {
 
@@ -65,6 +78,10 @@ public class VisualSelectionLines extends VisualSelection {
         this.rightDist = rightDist;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public Area getArea() {
 
@@ -174,6 +191,10 @@ public class VisualSelectionLines extends VisualSelection {
         }
     }
 
+    /**
+     *
+     * @param moveType
+     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
 

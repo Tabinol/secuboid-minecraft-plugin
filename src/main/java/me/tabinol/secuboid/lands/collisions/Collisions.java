@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.lands.Land;
@@ -520,21 +519,37 @@ public class Collisions {
         return isFree;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getLandName() {
 
         return landName;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getPriceLand() {
 
         return priceLand;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getPriceArea() {
 
         return priceArea;
     }
 
+    /**
+     *
+     * @return
+     */
     public double getPrice() {
 
         if(action == LandAction.LAND_ADD) {

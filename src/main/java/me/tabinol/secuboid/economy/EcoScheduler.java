@@ -20,19 +20,26 @@ package me.tabinol.secuboid.economy;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ *
+ * @author michel
+ */
 public class EcoScheduler extends BukkitRunnable {
 
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
+
+    /**
+     *
+     */
+
     public void run() {
         
         Calendar now = Calendar.getInstance();

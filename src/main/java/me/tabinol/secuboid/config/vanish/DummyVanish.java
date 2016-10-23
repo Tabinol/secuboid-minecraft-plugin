@@ -20,7 +20,6 @@ package me.tabinol.secuboid.config.vanish;
 
 import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
-
 import org.bukkit.entity.Player;
 
 

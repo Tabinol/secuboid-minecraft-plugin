@@ -30,20 +30,19 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.bukkit.Location;
-
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.exceptions.FileLoadException;
-import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import me.tabinol.secuboid.utilities.StringChanges;
+import org.bukkit.Location;
 
 
 /**
@@ -200,7 +199,7 @@ public class StorageFlat extends Storage implements StorageInt {
             String ownerS = cf.getValueString();
 
             // create owner (PlayerContainer)
-            owner = PlayerContainer.getFromString(ownerS);
+            owner = PlayerContainerUtil.getFromFileFormat(ownerS);
             if (owner == null) {
                 throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
             }
@@ -228,13 +227,13 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Residents
             while ((str = cf.getNextString()) != null) {
-                residents.add(PlayerContainer.getFromString(str));
+                residents.add(PlayerContainerUtil.getFromFileFormat(str));
             }
             cf.readParam();
 
             //Banneds
             while ((str = cf.getNextString()) != null) {
-                banneds.add(PlayerContainer.getFromString(str));
+                banneds.add(PlayerContainerUtil.getFromFileFormat(str));
             }
             cf.readParam();
 
@@ -242,7 +241,7 @@ public class StorageFlat extends Storage implements StorageInt {
             while ((str = cf.getNextString()) != null) {
                 String[] multiStr = str.split(":");
                 TreeMap<PermissionType, Permission> permPlayer;
-                PlayerContainer pc = PlayerContainer.getFromString(multiStr[0] + ":" + multiStr[1]);
+                PlayerContainer pc = PlayerContainerUtil.getFromFileFormat(multiStr[0] + ":" + multiStr[1]);
                 PermissionType permType = Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(multiStr[2]);
                 if (!permissions.containsKey(pc)) {
                     permPlayer = new TreeMap<PermissionType, Permission>();
@@ -271,7 +270,7 @@ public class StorageFlat extends Storage implements StorageInt {
 
             //Players Notify
             while ((str = cf.getNextString()) != null) {
-                pNotifs.add((PlayerContainerPlayer) PlayerContainer.getFromString(str));
+                pNotifs.add((PlayerContainerPlayer) PlayerContainerUtil.getFromFileFormat(str));
             }
             
             // Economy
@@ -299,7 +298,7 @@ public class StorageFlat extends Storage implements StorageInt {
                     rented = Boolean.parseBoolean(cf.getValueString());
                     if(rented) {
                         cf.readParam();
-                        tenant = (PlayerContainerPlayer) PlayerContainer.getFromString(cf.getValueString());
+                        tenant = (PlayerContainerPlayer) PlayerContainerUtil.getFromFileFormat(cf.getValueString());
                         cf.readParam();
                         lastPayment = Timestamp.valueOf(cf.getValueString());
                     }

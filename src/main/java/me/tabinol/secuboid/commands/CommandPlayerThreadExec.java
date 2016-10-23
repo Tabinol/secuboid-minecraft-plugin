@@ -30,6 +30,9 @@ import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
  */
 public abstract class CommandPlayerThreadExec extends CommandExec {
     
+    /**
+     *
+     */
     protected PlayerContainer pc;
 
     /**

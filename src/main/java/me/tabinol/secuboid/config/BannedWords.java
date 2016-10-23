@@ -24,28 +24,119 @@ package me.tabinol.secuboid.config;
  */
 public enum BannedWords {
 
+    /**
+     *
+     */
     DONE,
+
+    /**
+     *
+     */
     WORLDEDIT,
+
+    /**
+     *
+     */
     EXPAND,
+
+    /**
+     *
+     */
     SELECT,
+
+    /**
+     *
+     */
     REMOVE,
+
+    /**
+     *
+     */
     HERE,
+
+    /**
+     *
+     */
     CURRENT,
+
+    /**
+     *
+     */
     ADMINMOD,
+
+    /**
+     *
+     */
     FACTOID,
+
+    /**
+     *
+     */
     SECUBOID,
+
+    /**
+     *
+     */
     CONSOLE,
+
+    /**
+     *
+     */
     CLAIM,
+
+    /**
+     *
+     */
     PAGE,
+
+    /**
+     *
+     */
     CONFIG,
+
+    /**
+     *
+     */
     AREA,
+
+    /**
+     *
+     */
     SET,
+
+    /**
+     *
+     */
     UNSET,
+
+    /**
+     *
+     */
     LIST,
+
+    /**
+     *
+     */
     DEFAULT,
+
+    /**
+     *
+     */
     PRIORITY,
+
+    /**
+     *
+     */
     NULL,
+
+    /**
+     *
+     */
     APPROVE,
+
+    /**
+     *
+     */
     RENAME;
 
     /** The Constant INVALID_CHARACTERS. */

@@ -19,11 +19,9 @@
 package me.tabinol.secuboid.economy;
 
 import java.util.HashSet;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -93,6 +93,12 @@ public class LandModifyEvent extends LandEvent {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public HandlerList getHandlers() {
 

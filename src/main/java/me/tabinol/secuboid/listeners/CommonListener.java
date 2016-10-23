@@ -23,7 +23,6 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.PermissionType;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

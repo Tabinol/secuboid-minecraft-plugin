@@ -22,7 +22,6 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
-
 import org.bukkit.entity.Player;
 
 /**
@@ -35,9 +34,21 @@ public class AreaSelection extends RegionSelection {
      */
     public enum MoveType { // ACTIVE = move with the player, PASSIVE = fixed
 
+	/**
+	 *
+	 */
+
         PASSIVE,
-        ACTIVE,
-        EXPAND
+
+	/**
+	 *
+	 */
+	ACTIVE,
+
+	/**
+	 *
+	 */
+	EXPAND
         
     }
     
@@ -91,12 +102,20 @@ public class AreaSelection extends RegionSelection {
         return visualSelection;
     }
     
+    /**
+     *
+     * @return
+     */
     public MoveType getMoveType() {
         
         return moveType;
     }
     
     // Called from then player listenner
+
+    /**
+     *
+     */
     public void playerMove() {
         
         visualSelection.playerMove(moveType);

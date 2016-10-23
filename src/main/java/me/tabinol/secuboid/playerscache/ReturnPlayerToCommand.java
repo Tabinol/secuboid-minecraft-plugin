@@ -18,7 +18,6 @@
 package me.tabinol.secuboid.playerscache;
 
 import java.util.concurrent.Callable;
-
 import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
@@ -48,6 +47,12 @@ public class ReturnPlayerToCommand implements Callable<Void> {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public Void call() {
 

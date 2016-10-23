@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.LinkedList;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
@@ -35,7 +34,6 @@ import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-
 import org.bukkit.ChatColor;
 
 

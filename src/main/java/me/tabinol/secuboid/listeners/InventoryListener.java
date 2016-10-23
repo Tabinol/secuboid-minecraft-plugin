@@ -20,11 +20,11 @@
 package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.InventoryStorage;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
-import me.tabinol.secuboid.events.LandModifyEvent;
-import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.DummyLand;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -42,16 +42,27 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ *
+ * @author michel
+ */
 public class InventoryListener extends CommonListener implements Listener {
 
     private final InventoryStorage inventoryStorage;
 
+    /**
+     *
+     */
     public InventoryListener() {
 
         super();
         inventoryStorage = new InventoryStorage();
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
@@ -61,6 +72,10 @@ public class InventoryListener extends CommonListener implements Listener {
                 getDummyLand(player.getLocation()), player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.JOIN);
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
 
@@ -77,6 +92,9 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
+    /**
+     *
+     */
     public void forceSave() {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -87,12 +105,20 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param player
+     */
     public void removePlayer(Player player) {
 
         inventoryStorage.switchInventory(player,
                 getDummyLand(player.getLocation()), player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.QUIT);
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void PlayerGameModeChange(PlayerGameModeChangeEvent event) {
 
@@ -102,6 +128,10 @@ public class InventoryListener extends CommonListener implements Listener {
                 getDummyLand(player.getLocation()), event.getNewGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
 
@@ -111,6 +141,10 @@ public class InventoryListener extends CommonListener implements Listener {
                 event.getLandOrOutside(), player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLandModify(LandModifyEvent event) {
 
@@ -139,6 +173,10 @@ public class InventoryListener extends CommonListener implements Listener {
     	}
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
 
@@ -148,6 +186,10 @@ public class InventoryListener extends CommonListener implements Listener {
                 getDummyLand(player.getLocation()), player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.DEATH);
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
@@ -168,6 +210,11 @@ public class InventoryListener extends CommonListener implements Listener {
     }
     
     // On player death, prevent drop
+
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDeath(EntityDeathEvent event) {
         
@@ -195,6 +242,10 @@ public class InventoryListener extends CommonListener implements Listener {
         
     }
     
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         
@@ -205,16 +256,32 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param location
+     * @return
+     */
     public DummyLand getDummyLand(Location location) {
         
         return Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(location);
     }
     
+    /**
+     *
+     * @param player
+     * @return
+     */
     public PlayerInvEntry getPlayerInvEntry(Player player) {
 
         return inventoryStorage.getPlayerInvEntry(player);
     }
 
+    /**
+     *
+     * @param player
+     * @param deathVersion
+     * @return
+     */
     public boolean loadDeathInventory(Player player, int deathVersion) {
 
         InventorySpec invSpec = inventoryStorage.getPlayerInvEntry(player).getActualInv();
@@ -222,6 +289,11 @@ public class InventoryListener extends CommonListener implements Listener {
         return inventoryStorage.loadInventory(player, invSpec.getInventoryName(), player.getGameMode() == GameMode.CREATIVE, true, deathVersion);
     }
 
+    /**
+     *
+     * @param player
+     * @param invSpec
+     */
     public void saveDefaultInventory(Player player, InventorySpec invSpec) {
 
         inventoryStorage.saveInventory(player, invSpec.getInventoryName(),

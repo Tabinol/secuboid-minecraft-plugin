@@ -21,7 +21,6 @@ package me.tabinol.secuboid.lands.approve;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;

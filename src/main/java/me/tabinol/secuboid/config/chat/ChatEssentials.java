@@ -17,11 +17,9 @@
  */
 package me.tabinol.secuboid.config.chat;
 
-import me.tabinol.secuboid.Secuboid;
-
-import org.bukkit.entity.Player;
-
 import com.earth2me.essentials.Essentials;
+import me.tabinol.secuboid.Secuboid;
+import org.bukkit.entity.Player;
 
 /**
  * The Class ChatEssentials.

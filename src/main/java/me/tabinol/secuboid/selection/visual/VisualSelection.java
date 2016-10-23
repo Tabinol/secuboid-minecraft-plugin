@@ -32,6 +32,10 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author michel
+ */
 public abstract class VisualSelection {
     
     /** The block list. */
@@ -40,6 +44,9 @@ public abstract class VisualSelection {
     /** The block byte (option) list. */
     protected final Map<Location, Byte> blockByteList;
     
+    /**
+     *
+     */
     protected final Player player;
     
     /** The is from land. */
@@ -51,6 +58,11 @@ public abstract class VisualSelection {
     /** Parent detected */
     protected DummyLand parentDetected;
 
+    /**
+     *
+     * @param isFromLand
+     * @param player
+     */
     protected VisualSelection(boolean isFromLand, Player player) {
         
         blockList = new HashMap<Location, Material>();
@@ -61,6 +73,10 @@ public abstract class VisualSelection {
         parentDetected = null;
     }
 
+    /**
+     *
+     * @return
+     */
     public abstract Area getArea();
 
     /**
@@ -74,6 +90,11 @@ public abstract class VisualSelection {
     public abstract void makeVisualSelection();
     
     // Called from AreaSelection then player listenner
+
+    /**
+     *
+     * @param moveType
+     */
     public abstract void playerMove(AreaSelection.MoveType moveType);
     
     /**
@@ -86,6 +107,9 @@ public abstract class VisualSelection {
         return isCollision;
     }
     
+    /**
+     *
+     */
     @SuppressWarnings("deprecation")
     public void removeSelection() {
         
@@ -121,6 +145,10 @@ public abstract class VisualSelection {
         return loc.getBlockY();
     }
 
+    /**
+     *
+     * @return
+     */
     public Land getParentDetected() {
         
         if(parentDetected instanceof Land) {

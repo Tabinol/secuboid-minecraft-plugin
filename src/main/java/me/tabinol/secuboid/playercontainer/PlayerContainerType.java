@@ -19,97 +19,99 @@
 package me.tabinol.secuboid.playercontainer;
 
 /**
- * The Enum PlayerContainerType. This is the enum list of the possible player
- * containers.
+ * The Enum PlayerContainerType. This is the enum list of the possible player containers. <br>
+ * Order is important here The first is the permission checked first
  */
 public enum PlayerContainerType {
-    
+
     // Order is important here The first is the permission checked first
-    /** The undefined (do not use). */
-    UNDEFINED(0,"UNDEFINED", false),
-    
-    /** The land owner. */
-    OWNER(1,"Owner", false),
-    
-    /** The player. */
-    PLAYER(2,"Player", true),
-    
-    /** The land resident. */
-    RESIDENT(3,"Resident", false),
-    
-    /** The land tenant. */
-    TENANT(4, "Tenant", false),
-    
-    /** The land visitor. */
-    VISITOR(5, "Visitor", false),
-    
-    /** The group from permision system. */
-    GROUP(6,"Group", true),
-    
-    /** The Bukkit permission. */
-    PERMISSION(7, "Permission", true),
-    
-    /** Everybody. */
-    EVERYBODY(8,"Everybody", false),
-    
-    /** Nobody. */
-    NOBODY(9,"Nobody", false),
-    
-    /** Player Name, Only for UUID resolve and replace to a true player. (INTERNAL) */
-    PLAYERNAME(10, "PlayerName", false);
-    
-    /** The value. */
-    private final int value;
-    
-    /** The player container name. */
+    /**
+     * The undefined (do not use).
+     */
+    UNDEFINED("UNDEFINED", false),
+    /**
+     * The land owner.
+     */
+    OWNER("Owner", false),
+    /**
+     * The player.
+     */
+    PLAYER("Player", true),
+    /**
+     * The land resident.
+     */
+    RESIDENT("Resident", false),
+    /**
+     * The land tenant.
+     */
+    TENANT("Tenant", false),
+    /**
+     * The land visitor.
+     */
+    VISITOR("Visitor", false),
+    /**
+     * The group from permision system.
+     */
+    GROUP("Group", true),
+    /**
+     * The Bukkit permission.
+     */
+    PERMISSION("Permission", true),
+    /**
+     * Everybody.
+     */
+    EVERYBODY("Everybody", false),
+    /**
+     * Nobody.
+     */
+    NOBODY("Nobody", false),
+    /**
+     * Player Name, Only for UUID resolve and replace to a true player. (INTERNAL)
+     */
+    PLAYERNAME("PlayerName", false);
+
+    /**
+     * The player container name.
+     */
     private final String pcName;
-    
-    /** Has parameter. */
+
+    /**
+     * Has parameter.
+     */
     private final boolean hasParameter;
-    
+
     /**
      * Instantiates a new player container type.
      *
-     * @param value the value
      * @param pcName the pc name
      * @param hasParameter the has parameter
      */
-    private PlayerContainerType(final int value, final String pcName, final boolean hasParameter) {
-        
-        this.value = value;
-        this.pcName = pcName;
-        this.hasParameter = hasParameter;
+    private PlayerContainerType(final String pcName, final boolean hasParameter) {
+
+	this.pcName = pcName;
+	this.hasParameter = hasParameter;
     }
-    
-    /**
-     * Gets the value.
-     *
-     * @return the value
-     */
-    public int getValue() {
-        
-        return value;
-    }
-    
+
     /**
      * Checks for parameter.
      *
      * @return true, if successful
      */
     public boolean hasParameter() {
-        
-        return hasParameter;
+
+	return hasParameter;
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Enum#toString()
+
+    /**
+     * Gets printable name
+     *
+     * @return printable name
      */
-    @Override
-    public String toString() {
-        
-        return pcName;
+    public String getPrint() {
+
+	return pcName;
     }
-    
+
     /**
      * Gets the player container from string.
      *
@@ -117,12 +119,12 @@ public enum PlayerContainerType {
      * @return the player container type
      */
     public static PlayerContainerType getFromString(String pcName) {
-        
-        for(PlayerContainerType pct : values()) {
-            if(pct.toString().equalsIgnoreCase(pcName)) {
-                return pct;
-            }
-        }
-        return null;
+
+	for (PlayerContainerType pct : values()) {
+	    if (pct.toString().equalsIgnoreCase(pcName)) {
+		return pct;
+	    }
+	}
+	return null;
     }
 }

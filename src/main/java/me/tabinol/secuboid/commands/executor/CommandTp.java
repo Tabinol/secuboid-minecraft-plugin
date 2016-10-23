@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import org.bukkit.Location;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
@@ -29,6 +27,7 @@ import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.utilities.StringChanges;
+import org.bukkit.Location;
 
 
 /**

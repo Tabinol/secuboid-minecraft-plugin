@@ -22,40 +22,49 @@ import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
 
 
-/**
- * The Class PlayerContainerNobody.
- */
-public class PlayerContainerNobody extends PlayerContainer {
+public class PlayerContainerNobody implements PlayerContainer {
 
-    /**
-     * Instantiates a new player container nobody.
-     */
-    public PlayerContainerNobody() {
-        
-        super("", PlayerContainerType.NOBODY, false);
+    @Override
+    public boolean hasAccess(Player player) {
+        return true;
     }
     
-    public boolean equals(PlayerContainer container2) {
-        
-        return container2 instanceof PlayerContainerNobody;
-    }
-
-    public PlayerContainer copyOf() {
-        
-        return new PlayerContainerNobody();
-    }
-
-    public boolean hasAccess(Player player) {
-        
-        return false;
-    }
-
+    @Override
     public boolean hasAccess(Player player, Land land) {
-        
-        return false;
+        return true;
     }
 
+    @Override
     public void setLand(Land land) {
-        
+    }
+
+    @Override
+    public String getName() {
+	return "";
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.NOBODY;
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	return PlayerContainerType.NOBODY.compareTo(t.getContainerType());
+    }
+
+    @Override
+    public String getPrint() {
+	return PlayerContainerType.NOBODY.getPrint();
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.NOBODY.getPrint() + ":";
+    }
+
+    @Override
+    public Land getLand() {
+	return null;
     }
 }

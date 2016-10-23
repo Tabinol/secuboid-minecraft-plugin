@@ -17,10 +17,9 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
+import java.util.concurrent.Callable;
 import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-
-import java.util.concurrent.Callable;
 
 /**
  * Return the collision to launched command.
@@ -48,6 +47,12 @@ public class ReturnCollisionsToCommand implements Callable<Void> {
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public Void call() {
 

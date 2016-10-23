@@ -30,7 +30,6 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.parameters.PermissionType;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

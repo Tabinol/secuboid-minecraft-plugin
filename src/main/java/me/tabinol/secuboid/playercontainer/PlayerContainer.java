@@ -18,152 +18,65 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import java.util.UUID;
 import me.tabinol.secuboid.lands.Land;
-
-import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.entity.Player;
 
 /**
- * The Class PlayerContainer.
+ * The interface PlayerContainer.
  */
-public abstract class PlayerContainer implements Comparable<PlayerContainer> {
+public interface PlayerContainer extends Comparable<PlayerContainer> {
 
-    /** The name. */
-    protected String name;
-    
-    /** The container type. */
-    protected PlayerContainerType containerType;
-
-    /**
-     * Instantiates a new player container.
-     *
-     * @param name the name
-     * @param containerType the container type
-     * @param toLowerCase the to lower case
-     */
-    protected PlayerContainer(String name, PlayerContainerType containerType, boolean toLowerCase) {
-
-        if (toLowerCase) {
-            this.name = name.toLowerCase();
-        } else {
-            this.name = name;
-        }
-        this.containerType = containerType;
-    }
-
-    /**
-     * Creates the.
-     *
-     * @param land the land
-     * @param pct the pct
-     * @param name the name
-     * @return the player container
-     */
-    public static PlayerContainer create(Land land, PlayerContainerType pct, String name) {
-
-        if (pct == PlayerContainerType.GROUP) {
-            return new PlayerContainerGroup(name);
-        } else if (pct == PlayerContainerType.RESIDENT) {
-            return new PlayerContainerResident(land);
-        } else if (pct == PlayerContainerType.VISITOR) {
-            return new PlayerContainerVisitor(land);
-        } else if (pct == PlayerContainerType.OWNER) {
-            return new PlayerContainerOwner(land);
-        } else if (pct == PlayerContainerType.EVERYBODY) {
-            return new PlayerContainerEverybody();
-        } else if (pct == PlayerContainerType.NOBODY) {
-            return new PlayerContainerNobody();
-        } else if (pct == PlayerContainerType.PLAYER || pct == PlayerContainerType.PLAYERNAME) {
-            UUID minecraftUUID;
-
-            // First check if the ID is valid or was connected to the server
-            try {
-                minecraftUUID = UUID.fromString(name.replaceFirst("ID-", ""));
-            } catch (IllegalArgumentException ex) {
-
-                // If there is an error, just return a temporary PlayerName
-                return new PlayerContainerPlayerName(name);
-            }
-
-            // If not null, assign the value to a new PlayerContainer
-            return new PlayerContainerPlayer(minecraftUUID);
-        } else if (pct == PlayerContainerType.PERMISSION) {
-            return new PlayerContainerPermission(name);
-        } else if (pct == PlayerContainerType.TENANT) {
-            return new PlayerContainerTenant(land);
-        }
-        return null;
-    }
-
-    public String getName() {
-
-        return name;
-    }
+    String getName();
 
     /**
      * Gets the container type.
      *
      * @return the container type
      */
-    public PlayerContainerType getContainerType() {
-
-        return containerType;
-    }
-
-    public abstract boolean hasAccess(Player player);
-    
-    public abstract boolean hasAccess(Player player, Land land);
-    
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#compareTo(me.tabinol.secuboid.playercontainer.PlayerContainer)
-     */
-    @Override
-    public int compareTo(PlayerContainer t) {
-
-        if (containerType.getValue() < t.containerType.getValue()) {
-            return -1;
-        }
-        if (containerType.getValue() > t.containerType.getValue()) {
-            return 1;
-        }
-
-        // No ignorecase (Already Lower, except UUID)
-        return name.compareTo(t.name);
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-
-        return containerType.toString() + ":" + name;
-    }
-
-    public String getPrint() {
-
-        return containerType.toString();
-    }
+    PlayerContainerType getContainerType();
 
     /**
-     * Gets the from string.
+     * Return if the player has access
      *
-     * @param string the string
-     * @return the from string
+     * @param player the player
+     * @return true if the player has access
      */
-    public static PlayerContainer getFromString(String string) {
+    boolean hasAccess(Player player);
 
-        String strs[] = StringChanges.splitAddVoid(string, ":");
-        PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
-        return create(null, type, strs[1]);
-    }
-    
+    /**
+     * Return if the player has access from a land
+     *
+     * @param player the player
+     * @param land the land
+     * @return true if the player has access
+     */
+    boolean hasAccess(Player player, Land land);
+
+    /**
+     * Gets the printable format
+     *
+     * @return the printable format
+     */
+    String getPrint();
+
+    /**
+     * Convert to file paramater in file save format.
+     *
+     * @return the file save format
+     */
+    String toFileFormat();
+
+    /**
+     * Gets the land.
+     *
+     * @return the land
+     */
+    Land getLand();
+
     /**
      * Sets the land. Not in Common API for security.
      *
      * @param land the new land
      */
-    public abstract void setLand(Land land);
-    
+    void setLand(Land land);
 }

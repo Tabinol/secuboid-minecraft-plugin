@@ -18,16 +18,19 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-
+/**
+ *
+ * @author michel
+ */
 public class HttpProfileRepository {
 
     // You're not allowed to request more than 100 profiles per go.
@@ -36,17 +39,31 @@ public class HttpProfileRepository {
     private final String agent;
     private HttpClient client;
 
+    /**
+     *
+     * @param agent
+     */
     public HttpProfileRepository(String agent) {
 
         this(agent, HttpClient.getInstance());
     }
 
+    /**
+     *
+     * @param agent
+     * @param client
+     */
     public HttpProfileRepository(String agent, HttpClient client) {
 
         this.agent = agent;
         this.client = client;
     }
 
+    /**
+     *
+     * @param names
+     * @return
+     */
     public Profile[] findProfilesByNames(String... names) {
 
         List<Profile> profiles = new ArrayList<Profile>();

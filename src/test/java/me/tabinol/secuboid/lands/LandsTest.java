@@ -18,7 +18,11 @@
  */
 package me.tabinol.secuboid.lands;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.LinesArea;
@@ -33,11 +37,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import me.tabinol.secuboid.exceptions.SecuboidLandException;
 
 /**
  * Tests for lands.
@@ -54,6 +53,10 @@ public class LandsTest {
     private static Parameters parameters;
     private static Lands lands;
 
+    /**
+     *
+     * @throws SecuboidLandException
+     */
     @Before
     public void initLands() throws SecuboidLandException {
 
@@ -77,6 +80,10 @@ public class LandsTest {
         lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, lines));
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void verifyCuboid() throws Exception {
 
@@ -98,6 +105,10 @@ public class LandsTest {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void verifyCylinder() throws Exception {
 
@@ -124,6 +135,10 @@ public class LandsTest {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void verifyLines() throws Exception {
 

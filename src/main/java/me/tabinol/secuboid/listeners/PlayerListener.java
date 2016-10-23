@@ -20,7 +20,6 @@ package me.tabinol.secuboid.listeners;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -32,18 +31,17 @@ import me.tabinol.secuboid.commands.executor.CommandSelect;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.parameters.Parameters.SpecialPermPrefix;
 import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
-import me.tabinol.secuboid.events.PlayerLandChangeEvent;
-import me.tabinol.secuboid.parameters.Parameters.SpecialPermPrefix;
 import me.tabinol.secuboid.utilities.StringChanges;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -758,6 +756,10 @@ public class PlayerListener extends CommonListener implements Listener {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     // Must be after Essentials
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -922,6 +924,10 @@ public class PlayerListener extends CommonListener implements Listener {
         }
     }
     
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 

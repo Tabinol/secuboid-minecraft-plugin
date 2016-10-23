@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.LinkedList;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
@@ -32,7 +31,6 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.LandFlag;
-
 import org.bukkit.ChatColor;
 
 

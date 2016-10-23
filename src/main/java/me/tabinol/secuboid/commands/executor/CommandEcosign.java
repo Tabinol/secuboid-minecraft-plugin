@@ -24,18 +24,33 @@ import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.parameters.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
+/**
+ *
+ * @author michel
+ */
 public class CommandEcosign extends CommandExec {
 
+    /**
+     *
+     */
     public enum SignType {
-        SALE, RENT
+
+	/**
+	 *
+	 */
+	SALE, 
+
+	/**
+	 *
+	 */
+	RENT
     }
 
     /** The player. */
@@ -47,6 +62,15 @@ public class CommandEcosign extends CommandExec {
     private final SignType signType;
 
     // Called from FlyCreativeListener (right or leftclick)
+
+    /**
+     *
+     * @param entry
+     * @param land
+     * @param action
+     * @param signType
+     * @throws SecuboidCommandException
+     */
     public CommandEcosign(PlayerConfEntry entry, Land land, Action action,
             SignType signType) throws SecuboidCommandException {
 

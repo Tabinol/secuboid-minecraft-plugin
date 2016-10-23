@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.lands.DummyLand;
@@ -39,12 +38,35 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ *
+ * @author michel
+ */
 public class InventoryStorage {
 
+    /**
+     *
+     */
     public final static int STORAGE_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
+
+    /**
+     *
+     */
     public final static String INV_DIR = "inventories";
+
+    /**
+     *
+     */
     public final static String DEFAULT_INV = "DEFAULTINV";
+
+    /**
+     *
+     */
     public final static int MAX_FOOD_LEVEL = 20;
+
+    /**
+     *
+     */
     public final static String DEATH = "DEATH";
     private final Secuboid thisPlugin;
     private final HashMap<Player, PlayerInvEntry> playerInvList; // Last inventory
@@ -54,10 +76,25 @@ public class InventoryStorage {
      */
     public enum PlayerAction {
 
-        JOIN,
-        QUIT,
-        CHANGE,
-        DEATH
+	/**
+	 *
+	 */
+	JOIN,
+
+	/**
+	 *
+	 */
+	QUIT,
+
+	/**
+	 *
+	 */
+	CHANGE,
+
+	/**
+	 *
+	 */
+	DEATH
     }
 
     /**
@@ -65,10 +102,22 @@ public class InventoryStorage {
      */
     public enum InventoryType {
 
-        CREATIVE,
-        SURVIVAL;
+	/**
+	 *
+	 */
+	CREATIVE,
 
-        public static InventoryType getFromBoolean(boolean isCreative) {
+	/**
+	 *
+	 */
+	SURVIVAL;
+
+	/**
+	 *
+	 * @param isCreative
+	 * @return
+	 */
+	public static InventoryType getFromBoolean(boolean isCreative) {
 
             if (isCreative) {
                 return CREATIVE;
@@ -78,12 +127,21 @@ public class InventoryStorage {
         }
     }
 
+    /**
+     *
+     */
     public InventoryStorage() {
 
         this.thisPlugin = Secuboid.getThisPlugin();
         playerInvList = new HashMap<Player, PlayerInvEntry>();
     }
 
+    /**
+     *
+     * @param player
+     * @param invName
+     * @param isCreative
+     */
     public void deleteInventory(Player player, String invName,
             boolean isCreative) {
 
@@ -98,6 +156,16 @@ public class InventoryStorage {
         }
     }
     
+    /**
+     *
+     * @param player
+     * @param invName
+     * @param isCreative
+     * @param isDeath
+     * @param isSaveAllowed
+     * @param isDefaultInv
+     * @param enderChestOnly
+     */
     public void saveInventory(Player player, String invName, boolean isCreative, 
     		boolean isDeath, boolean isSaveAllowed, boolean isDefaultInv, boolean enderChestOnly) {
 
@@ -214,6 +282,16 @@ public class InventoryStorage {
     }
 
     // Return if the inventory exist
+
+    /**
+     *
+     * @param player
+     * @param invName
+     * @param isCreative
+     * @param fromDeath
+     * @param deathVersion
+     * @return
+     */
     public boolean loadInventory(Player player, String invName,
             boolean isCreative, boolean fromDeath, int deathVersion) {
 
@@ -336,6 +414,13 @@ public class InventoryStorage {
         }
     }
 
+    /**
+     *
+     * @param player
+     * @param dummyLand
+     * @param toIsCreative
+     * @param playerAction
+     */
     public void switchInventory(Player player, DummyLand dummyLand, boolean toIsCreative, PlayerAction playerAction) {
 
         PlayerInvEntry invEntry = null;
@@ -407,6 +492,11 @@ public class InventoryStorage {
         }
     }
 
+    /**
+     *
+     * @param player
+     * @return
+     */
     public PlayerInvEntry getPlayerInvEntry(Player player) {
 
         return playerInvList.get(player);

@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -34,8 +33,8 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import me.tabinol.secuboid.utilities.StringChanges;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -84,7 +83,7 @@ public class ApproveList {
         if (approve.getNewArea() != null) {
             section.set("NewArea", approve.getNewArea().toString());
         }
-        section.set("Owner", approve.getOwner().toString());
+        section.set("Owner", approve.getOwner().getPrint());
         if (approve.getParent() != null) {
             section.set("Parent", approve.getParent().getName());
         }
@@ -163,7 +162,7 @@ public class ApproveList {
         }
 
         String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        PlayerContainer pc = PlayerContainer.create(null, PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        PlayerContainer pc = PlayerContainerUtil.create(null, PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
         Land parent = null;
         Area newArea = null;
         

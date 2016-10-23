@@ -20,49 +20,22 @@ package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
-
 import org.bukkit.entity.Player;
 
 
-/**
- * The Class PlayerContainerTenant.
- */
-public class PlayerContainerTenant extends PlayerContainer {
+public class PlayerContainerTenant implements PlayerContainer {
     
-    /** The land. */
     private Land land;
-    
-    /**
-     * Instantiates a new player container tenant.
-     *
-     * @param land the land
-     */
+
     public PlayerContainerTenant(Land land) {
-        
-        super("", PlayerContainerType.TENANT, false);
-        this.land = land;
-    }
-    
-    public boolean equals(PlayerContainer container2) {
-        
-        return container2 instanceof PlayerContainerTenant &&
-                land == ((PlayerContainerTenant)container2).land;
+	this.land = land;
     }
 
-    public PlayerContainer copyOf() {
-        
-        return new PlayerContainerTenant(land);
-    }
-
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#hasAccess(org.bukkit.entity.Player)
-     */
     @Override
     public boolean hasAccess(Player player) {
-        
-        return hasAccess(player, land);
+	return hasAccess(player, land);
     }
-    
+
     @Override
     public boolean hasAccess(Player player, Land land) {
 
@@ -75,7 +48,7 @@ public class PlayerContainerTenant extends PlayerContainer {
         Land parent;
 
         while(!value && (parent = actual.getParent()) != null 
-                && actual.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
+                && actual.getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean() == true) {
             
             value = parent.isTenant(player);
             actual = parent;
@@ -83,22 +56,43 @@ public class PlayerContainerTenant extends PlayerContainer {
         
         return value;
     }
-    /**
-     * Gets the land.
-     *
-     * @return the land
-     */
+
+    @Override
     public Land getLand() {
-        
-        return land;
+	return land;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
     @Override
     public void setLand(Land land) {
-        
-        this.land = land;
+	this.land = land;
+    }
+
+    @Override
+    public String getName() {
+	return "";
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.TENANT;
+    }
+
+    @Override
+    public String getPrint() {
+	return PlayerContainerType.TENANT.getPrint();
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.TENANT.getPrint() + ":";
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	int result = PlayerContainerType.TENANT.compareTo(t.getContainerType());
+	if (result == 0) {
+	    return result;
+	}
+	return land.compareTo(t.getLand());
     }
 }

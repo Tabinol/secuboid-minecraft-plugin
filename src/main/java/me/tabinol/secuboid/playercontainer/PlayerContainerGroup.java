@@ -20,57 +20,67 @@ package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+public class PlayerContainerGroup implements PlayerContainer {
 
-/**
- * The Class PlayerContainerGroup.
- */
-public class PlayerContainerGroup extends PlayerContainer {
-    
-    /**
-     * Instantiates a new player container group.
-     *
-     * @param groupName the group name
-     */
+    String groupName;
+
     public PlayerContainerGroup(String groupName) {
-        
-        super(groupName, PlayerContainerType.GROUP, true);
-    }
-    
-    public boolean equals(PlayerContainer container2) {
-        
-        return container2 instanceof PlayerContainerGroup &&
-                name.equalsIgnoreCase(container2.getName());
+	this.groupName = groupName;
     }
 
-    public PlayerContainer copyOf() {
-        
-        return new PlayerContainerGroup(name);
-    }
-
+    @Override
     public boolean hasAccess(Player player) {
-        
-        if(player != null) {
-            return Secuboid.getThisPlugin().getDependPlugin().getPermission().playerInGroup(player, name);
-        } else {
-            return false;
-        }
+	if (player != null) {
+	    return Secuboid.getThisPlugin().getDependPlugin().getPermission().playerInGroup(player, groupName);
+	} else {
+	    return false;
+	}
     }
-    
+
+    @Override
     public boolean hasAccess(Player player, Land land) {
-        
-        return hasAccess(player);
+	return hasAccess(player);
     }
 
-    public String getPrint() {
-        
-        return ChatColor.BLUE + "G:" + ChatColor.WHITE + name;
+    @Override
+    public Land getLand() {
+	return null;
     }
 
+    @Override
     public void setLand(Land land) {
-        
+    }
+
+    @Override
+    public String getPrint() {
+
+	return ChatColor.BLUE + "G:" + ChatColor.WHITE + groupName;
+    }
+
+    @Override
+    public String getName() {
+	return groupName;
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.GROUP;
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.GROUP + ":" + groupName;
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	int result = PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
+	if (result == 0) {
+	    return result;
+	}
+	return groupName.compareTo(t.getName());
     }
 }

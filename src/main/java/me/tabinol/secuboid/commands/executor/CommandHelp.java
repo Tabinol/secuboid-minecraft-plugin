@@ -25,7 +25,6 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-
 import org.bukkit.command.CommandSender;
 
 

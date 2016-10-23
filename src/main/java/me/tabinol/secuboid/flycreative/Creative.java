@@ -21,9 +21,9 @@ package me.tabinol.secuboid.flycreative;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.listeners.FlyCreativeListener;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.listeners.FlyCreativeListener;
 import me.tabinol.secuboid.parameters.PermissionType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -38,17 +38,43 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
+/**
+ *
+ * @author michel
+ */
 public class Creative {
 
+    /**
+     *
+     */
     public final static String CREATIVE_IGNORE_PERM = "secuboid.flycreative.ignorecreative";
+
+    /**
+     *
+     */
     public final static String OVERRIDE_NODROP_PERM = "secuboid.flycreative.override.nodrop";
+
+    /**
+     *
+     */
     public final static String OVERRIDE_NOOPENCHEST_PERM = "secuboid.flycreative.override.noopenchest";
+
+    /**
+     *
+     */
     public final static String OVERRIDE_NOBUILDOUTSIDE_PERM = "secuboid.flycreative.override.nobuildoutside";
+
+    /**
+     *
+     */
     public final static String OVERRIDE_BANNEDITEMS_PERM = "secuboid.flycreative.override.allowbanneditems";
     private final Config conf;
     private final PermissionType permissionType;
     private final FlyCreativeListener flyCreativeListener;
 
+    /**
+     *
+     */
     public Creative() {
 
         conf = Secuboid.getThisPlugin().getConf();
@@ -59,6 +85,13 @@ public class Creative {
         flyCreativeListener = Secuboid.getThisPlugin().getFlyCreativeListener();
     }
 
+    /**
+     *
+     * @param event
+     * @param player
+     * @param dummyLand
+     * @return
+     */
     public boolean creative(Event event, Player player, DummyLand dummyLand) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
@@ -84,6 +117,11 @@ public class Creative {
         return player.getGameMode() == GameMode.CREATIVE;
     }
 
+    /**
+     *
+     * @param player
+     * @param gm
+     */
     public void setGM(Player player, GameMode gm) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
@@ -92,6 +130,12 @@ public class Creative {
         }
     }
 
+    /**
+     *
+     * @param event
+     * @param player
+     * @return
+     */
     public boolean dropItem(PlayerDropItemEvent event, Player player) {
 
         if (conf.isCreativeNoDrop()
@@ -103,6 +147,11 @@ public class Creative {
         return false;
     }
 
+    /**
+     *
+     * @param event
+     * @param player
+     */
     public void invOpen(InventoryOpenEvent event, HumanEntity player) {
 
         if (conf.isCreativeNoOpenChest()
@@ -120,6 +169,13 @@ public class Creative {
     }
 
     // Return «true» if the events must be cancelled
+
+    /**
+     *
+     * @param event
+     * @param player
+     * @return
+     */
     public boolean build(Event event, Player player) {
 
         Location blockLoc;
@@ -140,6 +196,11 @@ public class Creative {
         return false;
     }
 
+    /**
+     *
+     * @param event
+     * @param player
+     */
     public void checkBannedItems(InventoryCloseEvent event, HumanEntity player) {
 
         if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {

@@ -18,10 +18,6 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
-import org.bukkit.Bukkit;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +25,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
+import org.bukkit.Bukkit;
 
 /**
  * This class is for lands and cuboids calculation. It need to be threaded
@@ -74,7 +73,9 @@ public class CollisionsManagerThread extends Thread {
         }
     }
 
-
+    /**
+     *
+     */
     public CollisionsManagerThread() {
 
         this.setName("Secuboid collisions manager");
@@ -84,6 +85,11 @@ public class CollisionsManagerThread extends Thread {
     /* (non-Javadoc)
      * @see java.lang.Thread#run()
      */
+
+    /**
+     *
+     */
+
     @Override
     public void run() {
 

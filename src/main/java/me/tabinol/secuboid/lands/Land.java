@@ -27,22 +27,20 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.events.LandModifyEvent;
+import me.tabinol.secuboid.events.LandModifyEvent.LandModifyReason;
+import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.parameters.FlagType;
+import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboid.events.LandModifyEvent;
-import me.tabinol.secuboid.events.LandModifyEvent.LandModifyReason;
-import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
-import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -50,7 +48,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class Land.
  */
-public final class Land extends DummyLand {
+public final class Land extends DummyLand implements Comparable<Land> {
 
     /** The Constant DEFAULT_PRIORITY. */
     public static final short DEFAULT_PRIORITY = 10;
@@ -169,6 +167,9 @@ public final class Land extends DummyLand {
         addArea(area, areaId);
     }
 
+    /**
+     *
+     */
     public void setDefault() {
         owner = new PlayerContainerNobody();
         residents = new TreeSet<PlayerContainer>();
@@ -383,11 +384,24 @@ public final class Land extends DummyLand {
         return areas.values();
     }
 
+    /**
+     *
+     * @param loc
+     * @return
+     */
     public boolean isLocationInside(Location loc) {
 
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
+    /**
+     *
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
         for (Area area1 : areas.values()) {
@@ -640,6 +654,10 @@ public final class Land extends DummyLand {
         return (Land) parent;
     }
 
+    /**
+     *
+     * @param newParent
+     */
     public void setParent(Land newParent) {
         
         // Remove files
@@ -804,6 +822,15 @@ public final class Land extends DummyLand {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.lands.ApiLand#addPermission(me.tabinol.secuboidapi.playercontainer.ApiPlayerContainer, me.tabinol.secuboidapi.parameters.ApiPermissionType, boolean, boolean)
      */
+
+    /**
+     *
+     * @param pc
+     * @param permType
+     * @param value
+     * @param inheritance
+     */
+
     public void addPermission(PlayerContainer pc, PermissionType permType,
             boolean value, boolean inheritance) {
         
@@ -813,6 +840,14 @@ public final class Land extends DummyLand {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.lands.ApiLand#addFlag(me.tabinol.secuboidapi.parameters.ApiFlagType, java.lang.Object, boolean)
      */
+
+    /**
+     *
+     * @param flagType
+     * @param value
+     * @param inheritance
+     */
+
     public void addFlag(FlagType flagType, Object value, boolean inheritance) {
 
         addFlag(new LandFlag((FlagType) flagType, value, inheritance));
@@ -1077,11 +1112,19 @@ public final class Land extends DummyLand {
         doSave();
     }
 
+    /**
+     *
+     * @return
+     */
     public Location getSaleSignLoc() {
         
         return forSaleSignLoc;
     }
 
+    /**
+     *
+     * @param forSaleSignLoc
+     */
     public void setSaleSignLoc(Location forSaleSignLoc) {
         
         this.forSaleSignLoc = forSaleSignLoc;
@@ -1127,11 +1170,19 @@ public final class Land extends DummyLand {
         doSave();
     }
 
+    /**
+     *
+     * @return
+     */
     public Location getRentSignLoc() {
         
         return forRentSignLoc;
     }
     
+    /**
+     *
+     * @param forRentSignLoc
+     */
     public void setRentSignLoc(Location forRentSignLoc) {
         
         this.forRentSignLoc = forRentSignLoc;
@@ -1266,14 +1317,27 @@ public final class Land extends DummyLand {
         return lastPayment;
     }
 
+    /**
+     *
+     * @return
+     */
     public Type getType() {
 
         return type;
     }
 
+    /**
+     *
+     * @param arg0
+     */
     public void setType(Type arg0) {
         
         type = arg0;
         doSave();
+    }
+
+    @Override
+    public int compareTo(Land t) {
+	return name.compareTo(t.name);
     }
 }

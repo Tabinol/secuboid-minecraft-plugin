@@ -18,19 +18,16 @@
  */
 package me.tabinol.secuboid.config.players;
 
+import java.util.HashMap;
+import java.util.Map;
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.chat.Chat;
 import me.tabinol.secuboid.config.chat.ChatEssentials;
 import me.tabinol.secuboid.config.chat.ChatSecuboid;
-import me.tabinol.secuboid.config.vanish.VanishEssentials;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.vanish.DummyVanish;
 import me.tabinol.secuboid.config.vanish.Vanish;
+import me.tabinol.secuboid.config.vanish.VanishEssentials;
 import me.tabinol.secuboid.config.vanish.VanishNoPacket;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -108,6 +105,11 @@ public class PlayerStaticConfig {
         playerConfList.remove(sender);
     }
 
+    /**
+     *
+     * @param sender
+     * @return
+     */
     public PlayerConfEntry get(CommandSender sender) {
 
         return playerConfList.get(sender);
@@ -141,11 +143,20 @@ public class PlayerStaticConfig {
         playerConfList.clear();
     }
     
+    /**
+     *
+     * @param player
+     * @return
+     */
     public boolean isVanished(Player player) {
         
         return vanish.isVanished(player);
     }
     
+    /**
+     *
+     * @return
+     */
     public Chat getChat() {
         
         return chat;

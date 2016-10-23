@@ -23,7 +23,6 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-
 import org.bukkit.ChatColor;
 
 

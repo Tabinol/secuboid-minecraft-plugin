@@ -26,7 +26,6 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.parameters.PermissionList;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

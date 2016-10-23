@@ -27,6 +27,9 @@ public class ProfilesTest {
 
     private String[] names = {"Notch", "Tabinol"};
 
+    /**
+     *
+     */
     @Test
     public void testHtmlNamesRequest() {
 

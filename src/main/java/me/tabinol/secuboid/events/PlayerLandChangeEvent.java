@@ -87,6 +87,12 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
      */
+
+    /**
+     *
+     * @return
+     */
+
     @Override
     public HandlerList getHandlers() {
 
@@ -106,6 +112,12 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /* (non-Javadoc)
      * @see org.bukkit.events.Cancellable#isCancelled()
      */
+
+    /**
+     *
+     * @return
+     */
+
     public boolean isCancelled() {
         
         return cancelled;
@@ -114,6 +126,12 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /* (non-Javadoc)
      * @see org.bukkit.events.Cancellable#setCancelled(boolean)
      */
+
+    /**
+     *
+     * @param bln
+     */
+
     public void setCancelled(boolean bln) {
         
         cancelled = bln;

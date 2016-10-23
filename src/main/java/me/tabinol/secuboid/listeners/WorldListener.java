@@ -20,14 +20,12 @@ package me.tabinol.secuboid.listeners;
 
 import java.util.Iterator;
 import java.util.List;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.parameters.FlagList;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

@@ -65,6 +65,13 @@ public class AreaIndex implements Comparable<AreaIndex> {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+
+    /**
+     *
+     * @param t
+     * @return
+     */
+
     @Override
     public int compareTo(AreaIndex t) {
         if(indexNb < t.indexNb) {

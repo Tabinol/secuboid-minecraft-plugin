@@ -22,10 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

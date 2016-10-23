@@ -116,6 +116,14 @@ public final class CuboidArea extends Area {
         return (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1);
     }
 
+    /**
+     *
+     * @param worldName
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
         return worldName.equals(this.worldName)

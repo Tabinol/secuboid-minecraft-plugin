@@ -22,7 +22,6 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.collisions.Collisions;
-
 import org.bukkit.ChatColor;
 
 

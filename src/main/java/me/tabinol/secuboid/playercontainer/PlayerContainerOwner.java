@@ -20,47 +20,24 @@ package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.FlagList;
-
 import org.bukkit.entity.Player;
 
 
-/**
- * The Class PlayerContainerOwner.
- */
-public class PlayerContainerOwner extends PlayerContainer {
+public class PlayerContainerOwner implements PlayerContainer {
 
-    /** The land. */
     private Land land;
     
-    /**
-     * Instantiates a new player container owner.
-     *
-     * @param land the land
-     */
     public PlayerContainerOwner(Land land) {
-        
-        super("", PlayerContainerType.OWNER, false);
         this.land = land;
     }
     
-    public boolean equals(PlayerContainer container2) {
-        
-        return container2 instanceof PlayerContainerOwner &&
-                land == ((PlayerContainerOwner)container2).land;
-    }
-
-    public PlayerContainer copyOf() {
-        
-        return new PlayerContainerOwner(land);
-    }
-
+    @Override
     public boolean hasAccess(Player player) {
-        
         return hasAccess(player, land);
     }
         
+    @Override
     public boolean hasAccess(Player player, Land land) {
-        
         boolean value;
         Land parent;
         
@@ -79,23 +56,42 @@ public class PlayerContainerOwner extends PlayerContainer {
         return value;
     }
 
-
-    /**
-     * Gets the land.
-     *
-     * @return the land
-     */
+    @Override
     public Land getLand() {
-        
         return land;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.playercontainer.PlayerContainerInterface#setLand(me.tabinol.secuboid.lands.Land)
-     */
     @Override
     public void setLand(Land land) {
-
         this.land = land;
+    }
+
+    @Override
+    public String getName() {
+	return "";
+    }
+
+    @Override
+    public PlayerContainerType getContainerType() {
+	return PlayerContainerType.OWNER;
+    }
+
+    @Override
+    public String getPrint() {
+	return PlayerContainerType.OWNER.getPrint();
+    }
+
+    @Override
+    public String toFileFormat() {
+	return PlayerContainerType.OWNER.getPrint() + ":";
+    }
+
+    @Override
+    public int compareTo(PlayerContainer t) {
+	int result = PlayerContainerType.OWNER.compareTo(t.getContainerType());
+	if (result == 0) {
+	    return result;
+	}
+	return land.compareTo(t.getLand());
     }
 }

@@ -2,13 +2,11 @@ package me.tabinol.secuboid.listeners;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.ColoredConsole;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -40,6 +38,10 @@ public class ChatListener extends CommonListener implements Listener {
         playerConf = Secuboid.getThisPlugin().getPlayerConf();
     }
     
+    /**
+     *
+     * @param event
+     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         

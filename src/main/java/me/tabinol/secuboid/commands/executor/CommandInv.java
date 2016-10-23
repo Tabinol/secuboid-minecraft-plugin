@@ -20,7 +20,6 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.io.File;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
@@ -34,9 +33,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author michel
+ */
 @InfoCommand(name="inv", aliases={"inventory"}, allowConsole=true, forceParameter=true)
 public class CommandInv extends CommandExec {
 
+    /**
+     *
+     * @param entity
+     * @throws SecuboidCommandException
+     */
     public CommandInv(CommandEntities entity) throws SecuboidCommandException {
 
         super(entity);

@@ -18,24 +18,28 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
 
 /**
  * The Class LandEvent. Just for inheritance
  */
 public class LandEvent extends Event {
 
-    /** The Constant handlers. */
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The dummy land. */
-    private DummyLand dummyLand;
-    
-    /** The land. */
+
+    /**
+     * The dummy land.
+     */
+    private Land dummyLand;
+
+    /**
+     * The land.
+     */
     private Land land;
 
     /**
@@ -43,30 +47,21 @@ public class LandEvent extends Event {
      *
      * @param dummyLand the dummy land
      */
-    public LandEvent(DummyLand dummyLand) {
+    public LandEvent(Land dummyLand) {
 
-        this.dummyLand = dummyLand;
-        
-        if(dummyLand instanceof Land) {
-            land = (Land) dummyLand;
-        } else {
-            land = null;
-        }
+	this.dummyLand = dummyLand;
+
+	if (dummyLand instanceof Land) {
+	    land = (Land) dummyLand;
+	} else {
+	    land = null;
+	}
     }
-
-    /* (non-Javadoc)
-     * @see org.bukkit.events.Event#getHandlers()
-     */
-
-    /**
-     *
-     * @return
-     */
 
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -76,7 +71,7 @@ public class LandEvent extends Event {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -86,16 +81,16 @@ public class LandEvent extends Event {
      */
     public Land getLand() {
 
-        return land;
+	return land;
     }
-    
+
     /**
      * Gets the land or outside area.
      *
      * @return the land or a "Dummy Land Word" if the events is outside a land
      */
-    public DummyLand getLandOrOutside() {
-        
-        return dummyLand;
+    public Land getLandOrOutside() {
+
+	return dummyLand;
     }
 }

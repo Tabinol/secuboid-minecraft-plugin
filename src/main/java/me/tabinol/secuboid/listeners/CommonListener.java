@@ -16,11 +16,9 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.PermissionType;
 import org.bukkit.ChatColor;
@@ -37,37 +35,33 @@ import org.bukkit.entity.Projectile;
  * Common methods for Listeners
  */
 public class CommonListener {
-    
+
     /**
      * Check permission.
-     * 
-     * @param land
-     *            the land
-     * @param player
-     *            the player
-     * @param pt
-     *            the pt
+     *
+     * @param land the land
+     * @param player the player
+     * @param pt the pt
      * @return true, if successful
      */
-    protected boolean checkPermission(DummyLand land, Player player,
-            PermissionType pt) {
+    protected boolean checkPermission(Land land, Player player,
+	    PermissionType pt) {
 
-        return land.checkPermissionAndInherit(player, pt) == pt
-                .getDefaultValue();
+	return land.checkPermissionAndInherit(player, pt) == pt
+		.getDefaultValue();
     }
 
     /**
      * Message permission.
-     * 
-     * @param player
-     *            the player
+     *
+     * @param player the player
      */
     protected void messagePermission(Player player) {
 
-        player.sendMessage(ChatColor.GRAY + "[Secuboid] "
-                + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
+	player.sendMessage(ChatColor.GRAY + "[Secuboid] "
+		+ Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
     }
-    
+
     /**
      * Gets the source player from entity or projectile
      *
@@ -75,65 +69,59 @@ public class CommonListener {
      * @return the source player
      */
     protected Player getSourcePlayer(Entity entity) {
-        
-        Projectile damagerProjectile;
 
-        // Check if the damager is a player
-        if (entity instanceof Player) {
-            return (Player) entity;
-        } else if (entity instanceof Projectile
-                && entity.getType() != EntityType.EGG
-                && entity.getType() != EntityType.SNOWBALL) {
-            damagerProjectile = (Projectile) entity;
-            if (damagerProjectile.getShooter() instanceof Player) {
-                return (Player) damagerProjectile.getShooter();
-            }
-        }
-        
-        return null;
+	Projectile damagerProjectile;
+
+	// Check if the damager is a player
+	if (entity instanceof Player) {
+	    return (Player) entity;
+	} else if (entity instanceof Projectile
+		&& entity.getType() != EntityType.EGG
+		&& entity.getType() != EntityType.SNOWBALL) {
+	    damagerProjectile = (Projectile) entity;
+	    if (damagerProjectile.getShooter() instanceof Player) {
+		return (Player) damagerProjectile.getShooter();
+	    }
+	}
+
+	return null;
     }
-    
+
     /**
      * Check is the block to destroy is attached to an eco sign
+     *
      * @param land the land
      * @param block the block
      * @return true if the sign is attached
      */
     protected boolean hasEcoSign(Land land, Block block) {
-        
-        return (land.getSaleSignLoc() != null && hasEcoSign(land, block, land.getSaleSignLoc()))
-                || (land.getRentSignLoc() != null && hasEcoSign(land, block, land.getRentSignLoc())); 
+
+	return (land.getSaleSignLoc() != null && hasEcoSign(land, block, land.getSaleSignLoc()))
+		|| (land.getRentSignLoc() != null && hasEcoSign(land, block, land.getRentSignLoc()));
     }
 
     /**
      * Check is the block to destroy is attached to an eco sign
+     *
      * @param land the land
      * @param block the block
      * @param ecoSignLoc the eco sign location
      * @return true if the sign is attached
      */
     private boolean hasEcoSign(Land land, Block block, Location ecoSignLoc) {
-        
-        if((block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc) && block.getRelative(BlockFace.UP).getType() == Material.SIGN_POST)
-                || isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)
-                || isEcoSignAttached(block, BlockFace.SOUTH, ecoSignLoc)
-                || isEcoSignAttached(block, BlockFace.EAST, ecoSignLoc)
-                || isEcoSignAttached(block, BlockFace.WEST, ecoSignLoc)) {
-            return true;
-        }
-        
-        return false;
+
+	return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc) && block.getRelative(BlockFace.UP).getType() == Material.SIGN_POST)
+		|| isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)
+		|| isEcoSignAttached(block, BlockFace.SOUTH, ecoSignLoc)
+		|| isEcoSignAttached(block, BlockFace.EAST, ecoSignLoc)
+		|| isEcoSignAttached(block, BlockFace.WEST, ecoSignLoc);
     }
-    
+
     private boolean isEcoSignAttached(Block block, BlockFace face, Location ecoSignLoc) {
-        
-        Block checkBlock = block.getRelative(face);
-        
-        if(checkBlock.getLocation().equals(ecoSignLoc) && checkBlock.getType() == Material.WALL_SIGN 
-                && ((org.bukkit.material.Sign) checkBlock.getState().getData()).getFacing() == face) {
-            return true;
-        }
-        
-        return false;
+
+	Block checkBlock = block.getRelative(face);
+
+	return checkBlock.getLocation().equals(ecoSignLoc) && checkBlock.getType() == Material.WALL_SIGN
+		&& ((org.bukkit.material.Sign) checkBlock.getState().getData()).getFacing() == face;
     }
 }

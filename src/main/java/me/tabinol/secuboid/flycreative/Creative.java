@@ -16,13 +16,12 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.tabinol.secuboid.flycreative;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.listeners.FlyCreativeListener;
 import me.tabinol.secuboid.parameters.PermissionType;
 import org.bukkit.GameMode;
@@ -77,44 +76,42 @@ public class Creative {
      */
     public Creative() {
 
-        conf = Secuboid.getThisPlugin().getConf();
+	conf = Secuboid.getThisPlugin().getConf();
 
-        // Register flags
-        permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("CREATIVE", false);
+	// Register flags
+	permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("CREATIVE", false);
 
-        flyCreativeListener = Secuboid.getThisPlugin().getFlyCreativeListener();
+	flyCreativeListener = Secuboid.getThisPlugin().getFlyCreativeListener();
     }
 
     /**
      *
      * @param event
      * @param player
-     * @param dummyLand
+     * @param land
      * @return
      */
-    public boolean creative(Event event, Player player, DummyLand dummyLand) {
+    public boolean creative(Event event, Player player, Land land) {
 
-        if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-            if (askCreativeFlag(player, dummyLand)) {
-                if (player.getGameMode() != GameMode.CREATIVE) {
-                    flyCreativeListener.addIgnoredGMPlayers(player);
-                	player.setGameMode(GameMode.CREATIVE);
-                }
-            } else {
-                if (player.getGameMode() == GameMode.CREATIVE) {
-                    if (player.isFlying() && event instanceof PlayerLandChangeEvent
-                            && !((PlayerLandChangeEvent) event).isTp()) {
-                        // Return the player in the last cuboid if he is flying.
-                        ((PlayerLandChangeEvent) event).setCancelled(true);
-                    } else {
-                        flyCreativeListener.addIgnoredGMPlayers(player);
-                        player.setGameMode(GameMode.SURVIVAL);
-                    }
-                }
-            }
-        }
+	if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
+	    if (askCreativeFlag(player, land)) {
+		if (player.getGameMode() != GameMode.CREATIVE) {
+		    flyCreativeListener.addIgnoredGMPlayers(player);
+		    player.setGameMode(GameMode.CREATIVE);
+		}
+	    } else if (player.getGameMode() == GameMode.CREATIVE) {
+		if (player.isFlying() && event instanceof PlayerLandChangeEvent
+			&& !((PlayerLandChangeEvent) event).isTp()) {
+		    // Return the player in the last cuboid if he is flying.
+		    ((PlayerLandChangeEvent) event).setCancelled(true);
+		} else {
+		    flyCreativeListener.addIgnoredGMPlayers(player);
+		    player.setGameMode(GameMode.SURVIVAL);
+		}
+	    }
+	}
 
-        return player.getGameMode() == GameMode.CREATIVE;
+	return player.getGameMode() == GameMode.CREATIVE;
     }
 
     /**
@@ -124,10 +121,10 @@ public class Creative {
      */
     public void setGM(Player player, GameMode gm) {
 
-        if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-            flyCreativeListener.addIgnoredGMPlayers(player);
-            player.setGameMode(gm);
-        }
+	if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
+	    flyCreativeListener.addIgnoredGMPlayers(player);
+	    player.setGameMode(gm);
+	}
     }
 
     /**
@@ -138,13 +135,13 @@ public class Creative {
      */
     public boolean dropItem(PlayerDropItemEvent event, Player player) {
 
-        if (conf.isCreativeNoDrop()
-                && !player.hasPermission(OVERRIDE_NODROP_PERM)) {
+	if (conf.isCreativeNoDrop()
+		&& !player.hasPermission(OVERRIDE_NODROP_PERM)) {
 
-            return true;
-        }
-        
-        return false;
+	    return true;
+	}
+
+	return false;
     }
 
     /**
@@ -154,22 +151,21 @@ public class Creative {
      */
     public void invOpen(InventoryOpenEvent event, HumanEntity player) {
 
-        if (conf.isCreativeNoOpenChest()
-                && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
+	if (conf.isCreativeNoOpenChest()
+		&& !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
 
-            InventoryType it = event.getView().getType();
+	    InventoryType it = event.getView().getType();
 
-            if (it == InventoryType.CHEST || it == InventoryType.DISPENSER
-                    || it == InventoryType.DROPPER || it == InventoryType.ENDER_CHEST
-                    || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
+	    if (it == InventoryType.CHEST || it == InventoryType.DISPENSER
+		    || it == InventoryType.DROPPER || it == InventoryType.ENDER_CHEST
+		    || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
 
-                event.setCancelled(true);
-            }
-        }
+		event.setCancelled(true);
+	    }
+	}
     }
 
     // Return «true» if the events must be cancelled
-
     /**
      *
      * @param event
@@ -178,22 +174,22 @@ public class Creative {
      */
     public boolean build(Event event, Player player) {
 
-        Location blockLoc;
+	Location blockLoc;
 
-        if (conf.isCreativeNoBuildOutside()
-                && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
+	if (conf.isCreativeNoBuildOutside()
+		&& !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
 
-            if (event instanceof BlockBreakEvent) {
-                blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
-            } else {
-                blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
-            }
-            if (!askCreativeFlag(player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(blockLoc))) {
+	    if (event instanceof BlockBreakEvent) {
+		blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
+	    } else {
+		blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
+	    }
+	    if (!askCreativeFlag(player, Secuboid.getThisPlugin().getLands().getLand(blockLoc))) {
 
-                return true;
-            }
-        }
-        return false;
+		return true;
+	    }
+	}
+	return false;
     }
 
     /**
@@ -203,16 +199,16 @@ public class Creative {
      */
     public void checkBannedItems(InventoryCloseEvent event, HumanEntity player) {
 
-        if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
+	if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
 
-            for(Material mat : conf.getCreativeBannedItems()) {
-                event.getPlayer().getInventory().remove(mat);
-            }
-        }
+	    for (Material mat : conf.getCreativeBannedItems()) {
+		event.getPlayer().getInventory().remove(mat);
+	    }
+	}
     }
 
-    private boolean askCreativeFlag(Player player, DummyLand dummyLand) {
+    private boolean askCreativeFlag(Player player, Land land) {
 
-        return dummyLand.checkPermissionAndInherit(player, permissionType);
+	return land.checkPermissionAndInherit(player, permissionType);
     }
 }

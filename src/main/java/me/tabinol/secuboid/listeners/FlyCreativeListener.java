@@ -16,7 +16,6 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.tabinol.secuboid.listeners;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.flycreative.Creative;
 import me.tabinol.secuboid.flycreative.Fly;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -60,10 +59,10 @@ public class FlyCreativeListener implements Listener {
      */
     public FlyCreativeListener() {
 
-        fly = new Fly();
-        creative = new Creative();
-        conf = Secuboid.getThisPlugin().getConf();
-        ignoredGMPlayers = new ArrayList<Player>();
+	fly = new Fly();
+	creative = new Creative();
+	conf = Secuboid.getThisPlugin().getConf();
+	ignoredGMPlayers = new ArrayList<Player>();
     }
 
     /**
@@ -71,10 +70,10 @@ public class FlyCreativeListener implements Listener {
      * @param player
      */
     public void addIgnoredGMPlayers(Player player) {
-    	
-    	ignoredGMPlayers.add(player);
+
+	ignoredGMPlayers.add(player);
     }
-    
+
     /**
      *
      * @param event
@@ -82,8 +81,8 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        setFlyCreative(event, event.getPlayer(), 
-        		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
+	setFlyCreative(event, event.getPlayer(),
+		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
     }
 
     /**
@@ -93,8 +92,8 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
 
-        creative.setGM(event.getPlayer(), GameMode.SURVIVAL);
-        ignoredGMPlayers.remove(event.getPlayer());
+	creative.setGM(event.getPlayer(), GameMode.SURVIVAL);
+	ignoredGMPlayers.remove(event.getPlayer());
     }
 
     /**
@@ -104,30 +103,29 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
 
-        setFlyCreative(event, event.getPlayer(), event.getLandOrOutside());
+	setFlyCreative(event, event.getPlayer(), event.getLandOrOutside());
     }
 
     // Bugfix when tp is from an other worlds
-
     /**
      *
      * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-    	
-    	final Player player = event.getPlayer();
-    	
-    	if(event.getFrom().getWorld() != event.getTo().getWorld()) {
-    		Bukkit.getScheduler().runTaskLater(Secuboid.getThisPlugin(), new Runnable() {
-    			public void run() {
-    				if(player.isOnline()) {
-    					setFlyCreative(null, player, 
-    							Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
-    				}
-    			}
-    			}, 1);
-    	}
+
+	final Player player = event.getPlayer();
+
+	if (event.getFrom().getWorld() != event.getTo().getWorld()) {
+	    Bukkit.getScheduler().runTaskLater(Secuboid.getThisPlugin(), new Runnable() {
+		public void run() {
+		    if (player.isOnline()) {
+			setFlyCreative(null, player,
+				Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+		    }
+		}
+	    }, 1);
+	}
     }
 
     /**
@@ -137,13 +135,13 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
 
-    	Player player = event.getPlayer();
-    	
-        if(!ignoredGMPlayers.remove(player) 
-        		&& !conf.getIgnoredGameMode().contains(event.getNewGameMode())
-        		&& !player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
-        	event.setCancelled(true);
-        }
+	Player player = event.getPlayer();
+
+	if (!ignoredGMPlayers.remove(player)
+		&& !conf.getIgnoredGameMode().contains(event.getNewGameMode())
+		&& !player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
+	    event.setCancelled(true);
+	}
     }
 
     /**
@@ -153,24 +151,24 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onLandModify(LandModifyEvent event) {
 
-        LandModifyEvent.LandModifyReason reason = event.getLandModifyReason();
-    	
-    	// Test to be specific (take specific players)
-        if(reason == LandModifyEvent.LandModifyReason.AREA_ADD || reason == LandModifyEvent.LandModifyReason.AREA_REMOVE
-    			|| reason == LandModifyEvent.LandModifyReason.AREA_REPLACE) {
-        	
-        	// Land area change, all players in the world affected
-        	for(Player player : event.getLand().getWorld().getPlayers()) {
-            	setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
-            }
-    	} else if(reason != LandModifyEvent.LandModifyReason.FLAG_SET && reason != LandModifyEvent.LandModifyReason.FLAG_UNSET
-    			&& reason != LandModifyEvent.LandModifyReason.RENAME) {
-    	
-    		// No land resize or area replace, only players in the land affected
-    		for(Player player : event.getLand().getPlayersInLandAndChildren()) {
-    			setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
-    		}
-    	}
+	LandModifyEvent.LandModifyReason reason = event.getLandModifyReason();
+
+	// Test to be specific (take specific players)
+	if (reason == LandModifyEvent.LandModifyReason.AREA_ADD || reason == LandModifyEvent.LandModifyReason.AREA_REMOVE
+		|| reason == LandModifyEvent.LandModifyReason.AREA_REPLACE) {
+
+	    // Land area change, all players in the world affected
+	    for (Player player : event.getLand().getWorld().getPlayers()) {
+		setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+	    }
+	} else if (reason != LandModifyEvent.LandModifyReason.FLAG_SET && reason != LandModifyEvent.LandModifyReason.FLAG_UNSET
+		&& reason != LandModifyEvent.LandModifyReason.RENAME) {
+
+	    // No land resize or area replace, only players in the land affected
+	    for (Player player : event.getLand().getPlayersInLandAndChildren()) {
+		setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+	    }
+	}
     }
 
     /**
@@ -180,10 +178,10 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE
-            && creative.dropItem(event, event.getPlayer())) {
-            event.setCancelled(true);
-        }
+	if (event.getPlayer().getGameMode() == GameMode.CREATIVE
+		&& creative.dropItem(event, event.getPlayer())) {
+	    event.setCancelled(true);
+	}
     }
 
     /**
@@ -193,9 +191,9 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
 
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            creative.invOpen(event, event.getPlayer());
-        }
+	if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+	    creative.invOpen(event, event.getPlayer());
+	}
     }
 
     /**
@@ -205,11 +203,11 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
 
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            if (creative.build(event, event.getPlayer())) {
-                event.setCancelled(true);
-            }
-        }
+	if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+	    if (creative.build(event, event.getPlayer())) {
+		event.setCancelled(true);
+	    }
+	}
     }
 
     /**
@@ -219,11 +217,11 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
 
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            if (creative.build(event, event.getPlayer())) {
-                event.setCancelled(true);
-            }
-        }
+	if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+	    if (creative.build(event, event.getPlayer())) {
+		event.setCancelled(true);
+	    }
+	}
     }
 
     /**
@@ -233,18 +231,18 @@ public class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClose(InventoryCloseEvent event) {
 
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            creative.checkBannedItems(event, event.getPlayer());
-        }
+	if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+	    creative.checkBannedItems(event, event.getPlayer());
+	}
 
     }
 
-    private void setFlyCreative(Event event, Player player, DummyLand dummyLand) {
+    private void setFlyCreative(Event event, Player player, Land dummyLand) {
 
-        if (!conf.getIgnoredGameMode().contains(player.getGameMode())
-        		&& !creative.creative(event, player, dummyLand)) {
-            fly.fly(event, player, dummyLand);
-        }
+	if (!conf.getIgnoredGameMode().contains(player.getGameMode())
+		&& !creative.creative(event, player, dummyLand)) {
+	    fly.fly(event, player, dummyLand);
+	}
     }
 
     /**
@@ -253,6 +251,6 @@ public class FlyCreativeListener implements Listener {
      */
     public Creative getCreative() {
 
-        return creative;
+	return creative;
     }
 }

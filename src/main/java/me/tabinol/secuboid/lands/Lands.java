@@ -34,6 +34,7 @@ import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaIndex;
+import me.tabinol.secuboid.lands.areas.InfiniteArea;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
 import me.tabinol.secuboid.lands.types.Type;
@@ -41,6 +42,7 @@ import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.Location;
@@ -90,14 +92,14 @@ public class Lands {
     /**
      * The outside area.
      */
-    protected TreeMap<String, DummyLand> outsideArea; // Outside a Land (in specific worlds)
+    protected TreeMap<String, Land> outsideArea; // Outside a Land (in specific worlds)
 
-    private final DummyLand defaultConfNoType; // Default config (Type not exist or Type null)
+    private final Land defaultConfNoType; // Default config (Type not exist or Type null)
 
     /**
      * The default conf.
      */
-    private final TreeMap<Type, DummyLand> defaultConf; // Default config of a land
+    private final TreeMap<Type, Land> defaultConf; // Default config of a land
 
     /**
      * The pm.
@@ -159,9 +161,9 @@ public class Lands {
      * @param type
      * @return
      */
-    public DummyLand getDefaultConf(Type type) {
+    public Land getDefaultConf(Type type) {
 
-	DummyLand land;
+	Land land;
 
 	// No type? Return default config
 	if (type == null) {
@@ -184,13 +186,11 @@ public class Lands {
      * @return the approve list
      */
     public ApproveList getApproveList() {
-
 	return approveList;
     }
 
-    // For Land with no parent
     /**
-     * Creates the land.
+     * Creates the land with no parent.
      *
      * @param landName the land name
      * @param owner the owner
@@ -198,15 +198,12 @@ public class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area)
-	    throws SecuboidLandException {
-
+    public Land createLand(String landName, PlayerContainer owner, Area area) throws SecuboidLandException {
 	return createLand(landName, owner, area, null, 1, null);
     }
 
-    // For Land with parent
     /**
-     * Creates the land.
+     * Creates the land with parent.
      *
      * @param landName the land name
      * @param owner the owner
@@ -215,16 +212,13 @@ public class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area,
-	    Land parent)
+    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent)
 	    throws SecuboidLandException {
-
 	return createLand(landName, owner, area, parent, 1, null);
     }
 
-    // For Land with parent and price
     /**
-     * Creates the land.
+     * Creates the land with parent (or null) and price.
      *
      * @param landName the land name
      * @param owner the owner
@@ -235,16 +229,12 @@ public class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area,
-	    Land parent, double price, Type type)
+    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent, double price, Type type)
 	    throws SecuboidLandException {
-
 	getPriceFromPlayer(area.getWorldName(), owner, price);
-
 	return createLand(landName, owner, area, parent, 1, null, type);
     }
 
-    // Only for Land load at start
     /**
      * Creates the land.
      *
@@ -258,9 +248,8 @@ public class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area,
-	    Land parent, int areaId, UUID uuid, Type type)
-	    throws SecuboidLandException {
+    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent, int areaId, UUID uuid,
+	    Type type) throws SecuboidLandException {
 
 	String landNameLower = landName.toLowerCase();
 	int genealogy = 0;
@@ -299,7 +288,6 @@ public class Lands {
      * @return true, if is name exist
      */
     public boolean isNameExist(String landName) {
-
 	return landList.containsKey(landName.toLowerCase());
     }
 
@@ -340,6 +328,7 @@ public class Lands {
 	}
 	Secuboid.getThisPlugin().getStorageThread().removeLand((Land) land);
 	Secuboid.getThisPlugin().getLog().write("remove land: " + land);
+
 	return true;
     }
 
@@ -351,7 +340,6 @@ public class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public boolean removeLand(String landName) throws SecuboidLandException {
-
 	return removeLand(landList.get(landName.toLowerCase()));
     }
 
@@ -363,7 +351,6 @@ public class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public boolean removeLand(UUID uuid) throws SecuboidLandException {
-
 	return removeLand(landUUIDList.get(uuid));
     }
 
@@ -376,7 +363,6 @@ public class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public boolean renameLand(String landName, String newName) throws SecuboidLandException {
-
 	Land land = (Land) getLand(landName);
 
 	if (land != null) {
@@ -395,7 +381,6 @@ public class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public boolean renameLand(UUID uuid, String newName) throws SecuboidLandException {
-
 	Land land = (Land) getLand(uuid);
 
 	if (land != null) {
@@ -413,8 +398,7 @@ public class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(Land land, String newName)
-	    throws SecuboidLandException {
+    public boolean renameLand(Land land, String newName) throws SecuboidLandException {
 
 	String oldNameLower = land.getName();
 	String newNameLower = newName.toLowerCase();
@@ -438,8 +422,7 @@ public class Lands {
      * @return the land
      */
     public Land getLand(String landName) {
-
-	return (Land) landList.get(landName.toLowerCase());
+	return landList.get(landName.toLowerCase());
     }
 
     /**
@@ -449,8 +432,7 @@ public class Lands {
      * @return the land
      */
     public Land getLand(UUID uuid) {
-
-	return (Land) landUUIDList.get(uuid);
+	return landUUIDList.get(uuid);
     }
 
     /**
@@ -460,13 +442,12 @@ public class Lands {
      * @return the land
      */
     public Land getLand(Location loc) {
-
 	Area ca;
 
 	if ((ca = getArea(loc)) == null) {
 	    return null;
 	}
-	return (Land) ca.getLand();
+	return ca.getLand();
     }
 
     /**
@@ -475,7 +456,6 @@ public class Lands {
      * @return the lands
      */
     public Collection<Land> getLands() {
-
 	return landList.values();
     }
 
@@ -485,8 +465,7 @@ public class Lands {
      * @param loc the loc
      * @return the land or outside area
      */
-    public DummyLand getLandOrOutsideArea(Location loc) {
-
+    public Land getLandOrOutsideArea(Location loc) {
 	Land land;
 
 	if ((land = getLand(loc)) != null) {
@@ -502,8 +481,7 @@ public class Lands {
      * @param loc the loc
      * @return the outside area
      */
-    public DummyLand getOutsideArea(Location loc) {
-
+    public Land getOutsideArea(Location loc) {
 	return getOutsideArea(loc.getWorld().getName());
     }
 
@@ -513,14 +491,15 @@ public class Lands {
      * @param worldName the world name
      * @return the outside area
      */
-    public DummyLand getOutsideArea(String worldName) {
+    public Land getOutsideArea(String worldName) {
 
 	String worldNameLower = worldName.toLowerCase();
-	DummyLand dummyLand = outsideArea.get(worldNameLower);
+	Land dummyLand = outsideArea.get(worldNameLower);
 
 	// Not exist, create one
 	if (dummyLand == null) {
-	    dummyLand = new DummyLand(worldNameLower);
+	    dummyLand = new Land(worldNameLower, UUID.randomUUID(), new PlayerContainerNobody(),
+		    new InfiniteArea(worldNameLower), 0, null, 1, null);
 	    outsideArea.get(Config.GLOBAL).copyPermsFlagsTo(dummyLand);
 	    outsideArea.put(worldNameLower, dummyLand);
 	}
@@ -613,7 +592,7 @@ public class Lands {
     protected boolean getPermissionInWorld(String worldName, Player player, PermissionType pt, boolean onlyInherit) {
 
 	Boolean result;
-	DummyLand dl;
+	Land dl;
 
 	if ((dl = outsideArea.get(worldName.toLowerCase())) != null && (result = dl.getPermission(player, pt, onlyInherit)) != null) {
 	    return result;
@@ -633,7 +612,7 @@ public class Lands {
     protected FlagValue getFlagInWorld(String worldName, FlagType ft, boolean onlyInherit) {
 
 	FlagValue result;
-	DummyLand dl;
+	Land dl;
 
 	if ((dl = outsideArea.get(worldName.toLowerCase())) != null && (result = dl.getFlag(ft, onlyInherit)) != null) {
 	    return result;

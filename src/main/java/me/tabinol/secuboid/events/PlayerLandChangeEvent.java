@@ -18,42 +18,56 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-
 /**
- * The Class PlayerLandChangeEvent. This events is called every time a player
- * moves from a land to an other, or to an other world.
+ * The Class PlayerLandChangeEvent. This events is called every time a player moves from a land to an other, or to an
+ * other world.
  */
 public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
-    
-    /** The Constant handlers. */
+
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The cancelled. */
+
+    /**
+     * The cancelled.
+     */
     protected boolean cancelled = false;
-    
-    /** The player. */
+
+    /**
+     * The player.
+     */
     Player player;
-    
-    /** The from loc. */
+
+    /**
+     * The from loc.
+     */
     Location fromLoc;
-    
-    /** The to loc. */
+
+    /**
+     * The to loc.
+     */
     Location toLoc;
-    
-    /** The last land. */
+
+    /**
+     * The last land.
+     */
     Land lastLand;
-    
-    /** The last dummy land. */
-    DummyLand lastDummyLand;
-    
-    /** The if this is a player teleport. */
+
+    /**
+     * The last dummy land.
+     */
+    Land lastDummyLand;
+
+    /**
+     * The if this is a player teleport.
+     */
     boolean isTp;
 
     /**
@@ -66,37 +80,35 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @param toLoc the to location
      * @param isTp the is a player teleport
      */
-    public PlayerLandChangeEvent(final DummyLand lastDummyLand, final DummyLand dummyLand, final Player player,
-            final Location fromLoc, final Location toLoc, final boolean isTp) {
+    public PlayerLandChangeEvent(final Land lastDummyLand, final Land dummyLand, final Player player,
+	    final Location fromLoc, final Location toLoc, final boolean isTp) {
 
-        super(dummyLand);
-        this.lastDummyLand = lastDummyLand;
-        
-        if(lastDummyLand instanceof Land) {
-            lastLand = (Land) lastDummyLand;
-        } else {
-            lastLand = null;
-        }
-        
-        this.player = player;
-        this.fromLoc = fromLoc;
-        this.toLoc = toLoc;
-        this.isTp = isTp;
+	super(dummyLand);
+	this.lastDummyLand = lastDummyLand;
+
+	if (lastDummyLand.isGlobal()) {
+	    lastLand = lastDummyLand;
+	} else {
+	    lastLand = null;
+	}
+
+	this.player = player;
+	this.fromLoc = fromLoc;
+	this.toLoc = toLoc;
+	this.isTp = isTp;
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
      */
-
     /**
      *
      * @return
      */
-
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -106,75 +118,59 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
 
-    /* (non-Javadoc)
-     * @see org.bukkit.events.Cancellable#isCancelled()
-     */
-
-    /**
-     *
-     * @return
-     */
-
+    @Override
     public boolean isCancelled() {
-        
-        return cancelled;
+
+	return cancelled;
     }
 
-    /* (non-Javadoc)
-     * @see org.bukkit.events.Cancellable#setCancelled(boolean)
-     */
-
-    /**
-     *
-     * @param bln
-     */
-
+    @Override
     public void setCancelled(boolean bln) {
-        
-        cancelled = bln;
+
+	cancelled = bln;
     }
-    
+
     /**
      * Gets the player.
      *
      * @return the player
      */
     public Player getPlayer() {
-        
-        return player;
+
+	return player;
     }
-    
+
     /**
      * Gets the last land.
      *
      * @return the last land
      */
     public Land getLastLand() {
-        
-        return lastLand;
+
+	return lastLand;
     }
-    
+
     /**
      * Gets the last land or outside area (World).
      *
      * @return the last land or dummy land (World)
      */
-    public DummyLand getLastLandOrOutside() {
-        
-        return lastDummyLand;
+    public Land getLastLandOrOutside() {
+
+	return lastDummyLand;
     }
-    
+
     /**
      * Gets the from location.
      *
      * @return the from location
      */
     public Location getFromLoc() {
-        
-        return fromLoc;
+
+	return fromLoc;
     }
 
     /**
@@ -183,17 +179,17 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the to location
      */
     public Location getToLoc() {
-        
-        return toLoc;
+
+	return toLoc;
     }
-    
+
     /**
      * Checks if this is a player teleport.
      *
      * @return true, if it is a player teleport
      */
     public boolean isTp() {
-        
-        return isTp;
+
+	return isTp;
     }
 }

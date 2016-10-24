@@ -103,9 +103,8 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 
 	// Not complicated! The player must be AdminMod, or access to create (in world)
 	// or access to create in parent if it is a subland.
-	if (!entity.playerConf.isAdminMod()
-		&& ((parent == null && !Secuboid.getThisPlugin().getLands().getOutsideArea(area.getWorldName()).checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType()))
-		|| (parent != null && !parent.checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType())))) {
+	if (!entity.playerConf.isAdminMod() && (parent == null
+		|| !parent.checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType()))) {
 	    throw new SecuboidCommandException("CommandCreate", entity.player, "GENERAL.MISSINGPERMISSION");
 	}
 

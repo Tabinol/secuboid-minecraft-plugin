@@ -22,7 +22,7 @@ import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.parameters.PermissionList;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,16 +38,18 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
  */
 public class PlayerListener18 extends CommonListener implements Listener {
 
-    /** The player conf. */
-    private PlayerStaticConfig playerConf;
+    /**
+     * The player conf.
+     */
+    private final PlayerStaticConfig playerConf;
 
     /**
      * Instantiates a new player listener.
      */
     public PlayerListener18() {
 
-        super();
-        playerConf = Secuboid.getThisPlugin().getPlayerConf();
+	super();
+	playerConf = Secuboid.getThisPlugin().getPlayerConf();
     }
 
     /**
@@ -57,32 +59,32 @@ public class PlayerListener18 extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
 
-        DummyLand land;
-        EntityType et = event.getRightClicked().getType();
-        Player player = event.getPlayer();
-        Material mat = player.getItemInHand().getType();
-        PlayerConfEntry entry;
-        Location loc = event.getRightClicked().getLocation();
+	Land land;
+	EntityType et = event.getRightClicked().getType();
+	Player player = event.getPlayer();
+	Material mat = player.getItemInHand().getType();
+	PlayerConfEntry entry;
+	Location loc = event.getRightClicked().getLocation();
 
-        Secuboid.getThisPlugin().getLog().write(
-                "PlayerInteractAtEntity player name: " + event.getPlayer().getName()
-                        + ", Entity: " + et.name());
+	Secuboid.getThisPlugin().getLog().write(
+		"PlayerInteractAtEntity player name: " + event.getPlayer().getName()
+		+ ", Entity: " + et.name());
 
-        // Citizen bug, check if entry exist before
-        if ((entry = playerConf.get(player)) != null
-                && !entry.isAdminMod()) {
-            land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
-            
-            // Remove and add an item from an armor stand
-            if(BKVersion.isArmorStand(et)) {
-                if ((!checkPermission(land, event.getPlayer(), PermissionList.BUILD_DESTROY.getPermissionType())
-                        && mat == Material.AIR)
-                        || (!checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType())
-                        && mat != Material.AIR)) {
-                    messagePermission(player);
-                    event.setCancelled(true);
-                }
-            }
-        }
+	// Citizen bug, check if entry exist before
+	if ((entry = playerConf.get(player)) != null
+		&& !entry.isAdminMod()) {
+	    land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+
+	    // Remove and add an item from an armor stand
+	    if (BKVersion.isArmorStand(et)) {
+		if ((!checkPermission(land, event.getPlayer(), PermissionList.BUILD_DESTROY.getPermissionType())
+			&& mat == Material.AIR)
+			|| (!checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType())
+			&& mat != Material.AIR)) {
+		    messagePermission(player);
+		    event.setCancelled(true);
+		}
+	    }
+	}
     }
 }

@@ -18,57 +18,80 @@
  */
 package me.tabinol.secuboid.config.players;
 
-    // Entries for each player
+// Entries for each player
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-
 /**
  * The Class PlayerConfEntry.
  */
 public class PlayerConfEntry {
 
-    /** The sender. */
+    /**
+     * The sender.
+     */
     private final CommandSender sender; // The player (or sender)
-    
-    /** The player. */
+
+    /**
+     * The player.
+     */
     private final Player player; // The player (if is not console)
-    
-    /** The player selection. */
+
+    /**
+     * The player selection.
+     */
     private final PlayerSelection playerSelection; // Player Lands, areas and visual selections
-    
-    /** The admin mod. */
+
+    /**
+     * The admin mod.
+     */
     private boolean adminMod = false; // If the player is in Admin Mod
-    
-    /** The confirm. */
+
+    /**
+     * The confirm.
+     */
     private ConfirmEntry confirm = null; // "/secuboid confirm" command
-    
-    /** The chat page. */
+
+    /**
+     * The chat page.
+     */
     private ChatPage chatPage = null; // pages for "/secuboid page" command
-    
-    /** The last move update. */
+
+    /**
+     * The last move update.
+     */
     private long lastMoveUpdate = 0; // Time of lastupdate for PlayerEvents
-    
-    /** The last land. */
-    private DummyLand lastLand = null; // Last Land for player
-    
-    /** The last loc. */
+
+    /**
+     * The last land.
+     */
+    private Land lastLand = null; // Last Land for player
+
+    /**
+     * The last loc.
+     */
     private Location lastLoc = null; // Present location
-    
-    /** The tp cancel. */
+
+    /**
+     * The tp cancel.
+     */
     private boolean tpCancel = false; // If the player has a teleportation cacelled
-    
-    /** The cancel select. */
+
+    /**
+     * The cancel select.
+     */
     private PlayerAutoCancelSelect cancelSelect = null; // Auto cancel selection system
-    
-    /** The pcp. */
+
+    /**
+     * The pcp.
+     */
     private PlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
 
     /**
@@ -78,16 +101,16 @@ public class PlayerConfEntry {
      */
     PlayerConfEntry(CommandSender sender) {
 
-        this.sender = sender;
-        if (sender instanceof Player) {
-            player = (Player) sender;
-            playerSelection = new PlayerSelection(this);
-            pcp = new PlayerContainerPlayer(player.getUniqueId());
-        } else {
-            player = null;
-            playerSelection = null;
-            pcp = null;
-        }
+	this.sender = sender;
+	if (sender instanceof Player) {
+	    player = (Player) sender;
+	    playerSelection = new PlayerSelection(this);
+	    pcp = new PlayerContainerPlayer(player.getUniqueId());
+	} else {
+	    player = null;
+	    playerSelection = null;
+	    pcp = null;
+	}
     }
 
     /**
@@ -95,17 +118,17 @@ public class PlayerConfEntry {
      * @return
      */
     public PlayerContainerPlayer getPlayerContainer() {
-        
-        return pcp;
+
+	return pcp;
     }
-    
+
     /**
      *
      * @return
      */
     public CommandSender getSender() {
 
-        return sender;
+	return sender;
     }
 
     /**
@@ -114,7 +137,7 @@ public class PlayerConfEntry {
      */
     public Player getPlayer() {
 
-        return player;
+	return player;
     }
 
     /**
@@ -124,7 +147,7 @@ public class PlayerConfEntry {
      */
     public PlayerSelection getSelection() {
 
-        return playerSelection;
+	return playerSelection;
     }
 
     /**
@@ -133,13 +156,13 @@ public class PlayerConfEntry {
      */
     public boolean isAdminMod() {
 
-        // Security for adminmod
-        if (adminMod == true && !sender.hasPermission("secuboid.adminmod")) {
-            adminMod = false;
-            return false;
-        }
+	// Security for adminmod
+	if (adminMod == true && !sender.hasPermission("secuboid.adminmod")) {
+	    adminMod = false;
+	    return false;
+	}
 
-        return adminMod;
+	return adminMod;
     }
 
     /**
@@ -149,7 +172,7 @@ public class PlayerConfEntry {
      */
     public void setAdminMod(boolean value) {
 
-        adminMod = value;
+	adminMod = value;
     }
 
     /**
@@ -159,7 +182,7 @@ public class PlayerConfEntry {
      */
     public ConfirmEntry getConfirm() {
 
-        return confirm;
+	return confirm;
     }
 
     /**
@@ -169,7 +192,7 @@ public class PlayerConfEntry {
      */
     public void setConfirm(ConfirmEntry entry) {
 
-        confirm = entry;
+	confirm = entry;
     }
 
     /**
@@ -179,7 +202,7 @@ public class PlayerConfEntry {
      */
     public ChatPage getChatPage() {
 
-        return chatPage;
+	return chatPage;
     }
 
     /**
@@ -189,7 +212,7 @@ public class PlayerConfEntry {
      */
     public void setChatPage(ChatPage page) {
 
-        chatPage = page;
+	chatPage = page;
     }
 
     /**
@@ -198,7 +221,7 @@ public class PlayerConfEntry {
      */
     public long getLastMoveUpdate() {
 
-        return lastMoveUpdate;
+	return lastMoveUpdate;
     }
 
     /**
@@ -208,16 +231,16 @@ public class PlayerConfEntry {
      */
     public void setLastMoveUpdate(Long lastMove) {
 
-        lastMoveUpdate = lastMove;
+	lastMoveUpdate = lastMove;
     }
 
     /**
      *
      * @return
      */
-    public DummyLand getLastLand() {
+    public Land getLastLand() {
 
-        return lastLand;
+	return lastLand;
     }
 
     /**
@@ -225,9 +248,9 @@ public class PlayerConfEntry {
      *
      * @param land the new last land
      */
-    public void setLastLand(DummyLand land) {
+    public void setLastLand(Land land) {
 
-        lastLand = land;
+	lastLand = land;
     }
 
     /**
@@ -236,7 +259,7 @@ public class PlayerConfEntry {
      */
     public Location getLastLoc() {
 
-        return lastLoc;
+	return lastLoc;
     }
 
     /**
@@ -246,7 +269,7 @@ public class PlayerConfEntry {
      */
     public void setLastLoc(Location loc) {
 
-        lastLoc = loc;
+	lastLoc = loc;
     }
 
     /**
@@ -256,7 +279,7 @@ public class PlayerConfEntry {
      */
     public boolean hasTpCancel() {
 
-        return tpCancel;
+	return tpCancel;
     }
 
     /**
@@ -266,7 +289,7 @@ public class PlayerConfEntry {
      */
     public void setTpCancel(boolean tpCancel) {
 
-        this.tpCancel = tpCancel;
+	this.tpCancel = tpCancel;
     }
 
     // Set auto cancel select
@@ -277,28 +300,28 @@ public class PlayerConfEntry {
      */
     public void setAutoCancelSelect(boolean value) {
 
-        Long timeTick = Secuboid.getThisPlugin().getConf().getSelectAutoCancel();
+	Long timeTick = Secuboid.getThisPlugin().getConf().getSelectAutoCancel();
 
-        if (timeTick == 0) {
-            return;
-        }
+	if (timeTick == 0) {
+	    return;
+	}
 
-        if (cancelSelect == null && value == true) {
-            cancelSelect = new PlayerAutoCancelSelect(this);
-        }
+	if (cancelSelect == null && value == true) {
+	    cancelSelect = new PlayerAutoCancelSelect(this);
+	}
 
-        if (cancelSelect == null) {
-            return;
-        }
+	if (cancelSelect == null) {
+	    return;
+	}
 
-        if (value == true) {
+	if (value == true) {
 
-            // Schedule task
-            cancelSelect.runLater(timeTick, false);
-        } else {
+	    // Schedule task
+	    cancelSelect.runLater(timeTick, false);
+	} else {
 
-            // Stop!
-            cancelSelect.stopNextRun();
-        }
+	    // Stop!
+	    cancelSelect.stopNextRun();
+	}
     }
 }

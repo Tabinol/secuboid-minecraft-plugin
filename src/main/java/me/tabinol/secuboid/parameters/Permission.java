@@ -97,7 +97,7 @@ public class Permission {
      *
      * @return true, if is heritable
      */
-    public boolean isHeritable() {
+    public boolean isInheritable() {
 
         return heritable;
     }

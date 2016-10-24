@@ -18,7 +18,8 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.CommandEntities;
@@ -26,21 +27,18 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.DummyLand;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.LandFlag;
 import org.bukkit.ChatColor;
 
-
 /**
  * The Class CommandFlag.
  */
-@InfoCommand(name="flag", forceParameter=true)
+@InfoCommand(name = "flag", forceParameter = true)
 public class CommandFlag extends CommandExec {
-    
-    private LinkedList<DummyLand> precDL; // Listed Precedent lands (no duplicates)
+
+    private List<Land> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;
 
     /**
@@ -51,7 +49,7 @@ public class CommandFlag extends CommandExec {
      */
     public CommandFlag(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
     }
 
     /* (non-Javadoc)
@@ -60,112 +58,97 @@ public class CommandFlag extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-                String curArg = entity.argList.getNext();
+	checkSelections(true, null);
+	String curArg = entity.argList.getNext();
 
-        /*
-        if (entity.argList.length() < 2) {
+	if (curArg.equalsIgnoreCase("set")) {
 
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.JOINMODE"));
-            Secuboid.getThisPlugin().getLog().write("PlayerSetFlagUI for " + entity.playerName);
-            entity.player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.HINT"));
-            CuboidArea area = Secuboid.getThisPlugin().getLands().getCuboidArea(entity.player.getLocation());
-            LandSetFlag setting = new LandSetFlag(entity.player, area);
-            entity.playerConf.setSetFlagUI(setting);
-            
-                    
-        } else 
-        */ 
-        
-        if (curArg.equalsIgnoreCase("set")) {
+	    // Permission check is on getFlagFromArg
+	    LandFlag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
 
-            // Permission check is on getFlagFromArg
-            
-            LandFlag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
-            
-            if(!landFlag.getFlagType().isRegistered()) {
-                throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
-            }
-            
-            ((Land)land).addFlag(landFlag);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + 
-            Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
-                    landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
-            Secuboid.getThisPlugin().getLog().write("Flag set: " + landFlag.getFlagType().toString() + ", value: " +
-                    landFlag.getValue().getValue().toString());
+	    if (!landFlag.getFlagType().isRegistered()) {
+		throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
+	    }
 
-        } else if (curArg.equalsIgnoreCase("unset")) {
-        
-            FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
-            if (!land.removeFlag(flagType)) {
-                throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
-            }
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
-            Secuboid.getThisPlugin().getLog().write("Flag unset: " + flagType.toString());
-        
-        } else if (curArg.equalsIgnoreCase("list")) {
+	    ((Land) land).addFlag(landFlag);
+	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
+			    landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
+	    Secuboid.getThisPlugin().getLog().write("Flag set: " + landFlag.getFlagType().toString() + ", value: "
+		    + landFlag.getValue().getValue().toString());
 
-            precDL = new LinkedList<DummyLand>();
-            stList = new StringBuilder();
-            
-            // For the actual land
-            importDisplayFlagsFrom(land, false);
-            
-            // For default Type
-            if(land.getType() != null) {
-                stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
-                        land.getType().getName())).append(Config.NEWLINE);
-                importDisplayFlagsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getDefaultConf(land.getType()), false);
-            }
-            
-            // For parent (if exist)
-            Land parLand = land;
-            while((parLand = parLand.getParent()) != null) {
-                stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
-                        ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
-                importDisplayFlagsFrom(parLand, true);
-            }
-            
-            // For world
-            stList.append(ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
-                    land.getWorldName())).append(Config.NEWLINE);
-            importDisplayFlagsFrom(((Lands) Secuboid.getThisPlugin().getLands()).getOutsideArea(land.getWorldName()), true);
-                
-            new ChatPage("COMMAND.FLAGS.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
+	} else if (curArg.equalsIgnoreCase("unset")) {
 
-        } else {
-            throw new SecuboidCommandException("Missing information command", entity.player, "GENERAL.MISSINGINFO");
-        }
+	    FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    if (!land.removeFlag(flagType)) {
+		throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
+	    }
+	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
+	    Secuboid.getThisPlugin().getLog().write("Flag unset: " + flagType.toString());
+
+	} else if (curArg.equalsIgnoreCase("list")) {
+
+	    precDL = new ArrayList<Land>();
+	    stList = new StringBuilder();
+
+	    // For the actual land
+	    importDisplayFlagsFrom(land, false);
+
+	    // For default Type
+	    if (land.getType() != null) {
+		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+			land.getType().getName())).append(Config.NEWLINE);
+		importDisplayFlagsFrom((Secuboid.getThisPlugin().getLands()).getDefaultConf(land.getType()), false);
+	    }
+
+	    // For parent (if exist)
+	    Land parLand = land;
+	    while ((parLand = parLand.getParent()) != null) {
+		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
+			ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
+		importDisplayFlagsFrom(parLand, true);
+	    }
+
+	    // For world
+	    stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
+		    land.getWorldName())).append(Config.NEWLINE);
+	    importDisplayFlagsFrom((Secuboid.getThisPlugin().getLands()).getOutsideArea(land.getWorldName()), true);
+
+	    new ChatPage("COMMAND.FLAGS.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
+
+	} else {
+	    throw new SecuboidCommandException("Missing information command", entity.player, "GENERAL.MISSINGINFO");
+	}
     }
-    
-    private void importDisplayFlagsFrom(DummyLand land, boolean onlyInherit) {
-        
-        StringBuilder stSubList = new StringBuilder();
-        for (LandFlag flag : land.getFlags()) {
-            if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
-                stSubList.append(" ");
-            }
-            if((!onlyInherit || flag.isHeritable()) && !flagInList(flag)) {
-                stSubList.append(flag.getFlagType().getPrint()).append(":").append(flag.getValue().getValuePrint());
-            }
-        }
-        
-        if(stSubList.length() > 0) {
-            stList.append(stSubList).append(Config.NEWLINE);
-            precDL.add(land);
-        }
+
+    private void importDisplayFlagsFrom(Land land, boolean onlyInherit) {
+
+	StringBuilder stSubList = new StringBuilder();
+	for (LandFlag flag : land.getFlags()) {
+	    if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
+		stSubList.append(" ");
+	    }
+	    if ((!onlyInherit || flag.isHeritable()) && !flagInList(flag)) {
+		stSubList.append(flag.getFlagType().getPrint()).append(":").append(flag.getValue().getValuePrint());
+	    }
+	}
+
+	if (stSubList.length() > 0) {
+	    stList.append(stSubList).append(Config.NEWLINE);
+	    precDL.add(land);
+	}
     }
-    
+
     private boolean flagInList(LandFlag flag) {
-        
-        for(DummyLand listLand : precDL) {
-            for(LandFlag listFlag : listLand.getFlags()) {
-                if(flag.getFlagType() == listFlag.getFlagType()) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
+
+	for (Land listLand : precDL) {
+	    for (LandFlag listFlag : listLand.getFlags()) {
+		if (flag.getFlagType() == listFlag.getFlagType()) {
+		    return true;
+		}
+	    }
+	}
+
+	return false;
     }
 }

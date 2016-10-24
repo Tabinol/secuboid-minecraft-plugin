@@ -21,14 +21,17 @@ package me.tabinol.secuboid.config;
 import java.io.File;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import me.tabinol.secuboid.Secuboid;
 import static me.tabinol.secuboid.config.Config.GLOBAL;
-import me.tabinol.secuboid.lands.DummyLand;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.areas.InfiniteArea;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.parameters.FlagType;
 import me.tabinol.secuboid.parameters.FlagValue;
 import me.tabinol.secuboid.parameters.LandFlag;
 import me.tabinol.secuboid.parameters.Permission;
+import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import org.bukkit.configuration.ConfigurationSection;
@@ -55,7 +58,7 @@ public class WorldConfig {
     /**
      * Default config (No Type or global)
      */
-    private final DummyLand defaultConfNoType;
+    private final Land defaultConfNoType;
 
     /**
      * Instantiates a new world config.
@@ -83,9 +86,9 @@ public class WorldConfig {
      *
      * @return the land outside area
      */
-    public TreeMap<String, DummyLand> getLandOutsideArea() {
+    public TreeMap<String, Land> getLandOutsideArea() {
 
-	TreeMap<String, DummyLand> landList = new TreeMap<String, DummyLand>();
+	TreeMap<String, Land> landList = new TreeMap<String, Land>();
 	Set<String> keys = worldConfig.getConfigurationSection("").getKeys(false);
 
 	// We have to take _global_ first then others
@@ -105,13 +108,14 @@ public class WorldConfig {
 	return landList;
     }
 
-    private void createConfForWorld(String worldName, TreeMap<String, DummyLand> landList, boolean copyFromGlobal) {
+    private void createConfForWorld(String worldName, TreeMap<String, Land> landList, boolean copyFromGlobal) {
 
 	String worldNameLower = worldName.toLowerCase();
 	if (Secuboid.getThisPlugin() != null) {
 	    Secuboid.getThisPlugin().getLog().write("Create conf for World: " + worldNameLower);
 	}
-	DummyLand dl = new DummyLand(worldName);
+	Land dl = new Land(worldNameLower, UUID.randomUUID(), new PlayerContainerNobody(),
+		new InfiniteArea(worldNameLower), 0, null, 1, null);
 	if (copyFromGlobal) {
 	    landList.get(GLOBAL).copyPermsFlagsTo(dl);
 	}
@@ -124,12 +128,14 @@ public class WorldConfig {
      *
      * @return the land default conf
      */
-    private DummyLand getLandDefaultConf() {
+    private Land getLandDefaultConf() {
 
 	if (Secuboid.getThisPlugin() != null) {
 	    Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
 	}
-	return landModify(new DummyLand(GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
+	return landModify(new Land(GLOBAL, UUID.randomUUID(), new PlayerContainerNobody(),
+		new InfiniteArea(GLOBAL), 0, null, 1, null),
+		landDefault, "ContainerPermissions", "ContainerFlags");
     }
 
     /**
@@ -137,7 +143,7 @@ public class WorldConfig {
      *
      * @return The land configuration (DummyLand)
      */
-    public DummyLand getDefaultconfNoType() {
+    public Land getDefaultconfNoType() {
 
 	return defaultConfNoType;
     }
@@ -147,16 +153,17 @@ public class WorldConfig {
      *
      * @return a TreeMap of default configuration
      */
-    public TreeMap<Type, DummyLand> getTypeDefaultConf() {
+    public TreeMap<Type, Land> getTypeDefaultConf() {
 
 	if (Secuboid.getThisPlugin() != null) {
 	    Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
 	}
-	TreeMap<Type, DummyLand> defaultConf = new TreeMap<Type, DummyLand>();
+	TreeMap<Type, Land> defaultConf = new TreeMap<Type, Land>();
 
 	for (Type type : Secuboid.getStaticTypes().getTypes()) {
 	    ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
-	    DummyLand dl = new DummyLand(type.getName());
+	    Land dl = new Land(type.getName(), UUID.randomUUID(), new PlayerContainerNobody(),
+		    new InfiniteArea(type.getName()), 0, null, 1, null);
 	    defaultConfNoType.copyPermsFlagsTo(dl);
 	    defaultConf.put(type, landModify(dl, typeConf,
 		    "ContainerPermissions", "ContainerFlags"));
@@ -165,7 +172,7 @@ public class WorldConfig {
 	return defaultConf;
     }
 
-    private DummyLand landModify(DummyLand dl, ConfigurationSection fc, String perms, String flags) {
+    private Land landModify(Land dl, ConfigurationSection fc, String perms, String flags) {
 
 	ConfigurationSection csPerm = null;
 	ConfigurationSection csFlags = null;

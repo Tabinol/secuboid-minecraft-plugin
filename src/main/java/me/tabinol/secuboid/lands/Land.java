@@ -35,12 +35,12 @@ import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.parameters.FlagType;
-import me.tabinol.secuboid.parameters.FlagValue;
-import me.tabinol.secuboid.parameters.LandFlag;
-import me.tabinol.secuboid.parameters.Permission;
-import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.FlagValue;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.Permission;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
@@ -129,7 +129,7 @@ public final class Land implements Comparable<Land> {
     /**
      * The flags.
      */
-    private TreeMap<FlagType, LandFlag> flags;
+    private TreeMap<FlagType, Flag> flags;
 
     /**
      * The residents.
@@ -242,7 +242,7 @@ public final class Land implements Comparable<Land> {
 	this.owner = owner;
 	this.genealogy = genealogy;
 	permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-	flags = new TreeMap<FlagType, LandFlag>();
+	flags = new TreeMap<FlagType, Flag>();
 	worldName = area.getWorldName();
 	addArea(area, areaId);
     }
@@ -255,7 +255,7 @@ public final class Land implements Comparable<Land> {
 	residents = new TreeSet<PlayerContainer>();
 	playerNotify = new TreeSet<PlayerContainerPlayer>();
 	permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-	flags = new TreeMap<FlagType, LandFlag>();
+	flags = new TreeMap<FlagType, Flag>();
 	doSave();
     }
 
@@ -944,7 +944,7 @@ public final class Land implements Comparable<Land> {
 	}
 
 	// copy flags
-	for (Map.Entry<FlagType, LandFlag> flagEntry : flags.entrySet()) {
+	for (Map.Entry<FlagType, Flag> flagEntry : flags.entrySet()) {
 
 	    desLand.flags.put(flagEntry.getKey(), flagEntry.getValue().copyOf());
 	}
@@ -977,7 +977,7 @@ public final class Land implements Comparable<Land> {
      */
     public void addFlag(FlagType flagType, Object value, boolean inheritance) {
 
-	addFlag(new LandFlag((FlagType) flagType, value, inheritance));
+	addFlag(new Flag((FlagType) flagType, value, inheritance));
     }
 
     /**
@@ -1192,7 +1192,7 @@ public final class Land implements Comparable<Land> {
 
 		if (perm != null) {
 		    Secuboid.getThisPlugin().getLog().write("Container: " + permissionEntry.getKey().toString() + ", "
-			    + "PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Heritable: " + perm.isInheritable());
+			    + "PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Inheritable: " + perm.isInheritable());
 		    if ((onlyInherit && perm.isInheritable()) || !onlyInherit) {
 			return perm.getValue();
 		    }
@@ -1209,7 +1209,7 @@ public final class Land implements Comparable<Land> {
      *
      * @param flag the flag
      */
-    public void addFlag(LandFlag flag) {
+    public void addFlag(Flag flag) {
 
 	flags.put(flag.getFlagType(), flag);
 	doSave();
@@ -1229,7 +1229,7 @@ public final class Land implements Comparable<Land> {
      */
     public boolean removeFlag(FlagType flagType) {
 
-	LandFlag flag = flags.remove(flagType);
+	Flag flag = flags.remove(flagType);
 
 	if (flag == null) {
 	    return false;
@@ -1250,7 +1250,7 @@ public final class Land implements Comparable<Land> {
      *
      * @return the flags value or default
      */
-    public Collection<LandFlag> getFlags() {
+    public Collection<Flag> getFlags() {
 
 	return flags.values();
     }
@@ -1281,11 +1281,11 @@ public final class Land implements Comparable<Land> {
      */
     protected FlagValue getFlag(FlagType ft, boolean onlyInherit) {
 
-	LandFlag flag = flags.get(ft);
+	Flag flag = flags.get(ft);
 	if (flag != null) {
 	    Secuboid.getThisPlugin().getLog().write("Flag: " + flag.toString());
 
-	    if ((onlyInherit && flag.isHeritable()) || !onlyInherit) {
+	    if ((onlyInherit && flag.isInheritable()) || !onlyInherit) {
 		return flag.getValue();
 	    }
 	}

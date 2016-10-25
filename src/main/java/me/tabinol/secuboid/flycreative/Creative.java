@@ -23,7 +23,7 @@ import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.listeners.FlyCreativeListener;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -79,7 +79,7 @@ public class Creative {
 	conf = Secuboid.getThisPlugin().getConf();
 
 	// Register flags
-	permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("CREATIVE", false);
+	permissionType = Secuboid.getThisPlugin().getPermissionsFlags().registerPermissionType("CREATIVE", false);
 
 	flyCreativeListener = Secuboid.getThisPlugin().getFlyCreativeListener();
     }

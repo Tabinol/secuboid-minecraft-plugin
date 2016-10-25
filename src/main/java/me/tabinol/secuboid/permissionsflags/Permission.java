@@ -16,37 +16,42 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.parameters;
+package me.tabinol.secuboid.permissionsflags;
 
 import org.bukkit.ChatColor;
-
 
 /**
  * The Class Permission.
  */
 public class Permission {
 
-    /** The perm type. */
+    /**
+     * The perm type.
+     */
     PermissionType permType;
-    
-    /** The value. */
+
+    /**
+     * The value.
+     */
     boolean value;
-    
-    /** The heritable. */
-    boolean heritable;
+
+    /**
+     * The Inheritable.
+     */
+    boolean inheritable;
 
     /**
      * Instantiates a new permission.
      *
      * @param permType the perm type
      * @param value the value
-     * @param heritable the heritable
+     * @param inheritable the inheritable
      */
-    public Permission(final PermissionType permType, final boolean value, final boolean heritable) {
+    public Permission(final PermissionType permType, final boolean value, final boolean inheritable) {
 
-        this.permType = permType;
-        this.value = value;
-        this.heritable = heritable;
+	this.permType = permType;
+	this.value = value;
+	this.inheritable = inheritable;
     }
 
     /**
@@ -54,10 +59,10 @@ public class Permission {
      * @return
      */
     public Permission copyOf() {
-        
-        return new Permission(permType, value, heritable);
+
+	return new Permission(permType, value, inheritable);
     }
-    
+
     /**
      * Gets the perm type.
      *
@@ -65,7 +70,7 @@ public class Permission {
      */
     public PermissionType getPermType() {
 
-        return permType;
+	return permType;
     }
 
     /**
@@ -75,7 +80,7 @@ public class Permission {
      */
     public boolean getValue() {
 
-        return value;
+	return value;
     }
 
     /**
@@ -85,35 +90,29 @@ public class Permission {
      */
     public final String getValuePrint() {
 
-        if (value) {
-            return "" + ChatColor.GREEN + value;
-        } else {
-            return "" + ChatColor.RED + value;
-        }
+	if (value) {
+	    return "" + ChatColor.GREEN + value;
+	} else {
+	    return "" + ChatColor.RED + value;
+	}
     }
 
     /**
-     * Checks if is heritable.
+     * Checks if is inheritable.
      *
-     * @return true, if is heritable
+     * @return true, if is inheritable
      */
     public boolean isInheritable() {
 
-        return heritable;
+	return inheritable;
     }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
 
     /**
      *
      * @return
      */
+    public String toFileFormat() {
 
-    @Override
-    public String toString() {
-
-        return permType.toString() + ":" + value + ":" + heritable;
+	return permType.toString() + ":" + value + ":" + inheritable;
     }
 }

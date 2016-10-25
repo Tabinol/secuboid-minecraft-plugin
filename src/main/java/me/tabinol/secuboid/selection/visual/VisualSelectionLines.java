@@ -24,13 +24,14 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.LinesArea;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
-import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import static java.lang.Math.abs;
 
 /**
  *

@@ -8,91 +8,91 @@ _Global_:                           # _Global_ is for all worlds
       group_newbies:
         BUILD:
           Value: false
-          Heritable: true
+          Inheritable: true
         OPEN:
           Value: false
-          Heritable: true
+          Inheritable: true
         BUCKET_WATER:
           Value: false
-          Heritable: true
+          Inheritable: true
         BUCKET_LAVA:
           Value: false
-          Heritable: true
+          Inheritable: true
     Permission:
       group_users:
         LAND_CREATE:
           Value: true
-          Heritable: false
+          Inheritable: false
         BUILD:
           Value: true
-          Heritable: false
+          Inheritable: false
         ECO_LAND_FOR_SALE:
           Value: true
-          Heritable: true
+          Inheritable: true
         ECO_LAND_BUY:
           Value: true
-          Heritable: true
+          Inheritable: true
         ECO_LAND_FOR_RENT:
           Value: true
-          Heritable: true
+          Inheritable: true
         ECO_LAND_RENT:
           Value: true
-          Heritable: true
+          Inheritable: true
   ContainerFlags:
     FIRESPREAD:
       Value: true
-      Heritable: true
+      Inheritable: true
     CREEPER_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     TNT_EXPLOSION:
       Value: true
-      Heritable: true
+      Inheritable: true
     TNT_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     ENDERMAN_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     WITHER_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     ENDERDRAGON_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     GHAST_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     TNT_DAMAGE:
       Value: true
-      Heritable: true
+      Inheritable: true
     FULL_PVP:
       Value: true
-      Heritable: true
+      Inheritable: true
     FACTION_PVP:
       Value: true
-      Heritable: true
+      Inheritable: true
     ECO_BLOCK_PRICE:
       Value: 0.01
-      Heritable: true
+      Inheritable: true
 #world1:
 #  ContainerPermissions:
 #    Group:
 #      Newbies:
 #        BUILD_PLACE:
 #          Value: false
-#          Heritable: true
+#          Inheritable: true
 #        BUILD_DESTROY:
 #          Value: false
-#          Heritable: true
+#          Inheritable: true
 #    Everybody:
 #      BUILD_PLACE:
 #        Value: true
-#        Heritable: false
+#        Inheritable: false
 #      BUILD_DESTROY:
 #        Value: true
-#        Heritable: false
+#        Inheritable: false
 #  ContainerFlags:
 #    CREEPER_DAMAGE:
 #      Value: true
-#      Heritable: false
+#      Inheritable: false

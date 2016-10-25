@@ -16,115 +16,108 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.parameters;
+package me.tabinol.secuboid.permissionsflags;
 
 import org.bukkit.ChatColor;
 
-
 /**
- * The Class ParameterType.
+ * The Class PermissionsFlagsType.
  *
  * @author michel
  */
-public class ParameterType implements Comparable<ParameterType> {
-    
-    /** The name. */
+public class PermissionsFlagsType implements Comparable<PermissionsFlagsType> {
+
+    /**
+     * The name.
+     */
     private final String name;
-    
-    /** The is registered. */
+
+    /**
+     * The is registered.
+     */
     private boolean isRegistered = false;
-    
+
     /**
      * Instantiates a new parameter type.
      *
      * @param name the name
      */
-    ParameterType(String name) {
-        
-        this.name = name;
+    PermissionsFlagsType(String name) {
+
+	this.name = name;
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
 
     /**
      *
      * @param t
      * @return
      */
-
     @Override
-    public int compareTo(ParameterType t) {
-        
-        return name.compareTo(t.name);
+    public int compareTo(PermissionsFlagsType t) {
+
+	return name.compareTo(t.name);
     }
-    
+
     /**
      * Equals.
      *
      * @param t the t
      * @return true, if successful
      */
-    public boolean equals(ParameterType t) {
-        
-        return name.equals(t.name);
+    public boolean equals(PermissionsFlagsType t) {
+
+	return name.equals(t.name);
     }
-    
+
     /**
      * Gets the name.
      *
      * @return the name
      */
     public String getName() {
-        
-        return name;
+
+	return name;
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
 
     /**
      *
      * @return
      */
-
     @Override
     public String toString() {
-        
-        return name;
+
+	return name;
     }
-    
+
     /**
      * Gets the prints the.
      *
      * @return the prints the
      */
     public String getPrint() {
-        
-        if(isRegistered) {
-            return ChatColor.YELLOW + name;
-        } else {
-            return ChatColor.DARK_GRAY + name;
-        }
+
+	if (isRegistered) {
+	    return ChatColor.YELLOW + name;
+	} else {
+	    return ChatColor.DARK_GRAY + name;
+	}
     }
-    
+
     /**
      * Checks if is registered.
      *
      * @return true, if is registered
      */
     public boolean isRegistered() {
-        
-        return isRegistered;
+
+	return isRegistered;
     }
-    
+
     /**
      * Sets the registered.
      */
     void setRegistered() {
-        
-        isRegistered = true;
+
+	isRegistered = true;
     }
 }

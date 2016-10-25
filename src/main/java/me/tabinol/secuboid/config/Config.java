@@ -23,8 +23,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.parameters.FlagType;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -430,12 +430,12 @@ public class Config {
         config.addDefault("Lands.OwnerCanSet.Flags", new String[] {"MESSAGE_JOIN", "MESSAGE_QUIT"});
         ownerConfigFlag = new TreeSet<FlagType>();
         for (String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
-            ownerConfigFlag.add(Secuboid.getThisPlugin().getParameters().getFlagTypeNoValid(value.toUpperCase()));
+            ownerConfigFlag.add(Secuboid.getThisPlugin().getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));
         }
         config.addDefault("Lands.OwnerCanSet.Permissions", new String[] {"BUILD", "OPEN", "USE"});
         ownerConfigPerm = new TreeSet<PermissionType>();
         for (String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
-            ownerConfigPerm.add(Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(value.toUpperCase()));
+            ownerConfigPerm.add(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
         }
 
         // Fly and creative

@@ -28,8 +28,8 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagType;
-import me.tabinol.secuboid.parameters.LandFlag;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagType;
 import org.bukkit.ChatColor;
 
 /**
@@ -64,7 +64,7 @@ public class CommandFlag extends CommandExec {
 	if (curArg.equalsIgnoreCase("set")) {
 
 	    // Permission check is on getFlagFromArg
-	    LandFlag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    Flag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
 
 	    if (!landFlag.getFlagType().isRegistered()) {
 		throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
@@ -124,11 +124,11 @@ public class CommandFlag extends CommandExec {
     private void importDisplayFlagsFrom(Land land, boolean onlyInherit) {
 
 	StringBuilder stSubList = new StringBuilder();
-	for (LandFlag flag : land.getFlags()) {
+	for (Flag flag : land.getFlags()) {
 	    if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
 		stSubList.append(" ");
 	    }
-	    if ((!onlyInherit || flag.isHeritable()) && !flagInList(flag)) {
+	    if ((!onlyInherit || flag.isInheritable()) && !flagInList(flag)) {
 		stSubList.append(flag.getFlagType().getPrint()).append(":").append(flag.getValue().getValuePrint());
 	    }
 	}
@@ -139,10 +139,10 @@ public class CommandFlag extends CommandExec {
 	}
     }
 
-    private boolean flagInList(LandFlag flag) {
+    private boolean flagInList(Flag flag) {
 
 	for (Land listLand : precDL) {
-	    for (LandFlag listFlag : listLand.getFlags()) {
+	    for (Flag listFlag : listLand.getFlags()) {
 		if (flag.getFlagType() == listFlag.getFlagType()) {
 		    return true;
 		}

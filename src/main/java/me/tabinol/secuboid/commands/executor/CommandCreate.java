@@ -30,7 +30,7 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;

@@ -28,7 +28,7 @@ import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.LinesArea;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.lands.types.Types;
-import me.tabinol.secuboid.parameters.Parameters;
+import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class LandsTest {
     private static final String TEST_CYLINDER = "testcylinder";
     private static final String TEST_LINES = "testlines";
 
-    private static Parameters parameters;
+    private static PermissionsFlags parameters;
     private static Lands lands;
 
     /**
@@ -64,7 +64,7 @@ public class LandsTest {
         PowerMockito.mockStatic(Secuboid.class);
         Mockito.when(Secuboid.getThisPlugin()).thenReturn(null);
         Mockito.when(Secuboid.getConfigFolder()).thenReturn(new File("src/main/resources/"));
-        parameters = new Parameters();
+        parameters = new PermissionsFlags();
         Mockito.when(Secuboid.getStaticParameters()).thenReturn(parameters);
         Types types = new Types();
         Mockito.when(Secuboid.getStaticTypes()).thenReturn(types);

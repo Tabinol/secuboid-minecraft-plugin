@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.lands;
 
 import java.util.HashSet;
-import me.tabinol.secuboid.parameters.LandFlag;
+import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 
 
@@ -32,7 +32,7 @@ public class ContainerFlag {
     PlayerContainer pc;
     
     /** The flags. */
-    HashSet <LandFlag> flags;
+    HashSet <Flag> flags;
     
     /**
      * Instantiates a new container flag.
@@ -40,11 +40,11 @@ public class ContainerFlag {
      * @param pc the pc
      * @param flags the flags
      */
-    public ContainerFlag(PlayerContainer pc, HashSet <LandFlag> flags) {
+    public ContainerFlag(PlayerContainer pc, HashSet <Flag> flags) {
         
         this.pc = pc;
         if(flags == null) {
-            this.flags = new HashSet<LandFlag>();
+            this.flags = new HashSet<Flag>();
         } else {
             this.flags = flags;
         }

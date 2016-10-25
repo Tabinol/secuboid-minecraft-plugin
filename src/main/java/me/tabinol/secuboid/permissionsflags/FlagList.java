@@ -16,8 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.parameters;
-
+package me.tabinol.secuboid.permissionsflags;
 
 /**
  * The Enum FlagList.
@@ -25,97 +24,130 @@ package me.tabinol.secuboid.parameters;
  * @author Tabinol
  */
 public enum FlagList {
-    
-    /** The undefined. */
+
+    /**
+     * The undefined.
+     */
     UNDEFINED(""),
-    
-    /** The firespread. */
+    /**
+     * The firespread.
+     */
     FIRESPREAD(true),
-    
-    /** The fire. */
+    /**
+     * The fire.
+     */
     FIRE(true),
-    
-    /** The explosion. */
+    /**
+     * The explosion.
+     */
     EXPLOSION(true),
-    
-    /** The creeper explosion. */
+    /**
+     * The creeper explosion.
+     */
     CREEPER_EXPLOSION(true),
-    
-    /** The tnt explosion. */
+    /**
+     * The tnt explosion.
+     */
     TNT_EXPLOSION(true),
-    
-    /** The creeper damage. */
+    /**
+     * The creeper damage.
+     */
     CREEPER_DAMAGE(true),
-    
-    /** The enderman damage. */
+    /**
+     * The enderman damage.
+     */
     ENDERMAN_DAMAGE(true),
-    
-    /** The wither damage. */
+    /**
+     * The wither damage.
+     */
     WITHER_DAMAGE(true),
-    
-    /** The ghast damage. */
+    /**
+     * The ghast damage.
+     */
     GHAST_DAMAGE(true),
-    
-    /** The enderdragon damage. */
+    /**
+     * The enderdragon damage.
+     */
     ENDERDRAGON_DAMAGE(true),
-    
-    /** The tnt damage. */
+    /**
+     * The tnt damage.
+     */
     TNT_DAMAGE(true),
-    
-    /** The mob spawn. */
+    /**
+     * The mob spawn.
+     */
     MOB_SPAWN(true),
-    
-    /** The animal spawn. */
+    /**
+     * The animal spawn.
+     */
     ANIMAL_SPAWN(true),
-    
-    /** The leaves decay */
+    /**
+     * The leaves decay
+     */
     LEAF_DECAY(true),
-    
-    /** The crop trample */
+    /**
+     * The crop trample
+     */
     CROP_TRAMPLE(true),
-
-    /** The lava flow */
+    /**
+     * The lava flow
+     */
     LAVA_FLOW(true),
-
-    /** The water flow */
+    /**
+     * The water flow
+     */
     WATER_FLOW(true),
-
-    /** The full pvp. */
+    /**
+     * The full pvp.
+     */
     FULL_PVP(true),
-    
-    /** The faction pvp. */
+    /**
+     * The faction pvp.
+     */
     FACTION_PVP(true),
-
-    /** The message join. */
-    MESSAGE_JOIN(""),
-    
-    /** The message quit. */
-    MESSAGE_QUIT(""),
-    
-    /** The eco block price. */
+    /**
+     * The message enter.
+     */
+    MESSAGE_ENTER(""),
+    /**
+     * The message exit.
+     */
+    MESSAGE_EXIT(""),
+    /**
+     * The eco block price.
+     */
     ECO_BLOCK_PRICE(0d),
-    
-    /** The exclude commands. */
-    EXCLUDE_COMMANDS(new String[] {}),
-    
-    /**  The spawn and teleport point. */
+    /**
+     * The exclude commands.
+     */
+    EXCLUDE_COMMANDS(new String[]{}),
+    /**
+     * The spawn and teleport point.
+     */
     SPAWN(""),
-    
-    /** Inherit from parent owner */
+    /**
+     * Inherit from parent owner
+     */
     INHERIT_OWNER(true),
-    
-    /** Inherit from parent residents */
+    /**
+     * Inherit from parent residents
+     */
     INHERIT_RESIDENTS(true),
-    
-    /** Inherit from parent tenant */
+    /**
+     * Inherit from parent tenant
+     */
     INHERIT_TENANT(true);
 
-    /** The base value. */
+    /**
+     * The base value.
+     */
     final FlagValue baseValue;
-    
-    /** The flag type. */
+
+    /**
+     * The flag type.
+     */
     private FlagType flagType;
-    
+
     /**
      * Instantiates a new flag list.
      *
@@ -123,7 +155,7 @@ public enum FlagList {
      */
     FlagList(Object baseValue) {
 
-        this.baseValue = new FlagValue(baseValue);
+	this.baseValue = new FlagValue(baseValue);
     }
 
     /**
@@ -132,8 +164,8 @@ public enum FlagList {
      * @param flagType the new flag type
      */
     void setFlagType(FlagType flagType) {
-        
-        this.flagType = flagType;
+
+	this.flagType = flagType;
     }
 
     /**
@@ -142,7 +174,7 @@ public enum FlagList {
      * @return the flag type
      */
     public FlagType getFlagType() {
-        
-        return flagType;
+
+	return flagType;
     }
 }

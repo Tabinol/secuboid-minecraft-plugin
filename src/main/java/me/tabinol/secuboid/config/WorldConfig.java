@@ -27,10 +27,10 @@ import static me.tabinol.secuboid.config.Config.GLOBAL;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.InfiniteArea;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.parameters.FlagType;
-import me.tabinol.secuboid.parameters.FlagValue;
-import me.tabinol.secuboid.parameters.LandFlag;
-import me.tabinol.secuboid.parameters.Permission;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.FlagValueUtil;
+import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
@@ -207,7 +207,7 @@ public class WorldConfig {
 				    PlayerContainerUtil.create(null, pcType, containerNameLower),
 				    new Permission(Secuboid.getStaticParameters().getPermissionTypeNoValid(perm.toUpperCase()),
 					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
-					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Heritable")));
+					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Inheritable")));
 			}
 		    }
 		} else {
@@ -219,7 +219,7 @@ public class WorldConfig {
 				PlayerContainerUtil.create(null, pcType, null),
 				new Permission(Secuboid.getStaticParameters().getPermissionTypeNoValid(perm.toUpperCase()),
 					fc.getBoolean(perms + "." + container + "." + perm + ".Value"),
-					fc.getBoolean(perms + "." + container + "." + perm + ".Heritable")));
+					fc.getBoolean(perms + "." + container + "." + perm + ".Inheritable")));
 		    }
 		}
 	    }
@@ -232,8 +232,8 @@ public class WorldConfig {
 		    Secuboid.getThisPlugin().getLog().write("Flag: " + flag);
 		}
 		FlagType ft = Secuboid.getStaticParameters().getFlagTypeNoValid(flag.toUpperCase());
-		dl.addFlag(new LandFlag(ft,
-			FlagValue.getFromString(fc.getString(flags + "." + flag + ".Value"), ft),
+		dl.addFlag(new Flag(ft,
+			FlagValueUtil.getFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
 			fc.getBoolean(flags + "." + flag + ".Heritable")));
 	    }
 	}

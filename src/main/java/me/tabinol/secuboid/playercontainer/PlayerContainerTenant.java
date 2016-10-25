@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagList;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 import org.bukkit.entity.Player;
 
 /**

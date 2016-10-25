@@ -34,7 +34,7 @@ import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.*;
-import me.tabinol.secuboid.parameters.Parameters;
+import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayersCache;
@@ -65,7 +65,7 @@ public class Secuboid extends JavaPlugin {
     protected static Lands lands;
     
     /** The parameters. */
-    protected static Parameters parameters;
+    protected static PermissionsFlags PermissionsFlags;
     
     /** The player conf. */
     protected PlayerStaticConfig playerConf;
@@ -162,9 +162,9 @@ public class Secuboid extends JavaPlugin {
      *
      * @return
      */
-    public static Parameters getStaticParameters() {
+    public static PermissionsFlags getStaticParameters() {
 
-        return thisPlugin.getParameters();
+        return thisPlugin.getPermissionsFlags();
     }
 
     /**
@@ -193,7 +193,7 @@ public class Secuboid extends JavaPlugin {
         thisPlugin = this;
         BKVersion.initVersion();
         // TODO Ractivate API ApiSecuboidSta.initSecuboidPluginAccess();
-        parameters = new Parameters(); // Must be before the configuration!
+        PermissionsFlags = new PermissionsFlags(); // Must be before the configuration!
         types = new Types();
         conf = new Config();
 
@@ -378,9 +378,9 @@ public class Secuboid extends JavaPlugin {
      *
      * @return
      */
-    public Parameters getParameters() {
+    public PermissionsFlags getPermissionsFlags() {
         
-        return parameters;
+        return PermissionsFlags;
     }
     
     /**

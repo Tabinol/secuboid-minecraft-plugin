@@ -26,7 +26,7 @@ import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

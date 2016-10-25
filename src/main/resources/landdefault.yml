@@ -5,97 +5,97 @@ ContainerPermissions:          # Permissions
   Visitor:
     BUCKET_WATER:
       Value: false
-      Heritable: true
+      Inheritable: true
     BUCKET_LAVA:
       Value: false
-      Heritable: true
+      Inheritable: true
     BUILD:
       Value: false
-      Heritable: true
+      Inheritable: true
     OPEN:
       Value: false
-      Heritable: true
+      Inheritable: true
     USE:
       Value: false
-      Heritable: true
+      Inheritable: true
     ANIMAL_KILL:
       Value: false
-      Heritable: true
+      Inheritable: true
     FIRE:
       Value: false
-      Heritable: true
+      Inheritable: true
   Owner:
     RESIDENT_MANAGER:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_CREATE:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_REMOVE:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_KICK:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_BAN:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_WHO:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_NOTIFY:
       Value: true
-      Heritable: false
+      Inheritable: false
     MONEY_DEPOSIT:
       Value: true
-      Heritable: false
+      Inheritable: false
     MONEY_WITHDRAW:
       Value: true
-      Heritable: false
+      Inheritable: false
     BUCKET_WATER:
       Value: true
-      Heritable: true
+      Inheritable: true
     BUCKET_LAVA:
       Value: true
-      Heritable: true
+      Inheritable: true
     BUILD:
       Value: true
-      Heritable: true
+      Inheritable: true
     OPEN:
       Value: true
-      Heritable: true
+      Inheritable: true
     USE:
       Value: true
-      Heritable: true
+      Inheritable: true
     ANIMAL_KILL:
       Value: true
-      Heritable: true
+      Inheritable: true
     FIRE:
       Value: true
-      Heritable: true
+      Inheritable: true
   Resident:
     BUILD:
       Value: true
-      Heritable: false
+      Inheritable: false
     OPEN:
       Value: true
-      Heritable: false
+      Inheritable: false
     USE:
       Value: true
-      Heritable: true
+      Inheritable: true
     ANIMAL_KILL:
       Value: true
-      Heritable: true
+      Inheritable: true
     LAND_WHO:
       Value: true
-      Heritable: false
+      Inheritable: false
     LAND_NOTIFY:
       Value: true
-      Heritable: false
+      Inheritable: false
 ContainerFlags:                # Flags
   CREEPER_DAMAGE:
     Value: false
-    Heritable: true
+    Inheritable: true
 
 # Here is the configuration for specific types in config.yml
 admin:                         # The name of the type
@@ -103,6 +103,6 @@ admin:                         # The name of the type
     Resident:
       BUILD:
         Value: false
-        Heritable: false
+        Inheritable: false
   ContainerFlags:
       

@@ -25,9 +25,9 @@ import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboid.parameters.PermissionList;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import org.bukkit.ChatColor;
@@ -156,7 +156,7 @@ public class LandListener extends CommonListener implements Listener {
 		notifyPlayers(lastLand, "ACTION.PLAYEREXIT", player);
 
 		// Message quit
-		value = lastLand.getFlagNoInherit(FlagList.MESSAGE_QUIT.getFlagType()).getValueString();
+		value = lastLand.getFlagNoInherit(FlagList.MESSAGE_EXIT.getFlagType()).getValueString();
 		if (!value.isEmpty()) {
 		    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + lastLand.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
 		}
@@ -202,7 +202,7 @@ public class LandListener extends CommonListener implements Listener {
 		    landTest = landTest.getParent();
 		}
 		// Message join
-		value = land.getFlagNoInherit(FlagList.MESSAGE_JOIN.getFlagType()).getValueString();
+		value = land.getFlagNoInherit(FlagList.MESSAGE_ENTER.getFlagType()).getValueString();
 		if (!value.isEmpty()) {
 		    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + land.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
 		}

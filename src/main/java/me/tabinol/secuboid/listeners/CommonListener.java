@@ -20,7 +20,7 @@ package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

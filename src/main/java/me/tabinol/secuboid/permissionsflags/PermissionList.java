@@ -16,8 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.parameters;
-
+package me.tabinol.secuboid.permissionsflags;
 
 /**
  * The Enum PermissionList.
@@ -26,202 +25,272 @@ package me.tabinol.secuboid.parameters;
  */
 public enum PermissionList {
 
-    /** The undefined. */
+    /**
+     * The undefined.
+     */
     UNDEFINED(false),
-    
-    /** The build. */
+    /**
+     * The build.
+     */
     BUILD(true),
-    
-    /** The build place. */
+    /**
+     * The build place.
+     */
     BUILD_PLACE(true, "BUILD"),
-    
-    /** The build destroy. */
+    /**
+     * The build destroy.
+     */
     BUILD_DESTROY(true, "BUILD"),
-    
-    /** The drop. */
+    /**
+     * The drop.
+     */
     DROP(true),
-    
-    /** The picketup. */
-    PICKETUP(true),
-    
-    /** The sleep. */
+    /**
+     * The pickup.
+     */
+    PICKUP(true),
+    /**
+     * The sleep.
+     */
     SLEEP(true),
-    
-    /** The open. */
+    /**
+     * The open.
+     */
     OPEN(true),
-    
-    /** The open craft. */
+    /**
+     * The open craft.
+     */
     OPEN_CRAFT(true, "OPEN"),
-    
-    /** The open brew. */
+    /**
+     * The open brew.
+     */
     OPEN_BREW(true, "OPEN"),
-    
-    /** The open furnace. */
+    /**
+     * The open furnace.
+     */
     OPEN_FURNACE(true, "OPEN"),
-    
-    /** The open chest. */
+    /**
+     * The open chest.
+     */
     OPEN_CHEST(true, "OPEN"),
-    
-    /** The open enderchest. */
+    /**
+     * The open enderchest.
+     */
     OPEN_ENDERCHEST(true, "OPEN"),
-    
-    /** The open beacon. */
+    /**
+     * The open beacon.
+     */
     OPEN_BEACON(true, "OPEN"),
-    
-    /** The open hopper. */
+    /**
+     * The open hopper.
+     */
     OPEN_HOPPER(true, "OPEN"),
-    
-    /** The open dropper. */
+    /**
+     * The open dropper.
+     */
     OPEN_DROPPER(true, "OPEN"),
-    
-    /** The open dispenser. */
+    /**
+     * The open dispenser.
+     */
     OPEN_DISPENSER(true, "OPEN"),
-    
-    /** The open jukebox. */
+    /**
+     * The open jukebox.
+     */
     OPEN_JUKEBOX(true, "OPEN"),
-    
-    /** The use. */
+    /**
+     * The use.
+     */
     USE(true, "USE"),
-    
-    /** The use door. */
+    /**
+     * The use door.
+     */
     USE_DOOR(true, "USE"),
-    
-    /** The use button. */
+    /**
+     * The use button.
+     */
     USE_BUTTON(true, "USE"),
-    
-    /** The use lever. */
+    /**
+     * The use lever.
+     */
     USE_LEVER(true, "USE"),
-    
-    /** The use pressureplate. */
+    /**
+     * The use pressureplate.
+     */
     USE_PRESSUREPLATE(true, "USE"),
-    
-    /** The use trappedchest. */
+    /**
+     * The use trappedchest.
+     */
     USE_TRAPPEDCHEST(true, "USE"),
-    
-    /** The use string. */
+    /**
+     * The use string.
+     */
     USE_STRING(true, "USE"),
-    
-    /** The use enchanting table **/
+    /**
+     * The use enchanting table *
+     */
     USE_ENCHANTTABLE(true, "USE"),
-    
-    /** The use anvil **/
+    /**
+     * The use anvil *
+     */
     USE_ANVIL(true, "USE"),
-    
-    /** The mob spawner **/
+    /**
+     * The mob spawner *
+     */
     USE_MOBSPAWNER(true, "USE"),
-    
-    /** For daylight detector **/
+    /**
+     * For daylight detector *
+     */
     USE_LIGHTDETECTOR(true, "USE"),
-    
-    /** The animal kill. */
+    /**
+     * The animal kill.
+     */
     ANIMAL_KILL(true),
-
-    /** The tamed kill. */
+    /**
+     * The tamed kill.
+     */
     TAMED_KILL(true),
-    
-    /** The mob kill. */
+    /**
+     * The mob kill.
+     */
     MOB_KILL(true),
-
-    /** The villager kill. */
+    /**
+     * The villager kill.
+     */
     VILLAGER_KILL(true),
-    
-    /** The villager golem kill. */
+    /**
+     * The villager golem kill.
+     */
     VILLAGER_GOLEM_KILL(true),
-    
-    /** The horse kill. */
+    /**
+     * The horse kill.
+     */
     HORSE_KILL(true),
-
-    /** The bucket water. */
+    /**
+     * The bucket water.
+     */
     BUCKET_WATER(true),
-    
-    /** The bucket lava. */
+    /**
+     * The bucket lava.
+     */
     BUCKET_LAVA(true),
-    
-    /** The fire. */
+    /**
+     * The fire.
+     */
     FIRE(true),
-
-    /** The auto heal. */
+    /**
+     * The auto heal.
+     */
     AUTO_HEAL(false),
-    
-    /** The eat. */
+    /**
+     * The eat.
+     */
     EAT(true),
-    
-    /** The food heal. */
+    /**
+     * The food heal.
+     */
     FOOD_HEAL(true),
-    
-    /** The potion splash. */
+    /**
+     * The potion splash.
+     */
     POTION_SPLASH(true),
-    
-    /** The resident manager. */
+    /**
+     * The resident manager.
+     */
     RESIDENT_MANAGER(false),
-    
-    /** The land create. */
+    /**
+     * The land create.
+     */
     LAND_CREATE(false),
-    
-    /** The land enter. */
+    /**
+     * The land enter.
+     */
     LAND_ENTER(true),
-    
-    /** The land remove. */
+    /**
+     * The land remove.
+     */
     LAND_REMOVE(false),
-    
-    /** The land kick. */
+    /**
+     * The land kick.
+     */
     LAND_KICK(false),
-    
-    /** The land ban. */
+    /**
+     * The land ban.
+     */
     LAND_BAN(false),
-    
-    /** The land who. */
+    /**
+     * The land who.
+     */
     LAND_WHO(false),
-    
-    /** The land notify. */
+    /**
+     * The land notify.
+     */
     LAND_NOTIFY(false),
-    
-    /** The money deposit. */
+    /**
+     * The money deposit.
+     */
     MONEY_DEPOSIT(false),
-    
-    /** The money withdraw. */
+    /**
+     * The money withdraw.
+     */
     MONEY_WITHDRAW(false),
-    
-    /** The money balance. */
+    /**
+     * The money balance.
+     */
     MONEY_BALANCE(false),
-    
-    /** The eco land for sale. */
+    /**
+     * The eco land for sale.
+     */
     ECO_LAND_FOR_SALE(false),
-    
-    /** The eco land buy. */
+    /**
+     * The eco land buy.
+     */
     ECO_LAND_BUY(false),
-    
-    /** The eco land for rent. */
+    /**
+     * The eco land for rent.
+     */
     ECO_LAND_FOR_RENT(false),
-    
-    /** The eco land rent. */
+    /**
+     * The eco land rent.
+     */
     ECO_LAND_RENT(false),
-    
-    /**  TP with ender pearl. */
+    /**
+     * TP with ender pearl.
+     */
     ENDERPEARL_TP(true),
-    
-    /**  The player can teleport itself to the land. */
+    /**
+     * The player can teleport itself to the land.
+     */
     TP(false),
-    
-    /**  The payer respawn at the land spawn. */
+    /**
+     * The payer respawn at the land spawn.
+     */
     TP_DEATH(false),
-    
-    /** The player is death on enter. */
+    /**
+     * The player is death on enter.
+     */
     LAND_DEATH(false),
-    
-    /** The crop trample */
+    /**
+     * The crop trample
+     */
     CROP_TRAMPLE(true),
-    
-    /** The god */
+    /**
+     * The god
+     */
     GOD(false);
 
-    /** The base value. */
+    /**
+     * The base value.
+     */
     final boolean baseValue;
-    
-    /** The Permission type. */
+
+    /**
+     * The Permission type.
+     */
     private PermissionType PermissionType;
 
-    /** The parent permission name */
+    /**
+     * The parent permission name
+     */
     private String parent;
 
     /**
@@ -231,8 +300,8 @@ public enum PermissionList {
      */
     PermissionList(boolean baseValue) {
 
-        this.baseValue = baseValue;
-        parent = null;
+	this.baseValue = baseValue;
+	parent = null;
     }
 
     /**
@@ -242,8 +311,8 @@ public enum PermissionList {
      */
     PermissionList(boolean baseValue, String parent) {
 
-        this.baseValue = baseValue;
-        this.parent = parent;
+	this.baseValue = baseValue;
+	this.parent = parent;
     }
 
     /**
@@ -252,8 +321,8 @@ public enum PermissionList {
      * @param PermissionType the new permission type
      */
     void setPermissionType(PermissionType PermissionType) {
-        
-        this.PermissionType = PermissionType;
+
+	this.PermissionType = PermissionType;
     }
 
     /**
@@ -262,8 +331,8 @@ public enum PermissionList {
      * @return the permission type
      */
     public PermissionType getPermissionType() {
-        
-        return PermissionType;
+
+	return PermissionType;
     }
 
     /**
@@ -273,6 +342,6 @@ public enum PermissionList {
      */
     public String getParent() {
 
-        return parent;
+	return parent;
     }
 }

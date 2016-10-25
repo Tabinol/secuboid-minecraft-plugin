@@ -24,8 +24,8 @@ import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboid.parameters.LandFlag;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -68,7 +68,7 @@ public class CommandSetspawn extends CommandExec {
         String posStr = StringChanges.locationToString(loc);
         
         // Set flag
-        LandFlag flag = new LandFlag(FlagList.SPAWN.getFlagType(), posStr, true);
+        Flag flag = new Flag(FlagList.SPAWN.getFlagType(), posStr, true);
         ((Land) land).addFlag(flag);
         
         entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TP.CREATED"));

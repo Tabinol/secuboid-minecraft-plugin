@@ -16,45 +16,68 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.parameters;
+package me.tabinol.secuboid.permissionsflags;
 
 /**
- * The Class FlagType.
+ * The Class PermissionType.
  */
-public class FlagType extends ParameterType {
-
-    /** The default value. */
-    private FlagValue defaultValue;
-
-    /**
-     * Instantiates a new flag type.
-     *
-     * @param flagName the flag name
-     * @param defaultValue the default value
-     */
-    FlagType(String flagName, Object defaultValue) {
-
-        super(flagName);
-        this.defaultValue = new FlagValue(defaultValue);
-    }
+public class PermissionType extends PermissionsFlagsType {
     
+    /** The default value. */
+    private boolean defaultValue;
+
+    /** If the permission has a parent */
+    private final PermissionType parent;
+    
+    /**
+     * Instantiates a new permission type with parent.
+     *
+     * @param permissionName the permission name
+     * @param defaultValue the default value
+     * @param parent the parent permission (or null)
+     */
+    PermissionType(String permissionName, boolean defaultValue, PermissionType parent) {
+
+        super(permissionName);
+        this.defaultValue = defaultValue;
+        this.parent = parent;
+    }
+
     /**
      * Sets the default value.
      *
      * @param defaultValue the new default value
      */
-    public void setDefaultValue(FlagValue defaultValue) {
+    void setDefaultValue(boolean defaultValue) {
         
         this.defaultValue = defaultValue;
     }
-
+    
     /**
      * Gets the default value.
      *
      * @return the default value
      */
-    public FlagValue getDefaultValue() {
+    public boolean getDefaultValue() {
         
         return defaultValue;
+    }
+
+    /**
+     * Gets if there is a parent
+     * @return true if there is a parent
+     */
+    public boolean hasParent() {
+
+        return parent != null;
+    }
+
+    /**
+     * Gets the parent permission type
+     * @return the parent permission type
+     */
+    public PermissionType getParent() {
+
+        return parent;
     }
 }

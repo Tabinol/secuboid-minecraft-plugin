@@ -21,7 +21,7 @@ package me.tabinol.secuboid.flycreative;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -46,7 +46,7 @@ public class Fly {
     public Fly() {
 
 	// Register flags
-	permissionType = Secuboid.getThisPlugin().getParameters().registerPermissionType("FLY", false);
+	permissionType = Secuboid.getThisPlugin().getPermissionsFlags().registerPermissionType("FLY", false);
     }
 
     /**

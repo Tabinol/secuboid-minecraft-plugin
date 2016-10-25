@@ -36,9 +36,10 @@ import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
-import me.tabinol.secuboid.parameters.LandFlag;
-import me.tabinol.secuboid.parameters.Permission;
-import me.tabinol.secuboid.parameters.PermissionType;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagUtil;
+import me.tabinol.secuboid.permissionsflags.Permission;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
@@ -175,7 +176,7 @@ public class StorageFlat implements Storage {
 	Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
 	Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
 		= new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-	Set<LandFlag> flags = new HashSet<LandFlag>();
+	Set<Flag> flags = new HashSet<Flag>();
 	short priority;
 	double money;
 	Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
@@ -253,7 +254,7 @@ public class StorageFlat implements Storage {
 		String[] multiStr = str.split(":");
 		TreeMap<PermissionType, Permission> permPlayer;
 		PlayerContainer pc = PlayerContainerUtil.getFromFileFormat(multiStr[0] + ":" + multiStr[1]);
-		PermissionType permType = Secuboid.getThisPlugin().getParameters().getPermissionTypeNoValid(multiStr[2]);
+		PermissionType permType = Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
 		if (!permissions.containsKey(pc)) {
 		    permPlayer = new TreeMap<PermissionType, Permission>();
 		    permissions.put(pc, permPlayer);
@@ -267,7 +268,7 @@ public class StorageFlat implements Storage {
 
 	    //Create flags
 	    while ((str = cf.getNextString()) != null) {
-		flags.add(LandFlag.getFromString(str));
+		flags.add(FlagUtil.getFromFileFormat(str));
 	    }
 	    cf.readParam();
 
@@ -383,7 +384,7 @@ public class StorageFlat implements Storage {
 		land.addPermission(entry.getKey(), entryP.getValue());
 	    }
 	}
-	for (LandFlag flag : flags) {
+	for (Flag flag : flags) {
 	    land.addFlag(flag);
 	}
 	land.setPriority(priority);
@@ -456,15 +457,15 @@ public class StorageFlat implements Storage {
 	    strs = new ArrayList<String>();
 	    for (PlayerContainer pc : land.getSetPCHavePermission()) {
 		for (Permission perm : land.getPermissionsForPC(pc)) {
-		    strs.add(pc.toFileFormat() + ":" + perm.toString());
+		    strs.add(pc.toFileFormat() + ":" + perm.toFileFormat());
 		}
 	    }
 	    cb.writeParam("Permissions", strs.toArray(new String[0]));
 
 	    //Flags
 	    strs = new ArrayList<String>();
-	    for (LandFlag flag : land.getFlags()) {
-		strs.add(flag.toString());
+	    for (Flag flag : land.getFlags()) {
+		strs.add(flag.toFileFormat());
 	    }
 	    cb.writeParam("Flags", strs.toArray(new String[0]));
 

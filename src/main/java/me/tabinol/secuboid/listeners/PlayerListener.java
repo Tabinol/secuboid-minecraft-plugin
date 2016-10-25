@@ -34,9 +34,9 @@ import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagList;
-import me.tabinol.secuboid.parameters.Parameters.SpecialPermPrefix;
-import me.tabinol.secuboid.parameters.PermissionList;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
@@ -439,12 +439,12 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	    } else if (!checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
 		if (checkPermission(land, player,
-			Secuboid.getThisPlugin().getParameters().getSpecialPermission(SpecialPermPrefix.PLACE, mat))) {
+			Secuboid.getThisPlugin().getPermissionsFlags().getSpecialPermission(SpecialPermPrefix.PLACE, mat))) {
 		    messagePermission(player);
 		    event.setCancelled(true);
 		}
 	    } else if (!checkPermission(land, player,
-		    Secuboid.getThisPlugin().getParameters().getSpecialPermission(SpecialPermPrefix.NOPLACE, mat))) {
+		    Secuboid.getThisPlugin().getPermissionsFlags().getSpecialPermission(SpecialPermPrefix.NOPLACE, mat))) {
 		messagePermission(player);
 		event.setCancelled(true);
 	    }
@@ -515,12 +515,12 @@ public class PlayerListener extends CommonListener implements Listener {
 		event.setCancelled(true);
 	    } else if (!checkPermission(land, player, PermissionList.BUILD_DESTROY.getPermissionType())) {
 		if (checkPermission(land, player,
-			Secuboid.getThisPlugin().getParameters().getSpecialPermission(SpecialPermPrefix.DESTROY, mat))) {
+			Secuboid.getThisPlugin().getPermissionsFlags().getSpecialPermission(SpecialPermPrefix.DESTROY, mat))) {
 		    messagePermission(player);
 		    event.setCancelled(true);
 		}
 	    } else if (!checkPermission(land, player,
-		    Secuboid.getThisPlugin().getParameters().getSpecialPermission(SpecialPermPrefix.NODESTROY, mat))) {
+		    Secuboid.getThisPlugin().getPermissionsFlags().getSpecialPermission(SpecialPermPrefix.NODESTROY, mat))) {
 		messagePermission(player);
 		event.setCancelled(true);
 	    }
@@ -581,7 +581,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation());
 
-	    if (!checkPermission(land, event.getPlayer(), PermissionList.PICKETUP.getPermissionType())) {
+	    if (!checkPermission(land, event.getPlayer(), PermissionList.PICKUP.getPermissionType())) {
 		messagePermission(event.getPlayer());
 		event.setCancelled(true);
 	    }

@@ -26,8 +26,8 @@ import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.parameters.FlagType;
-import me.tabinol.secuboid.parameters.FlagValue;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.FlagValue;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -105,7 +105,7 @@ public class InventoryConfig {
 	}
 
 	// Connect to the data file and register flag to Factoid
-	invFlag = Secuboid.getThisPlugin().getParameters().registerFlagType("INVENTORY", new String());
+	invFlag = Secuboid.getThisPlugin().getPermissionsFlags().registerFlagType("INVENTORY", new String());
 
 	reloadConfig();
     }

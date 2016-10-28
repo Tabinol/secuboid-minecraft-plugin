@@ -19,11 +19,11 @@
 package me.tabinol.secuboid.playercontainer;
 
 import java.util.UUID;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 public class PlayerContainerUtil {
-    
+
     /**
      * Creates the player container
      *
@@ -32,44 +32,46 @@ public class PlayerContainerUtil {
      * @param name the name
      * @return the player container
      */
-    public static PlayerContainer create(Land land, PlayerContainerType pct, String name) {
+    public static PlayerContainer create(RealLand land, PlayerContainerType pct, String name) {
 
-        if (null != pct) switch (pct) {
-	    case GROUP:
-		return new PlayerContainerGroup(name);
-	    case RESIDENT:
-		return new PlayerContainerResident(land);
-	    case VISITOR:
-		return new PlayerContainerVisitor(land);
-	    case OWNER:
-		return new PlayerContainerOwner(land);
-	    case EVERYBODY:
-		return new PlayerContainerEverybody();
-	    case NOBODY:
-		return new PlayerContainerNobody();
-	    case PLAYER:
-	    case PLAYERNAME:
-		UUID minecraftUUID;
-		
-		// First check if the ID is valid or was connected to the server
-		try {
-		    minecraftUUID = UUID.fromString(name.replaceFirst("ID-", ""));
-		} catch (IllegalArgumentException ex) {
-		    
-		    // If there is an error, just return a temporary PlayerName
-		    return new PlayerContainerPlayerName(name);
-		}
-		
-		// If not null, assign the value to a new PlayerContainer
-		return new PlayerContainerPlayer(minecraftUUID);
-	    case PERMISSION:
-		return new PlayerContainerPermission(name);
-	    case TENANT:
-		return new PlayerContainerTenant(land);
-	    default:
-		break;
+	if (null != pct) {
+	    switch (pct) {
+		case GROUP:
+		    return new PlayerContainerGroup(name);
+		case RESIDENT:
+		    return new PlayerContainerResident(land);
+		case VISITOR:
+		    return new PlayerContainerVisitor(land);
+		case OWNER:
+		    return new PlayerContainerOwner(land);
+		case EVERYBODY:
+		    return new PlayerContainerEverybody();
+		case NOBODY:
+		    return new PlayerContainerNobody();
+		case PLAYER:
+		case PLAYERNAME:
+		    UUID minecraftUUID;
+
+		    // First check if the ID is valid or was connected to the server
+		    try {
+			minecraftUUID = UUID.fromString(name.replaceFirst("ID-", ""));
+		    } catch (IllegalArgumentException ex) {
+
+			// If there is an error, just return a temporary PlayerName
+			return new PlayerContainerPlayerName(name);
+		    }
+
+		    // If not null, assign the value to a new PlayerContainer
+		    return new PlayerContainerPlayer(minecraftUUID);
+		case PERMISSION:
+		    return new PlayerContainerPermission(name);
+		case TENANT:
+		    return new PlayerContainerTenant(land);
+		default:
+		    break;
+	    }
 	}
-        return null;
+	return null;
     }
 
     /**
@@ -80,8 +82,8 @@ public class PlayerContainerUtil {
      */
     public static PlayerContainer getFromFileFormat(String string) {
 
-        String strs[] = StringChanges.splitAddVoid(string, ":");
-        PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
-        return create(null, type, strs[1]);
+	String strs[] = StringChanges.splitAddVoid(string, ":");
+	PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
+	return create(null, type, strs[1]);
     }
 }

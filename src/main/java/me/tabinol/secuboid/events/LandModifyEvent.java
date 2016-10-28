@@ -17,63 +17,82 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.HandlerList;
 
 /**
  * The Class LandModifyEvent. When there is a change in a land.
  */
 public class LandModifyEvent extends LandEvent {
-    
+
     /**
      * The Enum LandModifyReason.
      */
     public enum LandModifyReason {
-        
-        /** The area add. */
-        AREA_ADD,
-        
-        /** The area remove. */
-        AREA_REMOVE,
-        
-        /** The area replace. */
-        AREA_REPLACE,
-        
-        /** The resident add. */
-        RESIDENT_ADD,
-        
-        /** The resident remove. */
-        RESIDENT_REMOVE,
-        
-        /** The permission set. */
-        PERMISSION_SET,
-        
-        /** The permission unset. */
-        PERMISSION_UNSET,
-        
-        /** The flag set. */
-        FLAG_SET,
-        
-        /** The flag unset. */
-        FLAG_UNSET,
-        
-        /** The owner change. */
-        OWNER_CHANGE,
-        
-        /** The land rename. */
-        RENAME,
-        
-        /** Change the faction territory or siege */
-        FACTION_TERRITORY_CHANGE
+
+	/**
+	 * The area add.
+	 */
+	AREA_ADD,
+	/**
+	 * The area remove.
+	 */
+	AREA_REMOVE,
+	/**
+	 * The area replace.
+	 */
+	AREA_REPLACE,
+	/**
+	 * The resident add.
+	 */
+	RESIDENT_ADD,
+	/**
+	 * The resident remove.
+	 */
+	RESIDENT_REMOVE,
+	/**
+	 * The permission set.
+	 */
+	PERMISSION_SET,
+	/**
+	 * The permission unset.
+	 */
+	PERMISSION_UNSET,
+	/**
+	 * The flag set.
+	 */
+	FLAG_SET,
+	/**
+	 * The flag unset.
+	 */
+	FLAG_UNSET,
+	/**
+	 * The owner change.
+	 */
+	OWNER_CHANGE,
+	/**
+	 * The land rename.
+	 */
+	RENAME,
+	/**
+	 * Change the faction territory or siege
+	 */
+	FACTION_TERRITORY_CHANGE
     }
 
-    /** The Constant handlers. */
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The land modify reason. */
+
+    /**
+     * The land modify reason.
+     */
     private final LandModifyReason landModifyReason;
-    
-    /** The new object. */
+
+    /**
+     * The new object.
+     */
     private final Object newObject;
 
     /**
@@ -83,26 +102,21 @@ public class LandModifyEvent extends LandEvent {
      * @param landModifyReason the land modify reason
      * @param newObject the new object
      */
-    public LandModifyEvent(final Land land, final LandModifyReason landModifyReason, final Object newObject) {
+    public LandModifyEvent(final RealLand land, final LandModifyReason landModifyReason, final Object newObject) {
 
-        super(land);
-        this.newObject = newObject;
-        this.landModifyReason = landModifyReason;
+	super(land);
+	this.newObject = newObject;
+	this.landModifyReason = landModifyReason;
     }
-
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
-     */
 
     /**
      *
      * @return
      */
-
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -112,7 +126,7 @@ public class LandModifyEvent extends LandEvent {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -122,17 +136,17 @@ public class LandModifyEvent extends LandEvent {
      */
     public LandModifyReason getLandModifyReason() {
 
-        return landModifyReason;
+	return landModifyReason;
     }
-    
+
     /**
-     * Gets the new object. This object can be an Area, a playerContainer (for RESIDENT or owner change),
-     * a flag, a permission, a String for a name change or a faction.
+     * Gets the new object. This object can be an Area, a playerContainer (for RESIDENT or owner change), a flag, a
+     * permission, a String for a name change or a faction.
      *
      * @return the new object
      */
     public Object getNewObject() {
-        
-        return newObject;
+
+	return newObject;
     }
 }

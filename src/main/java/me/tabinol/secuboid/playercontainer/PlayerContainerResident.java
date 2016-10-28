@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import org.bukkit.entity.Player;
 
@@ -29,9 +29,9 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerResident implements PlayerContainer {
 
-    private Land land;
+    private RealLand land;
 
-    public PlayerContainerResident(Land land) {
+    public PlayerContainerResident(RealLand land) {
 	this.land = land;
     }
 
@@ -41,18 +41,18 @@ public class PlayerContainerResident implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land land) {
+    public boolean hasAccess(Player player, RealLand land) {
 
 	if (land == null) {
 	    return false;
 	}
 
 	boolean value = land.isResident(player);
-	Land actual = land;
-	Land parent;
+	RealLand actual = land;
+	RealLand parent;
 
 	while (!value && (parent = actual.getParent()) != null
-		&& actual.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
+		&& actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
 
 	    value = parent.isResident(player);
 	    actual = parent;
@@ -62,12 +62,12 @@ public class PlayerContainerResident implements PlayerContainer {
     }
 
     @Override
-    public Land getLand() {
+    public RealLand getLand() {
 	return land;
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(RealLand land) {
 	this.land = land;
     }
 

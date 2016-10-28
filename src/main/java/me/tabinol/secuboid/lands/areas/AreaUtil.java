@@ -37,11 +37,6 @@ public class AreaUtil {
 
 	String[] multiStr = str.split(":");
 
-	// Create infinite area
-	if (multiStr[0].equals(AreaType.INFINITE.toString())) {
-	    return new InfiniteArea(multiStr[1]);
-	}
-
 	// Create cuboid area
 	if (multiStr[0].equals(AreaType.CUBOID.toString())) {
 	    return new CuboidArea(multiStr[1],

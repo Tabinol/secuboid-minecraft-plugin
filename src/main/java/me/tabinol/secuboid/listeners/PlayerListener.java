@@ -34,9 +34,10 @@ import me.tabinol.secuboid.config.players.PlayerStaticConfig;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.FlagList;
-import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
+import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
@@ -166,8 +167,8 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	// Remove player from the land
 	Land land = playerConf.get(player).getLastLand();
-	if (!land.isGlobal()) {
-	    land.removePlayerInLand(player);
+	if (land.isRealLand()) {
+	    ((RealLand) land).removePlayerInLand(player);
 	}
 
 	// Remove player from Static Config
@@ -306,7 +307,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	} else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
 		&& (ml == Material.SIGN_POST || ml == Material.WALL_SIGN)) {
 
-	    Land trueLand = Secuboid.getThisPlugin().getLands().getLand(loc);
+	    RealLand trueLand = Secuboid.getThisPlugin().getLands().getLand(loc);
 
 	    if (trueLand != null) {
 
@@ -334,7 +335,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	} else if ((entry = playerConf.get(player)) != null
 		&& !entry.isAdminMod()) {
 	    land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
-	    if (land instanceof Land && ((Land) land).isBanned(player)
+	    if (land.isBanned(player)
 		    || (action == Action.RIGHT_CLICK_BLOCK
 		    && BKVersion.isDoor(ml) && !checkPermission(land, player, PermissionList.USE_DOOR.getPermissionType()))
 		    || (action == Action.RIGHT_CLICK_BLOCK
@@ -432,7 +433,7 @@ public class PlayerListener extends CommonListener implements Listener {
 		    event.getBlock().getLocation());
 	    Material mat = event.getBlock().getType();
 
-	    if (land instanceof Land && ((Land) land).isBanned(player)) {
+	    if (land.isBanned(player)) {
 		// Player banned!!
 		messagePermission(player);
 		event.setCancelled(true);
@@ -464,8 +465,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getEntity().getLocation());
 	    Player player = event.getPlayer();
 
-	    if ((land instanceof Land && ((Land) land).isBanned(player))
-		    || !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
+	    if (land.isBanned(player) || !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
 
 		messagePermission(player);
 		event.setCancelled(true);
@@ -486,8 +486,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	    Player player = event.getPlayer();
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getRightClicked().getLocation());
 
-	    if ((land instanceof Land && ((Land) land).isBanned(player))
-		    || !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
+	    if (land.isBanned(player) || !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
 		messagePermission(player);
 		event.setCancelled(true);
 	    }
@@ -509,7 +508,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 	    Material mat = event.getBlock().getType();
 
-	    if (land.isBanned(player) || hasEcoSign(land, event.getBlock())) {
+	    if (land.isBanned(player) || (land.isRealLand() && hasEcoSign((RealLand) land, event.getBlock()))) {
 		// Player banned (or ecosign)
 		messagePermission(player);
 		event.setCancelled(true);
@@ -738,8 +737,8 @@ public class PlayerListener extends CommonListener implements Listener {
 	Location loc;
 
 	// For repsawn after death
-	if (entry != null && land.checkPermissionAndInherit(player, PermissionList.TP_DEATH.getPermissionType())
-		&& !(strLoc = land.getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString()).isEmpty()
+	if (entry != null && land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.TP_DEATH.getPermissionType())
+		&& !(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString()).isEmpty()
 		&& (loc = StringChanges.stringToLocation(strLoc)) != null) {
 	    event.setRespawnLocation(loc);
 	}
@@ -861,7 +860,8 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    player.getLocation());
-	    String[] excludedCommands = land.getFlagAndInherit(FlagList.EXCLUDE_COMMANDS.getFlagType()).getValueStringList();
+	    String[] excludedCommands = land.getPermissionsFlags().getFlagAndInherit(
+		    FlagList.EXCLUDE_COMMANDS.getFlagType()).getValueStringList();
 
 	    if (excludedCommands.length > 0) {
 		String commandTyped = event.getMessage().substring(1).split(" ")[0];
@@ -977,11 +977,11 @@ public class PlayerListener extends CommonListener implements Listener {
 	    entry.setLastLand(land);
 
 	    // Update player in the lands
-	    if (!landOld.isGlobal() && landOld != land) {
-		((me.tabinol.secuboid.lands.Land) landOld).removePlayerInLand(player);
+	    if (landOld.isRealLand() && landOld != land) {
+		((RealLand) landOld).removePlayerInLand(player);
 	    }
-	    if (!land.isGlobal()) {
-		((me.tabinol.secuboid.lands.Land) land).addPlayerInLand(player);
+	    if (land.isRealLand()) {
+		((RealLand) land).addPlayerInLand(player);
 	    }
 	}
 	entry.setLastLoc(loc);

@@ -19,51 +19,54 @@
 package me.tabinol.secuboid.selection.region;
 
 import java.util.TreeMap;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.entity.Player;
-
 
 /**
  * The Class LandSelection.
  */
 public class LandSelection extends RegionSelection {
 
-    /** The land. */
-    private final Land land;
-    
-    /** The visual areas. */
+    /**
+     * The land.
+     */
+    private final RealLand land;
+
+    /**
+     * The visual areas.
+     */
     private final TreeMap<Area, AreaSelection> visualAreas; // Visuals arealist
-    
+
     /**
      * Instantiates a new land selection.
      *
      * @param player the player
      * @param land the land
      */
-    public LandSelection(Player player, Land land) {
-        
-        super(SelectionType.LAND, player);
-        this.land = land;
-        visualAreas = new TreeMap<Area, AreaSelection>();
-        
-        // Add visual areas
-        for(Area area : land.getAreas()) {
-            visualAreas.put(area, new AreaSelection(player, area, true, 
-                    null, MoveType.PASSIVE));
-        }
+    public LandSelection(Player player, RealLand land) {
+
+	super(SelectionType.LAND, player);
+	this.land = land;
+	visualAreas = new TreeMap<Area, AreaSelection>();
+
+	// Add visual areas
+	for (Area area : land.getAreas()) {
+	    visualAreas.put(area, new AreaSelection(player, area, true,
+		    null, MoveType.PASSIVE));
+	}
     }
-    
+
     /**
      * Gets the land.
      *
      * @return the land
      */
-    public Land getLand() {
-        
-        return land;
+    public RealLand getLand() {
+
+	return land;
     }
 
     /* (non-Javadoc)
@@ -72,10 +75,10 @@ public class LandSelection extends RegionSelection {
     @Override
     public void removeSelection() {
 
-        for(AreaSelection areaSel : visualAreas.values()) {
-            areaSel.removeSelection();
-        }
-        
-        visualAreas.clear();
+	for (AreaSelection areaSel : visualAreas.values()) {
+	    areaSel.removeSelection();
+	}
+
+	visualAreas.clear();
     }
 }

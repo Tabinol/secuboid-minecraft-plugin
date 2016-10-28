@@ -18,21 +18,23 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.event.HandlerList;
 
-
 /**
- * The Class PlayerContainerLandBanEvent. This events is called when a player
- * container is banned from a land.
+ * The Class PlayerContainerLandBanEvent. This events is called when a player container is banned from a land.
  */
 public class PlayerContainerLandBanEvent extends LandEvent {
 
-    /** The Constant handlers. */
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The player container. */
+
+    /**
+     * The player container.
+     */
     PlayerContainer playerContainer;
 
     /**
@@ -41,25 +43,23 @@ public class PlayerContainerLandBanEvent extends LandEvent {
      * @param land the land
      * @param playerContainer the player container
      */
-    public PlayerContainerLandBanEvent(final Land land, final PlayerContainer playerContainer) {
+    public PlayerContainerLandBanEvent(final RealLand land, final PlayerContainer playerContainer) {
 
-        super(land);
-        this.playerContainer = playerContainer;
+	super(land);
+	this.playerContainer = playerContainer;
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.events.LandEvent#getHandlers()
      */
-
     /**
      *
      * @return
      */
-
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -69,7 +69,7 @@ public class PlayerContainerLandBanEvent extends LandEvent {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -79,6 +79,6 @@ public class PlayerContainerLandBanEvent extends LandEvent {
      */
     public PlayerContainer getPlayerContainer() {
 
-        return playerContainer;
+	return playerContainer;
     }
 }

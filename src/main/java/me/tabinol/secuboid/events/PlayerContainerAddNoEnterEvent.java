@@ -18,21 +18,24 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.event.HandlerList;
 
-
 /**
- * The Class PlayerContainerAddNoEnterEvent. This events is called when a
- * player container is added to a disallow inside a land.
+ * The Class PlayerContainerAddNoEnterEvent. This events is called when a player container is added to a disallow inside
+ * a land.
  */
 public class PlayerContainerAddNoEnterEvent extends LandEvent {
 
-    /** The Constant handlers. */
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The player container. */
+
+    /**
+     * The player container.
+     */
     PlayerContainer playerContainer;
 
     /**
@@ -41,25 +44,23 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      * @param land the land
      * @param playerContainer the player container
      */
-    public PlayerContainerAddNoEnterEvent(final Land land, final PlayerContainer playerContainer) {
+    public PlayerContainerAddNoEnterEvent(final RealLand land, final PlayerContainer playerContainer) {
 
-        super(land);
-        this.playerContainer = playerContainer;
+	super(land);
+	this.playerContainer = playerContainer;
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
      */
-
     /**
      *
      * @return
      */
-
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -69,7 +70,7 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -79,6 +80,6 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      */
     public PlayerContainer getPlayerContainer() {
 
-        return playerContainer;
+	return playerContainer;
     }
 }

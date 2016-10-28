@@ -135,13 +135,8 @@ public class Creative {
      */
     public boolean dropItem(PlayerDropItemEvent event, Player player) {
 
-	if (conf.isCreativeNoDrop()
-		&& !player.hasPermission(OVERRIDE_NODROP_PERM)) {
-
-	    return true;
-	}
-
-	return false;
+	return conf.isCreativeNoDrop()
+		&& !player.hasPermission(OVERRIDE_NODROP_PERM);
     }
 
     /**
@@ -209,6 +204,6 @@ public class Creative {
 
     private boolean askCreativeFlag(Player player, Land land) {
 
-	return land.checkPermissionAndInherit(player, permissionType);
+	return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
     }
 }

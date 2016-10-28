@@ -80,9 +80,6 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 
-	PlayerConfEntry entry;
-	PlayerConfEntry entryVictim;
-
 	// Check if a player break a ItemFrame
 	Player player = getSourcePlayer(event.getDamager());
 
@@ -92,8 +89,7 @@ public class PvpListener extends CommonListener implements Listener {
 	    Entity entity = event.getEntity();
 
 	    // For PVP
-	    if (entity instanceof Player && (entry = playerConf.get(player)) != null
-		    && (entryVictim = playerConf.get((Player) entity)) != null
+	    if (entity instanceof Player && playerConf.get(player) != null && playerConf.get((Player) entity) != null
 		    && !isPvpValid(land)) {
 		event.setCancelled(true);
 	    }
@@ -205,8 +201,8 @@ public class PvpListener extends CommonListener implements Listener {
 	    Location loc = event.getBlock().getLocation();
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
 
-	    if (land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false
-		    || land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {
+	    if (land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false
+		    || land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {
 
 		// Add fire for pvp listen
 		playerFireLocation.put(loc, entry.getPlayerContainer());
@@ -221,6 +217,6 @@ public class PvpListener extends CommonListener implements Listener {
      * @return true, if is pvp valid
      */
     private boolean isPvpValid(Land land) {
-	return land.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() != false;
+	return land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() != false;
     }
 }

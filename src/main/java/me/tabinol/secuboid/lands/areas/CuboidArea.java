@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -220,12 +220,12 @@ public final class CuboidArea implements Area {
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(RealLand land) {
 	areaCommon.setLand(land);
     }
 
     @Override
-    public Land getLand() {
+    public RealLand getLand() {
 	return areaCommon.getLand();
     }
 

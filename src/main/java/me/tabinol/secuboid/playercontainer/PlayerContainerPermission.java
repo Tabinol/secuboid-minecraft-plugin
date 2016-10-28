@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -42,7 +42,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land land) {
+    public boolean hasAccess(Player player, RealLand land) {
 	return hasAccess(player);
     }
 
@@ -52,7 +52,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(RealLand land) {
     }
 
     @Override
@@ -71,7 +71,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public Land getLand() {
+    public RealLand getLand() {
 	return null;
     }
 

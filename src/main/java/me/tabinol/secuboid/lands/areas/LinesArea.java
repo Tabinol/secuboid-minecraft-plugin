@@ -21,7 +21,7 @@ package me.tabinol.secuboid.lands.areas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
@@ -281,12 +281,12 @@ public final class LinesArea implements Area {
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(RealLand land) {
 	areaCommon.setLand(land);
     }
 
     @Override
-    public Land getLand() {
+    public RealLand getLand() {
 	return areaCommon.getLand();
     }
 

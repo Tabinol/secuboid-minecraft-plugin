@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.storage;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 
 /**
  * The Interface Storage.
@@ -41,14 +41,14 @@ public interface Storage {
      *
      * @param land the land
      */
-    void saveLand(Land land);
+    void saveLand(RealLand land);
 
     /**
      * Removes the land.
      *
      * @param land the land
      */
-    void removeLand(Land land);
+    void removeLand(RealLand land);
 
     /**
      * Removes the land.

@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.events;
 
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -40,7 +41,7 @@ public class LandEvent extends Event {
     /**
      * The land.
      */
-    private Land land;
+    private RealLand land;
 
     /**
      * Instantiates a new land events.
@@ -51,8 +52,8 @@ public class LandEvent extends Event {
 
 	this.dummyLand = dummyLand;
 
-	if (dummyLand instanceof Land) {
-	    land = (Land) dummyLand;
+	if (dummyLand.isRealLand()) {
+	    land = (RealLand) dummyLand;
 	} else {
 	    land = null;
 	}
@@ -79,7 +80,7 @@ public class LandEvent extends Event {
      *
      * @return the land or null if the events is outside a land
      */
-    public Land getLand() {
+    public RealLand getLand() {
 
 	return land;
     }

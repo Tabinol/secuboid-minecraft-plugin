@@ -92,6 +92,6 @@ public class Fly {
 
     private boolean askFlyFlag(Player player, Land land) {
 
-	return land.checkPermissionAndInherit(player, permissionType);
+	return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
     }
 }

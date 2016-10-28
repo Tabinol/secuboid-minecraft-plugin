@@ -23,7 +23,7 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
@@ -56,7 +56,7 @@ public class CommandExpand extends CommandExec {
 	checkSelections(null, null);
 	// checkPermission(false, false, null, null);
 
-	Land selLand = entity.playerConf.getSelection().getLand();
+	RealLand selLand = entity.playerConf.getSelection().getLand();
 	String curArg = entity.argList.getNext();
 
 	if (curArg == null) {

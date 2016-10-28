@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.commands;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 
 /**
  * The Class ConfirmEntry.
@@ -31,23 +31,33 @@ public class ConfirmEntry {
      */
     public enum ConfirmType {
 
-        /** The remove land. */
-        REMOVE_LAND,
-        
-        /** The remove area. */
-        REMOVE_AREA,
-        
-        /** The land default. */
-        LAND_DEFAULT;
+	/**
+	 * The remove land.
+	 */
+	REMOVE_LAND,
+	/**
+	 * The remove area.
+	 */
+	REMOVE_AREA,
+	/**
+	 * The land default.
+	 */
+	LAND_DEFAULT;
     }
 
-    /** The confirm type. */
+    /**
+     * The confirm type.
+     */
     public final ConfirmType confirmType;
-    
-    /** The land. */
-    public final Land land;
-    
-    /** The area nb. */
+
+    /**
+     * The land.
+     */
+    public final RealLand land;
+
+    /**
+     * The area nb.
+     */
     public final int areaNb;
 
     /**
@@ -57,10 +67,10 @@ public class ConfirmEntry {
      * @param land the land
      * @param areaNb the area nb
      */
-    public ConfirmEntry(ConfirmType confirmType, Land land, int areaNb) {
+    public ConfirmEntry(ConfirmType confirmType, RealLand land, int areaNb) {
 
-        this.confirmType = confirmType;
-        this.land = land;
-        this.areaNb = areaNb;
+	this.confirmType = confirmType;
+	this.land = land;
+	this.areaNb = areaNb;
     }
 }

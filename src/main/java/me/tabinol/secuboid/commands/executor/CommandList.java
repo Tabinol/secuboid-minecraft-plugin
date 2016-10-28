@@ -25,18 +25,17 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import org.bukkit.ChatColor;
-
 
 /**
  * The Class CommandList.
  *
  * @author Tabinol
  */
-@InfoCommand(name="list")
+@InfoCommand(name = "list")
 public class CommandList extends CommandPlayerThreadExec {
 
     private String worldName = null;
@@ -50,7 +49,7 @@ public class CommandList extends CommandPlayerThreadExec {
      */
     public CommandList(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
 
     }
 
@@ -60,41 +59,41 @@ public class CommandList extends CommandPlayerThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = entity.argList.getNext();
+	String curArg = entity.argList.getNext();
 
-        if (curArg != null) {
-            if (curArg.equalsIgnoreCase("world")) {
+	if (curArg != null) {
+	    if (curArg.equalsIgnoreCase("world")) {
 
-                // Get worldName
-                worldName = entity.argList.getNext();
-                if (worldName == null) {
-                    // No worldName has parameter
-                    worldName = entity.player.getLocation().getWorld().getName().toLowerCase();
-                }
+		// Get worldName
+		worldName = entity.argList.getNext();
+		if (worldName == null) {
+		    // No worldName has parameter
+		    worldName = entity.player.getLocation().getWorld().getName().toLowerCase();
+		}
 
-            } else if (curArg.equalsIgnoreCase("type")) {
-                
-                // Get the category name
-                String typeName = entity.argList.getNext();
-                
-                if(typeName != null) {
-                    type = Secuboid.getThisPlugin().getTypes().getType(typeName);
-                }
-                
-                if(type == null) {
-                    throw new SecuboidCommandException("CommandList", entity.sender, "COMMAND.LAND.TYPENOTEXIST");
-                }
-                
-            } else {
+	    } else if (curArg.equalsIgnoreCase("type")) {
 
-                // Get the player Container
-                entity.argList.setPos(0);
-                pc = entity.argList.getPlayerContainerFromArg(null, null);
+		// Get the category name
+		String typeName = entity.argList.getNext();
 
-            }
-        }
-        
-        Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
+		if (typeName != null) {
+		    type = Secuboid.getThisPlugin().getTypes().getType(typeName);
+		}
+
+		if (type == null) {
+		    throw new SecuboidCommandException("CommandList", entity.sender, "COMMAND.LAND.TYPENOTEXIST");
+		}
+
+	    } else {
+
+		// Get the player Container
+		entity.argList.setPos(0);
+		pc = entity.argList.getPlayerContainerFromArg(null, null);
+
+	    }
+	}
+
+	Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
@@ -102,32 +101,32 @@ public class CommandList extends CommandPlayerThreadExec {
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-            throws SecuboidCommandException {
-        
-        convertPcIfNeeded(playerCacheEntry);
+	    throws SecuboidCommandException {
 
-        // Check if the player is AdminMod or send only owned lands
-        Collection<Land> lands;
+	convertPcIfNeeded(playerCacheEntry);
 
-        if (entity.playerConf.isAdminMod()) {
-            lands = Secuboid.getThisPlugin().getLands().getLands();
-        } else {
-            lands = Secuboid.getThisPlugin().getLands().getLands(entity.playerConf.getPlayerContainer());
-        }
+	// Check if the player is AdminMod or send only owned lands
+	Collection<RealLand> lands;
 
-        // Get the list of the land
-        StringBuilder stList = new StringBuilder();
-        stList.append(ChatColor.YELLOW);
+	if (entity.playerConf.isAdminMod()) {
+	    lands = Secuboid.getThisPlugin().getLands().getLands();
+	} else {
+	    lands = Secuboid.getThisPlugin().getLands().getLands(entity.playerConf.getPlayerContainer());
+	}
 
-        for (Land land : lands) {
-            if (((worldName != null && worldName.equals(land.getWorldName()))
-                    || (type !=null && type == land.getType())
-                    || (worldName == null && type == null))
-                    && (pc == null || land.getOwner().equals(pc))) {
-                stList.append(land.getName()).append(" ");
-            }
-        }
+	// Get the list of the land
+	StringBuilder stList = new StringBuilder();
+	stList.append(ChatColor.YELLOW);
 
-        new ChatPage("COMMAND.LAND.LISTSTART", stList.toString(), entity.player, null).getPage(1);
+	for (RealLand land : lands) {
+	    if (((worldName != null && worldName.equals(land.getWorldName()))
+		    || (type != null && type == land.getType())
+		    || (worldName == null && type == null))
+		    && (pc == null || land.getOwner().equals(pc))) {
+		stList.append(land.getName()).append(" ");
+	    }
+	}
+
+	new ChatPage("COMMAND.LAND.LISTSTART", stList.toString(), entity.player, null).getPage(1);
     }
 }

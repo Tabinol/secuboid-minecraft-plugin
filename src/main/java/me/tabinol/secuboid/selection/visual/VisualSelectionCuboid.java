@@ -29,7 +29,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import static java.lang.Math.abs;
 
 /**
  *
@@ -45,8 +44,7 @@ public class VisualSelectionCuboid extends VisualSelection {
      * @param isFromLand
      * @param player
      */
-    public VisualSelectionCuboid(CuboidArea area,
-	    boolean isFromLand, Player player) {
+    public VisualSelectionCuboid(CuboidArea area, boolean isFromLand, Player player) {
 
 	super(isFromLand, player);
 	this.area = area;
@@ -123,7 +121,7 @@ public class VisualSelectionCuboid extends VisualSelection {
 	    parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
 	}
 
-	boolean canCreate = parentDetected.checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+	boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
 	//MakeSquare
 	for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
@@ -148,26 +146,26 @@ public class VisualSelectionCuboid extends VisualSelection {
 			    isCollision = true;
 			}
 		    } else // Passive Selection (created area)
-		    if ((posX == area.getX1() && posZ == area.getZ1() + 1)
-			    || (posX == area.getX1() && posZ == area.getZ2() - 1)
-			    || (posX == area.getX2() && posZ == area.getZ1() + 1)
-			    || (posX == area.getX2() && posZ == area.getZ2() - 1)
-			    || (posX == area.getX1() + 1 && posZ == area.getZ1())
-			    || (posX == area.getX2() - 1 && posZ == area.getZ1())
-			    || (posX == area.getX1() + 1 && posZ == area.getZ2())
-			    || (posX == area.getX2() - 1 && posZ == area.getZ2())) {
+		     if ((posX == area.getX1() && posZ == area.getZ1() + 1)
+				|| (posX == area.getX1() && posZ == area.getZ2() - 1)
+				|| (posX == area.getX2() && posZ == area.getZ1() + 1)
+				|| (posX == area.getX2() && posZ == area.getZ2() - 1)
+				|| (posX == area.getX1() + 1 && posZ == area.getZ1())
+				|| (posX == area.getX2() - 1 && posZ == area.getZ1())
+				|| (posX == area.getX1() + 1 && posZ == area.getZ2())
+				|| (posX == area.getX2() - 1 && posZ == area.getZ2())) {
 
-			// Subcorner
-			this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
+			    // Subcorner
+			    this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
 
-		    } else if ((posX == area.getX1() && posZ == area.getZ1())
-			    || (posX == area.getX2() && posZ == area.getZ1())
-			    || (posX == area.getX1() && posZ == area.getZ2())
-			    || (posX == area.getX2() && posZ == area.getZ2())) {
+			} else if ((posX == area.getX1() && posZ == area.getZ1())
+				|| (posX == area.getX2() && posZ == area.getZ1())
+				|| (posX == area.getX1() && posZ == area.getZ2())
+				|| (posX == area.getX2() && posZ == area.getZ2())) {
 
-			// Exact corner
-			this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
-		    }
+			    // Exact corner
+			    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+			}
 
 		} else {
 		    // Square center, skip!

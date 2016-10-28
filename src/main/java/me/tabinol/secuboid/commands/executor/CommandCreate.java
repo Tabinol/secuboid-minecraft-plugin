@@ -25,7 +25,7 @@ import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -66,7 +66,7 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 	AreaSelection select = (AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA);
 
 	Area area = select.getVisualSelection().getArea();
-	Land parent;
+	RealLand localParent;
 
 	// Quit select mod
 	// entity.playerConf.setAreaSelection(null);
@@ -86,40 +86,40 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 
 	    if (curString.equalsIgnoreCase("noparent")) {
 
-		parent = null;
+		localParent = null;
 	    } else {
 
-		parent = Secuboid.getThisPlugin().getLands().getLand(curString);
+		localParent = Secuboid.getThisPlugin().getLands().getLand(curString);
 
-		if (parent == null) {
+		if (localParent == null) {
 		    throw new SecuboidCommandException("CommandCreate", entity.player, "COMMAND.CREATE.PARENTNOTEXIST");
 		}
 	    }
 	} else {
 
 	    // Autodetect parent
-	    parent = select.getVisualSelection().getParentDetected();
+	    localParent = select.getVisualSelection().getParentDetected();
 	}
 
 	// Not complicated! The player must be AdminMod, or access to create (in world)
 	// or access to create in parent if it is a subland.
-	if (!entity.playerConf.isAdminMod() && (parent == null
-		|| !parent.checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType()))) {
+	if (!entity.playerConf.isAdminMod() && (localParent == null
+		|| !localParent.getPermissionsFlags().checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType()))) {
 	    throw new SecuboidCommandException("CommandCreate", entity.player, "GENERAL.MISSINGPERMISSION");
 	}
 
 	// If the player is adminmod, the owner is nobody, and set type
-	PlayerContainer owner;
-	Type type;
+	PlayerContainer localOwner;
+	Type localType;
 	if (entity.playerConf.isAdminMod()) {
-	    owner = new PlayerContainerNobody();
-	    type = Secuboid.getThisPlugin().getConf().getTypeAdminMod();
+	    localOwner = new PlayerContainerNobody();
+	    localType = Secuboid.getThisPlugin().getConf().getTypeAdminMod();
 	} else {
-	    owner = entity.playerConf.getPlayerContainer();
-	    type = Secuboid.getThisPlugin().getConf().getTypeNoneAdminMod();
+	    localOwner = entity.playerConf.getPlayerContainer();
+	    localType = Secuboid.getThisPlugin().getConf().getTypeNoneAdminMod();
 	}
 
-	checkCollision(curArg, null, type, LandAction.LAND_ADD, 0, area, parent, owner, true);
+	checkCollision(curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 
 	// Create Land
 	try {
-	    Land cLand = Secuboid.getThisPlugin().getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
+	    RealLand cLand = Secuboid.getThisPlugin().getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
 
 	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.DONE"));
 	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create a land named " + cLand.getName() + ".");

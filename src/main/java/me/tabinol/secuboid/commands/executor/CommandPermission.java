@@ -29,6 +29,7 @@ import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
@@ -95,7 +96,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 	    }
 
 	    // For parent (if exist)
-	    Land parLand = land;
+	    RealLand parLand = land;
 	    while ((parLand = parLand.getParent()) != null) {
 		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
 			ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
@@ -118,10 +119,10 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
 	boolean addToList = false;
 
-	for (PlayerContainer pc : land.getSetPCHavePermission()) {
+	for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
 	    StringBuilder stSubList = new StringBuilder();
 
-	    for (Permission perm : land.getPermissionsForPC(pc)) {
+	    for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
 		if ((!onlyInherit || perm.isInheritable()) && !permInList(pc, perm)) {
 		    addToList = true;
 		    stSubList.append(" ").append(perm.getPermType().getPrint()).append(":").append(perm.getValuePrint());
@@ -145,8 +146,8 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
 	for (Land listLand : precDL) {
 
-	    if (listLand.getSetPCHavePermission().contains(pc)) {
-		for (Permission listPerm : listLand.getPermissionsForPC(pc)) {
+	    if (listLand.getPermissionsFlags().getSetPCHavePermission().contains(pc)) {
+		for (Permission listPerm : listLand.getPermissionsFlags().getPermissionsForPC(pc)) {
 		    if (perm.getPermType() == listPerm.getPermType()) {
 			return true;
 		    }
@@ -179,7 +180,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 		    && land.isLocationInside(land.getWorld().getSpawnLocation())) {
 		throw new SecuboidCommandException("Permission", entity.player, "COMMAND.PERMISSION.NOENTERNOTINSPAWN");
 	    }
-	    ((Land) land).addPermission(pc, perm);
+	    land.getPermissionsFlags().addPermission(pc, perm);
 	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
 		    pc.getPrint() + ChatColor.YELLOW, land.getName()));
 	    Secuboid.getThisPlugin().getLog().write("Permission set: " + perm.getPermType().toString() + ", value: " + perm.getValue());
@@ -187,7 +188,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 	} else if (fonction.equalsIgnoreCase("unset")) {
 
 	    PermissionType pt = entity.argList.getPermissionTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
-	    if (!land.removePermission(pc, pt)) {
+	    if (!land.getPermissionsFlags().removePermission(pc, pt)) {
 		throw new SecuboidCommandException("Permission", entity.player, "COMMAND.PERMISSION.REMOVENOTEXIST");
 	    }
 	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PERMISSION.REMOVEISDONE", pt.toString()));

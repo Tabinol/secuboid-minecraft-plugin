@@ -21,6 +21,7 @@ package me.tabinol.secuboid.selection.visual;
 import java.util.HashMap;
 import java.util.Map;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
@@ -157,13 +158,11 @@ public abstract class VisualSelection {
      *
      * @return
      */
-    public Land getParentDetected() {
-
-	if (parentDetected instanceof Land) {
-	    return (Land) parentDetected;
-	} else {
-	    return null;
+    public RealLand getParentDetected() {
+	if (parentDetected.isRealLand()) {
+	    return (RealLand) parentDetected;
 	}
+	return null;
     }
 
     /**
@@ -174,8 +173,7 @@ public abstract class VisualSelection {
      * @param player the player
      * @return visual selection
      */
-    public static VisualSelection createVisualSelection(AreaType areaType,
-	    boolean isFromLand, Player player) {
+    public static VisualSelection createVisualSelection(AreaType areaType, boolean isFromLand, Player player) {
 
 	if (areaType == AreaType.CUBOID) {
 	    return new VisualSelectionCuboid(null, isFromLand, player);
@@ -195,10 +193,8 @@ public abstract class VisualSelection {
 	    boolean isFromLand, Player player) {
 
 	if (area.getAreaType() == AreaType.CUBOID) {
-	    return new VisualSelectionCuboid((CuboidArea) area,
-		    isFromLand, player);
+	    return new VisualSelectionCuboid((CuboidArea) area, isFromLand, player);
 	}
-	return new VisualSelectionCylinder((CylinderArea) area,
-		isFromLand, player);
+	return new VisualSelectionCylinder((CylinderArea) area, isFromLand, player);
     }
 }

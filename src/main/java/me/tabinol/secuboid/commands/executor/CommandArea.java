@@ -20,11 +20,14 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.*;
+import me.tabinol.secuboid.commands.ChatPage;
+import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
+import me.tabinol.secuboid.commands.CommandEntities;
+import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
+import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -144,7 +147,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
 	if (fonction.equalsIgnoreCase("add")) {
 
 	    // Add Area
-	    ((Land) land).addArea(newArea, collisions.getPrice());
+	    land.addArea(newArea, collisions.getPrice());
 
 	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
 	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + ".");
@@ -157,14 +160,13 @@ public class CommandArea extends CommandCollisionsThreadExec {
 		throw new SecuboidCommandException("Area", entity.sender, "COMMAND.REMOVE.AREA.INVALID");
 	    }
 
-	    entity.playerConf.setConfirm(new ConfirmEntry(
-		    ConfirmType.REMOVE_AREA, land, removeId));
+	    entity.playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, land, removeId));
 	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CONFIRM"));
 
 	} else if (fonction.equalsIgnoreCase("replace")) {
 
 	    // Replace Area
-	    ((Land) land).replaceArea(removeId, newArea, collisions.getPrice());
+	    land.replaceArea(removeId, newArea, collisions.getPrice());
 
 	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
 	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + ".");

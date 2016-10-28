@@ -28,6 +28,7 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import org.bukkit.ChatColor;
@@ -70,7 +71,7 @@ public class CommandFlag extends CommandExec {
 		throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
 	    }
 
-	    ((Land) land).addFlag(landFlag);
+	    land.getPermissionsFlags().addFlag(landFlag);
 	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
 		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
 			    landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
@@ -80,7 +81,7 @@ public class CommandFlag extends CommandExec {
 	} else if (curArg.equalsIgnoreCase("unset")) {
 
 	    FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
-	    if (!land.removeFlag(flagType)) {
+	    if (!land.getPermissionsFlags().removeFlag(flagType)) {
 		throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
 	    }
 	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
@@ -102,7 +103,7 @@ public class CommandFlag extends CommandExec {
 	    }
 
 	    // For parent (if exist)
-	    Land parLand = land;
+	    RealLand parLand = land;
 	    while ((parLand = parLand.getParent()) != null) {
 		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
 			ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
@@ -124,7 +125,7 @@ public class CommandFlag extends CommandExec {
     private void importDisplayFlagsFrom(Land land, boolean onlyInherit) {
 
 	StringBuilder stSubList = new StringBuilder();
-	for (Flag flag : land.getFlags()) {
+	for (Flag flag : land.getPermissionsFlags().getFlags()) {
 	    if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
 		stSubList.append(" ");
 	    }
@@ -142,7 +143,7 @@ public class CommandFlag extends CommandExec {
     private boolean flagInList(Flag flag) {
 
 	for (Land listLand : precDL) {
-	    for (Flag listFlag : listLand.getFlags()) {
+	    for (Flag listFlag : listLand.getPermissionsFlags().getFlags()) {
 		if (flag.getFlagType() == listFlag.getFlagType()) {
 		    return true;
 		}

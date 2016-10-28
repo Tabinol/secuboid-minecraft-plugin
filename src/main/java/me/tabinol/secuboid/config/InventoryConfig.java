@@ -148,7 +148,7 @@ public class InventoryConfig {
      */
     public InventorySpec getInvSpec(Land dummyLand) {
 
-	FlagValue invFlagValue = dummyLand.getFlagAndInherit(invFlag);
+	FlagValue invFlagValue = dummyLand.getPermissionsFlags().getFlagAndInherit(invFlag);
 
 	// If the flag is not set
 	if (invFlagValue.getValueString().isEmpty()) {

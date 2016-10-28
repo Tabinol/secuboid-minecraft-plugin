@@ -31,7 +31,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import static java.lang.Math.abs;
 
 /**
  *
@@ -147,7 +146,7 @@ public class VisualSelectionLines extends VisualSelection {
 		parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
 	    }
 
-	    canCreate = parentDetected.checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+	    canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 	}
 
 	//MakeLine

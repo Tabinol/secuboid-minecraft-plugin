@@ -34,20 +34,25 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-
 /**
  * The Class CommandInfo.
  */
-@InfoCommand(name="info", aliases={"current", "here"})
+@InfoCommand(name = "info", aliases = {"current", "here"})
 public class CommandInfo extends CommandExec {
 
-    /** The area. */
+    /**
+     * The area.
+     */
     private Area area;
-    
-    /** The player. */
+
+    /**
+     * The player.
+     */
     private final Player player;
-    
-    /** The arg list. */
+
+    /**
+     * The arg list.
+     */
     private final ArgList argList;
 
     /**
@@ -58,11 +63,11 @@ public class CommandInfo extends CommandExec {
      */
     public CommandInfo(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
-        player = entity.player;
-        Location playerloc = entity.player.getLocation();
-        area = Secuboid.getThisPlugin().getLands().getArea(playerloc);
-        argList = entity.argList;
+	super(entity);
+	player = entity.player;
+	Location playerloc = entity.player.getLocation();
+	area = Secuboid.getThisPlugin().getLands().getArea(playerloc);
+	argList = entity.argList;
     }
 
     // called from the bone
@@ -75,10 +80,10 @@ public class CommandInfo extends CommandExec {
      */
     public CommandInfo(Player player, Area area) throws SecuboidCommandException {
 
-        super(null);
-        this.player = player;
-        this.area = area;
-        argList = null;
+	super(null);
+	this.player = player;
+	this.area = area;
+	argList = null;
     }
 
     /* (non-Javadoc)
@@ -87,67 +92,67 @@ public class CommandInfo extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        land = null;
+	land = null;
 
-        // Get the land name from arg
-        if (argList != null && !argList.isLast()) {
-            land = Secuboid.getThisPlugin().getLands().getLand(argList.getNext());
+	// Get the land name from arg
+	if (argList != null && !argList.isLast()) {
+	    land = Secuboid.getThisPlugin().getLands().getLand(argList.getNext());
 
-            if (land == null) {
-                throw new SecuboidCommandException("CommandInfo", player, "COMMAND.INFO.NOTEXIST");
-            }
+	    if (land == null) {
+		throw new SecuboidCommandException("CommandInfo", player, "COMMAND.INFO.NOTEXIST");
+	    }
 
-            // If the land is in parameter, cancel Area
-            area = null;
-        }
+	    // If the land is in parameter, cancel Area
+	    area = null;
+	}
 
-        // get the Land from area
-        if (land == null && area != null) {
-            land = area.getLand();
-        }
+	// get the Land from area
+	if (land == null && area != null) {
+	    land = area.getLand();
+	}
 
-        // Show the land
-        if (land != null) {
-            // Create list
-            StringBuilder stList = new StringBuilder();
-            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
-                    ChatColor.GREEN + land.getName() + ChatColor.YELLOW, ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
-            stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
-            if(land.isForSale()) {
-                stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
-            }
-            if(land.isForRent() && !land.isRented()) {
-                stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
-            }
-            stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
-                    land.getType() != null ? land.getType().getName() : "-null-"));
-            if(land.getParent() != null) {
-                  stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
-            }
-            stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
-            if(land.isRented()) {
-                stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
-            }
-            stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
-                    getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
-                            + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
-                            + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
-            stList.append(NEWLINE);
-            if (area != null) {
-                stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
-                        "ID: " + area.getKey() + ", " + area.getPrint()));
-                stList.append(NEWLINE);
-            }
-            // Create the multiple page
-            new ChatPage("COMMAND.INFO.LAND.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+	// Show the land
+	if (land != null) {
+	    // Create list
+	    StringBuilder stList = new StringBuilder();
+	    stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
+		    ChatColor.GREEN + land.getName() + ChatColor.YELLOW, ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
+	    stList.append(NEWLINE);
+	    stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
+	    if (land.isForSale()) {
+		stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
+	    }
+	    if (land.isForRent() && !land.isRented()) {
+		stList.append(ChatColor.RED).append(" ").append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
+	    }
+	    stList.append(NEWLINE);
+	    stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
+		    land.getType() != null ? land.getType().getName() : "-null-"));
+	    if (land.getParent() != null) {
+		stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
+	    }
+	    stList.append(NEWLINE);
+	    stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
+	    if (land.isRented()) {
+		stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
+	    }
+	    stList.append(NEWLINE);
+	    stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
+		    getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
+		    + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
+		    + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
+	    stList.append(NEWLINE);
+	    if (area != null) {
+		stList.append(ChatColor.YELLOW).append(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
+			"ID: " + area.getKey() + ", " + area.getPrint()));
+		stList.append(NEWLINE);
+	    }
+	    // Create the multiple page
+	    new ChatPage("COMMAND.INFO.LAND.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
 
-        } else {
-            player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.NOLAND"));
-        }
+	} else {
+	    player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.INFO.NOLAND"));
+	}
     }
 
     /**
@@ -159,12 +164,12 @@ public class CommandInfo extends CommandExec {
      */
     private String getPermissionInColForPl(Land land, PermissionType pt) {
 
-        boolean result = land.checkPermissionAndInherit(player, pt);
+	boolean result = land.getPermissionsFlags().checkPermissionAndInherit(player, pt);
 
-        if (result) {
-            return ChatColor.GREEN + pt.getName();
-        } else {
-            return ChatColor.RED + pt.getName();
-        }
+	if (result) {
+	    return ChatColor.GREEN + pt.getName();
+	} else {
+	    return ChatColor.RED + pt.getName();
+	}
     }
 }

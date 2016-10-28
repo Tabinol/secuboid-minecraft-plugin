@@ -23,18 +23,17 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 /**
  *
- * @author michel
+ * @author Tabinol
  */
-@InfoCommand(name="setspawn")
+@InfoCommand(name = "setspawn")
 public class CommandSetspawn extends CommandExec {
 
     /**
@@ -45,7 +44,7 @@ public class CommandSetspawn extends CommandExec {
      */
     public CommandSetspawn(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
     }
 
     /* (non-Javadoc)
@@ -54,24 +53,24 @@ public class CommandSetspawn extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-        checkPermission(true, true, null, null);
-        
-        Location loc = entity.player.getLocation();
-        
-        // If the player is not inside the land
-        if(!land.isLocationInside(loc)) {
-            throw new SecuboidCommandException("On land tp create", entity.player, "COMMAND.TP.OUTSIDE");
-        }
-        
-        // put player position to String
-        String posStr = StringChanges.locationToString(loc);
-        
-        // Set flag
-        Flag flag = new Flag(FlagList.SPAWN.getFlagType(), posStr, true);
-        ((Land) land).addFlag(flag);
-        
-        entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TP.CREATED"));
+	checkSelections(true, null);
+	checkPermission(true, true, null, null);
+
+	Location loc = entity.player.getLocation();
+
+	// If the player is not inside the land
+	if (!land.isLocationInside(loc)) {
+	    throw new SecuboidCommandException("On land tp create", entity.player, "COMMAND.TP.OUTSIDE");
+	}
+
+	// put player position to String
+	String posStr = StringChanges.locationToString(loc);
+
+	// Set flag
+	Flag flag = new Flag(FlagList.SPAWN.getFlagType(), posStr, true);
+	land.getPermissionsFlags().addFlag(flag);
+
+	entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TP.CREATED"));
     }
 
 }

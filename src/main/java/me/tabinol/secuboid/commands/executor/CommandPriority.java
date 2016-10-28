@@ -23,15 +23,14 @@ import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.ChatColor;
-
 
 /**
  * The Class CommandPriority.
  */
-@InfoCommand(name="priority", forceParameter=true)
+@InfoCommand(name = "priority", forceParameter = true)
 public class CommandPriority extends CommandExec {
 
     /**
@@ -42,7 +41,7 @@ public class CommandPriority extends CommandExec {
      */
     public CommandPriority(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
     }
 
     /* (non-Javadoc)
@@ -51,26 +50,26 @@ public class CommandPriority extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-        checkPermission(true, false, null, null);
-        String curArg = entity.argList.getNext();
-        short newPrio;
+	checkSelections(true, null);
+	checkPermission(true, false, null, null);
+	String curArg = entity.argList.getNext();
+	short newPrio;
 
-        if (land.getParent() != null) {
-            throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.NOTCHILD");
-        }
-        try {
-            newPrio = Short.parseShort(curArg);
-        } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.INVALID", Land.MINIM_PRIORITY + "", Land.MAXIM_PRIORITY + "");
-        }
-        if (!Calculate.isInInterval(newPrio, Land.MINIM_PRIORITY, Land.MAXIM_PRIORITY)) {
-            throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.INVALID", Land.MINIM_PRIORITY + "", Land.MAXIM_PRIORITY + "");
-        }
-        land.setPriority(newPrio);
+	if (land.getParent() != null) {
+	    throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.NOTCHILD");
+	}
+	try {
+	    newPrio = Short.parseShort(curArg);
+	} catch (NumberFormatException ex) {
+	    throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
+	}
+	if (!Calculate.isInInterval(newPrio, RealLand.MINIM_PRIORITY, RealLand.MAXIM_PRIORITY)) {
+	    throw new SecuboidCommandException("Priority", entity.player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
+	}
+	land.setPriority(newPrio);
 
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(
-                "COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
-        Secuboid.getThisPlugin().getLog().write("Priority for land " + land.getName() + " changed for " + land.getPriority());
+	entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(
+		"COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
+	Secuboid.getThisPlugin().getLog().write("Priority for land " + land.getName() + " changed for " + land.getPriority());
     }
 }

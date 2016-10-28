@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.entity.Player;
 
 /**
@@ -50,7 +50,7 @@ public interface PlayerContainer extends Comparable<PlayerContainer> {
      * @param land the land
      * @return true if the player has access
      */
-    boolean hasAccess(Player player, Land land);
+    boolean hasAccess(Player player, RealLand land);
 
     /**
      * Gets the printable format
@@ -71,12 +71,12 @@ public interface PlayerContainer extends Comparable<PlayerContainer> {
      *
      * @return the land
      */
-    Land getLand();
+    RealLand getLand();
 
     /**
      * Sets the land. Not in Common API for security.
      *
      * @param land the new land
      */
-    void setLand(Land land);
+    void setLand(RealLand land);
 }

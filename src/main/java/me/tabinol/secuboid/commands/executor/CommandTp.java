@@ -29,11 +29,10 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.Location;
 
-
 /**
  * The Class CommandTp.
  */
-@InfoCommand(name="tp", forceParameter=true)
+@InfoCommand(name = "tp", forceParameter = true)
 public class CommandTp extends CommandExec {
 
     /**
@@ -44,40 +43,40 @@ public class CommandTp extends CommandExec {
      */
     public CommandTp(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
     }
-    
+
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = entity.argList.getNext();
-        land = Secuboid.getThisPlugin().getLands().getLand(curArg);
-        
-        // Land not found
-        if(land == null) {
-            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
-        }
-        
-        // Check adminmod or permission TP
-        checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
+	String curArg = entity.argList.getNext();
+	land = Secuboid.getThisPlugin().getLands().getLand(curArg);
 
-        // Try to get Location
-        FlagValue value = land.getFlagAndInherit(FlagList.SPAWN.getFlagType());
-        
-        if(value.getValueString().isEmpty()) {
-            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");
-        }
-        
-        Location location = StringChanges.stringToLocation(value.getValueString());
-        
-        if(location == null) {
-            throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.INVALID");
-        }
-        
-        // Teleport player
-        entity.player.teleport(location);
+	// Land not found
+	if (land == null) {
+	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
+	}
+
+	// Check adminmod or permission TP
+	checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
+
+	// Try to get Location
+	FlagValue value = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
+
+	if (value.getValueString().isEmpty()) {
+	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");
+	}
+
+	Location location = StringChanges.stringToLocation(value.getValueString());
+
+	if (location == null) {
+	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.INVALID");
+	}
+
+	// Teleport player
+	entity.player.teleport(location);
     }
 }

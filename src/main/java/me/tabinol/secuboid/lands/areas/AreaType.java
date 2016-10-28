@@ -24,10 +24,6 @@ package me.tabinol.secuboid.lands.areas;
 public enum AreaType {
 
     /**
-     * Infinite (entire world)
-     */
-    INFINITE,
-    /**
      * Cuboid type
      */
     CUBOID,

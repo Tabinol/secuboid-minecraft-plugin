@@ -21,7 +21,7 @@ package me.tabinol.secuboid.commands;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 import org.bukkit.Bukkit;
@@ -29,22 +29,29 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-
 /**
  * The Class CommandExec.
  */
 public abstract class CommandExec {
 
-    /** The entity. */
+    /**
+     * The entity.
+     */
     protected final CommandEntities entity;
-    
-    /** The land. */
-    protected Land land;
-    
-    /** The is executable. */
+
+    /**
+     * The land.
+     */
+    protected RealLand land;
+
+    /**
+     * The is executable.
+     */
     private boolean isExecutable = true;
-    
-    /** The reset select cancel. */
+
+    /**
+     * The reset select cancel.
+     */
     public boolean resetSelectCancel = false; // If reset select cancel is done (1 time only)
 
     /**
@@ -55,31 +62,31 @@ public abstract class CommandExec {
      */
     protected CommandExec(CommandEntities entity) throws SecuboidCommandException {
 
-        this.entity = entity;
+	this.entity = entity;
 
-        // Null Entity for an action without command, but don't ask to have information!
-        if (entity == null) {
-            land = null;
-            return;
-        }
+	// Null Entity for an action without command, but don't ask to have information!
+	if (entity == null) {
+	    land = null;
+	    return;
+	}
 
-        if (entity.player != null) {
-            // get the land Selected or null
-            land = entity.playerConf.getSelection().getLand();
-        }
+	if (entity.player != null) {
+	    // get the land Selected or null
+	    land = entity.playerConf.getSelection().getLand();
+	}
 
-        if (entity.player == null && !entity.infoCommand.allowConsole()) {
+	if (entity.player == null && !entity.infoCommand.allowConsole()) {
 
-            // Send a message if this command is player only
-            throw new SecuboidCommandException("Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
-        }
+	    // Send a message if this command is player only
+	    throw new SecuboidCommandException("Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
+	}
 
-        // Show help if there is no more parameter and the command needs one
-        if (entity.infoCommand.forceParameter() && entity.argList != null && entity.argList.isLast()) {
-            new CommandHelp(entity.onCommand, entity.sender, 
-                    entity.infoCommand.name()).commandExecute();
-            isExecutable = false;
-        }
+	// Show help if there is no more parameter and the command needs one
+	if (entity.infoCommand.forceParameter() && entity.argList != null && entity.argList.isLast()) {
+	    new CommandHelp(entity.onCommand, entity.sender,
+		    entity.infoCommand.name()).commandExecute();
+	    isExecutable = false;
+	}
     }
 
     /**
@@ -88,8 +95,7 @@ public abstract class CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public abstract void commandExecute() throws SecuboidCommandException;
-    
-    
+
     /**
      * Checks if is executable.
      *
@@ -97,7 +103,7 @@ public abstract class CommandExec {
      */
     public boolean isExecutable() {
 
-        return isExecutable;
+	return isExecutable;
     }
 
     // Check for needed selection and not needed (null for no verification)
@@ -110,19 +116,19 @@ public abstract class CommandExec {
      */
     protected void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected) throws SecuboidCommandException {
 
-        // No check if entity is null (if it is not from a command)
-        if (entity == null) {
-            return;
-        }
+	// No check if entity is null (if it is not from a command)
+	if (entity == null) {
+	    return;
+	}
 
-        if (mustBeSelectMode != null) {
-            // Pasted to variable land, can take direcly
-            checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
-                    entity != null && entity.playerConf.getSelection().getLand() != null);
-        }
-        if (mustBeAreaSelected != null) {
-            checkSelection(entity.playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
-        }
+	if (mustBeSelectMode != null) {
+	    // Pasted to variable land, can take direcly
+	    checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
+		    entity != null && entity.playerConf.getSelection().getLand() != null);
+	}
+	if (mustBeAreaSelected != null) {
+	    checkSelection(entity.playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
+	}
     }
 
     // Check selection for per type
@@ -137,22 +143,20 @@ public abstract class CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     private void checkSelection(boolean result, boolean neededResult, String messageTrue, String messageFalse,
-            boolean startSelectCancel) throws SecuboidCommandException {
+	    boolean startSelectCancel) throws SecuboidCommandException {
 
-        if (result != neededResult) {
-            if (result == true) {
-                throw new SecuboidCommandException("Player Select", entity.player, messageTrue);
-            } else {
-                throw new SecuboidCommandException("Player Select", entity.player, messageFalse);
-            }
-        } else {
-            if (startSelectCancel && !resetSelectCancel && result == true) {
+	if (result != neededResult) {
+	    if (result == true) {
+		throw new SecuboidCommandException("Player Select", entity.player, messageTrue);
+	    } else {
+		throw new SecuboidCommandException("Player Select", entity.player, messageFalse);
+	    }
+	} else if (startSelectCancel && !resetSelectCancel && result == true) {
 
-                // Reset autocancel if there is a command executed that need it
-                entity.playerConf.setAutoCancelSelect(true);
-                resetSelectCancel = true;
-            }
-        }
+	    // Reset autocancel if there is a command executed that need it
+	    entity.playerConf.setAutoCancelSelect(true);
+	    resetSelectCancel = true;
+	}
     }
 
     // Check if the player has permission
@@ -166,27 +170,27 @@ public abstract class CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void checkPermission(boolean mustBeAdminMod, boolean mustBeOwner,
-            PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
+	    PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
 
-        boolean canDo = false;
+	boolean canDo = false;
 
-        if (mustBeAdminMod && entity.playerConf.isAdminMod()) {
-            canDo = true;
-        }
-        if (mustBeOwner && (land == null || (land !=null && new PlayerContainerOwner(land).hasAccess(entity.player)))) {
-            canDo = true;
-        }
-        if (neededPerm != null && land.checkPermissionAndInherit(entity.player, neededPerm)) {
-            canDo = true;
-        }
-        if (bukkitPermission != null && entity.sender.hasPermission(bukkitPermission)) {
-            canDo = true;
-        }
+	if (mustBeAdminMod && entity.playerConf.isAdminMod()) {
+	    canDo = true;
+	}
+	if (mustBeOwner && (land == null || (land != null && new PlayerContainerOwner(land).hasAccess(entity.player)))) {
+	    canDo = true;
+	}
+	if (neededPerm != null && land.getPermissionsFlags().checkPermissionAndInherit(entity.player, neededPerm)) {
+	    canDo = true;
+	}
+	if (bukkitPermission != null && entity.sender.hasPermission(bukkitPermission)) {
+	    canDo = true;
+	}
 
-        // No permission, this is an exception
-        if (canDo == false) {
-            throw new SecuboidCommandException("No permission to do this action", entity.player, "GENERAL.MISSINGPERMISSION");
-        }
+	// No permission, this is an exception
+	if (canDo == false) {
+	    throw new SecuboidCommandException("No permission to do this action", entity.player, "GENERAL.MISSINGPERMISSION");
+	}
     }
 
     // The name says what it does!!!
@@ -195,22 +199,22 @@ public abstract class CommandExec {
      */
     protected void getLandFromCommandIfNoLandSelected() {
 
-        if (land == null && !entity.argList.isLast()) {
-            land = Secuboid.getThisPlugin().getLands().getLand(entity.argList.getNext());
-        }
+	if (land == null && !entity.argList.isLast()) {
+	    land = Secuboid.getThisPlugin().getLands().getLand(entity.argList.getNext());
+	}
     }
-    
+
     /**
      * Removes the sign from hand.
      */
     protected void removeSignFromHand() {
-        
-        if(entity.player.getGameMode() != GameMode.CREATIVE) {
-            if(entity.player.getItemInHand().getAmount() == 1) {
-                entity.player.setItemInHand(new ItemStack(Material.AIR));
-            } else {
-                entity.player.getItemInHand().setAmount(entity.player.getItemInHand().getAmount() - 1);
-            }
-        }
+
+	if (entity.player.getGameMode() != GameMode.CREATIVE) {
+	    if (entity.player.getItemInHand().getAmount() == 1) {
+		entity.player.setItemInHand(new ItemStack(Material.AIR));
+	    } else {
+		entity.player.getItemInHand().setAmount(entity.player.getItemInHand().getAmount() - 1);
+	    }
+	}
     }
 }

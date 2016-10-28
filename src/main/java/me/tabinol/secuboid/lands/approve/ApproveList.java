@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -169,7 +169,7 @@ public class ApproveList {
 
 	String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
 	PlayerContainer pc = PlayerContainerUtil.create(null, PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
-	Land parent = null;
+	RealLand parent = null;
 	Area newArea = null;
 
 	if (section.contains("Parent")) {

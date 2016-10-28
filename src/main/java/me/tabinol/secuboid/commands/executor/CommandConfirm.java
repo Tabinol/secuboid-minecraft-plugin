@@ -29,11 +29,10 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import org.bukkit.ChatColor;
 
-
 /**
  * The Class CommandConfirm.
  */
-@InfoCommand(name="confirm")
+@InfoCommand(name = "confirm")
 public class CommandConfirm extends CommandExec {
 
     /**
@@ -44,7 +43,7 @@ public class CommandConfirm extends CommandExec {
      */
     public CommandConfirm(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+	super(entity);
     }
 
     /* (non-Javadoc)
@@ -53,47 +52,53 @@ public class CommandConfirm extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        ConfirmEntry confirmEntry;
+	ConfirmEntry confirmEntry;
 
-        if ((confirmEntry = entity.playerConf.getConfirm()) != null) {
-            
-            if (confirmEntry.confirmType == ConfirmEntry.ConfirmType.REMOVE_LAND) {
+	if ((confirmEntry = entity.playerConf.getConfirm()) != null) {
+	    if (confirmEntry.confirmType != null) {
+		switch (confirmEntry.confirmType) {
 
-                // Remove land
-                int i = confirmEntry.land.getAreas().size();
-                try {
-                    Secuboid.getThisPlugin().getLands().removeLand(confirmEntry.land);
-                } catch (SecuboidLandException ex) {
-                    Logger.getLogger(CommandConfirm.class.getName()).log(Level.SEVERE, "On land remove", ex);
-                    throw new SecuboidCommandException("On land remove", entity.player, "GENERAL.ERROR");
-                }
-                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.REMOVE.DONE.LAND", confirmEntry.land.getName(), i + ""));
-                Secuboid.getThisPlugin().getLog().write(entity.playerName + " confirm for removing " + confirmEntry.land.getName());
+		    case REMOVE_LAND:
+			// Remove land
+			int i = confirmEntry.land.getAreas().size();
+			try {
+			    Secuboid.getThisPlugin().getLands().removeLand(confirmEntry.land);
+			} catch (SecuboidLandException ex) {
+			    Logger.getLogger(CommandConfirm.class.getName()).log(Level.SEVERE, "On land remove", ex);
+			    throw new SecuboidCommandException("On land remove", entity.player, "GENERAL.ERROR");
+			}
+			entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.REMOVE.DONE.LAND", confirmEntry.land.getName(), i + ""));
+			Secuboid.getThisPlugin().getLog().write(entity.playerName + " confirm for removing " + confirmEntry.land.getName());
+			break;
 
-            } else if (confirmEntry.confirmType == ConfirmEntry.ConfirmType.REMOVE_AREA) {
+		    case REMOVE_AREA:
+			// Remove area
+			if (!confirmEntry.land.removeArea(confirmEntry.areaNb)) {
+			    throw new SecuboidCommandException("Area", entity.player, "COMMAND.REMOVE.AREA.INVALID");
+			}
+			entity.playerConf.getSelection().refreshLand();
+			entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.REMOVE.DONE.AREA", confirmEntry.land.getName()));
+			Secuboid.getThisPlugin().getLog().write("area " + confirmEntry.areaNb + " for land " + confirmEntry.land.getName() + " is removed by " + entity.playerName);
+			break;
 
-                // Remove area
-                if (!confirmEntry.land.removeArea(confirmEntry.areaNb)) {
-                    throw new SecuboidCommandException("Area", entity.player, "COMMAND.REMOVE.AREA.INVALID");
-                }
-                entity.playerConf.getSelection().refreshLand();
-                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.REMOVE.DONE.AREA", confirmEntry.land.getName()));
-                Secuboid.getThisPlugin().getLog().write("area " + confirmEntry.areaNb + " for land " + confirmEntry.land.getName() + " is removed by " + entity.playerName);
+		    case LAND_DEFAULT:
+			// Set to default
+			confirmEntry.land.setDefault();
+			entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SETDEFAULT.ISDONE", confirmEntry.land.getName()));
+			Secuboid.getThisPlugin().getLog().write("The land " + confirmEntry.land.getName() + "is set to default configuration by " + entity.playerName);
+			break;
 
-            } else if (confirmEntry.confirmType == ConfirmEntry.ConfirmType.LAND_DEFAULT) {
+		    default:
+			break;
+		}
+	    }
 
-                // Set to default
-                confirmEntry.land.setDefault();
-                entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SETDEFAULT.ISDONE", confirmEntry.land.getName()));
-                Secuboid.getThisPlugin().getLog().write("The land " + confirmEntry.land.getName() + "is set to default configuration by " + entity.playerName);
-            }
-            
-            // Remove confirm
-            entity.playerConf.setConfirm(null);
-            
-        } else {
-            
-            throw new SecuboidCommandException("Nothing to confirm", entity.player, "COMMAND.NOCONFIRM");
-        }
+	    // Remove confirm
+	    entity.playerConf.setConfirm(null);
+
+	} else {
+
+	    throw new SecuboidCommandException("Nothing to confirm", entity.player, "COMMAND.NOCONFIRM");
+	}
     }
 }

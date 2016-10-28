@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.entity.Player;
 
 /**
@@ -28,9 +28,9 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerVisitor implements PlayerContainer {
 
-    private Land land;
+    private RealLand land;
 
-    public PlayerContainerVisitor(Land land) {
+    public PlayerContainerVisitor(RealLand land) {
 	this.land = land;
     }
 
@@ -40,7 +40,7 @@ public class PlayerContainerVisitor implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land land) {
+    public boolean hasAccess(Player player, RealLand land) {
 	if (land == null) {
 	    return false;
 	}
@@ -51,12 +51,12 @@ public class PlayerContainerVisitor implements PlayerContainer {
     }
 
     @Override
-    public Land getLand() {
+    public RealLand getLand() {
 	return land;
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(RealLand land) {
 	this.land = land;
     }
 

@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.permissionsflags.Flag;
@@ -108,7 +108,7 @@ public class StorageFlat implements Storage {
      * @param land the land
      * @return the land file
      */
-    private File getLandFile(Land land) {
+    private File getLandFile(RealLand land) {
 
 	return new File(landsDir + "/" + land.getName() + "." + land.getGenealogy() + EXT_CONF);
     }
@@ -167,7 +167,7 @@ public class StorageFlat implements Storage {
 	UUID uuid;
 	String landName;
 	String type = null;
-	Land land = null;
+	RealLand land = null;
 	Map<Integer, Area> areas = new TreeMap<Integer, Area>();
 	boolean isLandCreated = false;
 	PlayerContainer owner;
@@ -180,7 +180,7 @@ public class StorageFlat implements Storage {
 	short priority;
 	double money;
 	Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
-	Land parent;
+	RealLand parent;
 
 	// For economy
 	boolean forSale = false;
@@ -381,11 +381,11 @@ public class StorageFlat implements Storage {
 	}
 	for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> entry : permissions.entrySet()) {
 	    for (Map.Entry<PermissionType, Permission> entryP : entry.getValue().entrySet()) {
-		land.addPermission(entry.getKey(), entryP.getValue());
+		land.getPermissionsFlags().addPermission(entry.getKey(), entryP.getValue());
 	    }
 	}
 	for (Flag flag : flags) {
-	    land.addFlag(flag);
+	    land.getPermissionsFlags().addFlag(flag);
 	}
 	land.setPriority(priority);
 	land.addMoney(money);
@@ -412,7 +412,7 @@ public class StorageFlat implements Storage {
      * @see me.tabinol.secuboid.storage.Storage#saveLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void saveLand(Land land) {
+    public void saveLand(RealLand land) {
 	try {
 	    ArrayList<String> strs;
 
@@ -455,8 +455,8 @@ public class StorageFlat implements Storage {
 
 	    //Permissions
 	    strs = new ArrayList<String>();
-	    for (PlayerContainer pc : land.getSetPCHavePermission()) {
-		for (Permission perm : land.getPermissionsForPC(pc)) {
+	    for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
+		for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
 		    strs.add(pc.toFileFormat() + ":" + perm.toFileFormat());
 		}
 	    }
@@ -464,7 +464,7 @@ public class StorageFlat implements Storage {
 
 	    //Flags
 	    strs = new ArrayList<String>();
-	    for (Flag flag : land.getFlags()) {
+	    for (Flag flag : land.getPermissionsFlags().getFlags()) {
 		strs.add(flag.toFileFormat());
 	    }
 	    cb.writeParam("Flags", strs.toArray(new String[0]));
@@ -511,7 +511,7 @@ public class StorageFlat implements Storage {
      * @see me.tabinol.secuboid.storage.Storage#removeLand(me.tabinol.secuboid.lands.Land)
      */
     @Override
-    public void removeLand(Land land) {
+    public void removeLand(RealLand land) {
 
 	getLandFile(land).delete();
     }

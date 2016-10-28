@@ -21,12 +21,11 @@ package me.tabinol.secuboid.selection;
 import java.util.Collection;
 import java.util.EnumMap;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
 import me.tabinol.secuboid.selection.region.RegionSelection;
-
 
 /**
  * The Class PlayerSelection.
@@ -38,20 +37,29 @@ public class PlayerSelection {
      */
     public enum SelectionType { // ACTIVE = move with the player, PASSIVE = fixed
 
-        /** The land. */
-        LAND,
-        
-        /** The area. */
-        AREA
+	/**
+	 * The land.
+	 */
+	LAND,
+	/**
+	 * The area.
+	 */
+	AREA
     }
 
-    /** The player conf entry. */
+    /**
+     * The player conf entry.
+     */
     private final PlayerConfEntry playerConfEntry;
-    
-    /** The selection list. */
+
+    /**
+     * The selection list.
+     */
     private final EnumMap<SelectionType, RegionSelection> selectionList; // SelectionList for the player
-    
-    /** The area to replace. */
+
+    /**
+     * The area to replace.
+     */
     Area areaToReplace; // If it is an areaToReplace with an expand
 
     /**
@@ -61,9 +69,9 @@ public class PlayerSelection {
      */
     public PlayerSelection(PlayerConfEntry playerConfEntry) {
 
-        this.playerConfEntry = playerConfEntry;
-        selectionList = new EnumMap<SelectionType, RegionSelection>(SelectionType.class);
-        areaToReplace = null;
+	this.playerConfEntry = playerConfEntry;
+	selectionList = new EnumMap<SelectionType, RegionSelection>(SelectionType.class);
+	areaToReplace = null;
     }
 
     /**
@@ -73,7 +81,7 @@ public class PlayerSelection {
      */
     public boolean hasSelection() {
 
-        return !selectionList.isEmpty();
+	return !selectionList.isEmpty();
     }
 
     /**
@@ -83,7 +91,7 @@ public class PlayerSelection {
      */
     public Collection<RegionSelection> getSelections() {
 
-        return selectionList.values();
+	return selectionList.values();
     }
 
     /**
@@ -93,7 +101,7 @@ public class PlayerSelection {
      */
     public void addSelection(RegionSelection sel) {
 
-        selectionList.put(sel.getSelectionType(), sel);
+	selectionList.put(sel.getSelectionType(), sel);
     }
 
     /**
@@ -104,7 +112,7 @@ public class PlayerSelection {
      */
     public RegionSelection getSelection(SelectionType type) {
 
-        return selectionList.get(type);
+	return selectionList.get(type);
     }
 
     /**
@@ -115,30 +123,30 @@ public class PlayerSelection {
      */
     public RegionSelection removeSelection(SelectionType type) {
 
-        RegionSelection select = selectionList.remove(type);
+	RegionSelection select = selectionList.remove(type);
 
-        if (select != null) {
+	if (select != null) {
 
-            // reset AreaToReplace if exist
-            areaToReplace = null;
+	    // reset AreaToReplace if exist
+	    areaToReplace = null;
 
-            select.removeSelection();
-        }
+	    select.removeSelection();
+	}
 
-        return select;
+	return select;
     }
-    
+
     /**
      * Refresh land selection.
      */
     public void refreshLand() {
-        
-        Land land = getLand();
-        
-        if(land !=null) {
-            removeSelection(SelectionType.LAND);
-            addSelection(new LandSelection(playerConfEntry.getPlayer(), land));
-        }
+
+	RealLand land = getLand();
+
+	if (land != null) {
+	    removeSelection(SelectionType.LAND);
+	    addSelection(new LandSelection(playerConfEntry.getPlayer(), land));
+	}
     }
 
     /**
@@ -146,14 +154,14 @@ public class PlayerSelection {
      *
      * @return the land
      */
-    public Land getLand() {
+    public RealLand getLand() {
 
-        LandSelection sel = (LandSelection) selectionList.get(SelectionType.LAND);
-        if (sel != null) {
-            return sel.getLand();
-        } else {
-            return null;
-        }
+	LandSelection sel = (LandSelection) selectionList.get(SelectionType.LAND);
+	if (sel != null) {
+	    return sel.getLand();
+	} else {
+	    return null;
+	}
     }
 
     /**
@@ -163,12 +171,12 @@ public class PlayerSelection {
      */
     public Area getArea() {
 
-        AreaSelection sel = (AreaSelection) selectionList.get(SelectionType.AREA);
-        if (sel != null) {
-            return sel.getVisualSelection().getArea();
-        } else {
-            return null;
-        }
+	AreaSelection sel = (AreaSelection) selectionList.get(SelectionType.AREA);
+	if (sel != null) {
+	    return sel.getVisualSelection().getArea();
+	} else {
+	    return null;
+	}
     }
 
     /**
@@ -178,7 +186,7 @@ public class PlayerSelection {
      */
     public void setAreaToReplace(Area areaToReplace) {
 
-        this.areaToReplace = areaToReplace;
+	this.areaToReplace = areaToReplace;
     }
 
     /**
@@ -188,6 +196,6 @@ public class PlayerSelection {
      */
     public Area getAreaToReplace() {
 
-        return areaToReplace;
+	return areaToReplace;
     }
 }

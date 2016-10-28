@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -60,14 +60,14 @@ public interface Area extends Comparable<Area> {
      *
      * @param land the new land
      */
-    void setLand(Land land);
+    void setLand(RealLand land);
 
     /**
      * Gets the land.
      *
      * @return the land
      */
-    Land getLand();
+    RealLand getLand();
 
     /**
      * Gets the world name.

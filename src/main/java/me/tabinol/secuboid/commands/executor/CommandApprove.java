@@ -26,7 +26,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -34,11 +34,10 @@ import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.ChatColor;
 
-
 /**
  * The Class CommandApprove.
  */
-@InfoCommand(name="approve", allowConsole=true, forceParameter=true)
+@InfoCommand(name = "approve", allowConsole = true, forceParameter = true)
 public class CommandApprove extends CommandCollisionsThreadExec {
 
     private final ApproveList approveList;
@@ -53,8 +52,8 @@ public class CommandApprove extends CommandCollisionsThreadExec {
      */
     public CommandApprove(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
-        approveList = Secuboid.getThisPlugin().getLands().getApproveList();
+	super(entity);
+	approveList = Secuboid.getThisPlugin().getLands().getApproveList();
     }
 
     /* (non-Javadoc)
@@ -63,117 +62,117 @@ public class CommandApprove extends CommandCollisionsThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = entity.argList.getNext();
-        boolean isApprover = entity.sender.hasPermission("secuboid.collisionapprove");
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	String curArg = entity.argList.getNext();
+	boolean isApprover = entity.sender.hasPermission("secuboid.collisionapprove");
+	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-        if (curArg.equalsIgnoreCase("clear")) {
-            
-            if(!isApprover) {
-                throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
-            }
-            approveList.removeAll();
-            entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
-            
-        } else if (curArg.equalsIgnoreCase("list")) {
+	if (curArg.equalsIgnoreCase("clear")) {
 
-            // List of Approve
-            StringBuilder stList = new StringBuilder();
-            int t = 0;
-            TreeMap<Date,Approve> approveTree = new TreeMap<Date,Approve>();
-            
-            //create list (short by date/time)
-            for (Approve app : approveList.getApproveList().values()) {
-                approveTree.put(app.getDateTime().getTime(), app);
-            }
-            
-            // show Approve List
-            for(Map.Entry<Date,Approve> approveEntry : approveTree.descendingMap().entrySet()) {
-                Approve app = approveEntry.getValue();
-                if (app != null && (isApprover || app.getOwner().hasAccess(entity.player))) {
-                    stList.append(ChatColor.WHITE).append(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LIST",
-                            ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
-                            ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
-                            app.getOwner().getPrint() + ChatColor.WHITE,
-                            ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
-                    stList.append(Config.NEWLINE);
-                    t++;
-                }
-            }
-            if (t == 0) {
+	    if (!isApprover) {
+		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+	    }
+	    approveList.removeAll();
+	    entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
 
-                // List empty
-                entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
-            } else {
+	} else if (curArg.equalsIgnoreCase("list")) {
 
-                // List not empty
-                new ChatPage("COLLISION.SHOW.LISTSTART", stList.toString(), entity.sender, null).getPage(1);
-            }
-        } else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
+	    // List of Approve
+	    StringBuilder stList = new StringBuilder();
+	    int t = 0;
+	    TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
 
-            String param = entity.argList.getNext();
+	    //create list (short by date/time)
+	    for (Approve app : approveList.getApproveList().values()) {
+		approveTree.put(app.getDateTime().getTime(), app);
+	    }
 
-            if (param == null) {
-                throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
-            }
+	    // show Approve List
+	    for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
+		Approve app = approveEntry.getValue();
+		if (app != null && (isApprover || app.getOwner().hasAccess(entity.player))) {
+		    stList.append(ChatColor.WHITE).append(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LIST",
+			    ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
+			    ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
+			    app.getOwner().getPrint() + ChatColor.WHITE,
+			    ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
+		    stList.append(Config.NEWLINE);
+		    t++;
+		}
+	    }
+	    if (t == 0) {
 
-            approve = approveList.getApprove(param);
+		// List empty
+		entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
+	    } else {
 
-            if (approve == null) {
-                throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
-            }
+		// List not empty
+		new ChatPage("COLLISION.SHOW.LISTSTART", stList.toString(), entity.sender, null).getPage(1);
+	    }
+	} else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
 
-            // Check permission
-            if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
-                    || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-                    && !(isApprover || approve.getOwner().hasAccess(entity.player)))) {
-                throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
-            }
+	    String param = entity.argList.getNext();
 
-            Land apprLand = Secuboid.getThisPlugin().getLands().getLand(param);
-            Collisions.LandAction action = approve.getAction();
-            int removeId = approve.getRemovedAreaId();
-            Area newArea = approve.getNewArea();
-            Land parent = approve.getParent();
-            Double price = approve.getPrice();
-            PlayerContainer owner = approve.getOwner();
+	    if (param == null) {
+		throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
+	    }
 
-            if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
+	    approve = approveList.getApprove(param);
 
-                // Print area
-                if(newArea != null) {
-                    entity.sender.sendMessage(newArea.getPrint());
-                }
+	    if (approve == null) {
+		throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
+	    }
 
-                if (curArg.equalsIgnoreCase("confirm")) {
-                    // Paste to the After Thread
-                    confirm = true;
-                }
-                // Info on the specified land (Collision)
-                checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
+	    // Check permission
+	    if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
+		    || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
+		    && !(isApprover || approve.getOwner().hasAccess(entity.player)))) {
+		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+	    }
 
-            } else if (curArg.equalsIgnoreCase("cancel")) {
+	    RealLand apprLand = Secuboid.getThisPlugin().getLands().getLand(param);
+	    Collisions.LandAction action = approve.getAction();
+	    int removeId = approve.getRemovedAreaId();
+	    Area newArea = approve.getNewArea();
+	    RealLand parent = approve.getParent();
+	    Double price = approve.getPrice();
+	    PlayerContainer owner = approve.getOwner();
 
-                // Remove in approve list
-                approveList.removeApprove(approve);
-                entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
-            } else {
-                throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
-            }
-        } else {
-            throw new SecuboidCommandException("Missing information command", entity.sender, "GENERAL.MISSINGINFO");
-        }
+	    if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
+
+		// Print area
+		if (newArea != null) {
+		    entity.sender.sendMessage(newArea.getPrint());
+		}
+
+		if (curArg.equalsIgnoreCase("confirm")) {
+		    // Paste to the After Thread
+		    confirm = true;
+		}
+		// Info on the specified land (Collision)
+		checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
+
+	    } else if (curArg.equalsIgnoreCase("cancel")) {
+
+		// Remove in approve list
+		approveList.removeApprove(approve);
+		entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
+	    } else {
+		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+	    }
+	} else {
+	    throw new SecuboidCommandException("Missing information command", entity.sender, "GENERAL.MISSINGINFO");
+	}
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-        if (confirm) {
+	if (confirm) {
 
-            // Create the action (if it is possible)
-            approveList.removeApprove(approve);
-            approve.createAction();
-            entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.DONE"));
-        }
+	    // Create the action (if it is possible)
+	    approveList.removeApprove(approve);
+	    approve.createAction();
+	    entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.DONE"));
+	}
     }
 }

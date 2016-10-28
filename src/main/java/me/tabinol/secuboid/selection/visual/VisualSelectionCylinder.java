@@ -29,7 +29,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import static java.lang.Math.abs;
 
 /**
  *
@@ -123,7 +122,7 @@ public class VisualSelectionCylinder extends VisualSelection {
 	    parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
 	}
 
-	boolean canCreate = parentDetected.checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+	boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
 	//Make Cylinder
 	for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
@@ -154,18 +153,20 @@ public class VisualSelectionCylinder extends VisualSelection {
 			isCollision = true;
 		    }
 		} else // Passive Selection (created area)
-		if (posX == area.getOriginH() - 1
-			|| posX == area.getOriginH() + 1
-			|| posZ == area.getOriginK() - 1
-			|| posZ == area.getOriginK() + 1) {
+		{
+		    if (posX == area.getOriginH() - 1
+			    || posX == area.getOriginH() + 1
+			    || posZ == area.getOriginK() - 1
+			    || posZ == area.getOriginK() + 1) {
 
-		    // Subcorner
-		    this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
+			// Subcorner
+			this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
 
-		} else {
+		    } else {
 
-		    // Exact corner
-		    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+			// Exact corner
+			this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+		    }
 		}
 	    }
 	}

@@ -21,7 +21,7 @@ package me.tabinol.secuboid.commands;
 // Work with command arguments
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.FlagValue;
@@ -216,7 +216,7 @@ public class ArgList {
      * @return the player container from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PlayerContainer getPlayerContainerFromArg(Land land,
+    public PlayerContainer getPlayerContainerFromArg(RealLand land,
 	    PlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
 
 	String curArg = getNext();

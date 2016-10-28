@@ -18,20 +18,23 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-
 
 /**
  * The Class LandDeleteEvent. This events is called when a land is deleted.
  */
 public class LandDeleteEvent extends LandEvent implements Cancellable {
 
-    /** The Constant handlers. */
+    /**
+     * The Constant handlers.
+     */
     private static final HandlerList handlers = new HandlerList();
-    
-    /** The events is cancelled. */
+
+    /**
+     * The events is cancelled.
+     */
     protected boolean cancelled = false;
 
     /**
@@ -39,24 +42,22 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
      *
      * @param deletedLand the deleted land
      */
-    public LandDeleteEvent(final Land deletedLand) {
+    public LandDeleteEvent(final RealLand deletedLand) {
 
-        super(deletedLand);
+	super(deletedLand);
     }
 
     /* (non-Javadoc)
      * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
      */
-
     /**
      *
      * @return
      */
-
     @Override
     public HandlerList getHandlers() {
 
-        return handlers;
+	return handlers;
     }
 
     /**
@@ -66,34 +67,30 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
      */
     public static HandlerList getHandlerList() {
 
-        return handlers;
+	return handlers;
     }
-    
+
     /* (non-Javadoc)
      * @see org.bukkit.events.Cancellable#isCancelled()
      */
-
     /**
      *
      * @return
      */
-
     public boolean isCancelled() {
-        
-        return cancelled;
+
+	return cancelled;
     }
 
     /* (non-Javadoc)
      * @see org.bukkit.events.Cancellable#setCancelled(boolean)
      */
-
     /**
      *
      * @param bln
      */
-
     public void setCancelled(boolean bln) {
-        
-        cancelled = bln;
+
+	cancelled = bln;
     }
 }

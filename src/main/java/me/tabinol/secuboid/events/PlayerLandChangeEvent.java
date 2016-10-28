@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.events;
 
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -58,7 +59,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /**
      * The last land.
      */
-    Land lastLand;
+    RealLand lastLand;
 
     /**
      * The last dummy land.
@@ -86,8 +87,8 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
 	super(dummyLand);
 	this.lastDummyLand = lastDummyLand;
 
-	if (lastDummyLand.isGlobal()) {
-	    lastLand = lastDummyLand;
+	if (lastDummyLand.isRealLand()) {
+	    lastLand = (RealLand) lastDummyLand;
 	} else {
 	    lastLand = null;
 	}
@@ -148,7 +149,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      *
      * @return the last land
      */
-    public Land getLastLand() {
+    public RealLand getLastLand() {
 
 	return lastLand;
     }

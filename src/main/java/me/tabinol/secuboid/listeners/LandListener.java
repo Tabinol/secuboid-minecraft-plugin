@@ -25,6 +25,7 @@ import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
@@ -125,9 +126,9 @@ public class LandListener extends CommonListener implements Listener {
 	Land land = playerConf.get(player).getLastLand();
 
 	// Notify for quit
-	while (land instanceof Land) {
-	    notifyPlayers((Land) land, "ACTION.PLAYEREXIT", player);
-	    land = ((Land) land).getParent();
+	while (land.isRealLand()) {
+	    notifyPlayers((RealLand) land, "ACTION.PLAYEREXIT", player);
+	    land = ((RealLand) land).getParent();
 	}
 
 	if (playerHeal.contains(player)) {
@@ -143,8 +144,8 @@ public class LandListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
 	Player player = event.getPlayer();
-	Land lastLand = event.getLastLand();
-	Land land = event.getLand();
+	RealLand lastLand = event.getLastLand();
+	RealLand land = event.getLand();
 	Land dummyLand;
 	String value;
 
@@ -156,16 +157,11 @@ public class LandListener extends CommonListener implements Listener {
 		notifyPlayers(lastLand, "ACTION.PLAYEREXIT", player);
 
 		// Message quit
-		value = lastLand.getFlagNoInherit(FlagList.MESSAGE_EXIT.getFlagType()).getValueString();
+		value = lastLand.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_EXIT.getFlagType()).getValueString();
 		if (!value.isEmpty()) {
 		    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + lastLand.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
 		}
 	    }
-
-	    /*for(String playername : lastLand.getPlayersInLand()){
-             Secuboid.getThisPlugin().iScoreboard().sendScoreboard(lastLand.getPlayersInLand(), Secuboid.getThisPlugin().getServer().getPlayer(playername), lastLand.getName());
-             }
-             Secuboid.getThisPlugin().iScoreboard().sendScoreboard(lastLand.getPlayersInLand(), player, lastLand.getName());*/
 	}
 	if (land != null) {
 	    dummyLand = land;
@@ -174,7 +170,7 @@ public class LandListener extends CommonListener implements Listener {
 		// is banned or can enter
 		PermissionType permissionType = PermissionList.LAND_ENTER.getPermissionType();
 		if ((land.isBanned(player)
-			|| land.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue())
+			|| land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue())
 			&& !land.isOwner(player) && !player.hasPermission("secuboid.bypassban")) {
 		    String message;
 		    if (land.isBanned(player)) {
@@ -196,13 +192,13 @@ public class LandListener extends CommonListener implements Listener {
 	    if (!(lastLand != null && land.isDescendants(lastLand))) {
 
 		//Notify players for Enter
-		Land landTest = land;
+		RealLand landTest = land;
 		while (landTest != null && landTest != lastLand) {
 		    notifyPlayers(landTest, "ACTION.PLAYERENTER", player);
 		    landTest = landTest.getParent();
 		}
 		// Message join
-		value = land.getFlagNoInherit(FlagList.MESSAGE_ENTER.getFlagType()).getValueString();
+		value = land.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_ENTER.getFlagType()).getValueString();
 		if (!value.isEmpty()) {
 		    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + land.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
 		}
@@ -220,7 +216,7 @@ public class LandListener extends CommonListener implements Listener {
 	//Check for Healing
 	PermissionType permissionType = PermissionList.AUTO_HEAL.getPermissionType();
 
-	if (dummyLand.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
+	if (dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
 	    if (!playerHeal.contains(player)) {
 		playerHeal.add(player);
 	    }
@@ -232,7 +228,7 @@ public class LandListener extends CommonListener implements Listener {
 	permissionType = PermissionList.LAND_DEATH.getPermissionType();
 
 	if (!playerConf.get(player).isAdminMod()
-		&& dummyLand.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
+		&& dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
 	    player.setHealth(0);
 	}
     }
@@ -266,7 +262,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param pc the pc
      * @param message the message
      */
-    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message) {
+    private void checkForBannedPlayers(RealLand land, PlayerContainer pc, String message) {
 
 	checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
     }
@@ -279,7 +275,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param kickPlayers the kicked players list
      */
-    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+    private void checkForBannedPlayers(RealLand land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
 
 	Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
 
@@ -288,7 +284,7 @@ public class LandListener extends CommonListener implements Listener {
 		    && !land.isOwner(players)
 		    && !playerConf.get(players).isAdminMod()
 		    && !players.hasPermission("secuboid.bypassban")
-		    && (land.checkPermissionAndInherit(players, PermissionList.LAND_ENTER.getPermissionType()) == false
+		    && (land.getPermissionsFlags().checkPermissionAndInherit(players, PermissionList.LAND_ENTER.getPermissionType()) == false
 		    || land.isBanned(players))
 		    && !kickPlayers.contains(players)) {
 		tpSpawn(players, land, message);
@@ -297,7 +293,7 @@ public class LandListener extends CommonListener implements Listener {
 	}
 
 	// check for children
-	for (Land children : land.getChildren()) {
+	for (RealLand children : land.getChildren()) {
 	    checkForBannedPlayers(children, pc, message);
 	}
     }
@@ -310,7 +306,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param message the message
      * @param playerIn the player in
      */
-    private void notifyPlayers(Land land, String message, Player playerIn) {
+    private void notifyPlayers(RealLand land, String message, Player playerIn) {
 
 	Player player;
 
@@ -334,7 +330,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param land the land
      * @param message the message
      */
-    private void tpSpawn(Player player, Land land, String message) {
+    private void tpSpawn(Player player, RealLand land, String message) {
 
 	player.teleport(player.getWorld().getSpawnLocation());
 	player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));

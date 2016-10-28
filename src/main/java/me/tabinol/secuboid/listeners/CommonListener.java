@@ -20,6 +20,7 @@ package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -47,8 +48,7 @@ public class CommonListener {
     protected boolean checkPermission(Land land, Player player,
 	    PermissionType pt) {
 
-	return land.checkPermissionAndInherit(player, pt) == pt
-		.getDefaultValue();
+	return land.getPermissionsFlags().checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
     }
 
     /**
@@ -94,21 +94,20 @@ public class CommonListener {
      * @param block the block
      * @return true if the sign is attached
      */
-    protected boolean hasEcoSign(Land land, Block block) {
+    protected boolean hasEcoSign(RealLand land, Block block) {
 
-	return (land.getSaleSignLoc() != null && hasEcoSign(land, block, land.getSaleSignLoc()))
-		|| (land.getRentSignLoc() != null && hasEcoSign(land, block, land.getRentSignLoc()));
+	return (land.getSaleSignLoc() != null && hasEcoSign(block, land.getSaleSignLoc()))
+		|| (land.getRentSignLoc() != null && hasEcoSign(block, land.getRentSignLoc()));
     }
 
     /**
-     * Check is the block to destroy is attached to an eco sign
+     * Check if the block to destroy is attached to an eco sign
      *
-     * @param land the land
      * @param block the block
      * @param ecoSignLoc the eco sign location
      * @return true if the sign is attached
      */
-    private boolean hasEcoSign(Land land, Block block, Location ecoSignLoc) {
+    private boolean hasEcoSign(Block block, Location ecoSignLoc) {
 
 	return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc) && block.getRelative(BlockFace.UP).getType() == Material.SIGN_POST)
 		|| isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)

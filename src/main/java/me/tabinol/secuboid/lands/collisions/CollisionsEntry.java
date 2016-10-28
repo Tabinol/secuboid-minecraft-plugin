@@ -19,22 +19,27 @@
 package me.tabinol.secuboid.lands.collisions;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
-
 
 /**
  * The Class CollisionsEntry.
  */
 public class CollisionsEntry {
 
-    /** The error. */
+    /**
+     * The error.
+     */
     private final LandError error;
-    
-    /** The land. */
-    private final Land land;
-    
-    /** The area id. */
+
+    /**
+     * The land.
+     */
+    private final RealLand land;
+
+    /**
+     * The area id.
+     */
     private final int areaId;
 
     /**
@@ -44,11 +49,11 @@ public class CollisionsEntry {
      * @param land the land
      * @param areaId the area id
      */
-    public CollisionsEntry(LandError error, Land land, int areaId) {
+    public CollisionsEntry(LandError error, RealLand land, int areaId) {
 
-        this.error = error;
-        this.land = land;
-        this.areaId = areaId;
+	this.error = error;
+	this.land = land;
+	this.areaId = areaId;
     }
 
     /**
@@ -58,7 +63,7 @@ public class CollisionsEntry {
      */
     public LandError getError() {
 
-        return error;
+	return error;
     }
 
     /**
@@ -66,9 +71,9 @@ public class CollisionsEntry {
      *
      * @return the land
      */
-    public Land getLand() {
+    public RealLand getLand() {
 
-        return land;
+	return land;
     }
 
     /**
@@ -78,7 +83,7 @@ public class CollisionsEntry {
      */
     public int getAreaId() {
 
-        return areaId;
+	return areaId;
     }
 
     /**
@@ -88,32 +93,33 @@ public class CollisionsEntry {
      */
     public String getPrint() {
 
-        if (error != null) switch (error) {
-            case COLLISION:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.COLLISION", land.getName(), areaId + "");
-            case OUT_OF_PARENT:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.OUT_OF_PARENT", land.getName());
-            case CHILD_OUT_OF_BORDER:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.CHILD_OUT_OF_BORDER", land.getName());
-            case HAS_CHILDREN:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.HAS_CHILDREN", land.getName());
-            case NAME_IN_USE:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NAME_IN_USE");
-            case IN_APPROVE_LIST:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.IN_APPROVE_LIST");
-            case NOT_ENOUGH_MONEY:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOT_ENOUGH_MONEY");
-            case MAX_AREA_FOR_LAND:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MAX_AREA_FOR_LAND", land.getName());
-            case MAX_LAND_FOR_PLAYER:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MAX_LAND_FOR_PLAYER");
-            case MUST_HAVE_AT_LEAST_ONE_AREA:
-                return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MUST_HAVE_AT_LEAST_ONE_AREA");
-            default:
-                break;
-        }
-        
+	if (error != null) {
+	    switch (error) {
+		case COLLISION:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.COLLISION", land.getName(), areaId + "");
+		case OUT_OF_PARENT:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.OUT_OF_PARENT", land.getName());
+		case CHILD_OUT_OF_BORDER:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.CHILD_OUT_OF_BORDER", land.getName());
+		case HAS_CHILDREN:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.HAS_CHILDREN", land.getName());
+		case NAME_IN_USE:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NAME_IN_USE");
+		case IN_APPROVE_LIST:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.IN_APPROVE_LIST");
+		case NOT_ENOUGH_MONEY:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOT_ENOUGH_MONEY");
+		case MAX_AREA_FOR_LAND:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MAX_AREA_FOR_LAND", land.getName());
+		case MAX_LAND_FOR_PLAYER:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MAX_LAND_FOR_PLAYER");
+		case MUST_HAVE_AT_LEAST_ONE_AREA:
+		    return Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.MUST_HAVE_AT_LEAST_ONE_AREA");
+		default:
+		    break;
+	    }
+	}
 
-        return null;
+	return null;
     }
 }

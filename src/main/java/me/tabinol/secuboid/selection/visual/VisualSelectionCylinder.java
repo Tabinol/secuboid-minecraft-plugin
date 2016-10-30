@@ -19,12 +19,16 @@
 package me.tabinol.secuboid.selection.visual;
 
 import static java.lang.Math.abs;
+import java.util.HashMap;
+import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
+import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -34,7 +38,37 @@ import org.bukkit.entity.Player;
  *
  * @author michel
  */
-public class VisualSelectionCylinder extends VisualSelection {
+public class VisualSelectionCylinder implements VisualSelection {
+
+    /**
+     * The block list.
+     */
+    protected final Map<Location, Material> blockList;
+
+    /**
+     * The block byte (option) list.
+     */
+    protected final Map<Location, Byte> blockByteList;
+
+    /**
+     *
+     */
+    protected final Player player;
+
+    /**
+     * The is from land.
+     */
+    protected boolean isFromLand;
+
+    /**
+     * The is collision.
+     */
+    protected boolean isCollision;
+
+    /**
+     * Parent detected
+     */
+    protected Land parentDetected;
 
     private CylinderArea area;
 
@@ -44,11 +78,51 @@ public class VisualSelectionCylinder extends VisualSelection {
      * @param isFromLand
      * @param player
      */
-    public VisualSelectionCylinder(CylinderArea area,
-	    boolean isFromLand, Player player) {
-
-	super(isFromLand, player);
+    public VisualSelectionCylinder(CylinderArea area, boolean isFromLand, Player player) {
+	blockList = new HashMap<Location, Material>();
+	blockByteList = new HashMap<Location, Byte>();
+	this.isFromLand = isFromLand;
+	this.player = player;
+	isCollision = false;
+	parentDetected = null;
 	this.area = area;
+    }
+
+    /**
+     * Gets the collision.
+     *
+     * @return the collision
+     */
+    @Override
+    public boolean hasCollision() {
+	return isCollision;
+    }
+
+    /**
+     *
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void removeSelection() {
+
+	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
+	    this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
+	}
+
+	blockList.clear();
+	blockByteList.clear();
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public RealLand getParentDetected() {
+	if (parentDetected.isRealLand()) {
+	    return (RealLand) parentDetected;
+	}
+	return null;
     }
 
     /**
@@ -136,7 +210,7 @@ public class VisualSelectionCylinder extends VisualSelection {
 	    }
 	    for (int posZ : zPositions) {
 
-		Location newloc = new Location(area.getWord(), posX, this.getYNearPlayer(posX, posZ) - 1, posZ);
+		Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 		Block block = newloc.getBlock();
 		blockList.put(newloc, block.getType());
 		blockByteList.put(newloc, block.getData());
@@ -146,7 +220,7 @@ public class VisualSelectionCylinder extends VisualSelection {
 		    // Active Selection
 		    Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
 		    if (parentDetected == testCuboidarea
-			    && (canCreate == true || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMod())) {
+			    && (canCreate == true || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
 			this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
 		    } else {
 			this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);

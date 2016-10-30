@@ -101,22 +101,22 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 	    localParent = select.getVisualSelection().getParentDetected();
 	}
 
-	// Not complicated! The player must be AdminMod, or access to create (in world)
+	// Not complicated! The player must be AdminMode, or access to create (in world)
 	// or access to create in parent if it is a subland.
-	if (!entity.playerConf.isAdminMod() && (localParent == null
+	if (!entity.playerConf.isAdminMode() && (localParent == null
 		|| !localParent.getPermissionsFlags().checkPermissionAndInherit(entity.player, PermissionList.LAND_CREATE.getPermissionType()))) {
 	    throw new SecuboidCommandException("CommandCreate", entity.player, "GENERAL.MISSINGPERMISSION");
 	}
 
-	// If the player is adminmod, the owner is nobody, and set type
+	// If the player is adminmode, the owner is nobody, and set type
 	PlayerContainer localOwner;
 	Type localType;
-	if (entity.playerConf.isAdminMod()) {
+	if (entity.playerConf.isAdminMode()) {
 	    localOwner = new PlayerContainerNobody();
-	    localType = Secuboid.getThisPlugin().getConf().getTypeAdminMod();
+	    localType = Secuboid.getThisPlugin().getConf().getTypeAdminMode();
 	} else {
 	    localOwner = entity.playerConf.getPlayerContainer();
-	    localType = Secuboid.getThisPlugin().getConf().getTypeNoneAdminMod();
+	    localType = Secuboid.getThisPlugin().getConf().getTypeNoneAdminMode();
 	}
 
 	checkCollision(curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);

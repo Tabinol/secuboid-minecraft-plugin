@@ -97,7 +97,7 @@ public class CommandExpand extends CommandExec {
 
 		entity.playerConf.getSelection().addSelection(new AreaSelection(entity.player, area, false, AreaType.CUBOID, AreaSelection.MoveType.PASSIVE));
 
-		if (!((AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA)).getVisualSelection().getCollision()) {
+		if (!((AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA)).getVisualSelection().hasCollision()) {
 		    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
 			    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
 		} else {

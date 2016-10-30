@@ -12,7 +12,7 @@ HELP:
       2: "-General commands-"
       3: "/secuboid select : Select a land."
       4: "/secuboid info : Land information."
-      5: "/secuboid adminmod : Set/Unset admin mod."
+      5: "/secuboid adminmode : Set/Unset admin mode."
       6: "/secuboid reload : Reload the plugin."
       7: "/secuboid approve : Approve or not a change."
       8: "/secuboid list : Land list."
@@ -50,8 +50,8 @@ HELP:
       5: "/secuboid select info : Informations about the selection."
     INFO:
       1: "/secuboid INFO [land] : Show global informations of the curent land."
-    ADMINMOD:
-      1: "/secuboid adminmod : Activate or disactivate admin mod."
+    ADMINMODE:
+      1: "/secuboid adminmode : Activate or disactivate admin mode."
     RELOAD:
       1: "/secuboid reload : Reload the plugin configuration."
     APPROVE:
@@ -320,9 +320,9 @@ COMMAND:
       AREA: "-Area(s)- for '%'"
     NOLAND: "There's no Land here."
     NOTEXIST: "This land doesn't exist."
-  ADMINMOD:
-    JOIN: "you are now in AdminMod."
-    QUIT: "you quit AdminMod."
+  ADMINMODE:
+    JOIN: "you are now in admin mode."
+    QUIT: "you are no longur in admin mode."
   CANCEL:
     ACTION: "Your action is cancelled."
     FLAGS: "The flags selection mode is cancelled."

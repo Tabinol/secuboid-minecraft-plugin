@@ -65,7 +65,7 @@ public class CommandFlag extends CommandExec {
 	if (curArg.equalsIgnoreCase("set")) {
 
 	    // Permission check is on getFlagFromArg
-	    Flag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    Flag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
 
 	    if (!landFlag.getFlagType().isRegistered()) {
 		throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
@@ -80,7 +80,7 @@ public class CommandFlag extends CommandExec {
 
 	} else if (curArg.equalsIgnoreCase("unset")) {
 
-	    FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
 	    if (!land.getPermissionsFlags().removeFlag(flagType)) {
 		throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
 	    }

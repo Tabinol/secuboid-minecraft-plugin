@@ -148,9 +148,9 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	updatePosInfo(event, entry, player.getLocation(), true);
 
-	// Check if AdminMod is auto
-	if (player.hasPermission("secuboid.adminmod.auto")) {
-	    playerConf.get(player).setAdminMod(true);
+	// Check if AdminMode is auto
+	if (player.hasPermission("secuboid.adminmode.auto")) {
+	    playerConf.get(player).setAdminMode(true);
 	}
     }
 
@@ -202,7 +202,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation());
 
 	// TP With ender pearl
-	if (!playerConf.get(event.getPlayer()).isAdminMod()
+	if (!playerConf.get(event.getPlayer()).isAdminMode()
 		&& event.getCause() == TeleportCause.ENDER_PEARL
 		&& !checkPermission(land, player,
 			PermissionList.ENDERPEARL_TP.getPermissionType())) {
@@ -333,7 +333,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	    // Citizen bug, check if entry exist before
 	} else if ((entry = playerConf.get(player)) != null
-		&& !entry.isAdminMod()) {
+		&& !entry.isAdminMode()) {
 	    land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
 	    if (land.isBanned(player)
 		    || (action == Action.RIGHT_CLICK_BLOCK
@@ -427,7 +427,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	    if (checkForPutFire(event, player)) {
 		event.setCancelled(true);
 	    }
-	} else if (!playerConf.get(player).isAdminMod()) {
+	} else if (!playerConf.get(player).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    event.getBlock().getLocation());
@@ -460,7 +460,7 @@ public class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event) {
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getEntity().getLocation());
 	    Player player = event.getPlayer();
@@ -480,7 +480,7 @@ public class PlayerListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-	if (!playerConf.get(event.getPlayer()).isAdminMod()
+	if (!playerConf.get(event.getPlayer()).isAdminMode()
 		&& event.getRightClicked() instanceof ItemFrame) {
 
 	    Player player = event.getPlayer();
@@ -503,7 +503,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	Player player = event.getPlayer();
 
-	if (!playerConf.get(player).isAdminMod()) {
+	if (!playerConf.get(player).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 	    Material mat = event.getBlock().getType();
@@ -537,7 +537,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	Player player;
 
 	if (event.getRemover() instanceof Player
-		&& !playerConf.get((player = (Player) event.getRemover())).isAdminMod()) {
+		&& !playerConf.get((player = (Player) event.getRemover())).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getEntity().getLocation());
 
@@ -559,7 +559,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	Player player = event.getPlayer();
 	PlayerConfEntry entry = playerConf.get(player);
 
-	if (entry != null && !entry.isAdminMod()) {
+	if (entry != null && !entry.isAdminMode()) {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation());
 
 	    if (!checkPermission(land, event.getPlayer(), PermissionList.DROP.getPermissionType())) {
@@ -577,7 +577,7 @@ public class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation());
 
 	    if (!checkPermission(land, event.getPlayer(), PermissionList.PICKUP.getPermissionType())) {
@@ -595,7 +595,7 @@ public class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    event.getBed().getLocation());
 
@@ -626,7 +626,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	    // kill an entity (none player)
 	    if ((entry = playerConf.get(player)) != null // Citizens bugfix
-		    && !entry.isAdminMod()
+		    && !entry.isAdminMode()
 		    && (land.isBanned(player)
 		    || ((BKVersion.isArmorStand(et) || entity instanceof Hanging)
 		    && !checkPermission(land, player, PermissionList.BUILD_DESTROY.getPermissionType()))
@@ -658,7 +658,7 @@ public class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    event.getBlockClicked().getLocation());
@@ -683,7 +683,7 @@ public class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 	    Block block = event.getBlockClicked().getRelative(event.getBlockFace());
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(block.getLocation());
 	    Material mt = event.getBucket();
@@ -813,7 +813,7 @@ public class PlayerListener extends CommonListener implements Listener {
 		&& (event.getRegainReason() == RegainReason.REGEN
 		|| event.getRegainReason() == RegainReason.SATIATED)
 		&& (entry = playerConf.get((player = (Player) event.getEntity()))) != null
-		&& !entry.isAdminMod()) {
+		&& !entry.isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation());
 
@@ -835,7 +835,7 @@ public class PlayerListener extends CommonListener implements Listener {
 	PlayerConfEntry entry;
 
 	if ((entry = playerConf.get(player)) != null
-		&& !entry.isAdminMod()) {
+		&& !entry.isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation());
 
@@ -856,7 +856,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
 	Player player = event.getPlayer();
 
-	if (!playerConf.get(event.getPlayer()).isAdminMod()) {
+	if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    player.getLocation());
@@ -911,7 +911,7 @@ public class PlayerListener extends CommonListener implements Listener {
      */
     private boolean checkForPutFire(BlockEvent event, Player player) {
 
-	if (player != null && !playerConf.get(player).isAdminMod()) {
+	if (player != null && !playerConf.get(player).isAdminMode()) {
 
 	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
 		    event.getBlock().getLocation());

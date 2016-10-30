@@ -21,14 +21,19 @@ package me.tabinol.secuboid.selection.region;
 import java.util.TreeMap;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
-import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
+import me.tabinol.secuboid.selection.PlayerSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.entity.Player;
 
 /**
  * The Class LandSelection.
  */
-public class LandSelection extends RegionSelection {
+public class LandSelection implements RegionSelection {
+
+    /**
+     * The player.
+     */
+    private final Player player;
 
     /**
      * The land.
@@ -48,7 +53,7 @@ public class LandSelection extends RegionSelection {
      */
     public LandSelection(Player player, RealLand land) {
 
-	super(SelectionType.LAND, player);
+	this.player = player;
 	this.land = land;
 	visualAreas = new TreeMap<Area, AreaSelection>();
 
@@ -67,6 +72,11 @@ public class LandSelection extends RegionSelection {
     public RealLand getLand() {
 
 	return land;
+    }
+
+    @Override
+    public PlayerSelection.SelectionType getSelectionType() {
+	return PlayerSelection.SelectionType.LAND;
     }
 
     /* (non-Javadoc)

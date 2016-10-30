@@ -144,7 +144,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 		    }
 		    PlayerContainer owner = landtest.getOwner();
 
-		    if (!owner.hasAccess(player) && !playerConf.isAdminMod()
+		    if (!owner.hasAccess(player) && !playerConf.isAdminMode()
 			    && !(landtest.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.RESIDENT_MANAGER.getPermissionType())
 			    && (landtest.isResident(player) || landtest.isOwner(player)))) {
 			throw new SecuboidCommandException("CommandSelect", player, "GENERAL.MISSINGPERMISSION");
@@ -200,7 +200,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 		false, null, AreaSelection.MoveType.PASSIVE));
 	playerConf.setAutoCancelSelect(true);
 
-	if (!select.getVisualSelection().getCollision()) {
+	if (!select.getVisualSelection().hasCollision()) {
 
 	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
 		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));

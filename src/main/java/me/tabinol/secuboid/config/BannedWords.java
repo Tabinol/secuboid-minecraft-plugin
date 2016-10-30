@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.config;
 
-
 /**
  * Banned words for a land.
  */
@@ -28,122 +27,102 @@ public enum BannedWords {
      *
      */
     DONE,
-
     /**
      *
      */
     WORLDEDIT,
-
     /**
      *
      */
     EXPAND,
-
     /**
      *
      */
     SELECT,
-
     /**
      *
      */
     REMOVE,
-
     /**
      *
      */
     HERE,
-
     /**
      *
      */
     CURRENT,
-
     /**
      *
      */
-    ADMINMOD,
-
+    ADMINMODE,
     /**
      *
      */
     FACTOID,
-
     /**
      *
      */
     SECUBOID,
-
     /**
      *
      */
     CONSOLE,
-
     /**
      *
      */
     CLAIM,
-
     /**
      *
      */
     PAGE,
-
     /**
      *
      */
     CONFIG,
-
     /**
      *
      */
     AREA,
-
     /**
      *
      */
     SET,
-
     /**
      *
      */
     UNSET,
-
     /**
      *
      */
     LIST,
-
     /**
      *
      */
     DEFAULT,
-
     /**
      *
      */
     PRIORITY,
-
     /**
      *
      */
     NULL,
-
     /**
      *
      */
     APPROVE,
-
     /**
      *
      */
     RENAME;
 
-    /** The Constant INVALID_CHARACTERS. */
-    public static final String[] INVALID_CHARACTERS = new String[] {
-        ":", ";", "#", ",", ".", "*", "(", ")", "{", "}", "[", "]", 
-        "|", "\\", "/", "!", "?", "*", "\"", "'", "+", "-", "=" };   
-    
+    /**
+     * The Constant INVALID_CHARACTERS.
+     */
+    public static final String[] INVALID_CHARACTERS = new String[]{
+	":", ";", "#", ",", ".", "*", "(", ")", "{", "}", "[", "]",
+	"|", "\\", "/", "!", "?", "*", "\"", "'", "+", "-", "="};
+
     /**
      * Checks if is banned word or invalid.
      *
@@ -152,23 +131,23 @@ public enum BannedWords {
      */
     public static boolean isBannedWord(String name) {
 
-        // Pass 1 check for an invalid word
-        try {
-            valueOf(name.toUpperCase());
-            // No catch, the name is in ban list
-            return true;
-        
-        } catch (IllegalArgumentException ex) {
-            // The word is not in ban list
-        }
+	// Pass 1 check for an invalid word
+	try {
+	    valueOf(name.toUpperCase());
+	    // No catch, the name is in ban list
+	    return true;
 
-        // Pass 2 check for an invalid character
-        for(String invalidChar : INVALID_CHARACTERS) {
-            if(name.contains(invalidChar)) {
-                return true;
-            }
-        }
+	} catch (IllegalArgumentException ex) {
+	    // The word is not in ban list
+	}
 
-        return false;
+	// Pass 2 check for an invalid character
+	for (String invalidChar : INVALID_CHARACTERS) {
+	    if (name.contains(invalidChar)) {
+		return true;
+	    }
+	}
+
+	return false;
     }
 }

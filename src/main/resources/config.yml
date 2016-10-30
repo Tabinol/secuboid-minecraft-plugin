@@ -36,8 +36,8 @@ Lands:
       - admin
       - player
     OnCreate:                        # Automatic categories on create
-      AdminMod: admin                # On admin mode (or "-null-")
-      NoneAdminMod: player           # Non admin mode (normal players or "-null-")
+      AdminMode: admin               # On admin mode (or "-null-")
+      NoneAdminMode: player          # Non admin mode (normal players or "-null-")
 
   # AllowCollision:
   # true: Collisions are permitted without verification.

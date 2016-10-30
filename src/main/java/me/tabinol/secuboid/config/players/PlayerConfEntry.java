@@ -35,64 +35,64 @@ import org.bukkit.entity.Player;
 public class PlayerConfEntry {
 
     /**
-     * The sender.
+     * The player (or sender).
      */
-    private final CommandSender sender; // The player (or sender)
+    private final CommandSender sender;
 
     /**
-     * The player.
+     *  // The player (if is not console).
      */
-    private final Player player; // The player (if is not console)
+    private final Player player;
 
     /**
-     * The player selection.
+     * Player Lands, areas and visual selections
      */
-    private final PlayerSelection playerSelection; // Player Lands, areas and visual selections
+    private final PlayerSelection playerSelection;
 
     /**
-     * The admin mod.
+     * If the player is in Admin Mod
      */
-    private boolean adminMod = false; // If the player is in Admin Mod
+    private boolean adminMode = false;
 
     /**
-     * The confirm.
+     * secuboid confirm command
      */
-    private ConfirmEntry confirm = null; // "/secuboid confirm" command
+    private ConfirmEntry confirm = null;
 
     /**
-     * The chat page.
+     * pages for /secuboid page command
      */
-    private ChatPage chatPage = null; // pages for "/secuboid page" command
+    private ChatPage chatPage = null;
 
     /**
-     * The last move update.
+     * Time of lastupdate for PlayerEvents
      */
-    private long lastMoveUpdate = 0; // Time of lastupdate for PlayerEvents
+    private long lastMoveUpdate = 0;
 
     /**
-     * The last land.
+     * Last Land for player
      */
-    private Land lastLand = null; // Last Land for player
+    private Land lastLand = null;
 
     /**
-     * The last loc.
+     * Present location
      */
-    private Location lastLoc = null; // Present location
+    private Location lastLoc = null;
 
     /**
-     * The tp cancel.
+     * If the player has a teleportation cacelled
      */
-    private boolean tpCancel = false; // If the player has a teleportation cacelled
+    private boolean tpCancel = false;
 
     /**
-     * The cancel select.
+     * Auto cancel selection system
      */
-    private PlayerAutoCancelSelect cancelSelect = null; // Auto cancel selection system
+    private PlayerAutoCancelSelect cancelSelect = null;
 
     /**
-     * The pcp.
+     * PlayerContainerPlayer for this player
      */
-    private PlayerContainerPlayer pcp; // PlayerContainerPlayer for this player
+    private final PlayerContainerPlayer pcp;
 
     /**
      * Instantiates a new player conf entry.
@@ -154,15 +154,15 @@ public class PlayerConfEntry {
      *
      * @return
      */
-    public boolean isAdminMod() {
+    public boolean isAdminMode() {
 
-	// Security for adminmod
-	if (adminMod == true && !sender.hasPermission("secuboid.adminmod")) {
-	    adminMod = false;
+	// Security for adminmode
+	if (adminMode == true && !sender.hasPermission("secuboid.adminmod")) {
+	    adminMode = false;
 	    return false;
 	}
 
-	return adminMod;
+	return adminMode;
     }
 
     /**
@@ -170,9 +170,9 @@ public class PlayerConfEntry {
      *
      * @param value the new admin mod
      */
-    public void setAdminMod(boolean value) {
+    public void setAdminMode(boolean value) {
 
-	adminMod = value;
+	adminMode = value;
     }
 
     /**

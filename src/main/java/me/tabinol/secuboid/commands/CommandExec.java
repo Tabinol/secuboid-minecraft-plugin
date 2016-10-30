@@ -163,18 +163,18 @@ public abstract class CommandExec {
     /**
      * Check permission.
      *
-     * @param mustBeAdminMod the must be admin mod
+     * @param mustBeAdminMode the must be admin mod
      * @param mustBeOwner the must be owner
      * @param neededPerm the needed perm
      * @param bukkitPermission the bukkit permission
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkPermission(boolean mustBeAdminMod, boolean mustBeOwner,
+    protected void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner,
 	    PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
 
 	boolean canDo = false;
 
-	if (mustBeAdminMod && entity.playerConf.isAdminMod()) {
+	if (mustBeAdminMode && entity.playerConf.isAdminMode()) {
 	    canDo = true;
 	}
 	if (mustBeOwner && (land == null || (land != null && new PlayerContainerOwner(land).hasAccess(entity.player)))) {

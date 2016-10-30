@@ -72,7 +72,7 @@ public class PlayerListener18 extends CommonListener implements Listener {
 
 	// Citizen bug, check if entry exist before
 	if ((entry = playerConf.get(player)) != null
-		&& !entry.isAdminMod()) {
+		&& !entry.isAdminMode()) {
 	    land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
 
 	    // Remove and add an item from an armor stand

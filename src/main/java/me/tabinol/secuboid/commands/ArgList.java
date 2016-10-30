@@ -157,12 +157,12 @@ public class ArgList {
     /**
      * Gets the flag type from arg.
      *
-     * @param isAdminmod the is adminmod
+     * @param isAdminmode the is adminmode
      * @param isOwner the is owner
      * @return the flag type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public FlagType getFlagTypeFromArg(boolean isAdminmod, boolean isOwner) throws SecuboidCommandException {
+    public FlagType getFlagTypeFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
 
 	String curArg = getNext();
 	FlagType flagType;
@@ -176,7 +176,7 @@ public class ArgList {
 	    throw new SecuboidCommandException("Flag error", player, "COMMAND.FLAGS.FLAGNULL");
 	}
 
-	if (!isAdminmod && !(isOwner && Secuboid.getThisPlugin().getConf().getOwnerConfigFlag().contains(flagType))) {
+	if (!isAdminmode && !(isOwner && Secuboid.getThisPlugin().getConf().getOwnerConfigFlag().contains(flagType))) {
 	    throw new SecuboidCommandException("Flag error", player, "GENERAL.MISSINGPERMISSION");
 	}
 
@@ -267,12 +267,12 @@ public class ArgList {
     /**
      * Gets the permission type from arg.
      *
-     * @param isAdminmod the is adminmod
+     * @param isAdminmode the is adminmod
      * @param isOwner the is owner
      * @return the permission type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PermissionType getPermissionTypeFromArg(boolean isAdminmod, boolean isOwner) throws SecuboidCommandException {
+    public PermissionType getPermissionTypeFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
 
 	String curArg = getNext();
 	PermissionType pt;
@@ -286,7 +286,7 @@ public class ArgList {
 	    throw new SecuboidCommandException("Permission Error", player, "COMMAND.PERMISSIONTYPE.INVALID");
 	}
 
-	if (!isAdminmod && !(isOwner && Secuboid.getThisPlugin().getConf().getOwnerConfigPerm().contains(pt))) {
+	if (!isAdminmode && !(isOwner && Secuboid.getThisPlugin().getConf().getOwnerConfigPerm().contains(pt))) {
 	    throw new SecuboidCommandException("Permission Error", player, "GENERAL.MISSINGPERMISSION");
 	}
 
@@ -296,14 +296,14 @@ public class ArgList {
     /**
      * Gets the permission from arg.
      *
-     * @param isAdminmod the is adminmod
+     * @param isAdminmode the is adminmod
      * @param isOwner the is owner
      * @return the permission from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public Permission getPermissionFromArg(boolean isAdminmod, boolean isOwner) throws SecuboidCommandException {
+    public Permission getPermissionFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
 
-	PermissionType pt = getPermissionTypeFromArg(isAdminmod, isOwner);
+	PermissionType pt = getPermissionTypeFromArg(isAdminmode, isOwner);
 	String curArg = getNext();
 
 	if (curArg == null) {

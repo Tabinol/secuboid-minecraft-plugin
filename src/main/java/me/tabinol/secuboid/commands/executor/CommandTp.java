@@ -60,7 +60,7 @@ public class CommandTp extends CommandExec {
 	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
 	}
 
-	// Check adminmod or permission TP
+	// Check adminmode or permission TP
 	checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
 	// Try to get Location

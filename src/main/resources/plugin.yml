@@ -17,22 +17,22 @@ permissions:
         description: Secuboid Command Permission
         default: op
         children:
-            secuboid.adminmod: true
-            secuboid.adminmod.auto: true
+            secuboid.adminmode: true
+            secuboid.adminmode.auto: true
             secuboid.collisionapprove: true
             secuboid.socialspy: true
             secuboid.bypassban: true
             secuboid.use: true
             secuboid.reload: true
             secuboid.inv.*: true
-    secuboid.adminmod:
+    secuboid.adminmode:
         description: Can use Admin Mod
         default: op
-    secuboid.adminmod.auto:
+    secuboid.adminmode.auto:
         description: Auto Admin Mod on connect
         default: op
         children:
-            secuboid.adminmod: true
+            secuboid.adminmode: true
     secuboid.collisionapprove:
         description: Can approve land creation collisions
         default: op

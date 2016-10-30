@@ -18,183 +18,54 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
-import java.util.HashMap;
-import java.util.Map;
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
-import me.tabinol.secuboid.lands.areas.AreaType;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.selection.region.AreaSelection;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
 
 /**
  *
  * @author michel
  */
-public abstract class VisualSelection {
-
-    /**
-     * The block list.
-     */
-    protected final Map<Location, Material> blockList;
-
-    /**
-     * The block byte (option) list.
-     */
-    protected final Map<Location, Byte> blockByteList;
-
-    /**
-     *
-     */
-    protected final Player player;
-
-    /**
-     * The is from land.
-     */
-    protected boolean isFromLand;
-
-    /**
-     * The is collision.
-     */
-    protected boolean isCollision;
-
-    /**
-     * Parent detected
-     */
-    protected Land parentDetected;
-
-    /**
-     *
-     * @param isFromLand
-     * @param player
-     */
-    protected VisualSelection(boolean isFromLand, Player player) {
-
-	blockList = new HashMap<Location, Material>();
-	blockByteList = new HashMap<Location, Byte>();
-	this.isFromLand = isFromLand;
-	this.player = player;
-	isCollision = false;
-	parentDetected = null;
-    }
+public interface VisualSelection {
 
     /**
      *
      * @return
      */
-    public abstract Area getArea();
+    Area getArea();
 
     /**
      * Sets the active selection.
      */
-    public abstract void setActiveSelection();
+    void setActiveSelection();
 
     /**
      * Make visual selection.
      */
-    public abstract void makeVisualSelection();
+    void makeVisualSelection();
 
     // Called from AreaSelection then player listenner
     /**
      *
      * @param moveType
      */
-    public abstract void playerMove(AreaSelection.MoveType moveType);
+    void playerMove(AreaSelection.MoveType moveType);
 
     /**
-     * Gets the collision.
+     * Gets the if the area has collision.
      *
      * @return the collision
      */
-    public boolean getCollision() {
-
-	return isCollision;
-    }
+    boolean hasCollision();
 
     /**
      *
      */
-    @SuppressWarnings("deprecation")
-    public void removeSelection() {
-
-	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-	    this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
-	}
-
-	blockList.clear();
-	blockByteList.clear();
-    }
-
-    /**
-     * Gets the y near player before air.
-     *
-     * @param x the x
-     * @param z the z
-     * @return the y near player
-     */
-    protected int getYNearPlayer(int x, int z) {
-
-	Location loc = new Location(player.getWorld(), x, player.getLocation().getY() - 1, z);
-
-	if (!loc.getBlock().getType().isSolid()) {
-	    while (!loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()
-		    && loc.getBlockY() > 1) {
-		loc.subtract(0, 1, 0);
-	    }
-	} else {
-	    while (loc.getBlock().getType().isSolid() && loc.getBlockY() < player.getWorld().getMaxHeight()) {
-		loc.add(0, 1, 0);
-	    }
-	}
-	return loc.getBlockY();
-    }
+    public void removeSelection();
 
     /**
      *
      * @return
      */
-    public RealLand getParentDetected() {
-	if (parentDetected.isRealLand()) {
-	    return (RealLand) parentDetected;
-	}
-	return null;
-    }
-
-    /**
-     * Create a new visual selection from default
-     *
-     * @param areaType areaType
-     * @param isFromLand is from land or must be false
-     * @param player the player
-     * @return visual selection
-     */
-    public static VisualSelection createVisualSelection(AreaType areaType, boolean isFromLand, Player player) {
-
-	if (areaType == AreaType.CUBOID) {
-	    return new VisualSelectionCuboid(null, isFromLand, player);
-	}
-	return new VisualSelectionCylinder(null, isFromLand, player);
-    }
-
-    /**
-     * Create a visual selection from an area
-     *
-     * @param area area
-     * @param isFromLand is from land or must be false
-     * @param player the player
-     * @return visual selection
-     */
-    public static VisualSelection createVisualSelection(Area area,
-	    boolean isFromLand, Player player) {
-
-	if (area.getAreaType() == AreaType.CUBOID) {
-	    return new VisualSelectionCuboid((CuboidArea) area, isFromLand, player);
-	}
-	return new VisualSelectionCylinder((CylinderArea) area, isFromLand, player);
-    }
+    RealLand getParentDetected();
 }

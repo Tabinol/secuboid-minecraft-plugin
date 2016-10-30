@@ -26,18 +26,18 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.ChatColor;
 
 /**
- * The Class CommandAdminmod.
+ * The Class CommandAdminmode.
  */
-@InfoCommand(name = "adminmod")
-public class CommandAdminmod extends CommandExec {
+@InfoCommand(name = "adminmode", aliases = "am")
+public class CommandAdminmode extends CommandExec {
 
     /**
-     * Instantiates a new command adminmod.
+     * Instantiates a new command adminmode.
      *
      * @param entity the entity
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandAdminmod(CommandEntities entity) throws SecuboidCommandException {
+    public CommandAdminmode(CommandEntities entity) throws SecuboidCommandException {
 
 	super(entity);
     }
@@ -48,14 +48,14 @@ public class CommandAdminmod extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkPermission(false, false, null, "secuboid.adminmod");
+	checkPermission(false, false, null, "secuboid.adminmode");
 
-	if (entity.playerConf.isAdminMod()) {
-	    entity.playerConf.setAdminMod(false);
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMOD.QUIT"));
+	if (entity.playerConf.isAdminMode()) {
+	    entity.playerConf.setAdminMode(false);
+	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMODE.QUIT"));
 	} else {
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMOD.JOIN"));
-	    entity.playerConf.setAdminMod(true);
+	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMODE.JOIN"));
+	    entity.playerConf.setAdminMode(true);
 	}
     }
 }

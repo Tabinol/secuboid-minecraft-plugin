@@ -28,17 +28,20 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-
 /**
  * The Class CommandKick.
  */
-@InfoCommand(name="kick", forceParameter=true)
+@InfoCommand(name = "kick", forceParameter = true)
 public class CommandKick extends CommandExec {
 
-    /** The arg list. */
+    /**
+     * The arg list.
+     */
     private final ArgList argList;
-    
-    /** The player. */
+
+    /**
+     * The player.
+     */
     private final Player player;
 
     /**
@@ -49,47 +52,47 @@ public class CommandKick extends CommandExec {
      */
     public CommandKick(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
-        argList = entity.argList;
-        player = entity.player;
+	super(entity);
+	argList = entity.argList;
+	player = entity.player;
 
     }
-    
+
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String playerKickName = argList.getNext();
+	String playerKickName = argList.getNext();
 
-        getLandFromCommandIfNoLandSelected();
+	getLandFromCommandIfNoLandSelected();
 
-        // Only if it is from Kick command
-        if (entity != null) {
-            checkSelections(true, null);
-            checkPermission(true, true, PermissionList.LAND_KICK.getPermissionType(), null);
-        }
+	// Only if it is from Kick command
+	if (entity != null) {
+	    checkSelections(true, null);
+	    checkPermission(true, true, PermissionList.LAND_KICK.getPermissionType(), null);
+	}
 
-        // No player name?
-        if (playerKickName == null) {
-            throw new SecuboidCommandException("Kicked", player, "COMMAND.KICK.PLAYERNULL");
-        }
+	// No player name?
+	if (playerKickName == null) {
+	    throw new SecuboidCommandException("Kicked", player, "COMMAND.KICK.PLAYERNULL");
+	}
 
-        @SuppressWarnings("deprecation")
-        Player playerKick = Secuboid.getThisPlugin().getServer().getPlayer(playerKickName);
+	@SuppressWarnings("deprecation")
+	Player playerKick = Secuboid.getThisPlugin().getServer().getPlayer(playerKickName);
 
-        // Player not in land?
-        if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
-                || Secuboid.getThisPlugin().getPlayerConf().get(playerKick).isAdminMod()
-                || playerKick.hasPermission("secuboid.bypassban")) {
-            throw new SecuboidCommandException("Kicked", player, "COMMAND.KICK.NOTINLAND");
-        }
-        
-        //Kick the player
-        playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
-        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
-        Secuboid.getThisPlugin().getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
+	// Player not in land?
+	if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
+		|| Secuboid.getThisPlugin().getPlayerConf().get(playerKick).isAdminMode()
+		|| playerKick.hasPermission("secuboid.bypassban")) {
+	    throw new SecuboidCommandException("Kicked", player, "COMMAND.KICK.NOTINLAND");
+	}
+
+	//Kick the player
+	playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
+	playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
+	Secuboid.getThisPlugin().getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
     }
 }

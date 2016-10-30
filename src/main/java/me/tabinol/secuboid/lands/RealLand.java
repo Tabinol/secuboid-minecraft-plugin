@@ -1022,7 +1022,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
 	if (playersInLand.contains(player)
 		&& (!Secuboid.getThisPlugin().getPlayerConf().isVanished(player)
-		|| Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMod())) {
+		|| Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMode())) {
 	    return true;
 	}
 
@@ -1075,7 +1075,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	Set<Player> playerList = new HashSet<Player>();
 
 	for (Player player : playersInLand) {
-	    if (!Secuboid.getThisPlugin().getPlayerConf().isVanished(player) || Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMod()) {
+	    if (!Secuboid.getThisPlugin().getPlayerConf().isVanished(player) || Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMode()) {
 		playerList.add(player);
 	    }
 	}

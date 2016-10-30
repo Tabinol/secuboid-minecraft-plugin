@@ -166,7 +166,7 @@ public class LandListener extends CommonListener implements Listener {
 	if (land != null) {
 	    dummyLand = land;
 
-	    if (!playerConf.get(player).isAdminMod()) {
+	    if (!playerConf.get(player).isAdminMode()) {
 		// is banned or can enter
 		PermissionType permissionType = PermissionList.LAND_ENTER.getPermissionType();
 		if ((land.isBanned(player)
@@ -227,7 +227,7 @@ public class LandListener extends CommonListener implements Listener {
 	//Death land
 	permissionType = PermissionList.LAND_DEATH.getPermissionType();
 
-	if (!playerConf.get(player).isAdminMod()
+	if (!playerConf.get(player).isAdminMode()
 		&& dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
 	    player.setHealth(0);
 	}
@@ -282,7 +282,7 @@ public class LandListener extends CommonListener implements Listener {
 	for (Player players : playersArray) {
 	    if (pc.hasAccess(players)
 		    && !land.isOwner(players)
-		    && !playerConf.get(players).isAdminMod()
+		    && !playerConf.get(players).isAdminMode()
 		    && !players.hasPermission("secuboid.bypassban")
 		    && (land.getPermissionsFlags().checkPermissionAndInherit(players, PermissionList.LAND_ENTER.getPermissionType()) == false
 		    || land.isBanned(players))
@@ -315,8 +315,8 @@ public class LandListener extends CommonListener implements Listener {
 	    player = playerC.getPlayer();
 
 	    if (player != null && player != playerIn
-		    // Only adminmod can see vanish
-		    && (!playerConf.isVanished(playerIn) || playerConf.get(player).isAdminMod())) {
+		    // Only adminmode can see vanish
+		    && (!playerConf.isVanished(playerIn) || playerConf.get(player).isAdminMode())) {
 		player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(
 			message, playerIn.getDisplayName(), land.getName() + ChatColor.GRAY));
 	    }

@@ -55,8 +55,8 @@ public class CommandSale extends CommandExec {
 
 	checkSelections(true, null);
 	checkPermission(true, true, null, null);
-	if (!entity.playerConf.isAdminMod()) {
-	    // If the player not adminmod, he must be owner && permission true
+	if (!entity.playerConf.isAdminMode()) {
+	    // If the player not adminmode, he must be owner && permission true
 	    checkPermission(false, false, PermissionList.ECO_LAND_FOR_SALE.getPermissionType(), null);
 	}
 

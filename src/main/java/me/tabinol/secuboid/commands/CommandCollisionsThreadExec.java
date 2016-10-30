@@ -165,6 +165,6 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
 	return !(Secuboid.getThisPlugin().getPlayerMoney() == null
 		|| !Secuboid.getThisPlugin().getConf().useEconomy()
-		|| entity.playerConf.isAdminMod());
+		|| entity.playerConf.isAdminMode());
     }
 }

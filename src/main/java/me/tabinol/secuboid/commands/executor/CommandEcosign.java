@@ -118,80 +118,84 @@ public class CommandEcosign extends CommandExec {
 			land.getName()));
 		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is purchased by : " + player.getName());
 	    } else // Rent and unrent
-	    if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
-		    || playerConf.isAdminMod())) {
+	    {
+		if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
+			|| playerConf.isAdminMode())) {
 
-		// Unrent
-		land.unSetRented();
-		try {
-		    new EcoSign(land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(), land.getRentRenew(),
-			    land.getRentAutoRenew(), null);
-		} catch (SignException e) {
-		    // Real Error
-		    e.printStackTrace();
-		}
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND",
-			land.getName()));
-		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is unrented by : " + player.getName());
+		    // Unrent
+		    land.unSetRented();
+		    try {
+			new EcoSign(land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(), land.getRentRenew(),
+				land.getRentAutoRenew(), null);
+		    } catch (SignException e) {
+			// Real Error
+			e.printStackTrace();
+		    }
+		    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND",
+			    land.getName()));
+		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is unrented by : " + player.getName());
 
-	    } else if (!land.isRented()) {
+		} else if (!land.isRented()) {
 
-		// Rent
-		if (!land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.ECO_LAND_RENT.getPermissionType())) {
-		    throw new SecuboidCommandException("No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
-		}
-		if (Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(player,
-			land.getWorldName()) < land.getRentPrice()) {
-		    throw new SecuboidCommandException("Not enough money to rent a land", player, "COMMAND.ECONOMY.NOTENOUGHMONEY");
-		}
-		Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(player,
-			land.getWorldName(), land.getRentPrice());
-		if (land.getOwner() instanceof PlayerContainerPlayer) {
-		    Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
+		    // Rent
+		    if (!land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.ECO_LAND_RENT.getPermissionType())) {
+			throw new SecuboidCommandException("No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
+		    }
+		    if (Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(player,
+			    land.getWorldName()) < land.getRentPrice()) {
+			throw new SecuboidCommandException("Not enough money to rent a land", player, "COMMAND.ECONOMY.NOTENOUGHMONEY");
+		    }
+		    Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(player,
 			    land.getWorldName(), land.getRentPrice());
+		    if (land.getOwner() instanceof PlayerContainerPlayer) {
+			Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
+				land.getWorldName(), land.getRentPrice());
+		    }
+		    land.setRented(playerConf.getPlayerContainer());
+		    try {
+			new EcoSign(land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(), land.getRentRenew(),
+				land.getRentAutoRenew(), player.getName());
+		    } catch (SignException e) {
+			// Real Error
+			e.printStackTrace();
+		    }
+		    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
+			    land.getName()));
+		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is rented by : " + player.getName());
 		}
-		land.setRented(playerConf.getPlayerContainer());
-		try {
-		    new EcoSign(land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(), land.getRentRenew(),
-			    land.getRentAutoRenew(), player.getName());
-		} catch (SignException e) {
-		    // Real Error
-		    e.printStackTrace();
-		}
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
-			land.getName()));
-		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is rented by : " + player.getName());
 	    }
 	} else // Left Click, destroy the sign
-	if (land.getOwner().hasAccess(player) || playerConf.isAdminMod()) {
+	{
+	    if (land.getOwner().hasAccess(player) || playerConf.isAdminMode()) {
 
-	    if (signType == SignType.SALE) {
+		if (signType == SignType.SALE) {
 
-		// Destroy sale sign
-		try {
-		    new EcoSign(land, land.getSaleSignLoc()).removeSign();
-		} catch (SignException e) {
-		    // Real Error
-		    e.printStackTrace();
+		    // Destroy sale sign
+		    try {
+			new EcoSign(land, land.getSaleSignLoc()).removeSign();
+		    } catch (SignException e) {
+			// Real Error
+			e.printStackTrace();
+		    }
+		    land.setForSale(false, 0, null);
+		    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE",
+			    land.getName()));
+		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is no longer for sale by : " + player.getName());
+		} else {
+
+		    // Destroy rent sign
+		    try {
+			new EcoSign(land, land.getRentSignLoc()).removeSign();
+		    } catch (SignException e) {
+			// Real Error
+			e.printStackTrace();
+		    }
+		    land.unSetRented();
+		    land.unSetForRent();
+		    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNFORRENT",
+			    land.getName()));
+		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is no longer for rent by : " + player.getName());
 		}
-		land.setForSale(false, 0, null);
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE",
-			land.getName()));
-		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is no longer for sale by : " + player.getName());
-	    } else {
-
-		// Destroy rent sign
-		try {
-		    new EcoSign(land, land.getRentSignLoc()).removeSign();
-		} catch (SignException e) {
-		    // Real Error
-		    e.printStackTrace();
-		}
-		land.unSetRented();
-		land.unSetForRent();
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.UNFORRENT",
-			land.getName()));
-		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is no longer for rent by : " + player.getName());
 	    }
 	}
     }

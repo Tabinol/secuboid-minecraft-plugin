@@ -12,7 +12,7 @@ HELP:
       2: "-Commandes générales-"
       3: "/secuboid select : Sélectionner un terrain."
       4: "/secuboid info : Information sur le terrain."
-      5: "/secuboid adminmod : Activer/Désactiver le mode admin."
+      5: "/secuboid adminmode : Activer/Désactiver le mode admin."
       6: "/secuboid reload : Recharger le plugin."
       7: "/secuboid approve : Approuver ou non une action."
       8: "/secuboid list : Liste des terrains."
@@ -50,8 +50,8 @@ HELP:
       5: "/secuboid select info : Informations à propos de la sélection."
     INFO:
       1: "/secuboid info [terrain] : Affiche les informations générales du terrain."
-    ADMINMOD:
-      1: "/secuboid adminmod : Activer ou désactiver le mode admin."
+    ADMINMODE:
+      1: "/secuboid adminmode : Activer ou désactiver le mode admin."
     RELOAD:
       1: "/secuboid reload : Recharge la configuration du plugin."
     APPROVE:
@@ -320,9 +320,9 @@ COMMAND:
       AREA: "-Étendue(s)- pour '%'"
     NOLAND: "Il n'y a pas de terrain ici."
     NOTEXIST: "Ce terrain n'existe pas."
-  ADMINMOD:
-    JOIN: "Vous êtes maintenant en Mode Admin."
-    QUIT: "Vous quittez le Mode Admin."
+  ADMINMODE:
+    JOIN: "Vous êtes maintenant en mode admin."
+    QUIT: "Vous quittez le mode admin."
   CANCEL:
     ACTION: "Votre action est annulée."
     FLAGS: "Le mode de sélection de drapeaux est annulé."

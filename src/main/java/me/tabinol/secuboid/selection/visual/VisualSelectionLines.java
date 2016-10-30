@@ -19,14 +19,21 @@
 package me.tabinol.secuboid.selection.visual;
 
 import static java.lang.Math.abs;
+import java.util.HashMap;
+import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.lands.areas.AreaType;
+import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.LinesArea;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -36,7 +43,37 @@ import org.bukkit.entity.Player;
  *
  * @author michel
  */
-public class VisualSelectionLines extends VisualSelection {
+public class VisualSelectionLines implements VisualSelection {
+
+    /**
+     * The block list.
+     */
+    protected final Map<Location, Material> blockList;
+
+    /**
+     * The block byte (option) list.
+     */
+    protected final Map<Location, Byte> blockByteList;
+
+    /**
+     *
+     */
+    protected final Player player;
+
+    /**
+     * The is from land.
+     */
+    protected boolean isFromLand;
+
+    /**
+     * The is collision.
+     */
+    protected boolean isCollision;
+
+    /**
+     * Parent detected
+     */
+    protected Land parentDetected;
 
     private final LinesArea area;
     private LineLine curLine;
@@ -54,15 +91,15 @@ public class VisualSelectionLines extends VisualSelection {
      * @param area
      * @param isFromLand
      * @param player
-     * @param upDist
-     * @param downDist
-     * @param leftDist
-     * @param rightDist
      */
-    public VisualSelectionLines(LinesArea area, boolean isFromLand, Player player,
-	    int upDist, int downDist, int leftDist, int rightDist) {
+    public VisualSelectionLines(LinesArea area, boolean isFromLand, Player player) {
 
-	super(isFromLand, player);
+	blockList = new HashMap<Location, Material>();
+	blockByteList = new HashMap<Location, Byte>();
+	this.isFromLand = isFromLand;
+	this.player = player;
+	isCollision = false;
+	parentDetected = null;
 	Location loc = player.getLocation();
 	if (area != null) {
 	    this.area = area;
@@ -72,10 +109,81 @@ public class VisualSelectionLines extends VisualSelection {
 	x1 = loc.getBlockX();
 	y1 = loc.getBlockY();
 	z1 = loc.getBlockZ();
-	this.upDist = upDist;
-	this.downDist = downDist;
-	this.leftDist = leftDist;
-	this.rightDist = rightDist;
+	// TODO get correct dist
+	this.upDist = 5;
+	this.downDist = 5;
+	this.leftDist = 5;
+	this.rightDist = 5;
+    }
+
+    /**
+     * Gets the collision.
+     *
+     * @return the collision
+     */
+    @Override
+    public boolean hasCollision() {
+	return isCollision;
+    }
+
+    /**
+     *
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public void removeSelection() {
+
+	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
+	    this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
+	}
+
+	blockList.clear();
+	blockByteList.clear();
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public RealLand getParentDetected() {
+	if (parentDetected.isRealLand()) {
+	    return (RealLand) parentDetected;
+	}
+	return null;
+    }
+
+    /**
+     * Create a new visual selection from default
+     *
+     * @param areaType areaType
+     * @param isFromLand is from land or must be false
+     * @param player the player
+     * @return visual selection
+     */
+    public static VisualSelection createVisualSelection(AreaType areaType, boolean isFromLand, Player player) {
+
+	if (areaType == AreaType.CUBOID) {
+	    return new VisualSelectionCuboid(null, isFromLand, player);
+	}
+	return new VisualSelectionCylinder(null, isFromLand, player);
+    }
+
+    /**
+     * Create a visual selection from an area
+     *
+     * @param area area
+     * @param isFromLand is from land or must be false
+     * @param player the player
+     * @return visual selection
+     */
+    public static VisualSelection createVisualSelection(Area area,
+	    boolean isFromLand, Player player) {
+
+	if (area.getAreaType() == AreaType.CUBOID) {
+	    return new VisualSelectionCuboid((CuboidArea) area, isFromLand, player);
+	}
+	return new VisualSelectionCylinder((CylinderArea) area, isFromLand, player);
     }
 
     /**
@@ -160,13 +268,13 @@ public class VisualSelectionLines extends VisualSelection {
 		for (int posZ = z1; posZ <= z2; posZ++) {
 		    int correctZ = (int) ((curLine.getA() * posX) + curLine.getB());
 		    if (posZ == correctZ) {
-			Location newloc = new Location(area.getWord(), posX, this.getYNearPlayer(posX, posZ) - 1, posZ);
+			Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 			Block block = newloc.getBlock();
 			blockList.put(newloc, block.getType());
 			blockByteList.put(newloc, block.getData());
 			Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
-				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMod())) {
+				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
 			    this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
 			} else {
 			    this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);
@@ -177,12 +285,13 @@ public class VisualSelectionLines extends VisualSelection {
 	    }
 	} else {
 	    // Passive
-	    Location newloc = new Location(area.getWord(), x1, this.getYNearPlayer(x1, z1) - 1, z1);
+	    Location newloc = new Location(area.getWord(), x1, PlayersUtil.getYNearPlayer(player, x1, z1) - 1, z1);
 	    Block block = newloc.getBlock();
 	    blockList.put(newloc, block.getType());
 	    blockByteList.put(newloc, block.getData());
 	    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
-	    newloc = new Location(area.getWord(), curLine.getX2(), this.getYNearPlayer(curLine.getX2(), curLine.getZ2()) - 1, curLine.getZ2());
+	    newloc = new Location(area.getWord(), curLine.getX2(), PlayersUtil.getYNearPlayer(player, curLine.getX2(),
+		    curLine.getZ2()) - 1, curLine.getZ2());
 	    block = newloc.getBlock();
 	    blockList.put(newloc, block.getType());
 	    blockByteList.put(newloc, block.getData());

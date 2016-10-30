@@ -169,7 +169,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
 	if (fonction.equalsIgnoreCase("set")) {
 
-	    Permission perm = entity.argList.getPermissionFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    Permission perm = entity.argList.getPermissionFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
 
 	    if (!perm.getPermType().isRegistered()) {
 		throw new SecuboidCommandException("Permission not registered", entity.player, "COMMAND.PERMISSIONTYPE.TYPENULL");
@@ -187,7 +187,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
 	} else if (fonction.equalsIgnoreCase("unset")) {
 
-	    PermissionType pt = entity.argList.getPermissionTypeFromArg(entity.playerConf.isAdminMod(), land.isOwner(entity.player));
+	    PermissionType pt = entity.argList.getPermissionTypeFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
 	    if (!land.getPermissionsFlags().removePermission(pc, pt)) {
 		throw new SecuboidCommandException("Permission", entity.player, "COMMAND.PERMISSION.REMOVENOTEXIST");
 	    }

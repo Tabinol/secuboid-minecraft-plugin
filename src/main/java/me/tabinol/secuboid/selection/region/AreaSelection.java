@@ -20,14 +20,20 @@ package me.tabinol.secuboid.selection.region;
 
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
-import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
+import me.tabinol.secuboid.selection.PlayerSelection;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
+import me.tabinol.secuboid.selection.visual.VisualSelectionUtil;
 import org.bukkit.entity.Player;
 
 /**
  * The Class AreaSelection.
  */
-public class AreaSelection extends RegionSelection {
+public class AreaSelection implements RegionSelection {
+
+    /**
+     * The player.
+     */
+    private final Player player;
 
     /**
      * Move Type.
@@ -37,26 +43,25 @@ public class AreaSelection extends RegionSelection {
 	/**
 	 *
 	 */
-
-        PASSIVE,
-
+	PASSIVE,
 	/**
 	 *
 	 */
 	ACTIVE,
-
 	/**
 	 *
 	 */
 	EXPAND
-        
+
     }
-    
+
     private final MoveType moveType;
-    
-    /** The area. */
+
+    /**
+     * The area.
+     */
     private final VisualSelection visualSelection;
-    
+
     /**
      * Instantiates a new area selection.
      *
@@ -67,20 +72,25 @@ public class AreaSelection extends RegionSelection {
      * @param moveType move type
      */
     public AreaSelection(Player player, Area area, boolean isFromLand,
-            AreaType areaType, MoveType moveType) {
+	    AreaType areaType, MoveType moveType) {
 
-        super(SelectionType.AREA, player);
-        this.moveType = moveType;
-        
-        if(area == null) {
-            visualSelection = VisualSelection.createVisualSelection(areaType, 
-                    isFromLand, player);
-            visualSelection.setActiveSelection();
-        } else {
-            visualSelection = VisualSelection.createVisualSelection(area, 
-                    isFromLand, player);
-            visualSelection.makeVisualSelection();
-        }
+	this.player = player;
+	this.moveType = moveType;
+
+	if (area == null) {
+	    visualSelection = VisualSelectionUtil.createVisualSelection(areaType,
+		    isFromLand, player);
+	    visualSelection.setActiveSelection();
+	} else {
+	    visualSelection = VisualSelectionUtil.createVisualSelection(area,
+		    isFromLand, player);
+	    visualSelection.makeVisualSelection();
+	}
+    }
+
+    @Override
+    public PlayerSelection.SelectionType getSelectionType() {
+	return PlayerSelection.SelectionType.AREA;
     }
 
     /* (non-Javadoc)
@@ -88,8 +98,8 @@ public class AreaSelection extends RegionSelection {
      */
     @Override
     public void removeSelection() {
-        
-        visualSelection.removeSelection();
+
+	visualSelection.removeSelection();
     }
 
     /**
@@ -98,26 +108,25 @@ public class AreaSelection extends RegionSelection {
      * @return the visual selection
      */
     public VisualSelection getVisualSelection() {
-        
-        return visualSelection;
+
+	return visualSelection;
     }
-    
+
     /**
      *
      * @return
      */
     public MoveType getMoveType() {
-        
-        return moveType;
-    }
-    
-    // Called from then player listenner
 
+	return moveType;
+    }
+
+    // Called from then player listenner
     /**
      *
      */
     public void playerMove() {
-        
-        visualSelection.playerMove(moveType);
+
+	visualSelection.playerMove(moveType);
     }
 }

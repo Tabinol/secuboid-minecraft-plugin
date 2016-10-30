@@ -105,10 +105,10 @@ public class CommandList extends CommandPlayerThreadExec {
 
 	convertPcIfNeeded(playerCacheEntry);
 
-	// Check if the player is AdminMod or send only owned lands
+	// Check if the player is AdminMode or send only owned lands
 	Collection<RealLand> lands;
 
-	if (entity.playerConf.isAdminMod()) {
+	if (entity.playerConf.isAdminMode()) {
 	    lands = Secuboid.getThisPlugin().getLands().getLands();
 	} else {
 	    lands = Secuboid.getThisPlugin().getLands().getLands(entity.playerConf.getPlayerContainer());

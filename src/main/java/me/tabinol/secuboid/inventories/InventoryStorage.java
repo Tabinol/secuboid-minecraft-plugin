@@ -46,7 +46,7 @@ public class InventoryStorage {
     /**
      *
      */
-    public final static int STORAGE_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
+    public final static int STORAGE_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
 
     /**
      *

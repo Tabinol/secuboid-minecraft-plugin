@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class StorageFlat implements Storage {
      * The lands dir.
      */
     private String landsDir;
+
+    /**
+     * Represents lands with non resolved parents. In a second loop, we will try to resolve.
+     */
+    private Map<RealLand, UUID> orphans;
 
     /**
      * Instantiates a new storage flat.
@@ -110,48 +116,52 @@ public class StorageFlat implements Storage {
      */
     private File getLandFile(RealLand land) {
 
-	return new File(landsDir + "/" + land.getName() + "." + land.getGenealogy() + EXT_CONF);
+	return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
     }
 
     /**
      * Gets the land file.
      *
-     * @param landName the land
+     * @param landUUID the land uuid
      * @param landGenealogy the land genealogy
      * @return the land file
      */
-    private File getLandFile(String landName, int landGenealogy) {
+    private File getLandFile(UUID landUUID, int landGenealogy) {
 
-	return new File(landsDir + "/" + landName + "." + landGenealogy + EXT_CONF);
+	return new File(landsDir + "/" + landUUID + EXT_CONF);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.Storage#loadLands()
-     */
     @Override
     public void loadLands() {
 
 	File[] files = new File(landsDir).listFiles();
 	int loadedlands = 0;
-	int pass = 0;
-	boolean empty = false;
+	orphans = new HashMap<RealLand, UUID>();
 
 	if (files.length == 0) {
 	    Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
 	    return;
 	}
 
-	while (!empty) {
-	    empty = true;
-	    for (File file : files) {
-		if (file.isFile() && file.getName().toLowerCase().endsWith(pass + EXT_CONF)) {
-		    empty = false;
-		    loadLand(file);
-		    loadedlands++;
-		}
+	// Pass 1: load lands
+	for (File file : files) {
+	    if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
+		loadLand(file);
+		loadedlands++;
 	    }
-	    pass++;
 	}
+
+	// Pass 2: find parents
+	for (Map.Entry<RealLand, UUID> entry : orphans.entrySet()) {
+	    RealLand land = entry.getKey();
+	    RealLand parent = Secuboid.getThisPlugin().getLands().getLand(entry.getValue());
+	    if (parent != null) {
+		land.setParent(parent);
+	    } else {
+		Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: The parent is not found for land: {0}", land);
+	    }
+	}
+
 	Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
     }
 
@@ -171,7 +181,7 @@ public class StorageFlat implements Storage {
 	Map<Integer, Area> areas = new TreeMap<Integer, Area>();
 	boolean isLandCreated = false;
 	PlayerContainer owner;
-	String parentName;
+	String parentUUID;
 	Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
 	Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
 	Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
@@ -180,7 +190,6 @@ public class StorageFlat implements Storage {
 	short priority;
 	double money;
 	Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
-	RealLand parent;
 
 	// For economy
 	boolean forSale = false;
@@ -217,7 +226,7 @@ public class StorageFlat implements Storage {
 	    }
 
 	    cf.readParam();
-	    parentName = cf.getValueString();
+	    parentUUID = cf.getValueString();
 
 	    // Old Faction Territory value
 	    if (version < 6) {
@@ -337,25 +346,13 @@ public class StorageFlat implements Storage {
 	// Create land
 	for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
 	    if (!isLandCreated) {
-		if (parentName != null) {
-
-		    parent = Secuboid.getThisPlugin().getLands().getLand(UUID.fromString(parentName));
-
-		    try {
-			land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(), parent,
-				entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
-		    } catch (SecuboidLandException ex) {
-			Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
-			return;
-		    }
-		} else {
-		    try {
-			land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(),
-				null, entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
-		    } catch (SecuboidLandException ex) {
-			Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
-			return;
-		    }
+		try {
+		    land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(),
+			    null, entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
+		    orphans.put(land, UUID.fromString(parentUUID));
+		} catch (SecuboidLandException ex) {
+		    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
+		    return;
 		}
 		isLandCreated = true;
 	    } else {
@@ -517,8 +514,8 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void removeLand(String landName, int landGenealogy) {
+    public void removeLand(UUID landUUID, int landGenealogy) {
 
-	getLandFile(landName, landGenealogy).delete();
+	getLandFile(landUUID, landGenealogy).delete();
     }
 }

@@ -521,10 +521,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     protected void setName(String newName) {
 
-	setAutoSave(false);
-	Secuboid.getThisPlugin().getStorageThread().removeLand(this);
 	this.name = newName;
-	setAutoSave(true);
 	doSave();
 
 	// Start Event
@@ -744,7 +741,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
 	// Remove files
 	removeChildFiles();
-	Secuboid.getThisPlugin().getStorageThread().removeLand(name, genealogy);
 
 	// remove parent (if needed)
 	if (parent != null) {

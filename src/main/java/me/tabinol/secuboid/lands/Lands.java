@@ -91,7 +91,7 @@ public class Lands {
     /**
      * The outside area.
      */
-    protected TreeMap<String, GlobalLand> outsideArea; // Outside a Land (in specific worlds)
+    private final TreeMap<String, GlobalLand> outsideArea; // Outside a Land (in specific worlds)
 
     private final Land defaultConfNoType; // Default config (Type not exist or Type null)
 

@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid;
 
-import java.io.File;
 import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.DependPlugin;
@@ -50,34 +49,34 @@ public class Secuboid extends JavaPlugin {
     public static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
 
     /**
-     * The maven app properties.
-     */
-    private static MavenAppProperties mavenAppProperties;
-
-    /**
      * The this plugin.
      */
     private static Secuboid thisPlugin;
 
     /**
+     * The maven app properties.
+     */
+    private MavenAppProperties mavenAppProperties;
+
+    /**
      * The types
      */
-    protected static Types types;
+    private Types types;
 
     /**
      * The lands.
      */
-    protected static Lands lands;
+    private Lands lands;
 
     /**
      * The parameters.
      */
-    protected static PermissionsFlags PermissionsFlags;
+    private PermissionsFlags PermissionsFlags;
 
     /**
      * The player conf.
      */
-    protected PlayerStaticConfig playerConf;
+    private PlayerStaticConfig playerConf;
 
     /**
      * The Command listener.
@@ -177,16 +176,6 @@ public class Secuboid extends JavaPlugin {
     private PlayersCache playersCache;
 
     /**
-     * Gets the maven app properties.
-     *
-     * @return the maven app properties
-     */
-    public static MavenAppProperties getMavenAppProperties() {
-
-	return mavenAppProperties;
-    }
-
-    /**
      * Gets the this plugin.
      *
      * @return the this plugin
@@ -196,40 +185,6 @@ public class Secuboid extends JavaPlugin {
 	return thisPlugin;
     }
 
-    /**
-     * Gets the configuration folder for this plugin
-     *
-     * @return a File instance of the data folder
-     */
-    public static File getConfigFolder() {
-
-	return thisPlugin.getDataFolder();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static PermissionsFlags getStaticParameters() {
-
-	return thisPlugin.getPermissionsFlags();
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static Types getStaticTypes() {
-
-	return thisPlugin.getTypes();
-    }
-
-    /* (non-Javadoc)
-     * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
-     */
-    /**
-     *
-     */
     @Override
     public void onEnable() {
 
@@ -350,6 +305,16 @@ public class Secuboid extends JavaPlugin {
 	approveNotif.stopNextRun();
 	storageThread.stopNextRun();
 	playerConf.removeAll();
+    }
+
+    /**
+     * Gets the maven app properties.
+     *
+     * @return the maven app properties
+     */
+    public MavenAppProperties getMavenAppProperties() {
+
+	return mavenAppProperties;
     }
 
     /**

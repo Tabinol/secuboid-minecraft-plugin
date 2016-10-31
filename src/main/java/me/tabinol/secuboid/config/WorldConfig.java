@@ -63,7 +63,7 @@ public class WorldConfig {
      */
     public WorldConfig() {
 
-	File configFileFolder = Secuboid.getConfigFolder();
+	File configFileFolder = Secuboid.getThisPlugin().getDataFolder();
 
 	// Create files (if not exist) and load
 	if (!new File(configFileFolder, "landdefault.yml").exists()) {
@@ -155,7 +155,7 @@ public class WorldConfig {
 	}
 	TreeMap<Type, GlobalLand> defaultConf = new TreeMap<Type, GlobalLand>();
 
-	for (Type type : Secuboid.getStaticTypes().getTypes()) {
+	for (Type type : Secuboid.getThisPlugin().getTypes().getTypes()) {
 	    ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
 	    GlobalLand dl = new GlobalLand(GLOBAL);
 	    defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
@@ -193,7 +193,7 @@ public class WorldConfig {
 
 			    dl.getPermissionsFlags().addPermission(
 				    PlayerContainerUtil.create(null, pcType, containerNameLower),
-				    new Permission(Secuboid.getStaticParameters().getPermissionTypeNoValid(perm.toUpperCase()),
+				    new Permission(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
 					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
 					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Inheritable")));
 			}
@@ -205,7 +205,7 @@ public class WorldConfig {
 			}
 			dl.getPermissionsFlags().addPermission(
 				PlayerContainerUtil.create(null, pcType, null),
-				new Permission(Secuboid.getStaticParameters().getPermissionTypeNoValid(perm.toUpperCase()),
+				new Permission(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
 					fc.getBoolean(perms + "." + container + "." + perm + ".Value"),
 					fc.getBoolean(perms + "." + container + "." + perm + ".Inheritable")));
 		    }
@@ -219,7 +219,7 @@ public class WorldConfig {
 		if (Secuboid.getThisPlugin() != null) {
 		    Secuboid.getThisPlugin().getLog().write("Flag: " + flag);
 		}
-		FlagType ft = Secuboid.getStaticParameters().getFlagTypeNoValid(flag.toUpperCase());
+		FlagType ft = Secuboid.getThisPlugin().getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
 		dl.getPermissionsFlags().addFlag(new Flag(ft,
 			FlagValueUtil.getFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
 			fc.getBoolean(flags + "." + flag + ".Heritable")));

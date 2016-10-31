@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.util.UUID;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
 
@@ -29,7 +30,7 @@ public interface Storage {
     /**
      * The Constant LAND_VERSION.
      */
-    static final int LAND_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("landVersion");
+    static final int LAND_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("landVersion");
 
     /**
      * Load all.
@@ -53,10 +54,10 @@ public interface Storage {
     /**
      * Removes the land.
      *
-     * @param landName the land name
+     * @param landUUID the land name uuid
      * @param landGenealogy The land genealogy
      */
-    void removeLand(String landName, int landGenealogy);
+    void removeLand(UUID landUUID, int landGenealogy);
 
     /**
      * Load lands.

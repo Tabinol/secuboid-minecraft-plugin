@@ -27,28 +27,39 @@ import static org.bukkit.Bukkit.getServer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-
 /**
  * The Class DependPlugin.
  */
 public class DependPlugin {
 
-    /** The world edit. */
+    /**
+     * The world edit.
+     */
     private Plugin worldEdit = null;
-    
-    /** The essentials. */
+
+    /**
+     * The essentials.
+     */
     private Plugin essentials = null;
-    
-    /** The vanish no packet. */
+
+    /**
+     * The vanish no packet.
+     */
     private Plugin vanishNoPacket = null;
-    
-    /** The permission. */
+
+    /**
+     * The permission.
+     */
     private Permission permission = null;
-    
-    /** The economy. */
+
+    /**
+     * The economy.
+     */
     private Economy economy = null;
-    
-    /** The chat. */
+
+    /**
+     * The chat.
+     */
     private Chat chat = null;
 
     /**
@@ -56,12 +67,12 @@ public class DependPlugin {
      */
     public DependPlugin() {
 
-        worldEdit = getPlugin("WorldEdit");
-        essentials = getPlugin("Essentials");
-        vanishNoPacket = getPlugin("VanishNoPacket");
-        setupPermissions();
-        setupChat();
-        setupEconomy();
+	worldEdit = getPlugin("WorldEdit");
+	essentials = getPlugin("Essentials");
+	vanishNoPacket = getPlugin("VanishNoPacket");
+	setupPermissions();
+	setupChat();
+	setupEconomy();
     }
 
     /**
@@ -72,18 +83,18 @@ public class DependPlugin {
      */
     private Plugin getPlugin(String pluginName) {
 
-        Plugin plugin = Secuboid.getThisPlugin().getServer().getPluginManager().getPlugin(pluginName);
+	Plugin plugin = Secuboid.getThisPlugin().getServer().getPluginManager().getPlugin(pluginName);
 
-        if (plugin != null) {
-            Secuboid.getThisPlugin().getServer().getPluginManager().enablePlugin(plugin);
-            Secuboid.getThisPlugin().getLog().write(pluginName + " detected!");
-            Secuboid.getThisPlugin().getLogger().log(Level.INFO, pluginName + " detected!");
-        } else {
-            Secuboid.getThisPlugin().getLog().write(pluginName + " NOT detected!");
-            Secuboid.getThisPlugin().getLogger().log(Level.INFO, pluginName + " IS NOT Detected!");
-        }
+	if (plugin != null) {
+	    Secuboid.getThisPlugin().getServer().getPluginManager().enablePlugin(plugin);
+	    Secuboid.getThisPlugin().getLog().write(pluginName + " detected!");
+	    Secuboid.getThisPlugin().getLogger().log(Level.INFO, "{0} detected!", pluginName);
+	} else {
+	    Secuboid.getThisPlugin().getLog().write(pluginName + " NOT detected!");
+	    Secuboid.getThisPlugin().getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
+	}
 
-        return plugin;
+	return plugin;
     }
 
     /**
@@ -93,7 +104,7 @@ public class DependPlugin {
      */
     public Plugin getWorldEdit() {
 
-        return worldEdit;
+	return worldEdit;
     }
 
     /**
@@ -102,31 +113,31 @@ public class DependPlugin {
      * @return the essentials
      */
     public Plugin getEssentials() {
-        
-        return essentials;
+
+	return essentials;
     }
-    
+
     /**
      * Gets the vanish no packet.
      *
      * @return the vanish no packet
      */
     public Plugin getVanishNoPacket() {
-        
-        return vanishNoPacket;
+
+	return vanishNoPacket;
     }
-    
+
     /**
      * Setup permissions.
      *
      * @return true, if successful
      */
     private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permission = permissionProvider.getProvider();
-        }
-        return (permission != null);
+	RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+	if (permissionProvider != null) {
+	    permission = permissionProvider.getProvider();
+	}
+	return (permission != null);
     }
 
     /**
@@ -135,12 +146,12 @@ public class DependPlugin {
      * @return true, if successful
      */
     private boolean setupChat() {
-        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if (chatProvider != null) {
-            chat = chatProvider.getProvider();
-        }
+	RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+	if (chatProvider != null) {
+	    chat = chatProvider.getProvider();
+	}
 
-        return (chat != null);
+	return (chat != null);
     }
 
     /**
@@ -149,12 +160,12 @@ public class DependPlugin {
      * @return true, if successful
      */
     private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
+	RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+	if (economyProvider != null) {
+	    economy = economyProvider.getProvider();
+	}
 
-        return (economy != null);
+	return (economy != null);
     }
 
     /**
@@ -163,27 +174,27 @@ public class DependPlugin {
      * @return the permission
      */
     public Permission getPermission() {
-        
-        return permission;
+
+	return permission;
     }
-    
+
     /**
      * Gets the economy.
      *
      * @return the economy
      */
     public Economy getEconomy() {
-        
-        return economy;
+
+	return economy;
     }
-    
+
     /**
      * Gets the chat.
      *
      * @return the chat
      */
     public Chat getChat() {
-        
-        return chat;
+
+	return chat;
     }
 }

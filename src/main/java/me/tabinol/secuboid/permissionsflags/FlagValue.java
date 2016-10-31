@@ -48,9 +48,9 @@ public class FlagValue {
     public FlagValue copyOf() {
 
 	if (value instanceof Boolean) {
-	    return new FlagValue(Boolean.valueOf((Boolean) value));
+	    return new FlagValue((Boolean) value);
 	} else if (value instanceof Double) {
-	    return new FlagValue(Double.valueOf((Double) value));
+	    return new FlagValue((Double) value);
 	} else if (value instanceof String) {
 	    return new FlagValue(String.valueOf((String) value));
 	} else if (value instanceof String[]) {

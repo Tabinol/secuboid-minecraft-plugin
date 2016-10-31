@@ -36,7 +36,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  *
  * @author michel
  */
-public class InventoryConfig {
+public final class InventoryConfig {
 
     /**
      *

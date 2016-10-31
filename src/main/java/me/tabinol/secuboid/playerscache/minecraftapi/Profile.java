@@ -24,8 +24,8 @@ package me.tabinol.secuboid.playerscache.minecraftapi;
  */
 public class Profile {
 
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
 
     /**
      *
@@ -34,8 +34,8 @@ public class Profile {
      */
     public Profile(String id, String name) {
 
-        this.id = id;
-        this.name = name;
+	this.id = id;
+	this.name = name;
     }
 
     /**
@@ -44,7 +44,7 @@ public class Profile {
      */
     public String getId() {
 
-        return id;
+	return id;
     }
 
     /**
@@ -53,6 +53,6 @@ public class Profile {
      */
     public String getName() {
 
-        return name;
+	return name;
     }
 }

@@ -54,7 +54,7 @@ public class FlagValueUtil {
 		for (String st : strs) {
 		    result.add(StringChanges.fromQuote(st));
 		}
-		value = new FlagValue(result.toArray(new String[0]));
+		value = new FlagValue(result.toArray(new String[result.size()]));
 	    } else {
 		value = null;
 	    }

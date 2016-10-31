@@ -119,7 +119,7 @@ public enum BannedWords {
     /**
      * The Constant INVALID_CHARACTERS.
      */
-    public static final String[] INVALID_CHARACTERS = new String[]{
+    private static final String[] INVALID_CHARACTERS = new String[]{
 	":", ";", "#", ",", ".", "*", "(", ")", "{", "}", "[", "]",
 	"|", "\\", "/", "!", "?", "*", "\"", "'", "+", "-", "="};
 

@@ -36,12 +36,12 @@ public class LandEvent extends Event {
     /**
      * The dummy land.
      */
-    private Land dummyLand;
+    private final Land dummyLand;
 
     /**
      * The land.
      */
-    private RealLand land;
+    private final RealLand land;
 
     /**
      * Instantiates a new land events.

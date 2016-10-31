@@ -131,39 +131,41 @@ public class StorageThread extends Thread {
     public void run() {
 
 	lock.lock();
+	try {
+	    // Output request loop (waiting for a command)
+	    while (!exitRequest) {
 
-	// Output request loop (waiting for a command)
-	while (!exitRequest) {
+		// Save Lands or Factions
+		while (!saveList.isEmpty()) {
 
-	    // Save Lands or Factions
-	    while (!saveList.isEmpty()) {
+		    Object saveEntry = saveList.remove(0);
+		    storage.saveLand((RealLand) saveEntry);
+		}
 
-		Object saveEntry = saveList.remove(0);
-		storage.saveLand((RealLand) saveEntry);
-	    }
+		// Remove Lands or Factions
+		while (!removeList.isEmpty()) {
 
-	    // Remove Lands or Factions
-	    while (!removeList.isEmpty()) {
+		    Object removeEntry = removeList.remove(0);
+		    if (removeEntry instanceof RealLand) {
+			storage.removeLand((RealLand) removeEntry);
+		    } else if (removeEntry instanceof NameGenealogy) {
+			storage.removeLand(((NameGenealogy) removeEntry).landName,
+				((NameGenealogy) removeEntry).landGenealogy);
+		    }
+		}
 
-		Object removeEntry = removeList.remove(0);
-		if (removeEntry instanceof RealLand) {
-		    storage.removeLand((RealLand) removeEntry);
-		} else if (removeEntry instanceof NameGenealogy) {
-		    storage.removeLand(((NameGenealogy) removeEntry).landName,
-			    ((NameGenealogy) removeEntry).landGenealogy);
+		// wait!
+		try {
+		    commandRequest.await();
+		    Secuboid.getThisPlugin().getLog().write("Storage Thread wake up!");
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
 		}
 	    }
-
-	    // wait!
-	    try {
-		commandRequest.await();
-		Secuboid.getThisPlugin().getLog().write("Storage Thread wake up!");
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-	    }
+	    notSaved.signal();
+	} finally {
+	    lock.unlock();
 	}
-	notSaved.signal();
-	lock.unlock();
     }
 
     /**
@@ -226,8 +228,11 @@ public class StorageThread extends Thread {
     private void wakeUp() {
 
 	lock.lock();
-	commandRequest.signal();
-	Secuboid.getThisPlugin().getLog().write("Storage request (Thread wake up...)");
-	lock.unlock();
+	try {
+	    commandRequest.signal();
+	    Secuboid.getThisPlugin().getLog().write("Storage request (Thread wake up...)");
+	} finally {
+	    lock.unlock();
+	}
     }
 }

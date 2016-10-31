@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
-import static java.lang.Math.abs;
-import java.util.HashMap;
-import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
@@ -30,8 +27,6 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /**
@@ -41,34 +36,26 @@ import org.bukkit.entity.Player;
 public class VisualSelectionCuboid implements VisualSelection {
 
     /**
-     * The block list.
+     * The player.
      */
-    protected final Map<Location, Material> blockList;
+    private final Player player;
+
+    private final ChangedBlocks changedBlocks;
 
     /**
-     * The block byte (option) list.
+     * Is from land.
      */
-    protected final Map<Location, Byte> blockByteList;
-
-    /**
-     *
-     */
-    protected final Player player;
-
-    /**
-     * The is from land.
-     */
-    protected boolean isFromLand;
+    private final boolean isFromLand;
 
     /**
      * The is collision.
      */
-    protected boolean isCollision;
+    private boolean isCollision;
 
     /**
      * Parent detected
      */
-    protected Land parentDetected;
+    private Land parentDetected;
 
     private CuboidArea area;
 
@@ -79,8 +66,7 @@ public class VisualSelectionCuboid implements VisualSelection {
      * @param player
      */
     public VisualSelectionCuboid(CuboidArea area, boolean isFromLand, Player player) {
-	blockList = new HashMap<Location, Material>();
-	blockByteList = new HashMap<Location, Byte>();
+	changedBlocks = new ChangedBlocks(player);
 	this.isFromLand = isFromLand;
 	this.player = player;
 	isCollision = false;
@@ -101,16 +87,9 @@ public class VisualSelectionCuboid implements VisualSelection {
     /**
      *
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
-
-	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-	    this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
-	}
-
-	blockList.clear();
-	blockByteList.clear();
+	changedBlocks.resetBlocks();
     }
 
     /**
@@ -150,26 +129,8 @@ public class VisualSelectionCuboid implements VisualSelection {
 	makeVisualSelection();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void makeVisualSelection() {
-
-	// Get the size (x and z) no abs (already ajusted)
-	int diffX = area.getX2() - area.getX1();
-	int diffZ = area.getZ2() - area.getZ1();
-
-	// Do not show a too big select to avoid crash or severe lag
-	int maxSize = Secuboid.getThisPlugin().getConf().getMaxVisualSelect();
-	int maxDisPlayer = Secuboid.getThisPlugin().getConf().getMaxVisualSelectFromPlayer();
-	Location playerLoc = player.getLocation();
-	if (diffX > maxSize || diffZ > maxSize
-		|| abs(area.getX1() - playerLoc.getBlockX()) > maxDisPlayer
-		|| abs(area.getX2() - playerLoc.getBlockX()) > maxDisPlayer
-		|| abs(area.getZ1() - playerLoc.getBlockZ()) > maxDisPlayer
-		|| abs(area.getZ2() - playerLoc.getBlockZ()) > maxDisPlayer) {
-	    Secuboid.getThisPlugin().getLog().write("Selection disabled!");
-	    return;
-	}
 
 	// Detect the curent land from the 8 points
 	Land Land1 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
@@ -205,9 +166,6 @@ public class VisualSelectionCuboid implements VisualSelection {
 			|| posZ == area.getZ1() || posZ == area.getZ2()) {
 
 		    Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
-		    Block block = newloc.getBlock();
-		    blockList.put(newloc, block.getType());
-		    blockByteList.put(newloc, block.getData());
 
 		    if (!isFromLand) {
 
@@ -215,14 +173,13 @@ public class VisualSelectionCuboid implements VisualSelection {
 			Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
 				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
-			    this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
 			} else {
-			    this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
 			    isCollision = true;
 			}
 		    } else // Passive Selection (created area)
-		    {
-			if ((posX == area.getX1() && posZ == area.getZ1() + 1)
+		     if ((posX == area.getX1() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX1() && posZ == area.getZ2() - 1)
 				|| (posX == area.getX2() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX2() && posZ == area.getZ2() - 1)
@@ -232,7 +189,7 @@ public class VisualSelectionCuboid implements VisualSelection {
 				|| (posX == area.getX2() - 1 && posZ == area.getZ2())) {
 
 			    // Subcorner
-			    this.player.sendBlockChange(newloc, Material.IRON_BLOCK, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
 
 			} else if ((posX == area.getX1() && posZ == area.getZ1())
 				|| (posX == area.getX2() && posZ == area.getZ1())
@@ -240,9 +197,8 @@ public class VisualSelectionCuboid implements VisualSelection {
 				|| (posX == area.getX2() && posZ == area.getZ2())) {
 
 			    // Exact corner
-			    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 			}
-		    }
 
 		} else {
 		    // Square center, skip!

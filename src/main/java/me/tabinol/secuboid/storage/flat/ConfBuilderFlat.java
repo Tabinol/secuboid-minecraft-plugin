@@ -27,7 +27,7 @@ import java.util.UUID;
 /**
  * The Class ConfBuilder.
  */
-class ConfBuilderFlat {
+final class ConfBuilderFlat {
 
     /**
      * The br.

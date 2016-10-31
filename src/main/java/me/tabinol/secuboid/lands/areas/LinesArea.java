@@ -20,6 +20,7 @@ package me.tabinol.secuboid.lands.areas;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
@@ -236,7 +237,7 @@ public final class LinesArea implements Area {
      */
     public Collection<LineLine> getLines() {
 
-	return lines;
+	return Collections.unmodifiableCollection(lines);
     }
 
     @Override

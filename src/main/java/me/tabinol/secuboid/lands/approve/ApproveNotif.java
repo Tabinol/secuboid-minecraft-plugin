@@ -24,21 +24,22 @@ import me.tabinol.secuboid.utilities.SecuboidRunnable;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-
 /**
  * The Class ApproveNotif.
  */
 public class ApproveNotif extends SecuboidRunnable {
 
-    /** The Constant PERM_APPROVE. */
+    /**
+     * The Constant PERM_APPROVE.
+     */
     public static final String PERM_APPROVE = "secuboid.collisionapprove";
 
     /**
      * Instantiates a new approve notif.
      */
     public ApproveNotif() {
-        
-        super();
+
+	super();
     }
 
     /**
@@ -46,33 +47,31 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void runApproveNotifLater() {
 
-        long notifyTime = Secuboid.getThisPlugin().getConf().getApproveNotifyTime();
+	long notifyTime = Secuboid.getThisPlugin().getConf().getApproveNotifyTime();
 
-        // Start only if notification is activated in configuration
-        if (notifyTime != 0) {
-            this.runLater(notifyTime, true);
-        }
+	// Start only if notification is activated in configuration
+	if (notifyTime != 0) {
+	    this.runLater(notifyTime, true);
+	}
 
     }
 
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
-
     /**
      *
      */
-
     @Override
     public void run() {
 
-        int lstCount;
+	int lstCount;
 
-        if ((lstCount = Secuboid.getThisPlugin().getLands().getApproveList().getApproveList().size()) != 0) {
+	if ((lstCount = Secuboid.getThisPlugin().getLands().getApproveList().getApproveList().size()) != 0) {
 
-            // If there is some notification to done
-            notifyListApprove(lstCount);
-        }
+	    // If there is some notification to done
+	    notifyListApprove(lstCount);
+	}
     }
 
     /**
@@ -83,7 +82,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void notifyForApprove(String landName, String playerName) {
 
-        notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+	notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
     }
 
     /**
@@ -93,7 +92,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     private void notifyListApprove(int lstCount) {
 
-        notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
+	notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
     }
 
     // Notify with a message
@@ -104,12 +103,12 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     private void notifyPlayer(String message) {
 
-        for (Player players : Secuboid.getThisPlugin().getServer().getOnlinePlayers()) {
-            if (players.hasPermission(PERM_APPROVE)) {
-                players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
-            }
-        }
+	for (Player players : Secuboid.getThisPlugin().getServer().getOnlinePlayers()) {
+	    if (players.hasPermission(PERM_APPROVE)) {
+		players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
+	    }
+	}
 
-        Secuboid.getThisPlugin().getLogger().log(Level.INFO, "[Secuboid] " + message);
+	Secuboid.getThisPlugin().getLogger().log(Level.INFO, "[Secuboid] {0}", message);
     }
 }

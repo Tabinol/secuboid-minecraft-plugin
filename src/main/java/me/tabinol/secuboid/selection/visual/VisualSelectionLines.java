@@ -18,16 +18,10 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
-import static java.lang.Math.abs;
-import java.util.HashMap;
-import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
-import me.tabinol.secuboid.lands.areas.AreaType;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.LinesArea;
 import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -35,8 +29,6 @@ import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.Calculate;
 import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /**
@@ -46,34 +38,26 @@ import org.bukkit.entity.Player;
 public class VisualSelectionLines implements VisualSelection {
 
     /**
-     * The block list.
-     */
-    protected final Map<Location, Material> blockList;
-
-    /**
-     * The block byte (option) list.
-     */
-    protected final Map<Location, Byte> blockByteList;
-
-    /**
      *
      */
-    protected final Player player;
+    private final Player player;
+
+    private final ChangedBlocks changedBlocks;
 
     /**
      * The is from land.
      */
-    protected boolean isFromLand;
+    private final boolean isFromLand;
 
     /**
      * The is collision.
      */
-    protected boolean isCollision;
+    private boolean isCollision;
 
     /**
      * Parent detected
      */
-    protected Land parentDetected;
+    private Land parentDetected;
 
     private final LinesArea area;
     private LineLine curLine;
@@ -93,9 +77,7 @@ public class VisualSelectionLines implements VisualSelection {
      * @param player
      */
     public VisualSelectionLines(LinesArea area, boolean isFromLand, Player player) {
-
-	blockList = new HashMap<Location, Material>();
-	blockByteList = new HashMap<Location, Byte>();
+	changedBlocks = new ChangedBlocks(player);
 	this.isFromLand = isFromLand;
 	this.player = player;
 	isCollision = false;
@@ -132,13 +114,7 @@ public class VisualSelectionLines implements VisualSelection {
     @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
-
-	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-	    this.player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
-	}
-
-	blockList.clear();
-	blockByteList.clear();
+	changedBlocks.resetBlocks();
     }
 
     /**
@@ -151,39 +127,6 @@ public class VisualSelectionLines implements VisualSelection {
 	    return (RealLand) parentDetected;
 	}
 	return null;
-    }
-
-    /**
-     * Create a new visual selection from default
-     *
-     * @param areaType areaType
-     * @param isFromLand is from land or must be false
-     * @param player the player
-     * @return visual selection
-     */
-    public static VisualSelection createVisualSelection(AreaType areaType, boolean isFromLand, Player player) {
-
-	if (areaType == AreaType.CUBOID) {
-	    return new VisualSelectionCuboid(null, isFromLand, player);
-	}
-	return new VisualSelectionCylinder(null, isFromLand, player);
-    }
-
-    /**
-     * Create a visual selection from an area
-     *
-     * @param area area
-     * @param isFromLand is from land or must be false
-     * @param player the player
-     * @return visual selection
-     */
-    public static VisualSelection createVisualSelection(Area area,
-	    boolean isFromLand, Player player) {
-
-	if (area.getAreaType() == AreaType.CUBOID) {
-	    return new VisualSelectionCuboid((CuboidArea) area, isFromLand, player);
-	}
-	return new VisualSelectionCylinder((CylinderArea) area, isFromLand, player);
     }
 
     /**
@@ -207,26 +150,8 @@ public class VisualSelectionLines implements VisualSelection {
 	makeVisualSelection();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void makeVisualSelection() {
-
-	// Get the size (x and z) no abs (already ajusted)
-	int diffX = abs(curLine.getLeftX1() - curLine.getRightX2());
-	int diffZ = abs(curLine.getLeftZ1() - curLine.getRightZ2());
-
-	// Do not show a too big select to avoid crash or severe lag
-	int maxSize = Secuboid.getThisPlugin().getConf().getMaxVisualSelect();
-	int maxDisPlayer = Secuboid.getThisPlugin().getConf().getMaxVisualSelectFromPlayer();
-	Location playerLoc = player.getLocation();
-	if (diffX > maxSize || diffZ > maxSize
-		|| abs(curLine.getLeftX1() - playerLoc.getBlockX()) > maxDisPlayer
-		|| abs(curLine.getRightX2() - playerLoc.getBlockX()) > maxDisPlayer
-		|| abs(curLine.getLeftZ1() - playerLoc.getBlockZ()) > maxDisPlayer
-		|| abs(curLine.getRightZ2() - playerLoc.getBlockZ()) > maxDisPlayer) {
-	    Secuboid.getThisPlugin().getLog().write("Selection disabled!");
-	    return;
-	}
 
 	if (area.getLines().isEmpty()) {
 	    // Detect the curent land from the 8 points
@@ -269,15 +194,12 @@ public class VisualSelectionLines implements VisualSelection {
 		    int correctZ = (int) ((curLine.getA() * posX) + curLine.getB());
 		    if (posZ == correctZ) {
 			Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
-			Block block = newloc.getBlock();
-			blockList.put(newloc, block.getType());
-			blockByteList.put(newloc, block.getData());
 			Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
 				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
-			    this.player.sendBlockChange(newloc, Material.SPONGE, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
 			} else {
-			    this.player.sendBlockChange(newloc, Material.REDSTONE_BLOCK, (byte) 0);
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
 			    isCollision = true;
 			}
 		    }
@@ -286,16 +208,10 @@ public class VisualSelectionLines implements VisualSelection {
 	} else {
 	    // Passive
 	    Location newloc = new Location(area.getWord(), x1, PlayersUtil.getYNearPlayer(player, x1, z1) - 1, z1);
-	    Block block = newloc.getBlock();
-	    blockList.put(newloc, block.getType());
-	    blockByteList.put(newloc, block.getData());
-	    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 	    newloc = new Location(area.getWord(), curLine.getX2(), PlayersUtil.getYNearPlayer(player, curLine.getX2(),
 		    curLine.getZ2()) - 1, curLine.getZ2());
-	    block = newloc.getBlock();
-	    blockList.put(newloc, block.getType());
-	    blockByteList.put(newloc, block.getData());
-	    this.player.sendBlockChange(newloc, Material.BEACON, (byte) 0);
+	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 	}
     }
 

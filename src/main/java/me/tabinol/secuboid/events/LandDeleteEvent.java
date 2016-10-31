@@ -47,9 +47,6 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
 	super(deletedLand);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
-     */
     /**
      *
      * @return
@@ -70,25 +67,21 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
 	return handlers;
     }
 
-    /* (non-Javadoc)
-     * @see org.bukkit.events.Cancellable#isCancelled()
-     */
     /**
      *
      * @return
      */
+    @Override
     public boolean isCancelled() {
 
 	return cancelled;
     }
 
-    /* (non-Javadoc)
-     * @see org.bukkit.events.Cancellable#setCancelled(boolean)
-     */
     /**
      *
      * @param bln
      */
+    @Override
     public void setCancelled(boolean bln) {
 
 	cancelled = bln;

@@ -291,7 +291,7 @@ public enum PermissionList {
     /**
      * The parent permission name
      */
-    private String parent;
+    private final String parent;
 
     /**
      * Instantiates a new permission list.

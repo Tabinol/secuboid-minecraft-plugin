@@ -115,7 +115,7 @@ public class StringChanges {
             }
         }
         
-        return strl.toArray(new String[0]);
+        return strl.toArray(new String[strl.size()]);
     }
 
     /**
@@ -126,10 +126,7 @@ public class StringChanges {
      */
     private static boolean isStartQuote(String str) {
 
-        if (str.startsWith("'") || str.startsWith("\"")) {
-            return true;
-        }
-        return false;
+        return str.startsWith("'") || str.startsWith("\"");
     }
 
     /**
@@ -140,10 +137,7 @@ public class StringChanges {
      */
     private static boolean isEndQuote(String str) {
 
-        if (str.endsWith("'") || str.endsWith("\"") || str.endsWith(";") /* Fix String list */) {
-            return true;
-        }
-        return false;
+        return str.endsWith("'") || str.endsWith("\"") || str.endsWith(";") /* Fix String list */;
     }
     
     /**
@@ -157,9 +151,7 @@ public class StringChanges {
         
         String[] tlist = string.split(split);
         String[] result = new String[tlist.length + 1];
-        for(int t = 0; t < tlist.length; t ++) {
-            result[t] = tlist[t];
-        }
+	System.arraycopy(tlist, 0, result, 0, tlist.length);
         result[tlist.length] = "";
         
         return result;

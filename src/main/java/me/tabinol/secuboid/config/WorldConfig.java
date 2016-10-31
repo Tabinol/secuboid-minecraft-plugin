@@ -167,13 +167,8 @@ public class WorldConfig {
 
     private GlobalLand landModify(GlobalLand dl, ConfigurationSection fc, String perms, String flags) {
 
-	ConfigurationSection csPerm = null;
-	ConfigurationSection csFlags = null;
-
-	if (fc != null) {
-	    csPerm = fc.getConfigurationSection(perms);
-	    csFlags = fc.getConfigurationSection(flags);
-	}
+	ConfigurationSection csPerm = fc.getConfigurationSection(perms);
+	ConfigurationSection csFlags = fc.getConfigurationSection(flags);
 
 	// Add permissions
 	if (csPerm != null) {

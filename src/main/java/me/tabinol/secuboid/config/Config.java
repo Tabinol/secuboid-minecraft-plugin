@@ -511,8 +511,7 @@ public class Config {
 	try {
 	    infoItem = Material.valueOf(infoItemS.toUpperCase());
 	} catch (IllegalArgumentException ex) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
-		    "Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
+	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on General.InfoItem : No {0} item found in Bukkit! Using default.", infoItemS);
 	    infoItem = Material.BONE;
 	}
 
@@ -520,8 +519,7 @@ public class Config {
 	try {
 	    selectItem = Material.valueOf(selectItemS.toUpperCase());
 	} catch (IllegalArgumentException ex) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
-		    "Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
+	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on General.SelectItem : No {0} item found in Bukkit! Using default.", selectItemS);
 	    selectItem = Material.ROTTEN_FLESH;
 	}
 
@@ -565,8 +563,7 @@ public class Config {
 	    try {
 		ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
 	    } catch (IllegalArgumentException ex) {
-		Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
-			"Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
+		Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No {0} game mode!", value);
 	    }
 	}
 
@@ -580,8 +577,7 @@ public class Config {
 	    try {
 		creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
 	    } catch (IllegalArgumentException ex) {
-		Secuboid.getThisPlugin().getLogger().log(Level.WARNING,
-			"Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + " item found in Bukkit!");
+		Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.Creative.BannedItems : No {0} item found in Bukkit!", value);
 	    }
 	}
 

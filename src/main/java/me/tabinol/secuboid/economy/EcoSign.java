@@ -126,12 +126,15 @@ public class EcoSign {
 	// Get Sign parameter
 	Block blockPlace = location.getBlock();
 
-	if (blockPlace.getType() == Material.WALL_SIGN) {
-	    isWallSign = true;
-	} else if (blockPlace.getType() == Material.SIGN_POST) {
-	    isWallSign = false;
-	} else {
-	    throw new SignException();
+	switch (blockPlace.getType()) {
+	    case WALL_SIGN:
+		isWallSign = true;
+		break;
+	    case SIGN_POST:
+		isWallSign = false;
+		break;
+	    default:
+		throw new SignException();
 	}
 
 	this.facing = ((org.bukkit.material.Sign) ((Sign) blockPlace.getState()).getData()).getFacing();

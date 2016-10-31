@@ -106,8 +106,8 @@ public class FlyCreativeListener implements Listener {
 	setFlyCreative(event, event.getPlayer(), event.getLandOrOutside());
     }
 
-    // Bugfix when tp is from an other worlds
     /**
+     * Bugfix when tp is from an other worlds
      *
      * @param event
      */
@@ -118,6 +118,7 @@ public class FlyCreativeListener implements Listener {
 
 	if (event.getFrom().getWorld() != event.getTo().getWorld()) {
 	    Bukkit.getScheduler().runTaskLater(Secuboid.getThisPlugin(), new Runnable() {
+		@Override
 		public void run() {
 		    if (player.isOnline()) {
 			setFlyCreative(null, player,

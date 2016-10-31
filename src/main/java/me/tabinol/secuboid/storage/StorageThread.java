@@ -21,6 +21,7 @@ package me.tabinol.secuboid.storage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -79,12 +80,12 @@ public class StorageThread extends Thread {
      */
     private class NameGenealogy {
 
-	String landName;
+	UUID landUUID;
 	int landGenealogy;
 
-	NameGenealogy(String landName, int landGenealogy) {
+	NameGenealogy(UUID landUUID, int landGenealogy) {
 
-	    this.landName = landName;
+	    this.landUUID = landUUID;
 	    this.landGenealogy = landGenealogy;
 	}
     }
@@ -149,7 +150,7 @@ public class StorageThread extends Thread {
 		    if (removeEntry instanceof RealLand) {
 			storage.removeLand((RealLand) removeEntry);
 		    } else if (removeEntry instanceof NameGenealogy) {
-			storage.removeLand(((NameGenealogy) removeEntry).landName,
+			storage.removeLand(((NameGenealogy) removeEntry).landUUID,
 				((NameGenealogy) removeEntry).landGenealogy);
 		    }
 		}
@@ -216,12 +217,12 @@ public class StorageThread extends Thread {
     /**
      * Removes the land.
      *
-     * @param landName the land name
+     * @param landUUID the land name
      * @param landGenealogy The land genealogy
      */
-    public void removeLand(String landName, int landGenealogy) {
+    public void removeLand(UUID landUUID, int landGenealogy) {
 
-	removeList.add(new NameGenealogy(landName, landGenealogy));
+	removeList.add(new NameGenealogy(landUUID, landGenealogy));
 	wakeUp();
     }
 

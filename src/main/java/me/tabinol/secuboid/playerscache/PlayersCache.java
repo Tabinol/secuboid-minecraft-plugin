@@ -52,7 +52,7 @@ public final class PlayersCache extends Thread {
     /**
      * The Constant PLAYERS_CACHE_VERSION.
      */
-    public static final int PLAYERS_CACHE_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
+    public static final int PLAYERS_CACHE_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("playersCacheVersion");
 
     /**
      * The file name.

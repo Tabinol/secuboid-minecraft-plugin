@@ -38,7 +38,7 @@ public class Lang {
     /**
      * The Constant ACTUAL_VERSION.
      */
-    public static final int ACTUAL_VERSION = Secuboid.getMavenAppProperties().getPropertyInt("langVersion");
+    public static final int ACTUAL_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("langVersion");
 
     /**
      * The lang.

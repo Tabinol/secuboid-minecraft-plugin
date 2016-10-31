@@ -256,11 +256,7 @@ public class LineLine {
 	}
 	pos1 = (int) ((locZ - b1) / a1);
 	pos2 = (int) ((locZ - b2) / a2);
-	if (!Calculate.isInInterval(locX, pos1, pos2)) {
-	    return false;
-	}
-
-	return true;
+	return Calculate.isInInterval(locX, pos1, pos2);
     }
 
     /**

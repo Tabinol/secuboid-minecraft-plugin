@@ -26,16 +26,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.tabinol.secuboid.Secuboid;
 
-
 /**
  * The Class Log.
  */
 public class Log {
 
-    /** The Folder. */
+    /**
+     * The Folder.
+     */
     public File Folder;
-    
-    /** The debug. */
+
+    /**
+     * The debug.
+     */
     private boolean debug = false;
 
     /**
@@ -43,8 +46,8 @@ public class Log {
      */
     public Log() {
 
-        this.debug = Secuboid.getThisPlugin().getConf().isDebug();
-        this.Folder = Secuboid.getThisPlugin().getDataFolder();
+	this.debug = Secuboid.getThisPlugin().getConf().isDebug();
+	this.Folder = Secuboid.getThisPlugin().getDataFolder();
     }
 
     /**
@@ -54,37 +57,41 @@ public class Log {
      */
     public void write(String text) {
 
-        if (debug) {
-            File filename = new File(Folder, "log_" + Dates.date() + ".log");
-            BufferedWriter bufWriter = null;
-            FileWriter fileWriter = null;
+	if (debug) {
+	    File filename = new File(Folder, "log_" + Dates.date() + ".log");
+	    BufferedWriter bufWriter = null;
+	    FileWriter fileWriter = null;
 
-            if (!filename.exists()) {
-                try {
-                    filename.createNewFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+	    if (!filename.exists()) {
+		try {
+		    filename.createNewFile();
+		} catch (IOException ex) {
+		    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	    }
 
-            try {
-                fileWriter = new FileWriter(filename, true);
-                bufWriter = new BufferedWriter(fileWriter);
-                bufWriter.newLine();
-                bufWriter.write("[Secuboid][v." + Secuboid.getThisPlugin().getDescription().getVersion()
-                        + "][" + Dates.time() + "]" + text);
-                bufWriter.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    bufWriter.close();
-                    fileWriter.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+	    try {
+		fileWriter = new FileWriter(filename, true);
+		bufWriter = new BufferedWriter(fileWriter);
+		bufWriter.newLine();
+		bufWriter.write("[Secuboid][v." + Secuboid.getThisPlugin().getDescription().getVersion()
+			+ "][" + Dates.time() + "]" + text);
+		bufWriter.close();
+	    } catch (IOException ex) {
+		Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+	    } finally {
+		try {
+		    if (bufWriter != null) {
+			bufWriter.close();
+		    }
+		    if (fileWriter != null) {
+			fileWriter.close();
+		    }
+		} catch (IOException ex) {
+		    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	    }
+	}
     }
 
     /**
@@ -94,6 +101,6 @@ public class Log {
      */
     public void setDebug(boolean newdebug) {
 
-        this.debug = newdebug;
+	this.debug = newdebug;
     }
 }

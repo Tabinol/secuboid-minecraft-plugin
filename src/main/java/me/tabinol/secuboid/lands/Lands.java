@@ -20,6 +20,7 @@ package me.tabinol.secuboid.lands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -853,7 +854,7 @@ public class Lands {
      */
     public Collection<RealLand> getForSale() {
 
-	return forSale;
+	return Collections.unmodifiableCollection(forSale);
     }
 
     /**
@@ -883,6 +884,6 @@ public class Lands {
      */
     public Collection<RealLand> getForRent() {
 
-	return forRent;
+	return Collections.unmodifiableCollection(forRent);
     }
 }

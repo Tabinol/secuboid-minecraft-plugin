@@ -30,7 +30,7 @@ import me.tabinol.secuboid.exceptions.FileLoadException;
 /**
  * The Class ConfLoader.
  */
-class ConfLoaderFlat {
+final class ConfLoaderFlat {
 
     /**
      * The version.
@@ -162,7 +162,7 @@ class ConfLoaderFlat {
 	    return null;
 	}
 	lrt = actLine.trim();
-	if (lrt.equals("") || lrt.equals("}")) {
+	if (lrt.isEmpty() || lrt.equals("}")) {
 	    return null;
 	}
 	Secuboid.getThisPlugin().getLog().write("Readline: " + lrt);

@@ -142,7 +142,7 @@ public enum CommandClassList {
      */
     CommandReload(CommandReload.class);
 
-    private Class<?> commandClass;
+    private final Class<?> commandClass;
 
     private CommandClassList(Class<?> commandClass) {
 

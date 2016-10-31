@@ -21,14 +21,13 @@ package me.tabinol.secuboid.exceptions;
 import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
 
-
 /**
  * The Class FileLoadException.
  */
 public class FileLoadException extends Exception {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1116607352612567604L;
 
@@ -42,11 +41,11 @@ public class FileLoadException extends Exception {
      */
     public FileLoadException(String FileName, String Line, Integer LineNum, String message) {
 
-        super("File Load Exception in:" + FileName);
-        Secuboid.getThisPlugin().getLog().write("Error: file: " + FileName + ", Line: " + Line + ", Line Nb: " + LineNum + ", msg: " + message);
-        Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Error! There is an error in file: " + FileName);
-        Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Line: " + LineNum);
-        Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, Line);
-        Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Error Message: " + message);
+	super("File Load Exception in:" + FileName);
+	Secuboid.getThisPlugin().getLog().write("Error: file: " + FileName + ", Line: " + Line + ", Line Nb: " + LineNum + ", msg: " + message);
+	Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Error! There is an error in file: {0}", FileName);
+	Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Line: {0}", LineNum);
+	Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, Line);
+	Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Error Message: {0}", message);
     }
 }

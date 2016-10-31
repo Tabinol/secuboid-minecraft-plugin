@@ -437,21 +437,21 @@ public class StorageFlat implements Storage {
 	    for (int index : land.getAreasKey()) {
 		strs.add(index + ":" + land.getArea(index).toFileFormat());
 	    }
-	    cb.writeParam("CuboidAreas", strs.toArray(new String[0]));
+	    cb.writeParam("CuboidAreas", strs.toArray(new String[strs.size()]));
 
 	    //Residents
 	    strs = new ArrayList<String>();
 	    for (PlayerContainer pc : land.getResidents()) {
 		strs.add(pc.toFileFormat());
 	    }
-	    cb.writeParam("Residents", strs.toArray(new String[0]));
+	    cb.writeParam("Residents", strs.toArray(new String[strs.size()]));
 
 	    //Banneds
 	    strs = new ArrayList<String>();
 	    for (PlayerContainer pc : land.getBanneds()) {
 		strs.add(pc.toFileFormat());
 	    }
-	    cb.writeParam("Banneds", strs.toArray(new String[0]));
+	    cb.writeParam("Banneds", strs.toArray(new String[strs.size()]));
 
 	    //Permissions
 	    strs = new ArrayList<String>();
@@ -460,14 +460,14 @@ public class StorageFlat implements Storage {
 		    strs.add(pc.toFileFormat() + ":" + perm.toFileFormat());
 		}
 	    }
-	    cb.writeParam("Permissions", strs.toArray(new String[0]));
+	    cb.writeParam("Permissions", strs.toArray(new String[strs.size()]));
 
 	    //Flags
 	    strs = new ArrayList<String>();
 	    for (Flag flag : land.getPermissionsFlags().getFlags()) {
 		strs.add(flag.toFileFormat());
 	    }
-	    cb.writeParam("Flags", strs.toArray(new String[0]));
+	    cb.writeParam("Flags", strs.toArray(new String[strs.size()]));
 
 	    // Priority
 	    cb.writeParam("Priority", land.getPriority());
@@ -480,7 +480,7 @@ public class StorageFlat implements Storage {
 	    for (PlayerContainerPlayer pc : land.getPlayersNotify()) {
 		strs.add(pc.toFileFormat());
 	    }
-	    cb.writeParam("PlayersNotify", strs.toArray(new String[0]));
+	    cb.writeParam("PlayersNotify", strs.toArray(new String[strs.size()]));
 
 	    // Economy
 	    cb.writeParam("ForSale", land.isForSale() + "");

@@ -20,6 +20,7 @@ package me.tabinol.secuboid.lands.collisions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import me.tabinol.secuboid.Secuboid;
@@ -541,7 +542,7 @@ public class Collisions {
      */
     public Collection<CollisionsEntry> getEntries() {
 
-	return coll;
+	return Collections.unmodifiableCollection(coll);
     }
 
     /**

@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.utilities;
 
-
 /**
  * The Class Calculate.
  */
@@ -33,11 +32,11 @@ public class Calculate {
      */
     public static int greaterInt(int nb1, int nb2) {
 
-        if (nb1 > nb2) {
-            return nb1;
-        } else {
-            return nb2;
-        }
+	if (nb1 > nb2) {
+	    return nb1;
+	} else {
+	    return nb2;
+	}
     }
 
     /**
@@ -49,13 +48,13 @@ public class Calculate {
      */
     public static int lowerInt(int nb1, int nb2) {
 
-        if (nb1 < nb2) {
-            return nb1;
-        } else {
-            return nb2;
-        }
+	if (nb1 < nb2) {
+	    return nb1;
+	} else {
+	    return nb2;
+	}
     }
-    
+
     /**
      * Checks if is in interval.
      *
@@ -65,10 +64,10 @@ public class Calculate {
      * @return true, if is in interval
      */
     public static boolean isInInterval(int nbSource, int nb1, int nb2) {
-        
-        return nbSource >= lowerInt(nb1, nb2) && nbSource <= greaterInt(nb1, nb2);
+
+	return nbSource >= lowerInt(nb1, nb2) && nbSource <= greaterInt(nb1, nb2);
     }
-    
+
     // -1 before, 0 inside, +1 after
     /**
      * Compare position.
@@ -79,16 +78,16 @@ public class Calculate {
      * @return the int
      */
     public static int comparePosition(int nbSource, int nb1, int nb2) {
-        
-        if(nbSource < nb1) {
-            return -1;
-        }
-        if(nbSource > nb2) {
-            return 1;
-        }
-        return 0;
+
+	if (nbSource < nb1) {
+	    return -1;
+	}
+	if (nbSource > nb2) {
+	    return 1;
+	}
+	return 0;
     }
-    
+
     /**
      * Addition double.
      *
@@ -96,16 +95,16 @@ public class Calculate {
      * @param b the b
      * @return the double
      */
-    public static Double AdditionDouble(Double a, Double b){
-        Double t = null;
-        if(a<0){
-            t = a-b;
-        }else{
-            t = a+b;
-        }
-        return t;
+    public static Double AdditionDouble(Double a, Double b) {
+	Double t;
+	if (a < 0) {
+	    t = a - b;
+	} else {
+	    t = a + b;
+	}
+	return t;
     }
-    
+
     /**
      * Addition int.
      *
@@ -113,13 +112,13 @@ public class Calculate {
      * @param b the b
      * @return the int
      */
-    public static int AdditionInt(int a, int b){
-        int t = 0;
-        if(a<0){
-            t = a-b;
-        }else{
-            t = a+b;
-        }
-        return t;
+    public static int AdditionInt(int a, int b) {
+	int t;
+	if (a < 0) {
+	    t = a - b;
+	} else {
+	    t = a + b;
+	}
+	return t;
     }
 }

@@ -7,6 +7,7 @@ package me.tabinol.secuboid.lands;
 
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -430,7 +431,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Map<Integer, Area> getIdsAndAreas() {
 
-	return areas;
+	return Collections.unmodifiableMap(areas);
     }
 
     /**
@@ -611,7 +612,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public final Set<PlayerContainer> getResidents() {
 
-	return residents;
+	return Collections.unmodifiableSet(residents);
     }
 
     /**
@@ -669,7 +670,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public final Set<PlayerContainer> getBanneds() {
 
-	return banneds;
+	return Collections.unmodifiableSet(banneds);
     }
 
     /**
@@ -890,9 +891,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	}
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.lands.DummyLand#doSave()
-     */
     protected void doSave() {
 
 	if (autoSave) {
@@ -975,7 +973,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Set<PlayerContainerPlayer> getPlayersNotify() {
 
-	return playerNotify;
+	return Collections.unmodifiableSet(playerNotify);
     }
 
     /**
@@ -1043,7 +1041,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Set<Player> getPlayersInLand() {
 
-	return playersInLand;
+	return Collections.unmodifiableSet(playersInLand);
     }
 
     /**

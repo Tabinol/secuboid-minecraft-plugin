@@ -43,7 +43,7 @@ public class Types {
      */
     public Type addOrGetType(String arg0) {
         
-        if(arg0 == null || arg0.equals("")) {
+        if(arg0 == null || arg0.isEmpty()) {
             return null;
         }
         

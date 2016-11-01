@@ -313,7 +313,6 @@ public class Secuboid extends JavaPlugin {
      * @return the maven app properties
      */
     public MavenAppProperties getMavenAppProperties() {
-
 	return mavenAppProperties;
     }
 
@@ -323,7 +322,6 @@ public class Secuboid extends JavaPlugin {
      * @return the config
      */
     public Config getConf() {
-
 	return conf;
     }
 
@@ -333,7 +331,6 @@ public class Secuboid extends JavaPlugin {
      * @return the config
      */
     public InventoryConfig getInventoryConf() {
-
 	return inventoryConf;
     }
 
@@ -343,7 +340,6 @@ public class Secuboid extends JavaPlugin {
      * @return the inventory listener
      */
     public InventoryListener getInventoryListener() {
-
 	return inventoryListener;
     }
 
@@ -353,7 +349,6 @@ public class Secuboid extends JavaPlugin {
      * @return the fly and creative listener
      */
     public FlyCreativeListener getFlyCreativeListener() {
-
 	return flyCreativeListener;
     }
 
@@ -362,7 +357,6 @@ public class Secuboid extends JavaPlugin {
      * @return
      */
     public PlayerStaticConfig getPlayerConf() {
-
 	return playerConf;
     }
 
@@ -372,7 +366,6 @@ public class Secuboid extends JavaPlugin {
      * @return the lang
      */
     public Lang getLanguage() {
-
 	return language;
     }
 
@@ -382,7 +375,6 @@ public class Secuboid extends JavaPlugin {
      * @return the log
      */
     public Log getLog() {
-
 	return log;
     }
 
@@ -391,7 +383,6 @@ public class Secuboid extends JavaPlugin {
      * @return
      */
     public PermissionsFlags getPermissionsFlags() {
-
 	return PermissionsFlags;
     }
 
@@ -400,7 +391,6 @@ public class Secuboid extends JavaPlugin {
      * @return
      */
     public Lands getLands() {
-
 	return lands;
     }
 
@@ -409,7 +399,6 @@ public class Secuboid extends JavaPlugin {
      * @return
      */
     public Types getTypes() {
-
 	return types;
     }
 
@@ -419,7 +408,6 @@ public class Secuboid extends JavaPlugin {
      * @return the storage thread
      */
     public StorageThread getStorageThread() {
-
 	return storageThread;
     }
 
@@ -429,7 +417,6 @@ public class Secuboid extends JavaPlugin {
      * @return the lands manager thread
      */
     public CollisionsManagerThread getCollisionsManagerThread() {
-
 	return collisionsManagerThread;
     }
 
@@ -439,7 +426,6 @@ public class Secuboid extends JavaPlugin {
      * @return the depend plugin
      */
     public DependPlugin getDependPlugin() {
-
 	return dependPlugin;
     }
 
@@ -449,7 +435,6 @@ public class Secuboid extends JavaPlugin {
      * @return the approve notif
      */
     public ApproveNotif getApproveNotif() {
-
 	return approveNotif;
     }
 
@@ -459,7 +444,6 @@ public class Secuboid extends JavaPlugin {
      * @return the player money
      */
     public PlayerMoney getPlayerMoney() {
-
 	return playerMoney;
     }
 
@@ -469,7 +453,6 @@ public class Secuboid extends JavaPlugin {
      * @return the players cache
      */
     public PlayersCache getPlayersCache() {
-
 	return playersCache;
     }
 }

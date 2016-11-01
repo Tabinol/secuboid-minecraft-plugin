@@ -30,128 +30,121 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-
 /**
  * The Class OnCommand.
  */
 public class OnCommand extends Thread implements CommandExecutor {
 
     private final Map<String, Class<?>> commands;
-    
+
     /**
      * Instantiates a new on command.
      */
     public OnCommand() {
-        
-        // Create Command list
-        commands = new TreeMap<String, Class<?>>();
-        
-        for(CommandClassList presentClass : CommandClassList.values()) {
-            // Store commands information
-            InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
-            commands.put(infoCommand.name().toLowerCase(), presentClass.getCommandClass());
-            for(String alias : infoCommand.aliases()) {
-                commands.put(alias.toLowerCase(), presentClass.getCommandClass());
-            }
-        }
+
+	// Create Command list
+	commands = new TreeMap<String, Class<?>>();
+
+	for (CommandClassList presentClass : CommandClassList.values()) {
+	    // Store commands information
+	    System.out.println(presentClass);
+	    InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
+	    commands.put(infoCommand.name().toLowerCase(), presentClass.getCommandClass());
+	    for (String alias : infoCommand.aliases()) {
+		commands.put(alias.toLowerCase(), presentClass.getCommandClass());
+	    }
+	}
     }
-
-    /* (non-Javadoc)
-     * @see org.bukkit.command.CommandExecutor#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
-     */
-
-    /**
-     *
-     * @param sender
-     * @param cmd
-     * @param label
-     * @param arg
-     * @return
-     */
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] arg) {
 
-        // Others commands then /secuboid, /claim and /fd will not be send.
-        
-        ArgList argList = new ArgList(arg, sender);
-            try {
-                // Check the command to send
-                getCommand(sender, cmd, argList);
-                return true;
-                // If error on command, send the message to the player
-            } catch (SecuboidCommandException ex) {
-                return true;
-            }
+	// Others commands then /secuboid, /claim and /fd will not be send.
+	ArgList argList = new ArgList(arg, sender);
+	try {
+	    // Check the command to send
+	    getCommand(sender, cmd, argList);
+	    return true;
+	    // If error on command, send the message to the player
+	} catch (SecuboidCommandException ex) {
+	    return true;
+	}
     }
 
-    // Get command from args
+    /**
+     * Gets command from args.
+     *
+     * @param sender the sender
+     * @param cmd the command
+     * @param argList arguments list
+     * @throws SecuboidCommandException
+     */
     private void getCommand(CommandSender sender, Command cmd, ArgList argList) throws SecuboidCommandException {
 
-        try {
-            // Show help if there is no arguments
-            if (argList.isLast()) {
-                new CommandHelp(this, sender, "GENERAL").commandExecute();
-                return;
-            }
+	try {
+	    // Show help if there is no arguments
+	    if (argList.isLast()) {
+		new CommandHelp(this, sender, "GENERAL").commandExecute();
+		return;
+	    }
 
-            String command = argList.getNext().toLowerCase();
+	    String command = argList.getNext().toLowerCase();
 
-            // take the name
-            Class<?> cv = commands.get(command.toLowerCase());
-            
-            // The command does not exist
-            if(cv == null) {
-                throw new SecuboidCommandException("Command not existing", sender, "COMMAND.NOTEXIST", "SECUBOID");
-            }
-            
-            // Remove page from memory if needed
-            if(cv != commands.get("page")) {
-                Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(null);
-            }
+	    // take the name
+	    Class<?> cv = commands.get(command.toLowerCase());
 
-            // Do the command
-            InfoCommand ci = cv.getAnnotation(InfoCommand.class);
-            CommandExec ce = (CommandExec) cv.getConstructor(CommandEntities.class)
-                    .newInstance(new CommandEntities(ci, sender, argList, this));
-            if (ce.isExecutable()) {
-                ce.commandExecute();
-            }
+	    // The command does not exist
+	    if (cv == null) {
+		throw new SecuboidCommandException("Command not existing", sender, "COMMAND.NOTEXIST", "SECUBOID");
+	    }
 
-            // a huge number of Exception to catch!
-        } catch (NoSuchMethodException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
-        } catch (SecurityException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
-        } catch (InstantiationException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
-            throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
-        } catch (InvocationTargetException ex) {
-            // Noting to do, it will trows SecuboidCommandException
-        }
+	    // Remove page from memory if needed
+	    if (cv != commands.get("page")) {
+		Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(null);
+	    }
+
+	    // Do the command
+	    InfoCommand ci = cv.getAnnotation(InfoCommand.class);
+	    CommandExec ce = (CommandExec) cv.getConstructor(CommandEntities.class)
+		    .newInstance(new CommandEntities(ci, sender, argList, this));
+	    if (ce.isExecutable()) {
+		ce.commandExecute();
+	    }
+
+	    // a huge number of Exception to catch!
+	} catch (NoSuchMethodException ex) {
+	    Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
+	    throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+	} catch (SecurityException ex) {
+	    Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
+	    throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+	} catch (InstantiationException ex) {
+	    Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
+	    throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+	} catch (IllegalAccessException ex) {
+	    Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
+	    throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+	} catch (IllegalArgumentException ex) {
+	    Logger.getLogger(OnCommand.class.getName()).log(Level.SEVERE, "General Error on Command class find", ex);
+	    throw new SecuboidCommandException("General Error on Command class find", sender, "GENERAL.ERROR");
+	} catch (InvocationTargetException ex) {
+	    // Noting to do, it will trows SecuboidCommandException
+	}
     }
-    
+
     /**
      *
      * @param command
      * @return
      */
     public InfoCommand getInfoCommand(String command) {
-        
-        Class<?> infoClass = commands.get(command.toLowerCase());
-        
-        if(infoClass == null) {
-            return null;
-        }
-        
-        return infoClass.getAnnotation(InfoCommand.class);
+
+	Class<?> infoClass = commands.get(command.toLowerCase());
+
+	if (infoClass == null) {
+	    return null;
+	}
+
+	return infoClass.getAnnotation(InfoCommand.class);
     }
 }

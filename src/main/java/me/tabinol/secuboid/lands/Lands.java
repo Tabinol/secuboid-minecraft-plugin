@@ -127,11 +127,8 @@ public class Lands {
     public Lands() {
 
 	areaList = new TreeMap[4];
-	if (Secuboid.getThisPlugin() != null) {
-	    pm = Secuboid.getThisPlugin().getServer().getPluginManager();
-	} else {
-	    pm = null;
-	}
+	pm = Secuboid.getThisPlugin().getServer().getPluginManager();
+
 	for (int t = 0; t < areaList.length; t++) {
 	    areaList[t] = new TreeMap<String, TreeSet<AreaIndex>>();
 	}

@@ -25,7 +25,7 @@ import org.junit.Test;
  */
 public class ProfilesTest {
 
-    private String[] names = {"Notch", "Tabinol"};
+    private final String[] names = {"Notch", "Tabinol"};
 
     /**
      *
@@ -33,13 +33,13 @@ public class ProfilesTest {
     @Test
     public void testHtmlNamesRequest() {
 
-        HttpProfileRepository httpProfileRepository = new HttpProfileRepository("minecraft");
-        Profile[] profiles = httpProfileRepository.findProfilesByNames(names);
+	HttpProfileRepository httpProfileRepository = new HttpProfileRepository("minecraft");
+	Profile[] profiles = httpProfileRepository.findProfilesByNames(names);
 
-        for(int t = 0; t < names.length; t ++) {
+	for (int t = 0; t < names.length; t++) {
 
-            // Write result
-            System.out.println(names[t] + "-->" + profiles[t].getId());
-        }
+	    // Write result
+	    System.out.println(names[t] + "-->" + profiles[t].getId());
+	}
     }
 }

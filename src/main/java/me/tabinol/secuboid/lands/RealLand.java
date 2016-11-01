@@ -288,16 +288,12 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
 	((Area) area).setLand(this);
 	areas.put(key, area);
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getLands().addAreaToList(area);
-	}
+	Secuboid.getThisPlugin().getLands().addAreaToList(area);
 	doSave();
 
 	// Start Event
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
-		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_ADD, area));
-	}
+	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(new LandModifyEvent(this,
+		LandModifyEvent.LandModifyReason.AREA_ADD, area));
     }
 
     /**
@@ -882,9 +878,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void forceSave() {
 
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getStorageThread().saveLand(this);
-	}
+	Secuboid.getThisPlugin().getStorageThread().saveLand(this);
     }
 
     protected void doSave() {

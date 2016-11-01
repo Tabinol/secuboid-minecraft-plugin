@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.commands;
 
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 /**
@@ -25,12 +26,10 @@ import org.junit.Test;
  */
 public class CommandsTest {
 
-    /**
-     *
-     */
     @Test
     public void AnnotationsTest() {
-        // Create Command list
-        new OnCommand();
+	// Create Command list
+	OnCommand onCommand = new OnCommand();
+	assertNotNull(onCommand.getInfoCommand("info"));
     }
 }

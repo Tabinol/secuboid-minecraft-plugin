@@ -18,8 +18,10 @@
  */
 package me.tabinol.secuboid.commands;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Set;
+import static org.junit.Assert.fail;
 import org.junit.Test;
+import org.reflections.Reflections;
 
 /**
  * Test for commands annotations
@@ -28,8 +30,21 @@ public class CommandsTest {
 
     @Test
     public void AnnotationsTest() {
-	// Create Command list
-	OnCommand onCommand = new OnCommand();
-	assertNotNull(onCommand.getInfoCommand("info"));
+
+	Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
+	Set<Class<?>> classes = reflections.getTypesAnnotatedWith(InfoCommand.class);
+
+	// Test if annoted classes are in CommandClassList
+	for (Class<?> classUnit : classes) {
+	    boolean found = false;
+	    for (CommandClassList commandList : CommandClassList.values()) {
+		if (commandList.getCommandClass().equals(classUnit)) {
+		    found = true;
+		}
+	    }
+	    if (!found) {
+		fail("The class \"" + classUnit.getCanonicalName() + "\" is not declared in class \"CommandClassList\".");
+	    }
+	}
     }
 }

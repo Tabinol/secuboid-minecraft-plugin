@@ -44,13 +44,7 @@ public class CommandEcosign extends CommandExec {
      */
     public enum SignType {
 
-	/**
-	 *
-	 */
 	SALE,
-	/**
-	 *
-	 */
 	RENT
     }
 
@@ -119,7 +113,8 @@ public class CommandEcosign extends CommandExec {
 			land.getName()));
 		Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is purchased by : " + player.getName());
 	    } else // Rent and unrent
-	     if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
+	    {
+		if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
 			|| playerConf.isAdminMode())) {
 
 		    // Unrent
@@ -163,8 +158,10 @@ public class CommandEcosign extends CommandExec {
 			    land.getName()));
 		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is rented by : " + player.getName());
 		}
+	    }
 	} else // Left Click, destroy the sign
-	 if (land.getOwner().hasAccess(player) || playerConf.isAdminMode()) {
+	{
+	    if (land.getOwner().hasAccess(player) || playerConf.isAdminMode()) {
 
 		if (signType == SignType.SALE) {
 
@@ -195,5 +192,6 @@ public class CommandEcosign extends CommandExec {
 		    Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is no longer for rent by : " + player.getName());
 		}
 	    }
+	}
     }
 }

@@ -21,7 +21,7 @@ package me.tabinol.secuboid.commands;
 import me.tabinol.secuboid.commands.executor.*;
 
 /**
- * Each command classes must be added in this list. The goal is to remove Reflection library
+ * Each command classes must be added in this list. The goal is to remove Reflection library.
  */
 public enum CommandClassList {
 

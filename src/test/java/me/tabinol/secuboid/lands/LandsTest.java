@@ -168,10 +168,8 @@ public class LandsTest {
     @Test
     public void verifyLines() throws Exception {
 
-	Land land = lands.getLand(TEST_LINES);
-
-	System.out.println(lands.getLand(TEST_LINES).getArea(1).getVolume());
-
+	//Land land = lands.getLand(TEST_LINES);
+	//System.out.println(lands.getLand(TEST_LINES).getArea(1).getVolume());
 	// Inside point check
 	// TODO Activate tests
 	//if(!land.isLocationInside(WORLD, 151, 71, 1225)) {

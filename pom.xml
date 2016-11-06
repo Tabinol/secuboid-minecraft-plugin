@@ -39,13 +39,6 @@
     </repositories>
 
     <dependencies>
-        
-	<!-- Test begin -->
-	<plugin>
-	    <groupId>org.jacoco</groupId>
-	    <artifactId>jacoco-maven-plugin</artifactId>
-	    <version>0.7.7.201606060606</version>
-	</plugin>
 
 	<dependency>
 	    <groupId>junit</groupId>
@@ -204,20 +197,44 @@
 		</configuration>
 	    </plugin>
             
+	    <!-- Test begin -->
+	    <plugin>
+		<groupId>org.jacoco</groupId>
+		<artifactId>jacoco-maven-plugin</artifactId>
+		<version>0.7.7.201606060606</version>
+		<configuration>
+		    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+		    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+		</configuration>
+		<executions>
+		    <execution>
+			<id>jacoco-initialize</id>
+			<goals>
+			    <goal>prepare-agent</goal>
+			</goals>
+		    </execution>
+		    <execution>
+			<id>jacoco-site</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>report</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
+
 	</plugins>
     </build>
 
     <distributionManagement>
 	<snapshotRepository>
 	    <id>snapshots</id>
-	    <name>vps88881.vps.ovh.ca-snapshots</name>
+	    <name>Tabinol.me Artifactory-snapshots</name>
 	    <url>http://tabinol.me/artifactory/libs-snapshot-local</url>
 	</snapshotRepository>
-    </distributionManagement>
-    <distributionManagement>
 	<repository>
-	    <id>central</id>
-	    <name>vps88881.vps.ovh.ca-releases</name>
+	    <id>release</id>
+	    <name>Tabinol.me Artifactory-releases</name>
 	    <url>http://tabinol.me/artifactory/libs-release-local</url>
 	</repository>
     </distributionManagement>

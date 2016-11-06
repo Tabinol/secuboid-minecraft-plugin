@@ -233,7 +233,7 @@
 	    <url>http://tabinol.me/artifactory/libs-snapshot-local</url>
 	</snapshotRepository>
 	<repository>
-	    <id>release</id>
+	    <id>releases</id>
 	    <name>Tabinol.me Artifactory-releases</name>
 	    <url>http://tabinol.me/artifactory/libs-release-local</url>
 	</repository>

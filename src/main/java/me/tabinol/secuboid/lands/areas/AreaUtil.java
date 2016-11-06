@@ -20,7 +20,6 @@ package me.tabinol.secuboid.lands.areas;
 
 import java.util.ArrayList;
 import java.util.List;
-import me.tabinol.secuboid.lands.areas.lines.LineLine;
 
 /**
  * Area utilities
@@ -61,40 +60,19 @@ public class AreaUtil {
 
 	// Create lines area
 	if (multiStr[0].equals(AreaType.LINES.toString())) {
-	    List<LineLine> lines = new ArrayList<LineLine>();
-
-	    // Do the first
-	    lines.add(new LineLine(
+	    List<Point> points = new ArrayList<Point>();
+	    for (int t = 6; t < multiStr.length; t += 3) {
+		points.add(new Point(
+			Integer.parseInt(multiStr[t]),
+			Integer.parseInt(multiStr[t + 1]),
+			Integer.parseInt(multiStr[t + 2])));
+	    }
+	    return new LinesArea(multiStr[1],
 		    Integer.parseInt(multiStr[2]),
 		    Integer.parseInt(multiStr[3]),
 		    Integer.parseInt(multiStr[4]),
 		    Integer.parseInt(multiStr[5]),
-		    Integer.parseInt(multiStr[6]),
-		    Integer.parseInt(multiStr[7]),
-		    Integer.parseInt(multiStr[8]),
-		    Integer.parseInt(multiStr[9]),
-		    Integer.parseInt(multiStr[10]),
-		    Integer.parseInt(multiStr[11])
-	    ));
-
-	    // Do the next lines (if exist)
-	    if (multiStr.length > 12) {
-		for (int t = 12; t < multiStr.length; t += 10) {
-		    lines.add(new LineLine(
-			    Integer.parseInt(multiStr[t - 7]),
-			    Integer.parseInt(multiStr[t - 6]),
-			    Integer.parseInt(multiStr[t - 5]),
-			    Integer.parseInt(multiStr[t]),
-			    Integer.parseInt(multiStr[t + 1]),
-			    Integer.parseInt(multiStr[t + 2]),
-			    Integer.parseInt(multiStr[t + 3]),
-			    Integer.parseInt(multiStr[t + 4]),
-			    Integer.parseInt(multiStr[t + 5]),
-			    Integer.parseInt(multiStr[t + 6])
-		    ));
-		}
-	    }
-	    return new LinesArea(multiStr[1], lines);
+		    points);
 	}
 
 	// Create CuboidArea (old version)

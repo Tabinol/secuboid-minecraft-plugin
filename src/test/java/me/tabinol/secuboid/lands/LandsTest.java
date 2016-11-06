@@ -18,14 +18,10 @@
  */
 package me.tabinol.secuboid.lands;
 
-import java.util.ArrayList;
-import java.util.List;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
-import me.tabinol.secuboid.lands.areas.LinesArea;
-import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
@@ -103,11 +99,11 @@ public class LandsTest {
 	// Create lands for test
 	lands.createLand(TEST_CUBOID, new PlayerContainerNobody(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
 	lands.createLand(TEST_CYLINDER, new PlayerContainerNobody(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
-	List<LineLine> lines = new ArrayList<LineLine>();
-	lines.add(new LineLine(150, 70, 150, 150, 70, 200, 5, 5, 5, 5));
-	lines.add(new LineLine(150, 70, 200, 200, 70, 250, 5, 5, 5, 5));
-	lines.add(new LineLine(200, 70, 250, 250, 70, 250, 5, 5, 5, 5));
-	lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, lines));
+	//List<Line> lines = new ArrayList<Line>();
+	//lines.add(new Line(150, 70, 150, 150, 70, 200, 5, 5, 5, 5));
+	//lines.add(new Line(150, 70, 200, 200, 70, 250, 5, 5, 5, 5));
+	//lines.add(new Line(200, 70, 250, 250, 70, 250, 5, 5, 5, 5));
+	//lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, lines));
     }
 
     /**

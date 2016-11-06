@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.lands.areas.lines.LineLine;
-import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -34,25 +32,39 @@ import org.bukkit.World;
 public final class LinesArea implements Area {
 
     private final AreaCommon areaCommon;
-    private final List<LineLine> lines;
+    private final int up;
+    private final int down;
+    private final int left;
+    private final int right;
+    private final List<Point> points;
 
     /**
      * Instantiates a line area.
      *
      * @param worldName the world name
-     * @param lines the lines
+     * @param up the up distance (from the point)
+     * @param down the down distance (from the point)
+     * @param left the left distance (from the point)
+     * @param right the right distance (from the point)
+     * @param points the points (can be null for a new lines area)
      */
-    public LinesArea(String worldName, Collection<LineLine> lines) {
+    public LinesArea(String worldName, int up, int down, int left, int right, List<Point> points) {
 
 	areaCommon = new AreaCommon(this, worldName, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
 		Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-	this.lines = new ArrayList<LineLine>();
+	if (points != null) {
+	    this.points = points;
+	} else {
+	    this.points = new ArrayList<Point>();
+	}
+	this.up = up;
+	this.down = down;
+	this.left = left;
+	this.right = right;
 
 	// Know the minimal x/z and maximal x/z
-	if (lines != null) {
-	    for (LineLine line : lines) {
-		addLine(line);
-	    }
+	for (Point point : points) {
+	    addPoint(point);
 	}
     }
 
@@ -174,11 +186,10 @@ public final class LinesArea implements Area {
     public String toFileFormat() {
 
 	StringBuilder sb = new StringBuilder();
-	sb.append(AreaType.LINES).append(":").append(getWorldName());
-	boolean isFirst = true;
-	for (LineLine line : getLines()) {
-	    sb.append(":").append(line.toString(isFirst));
-	    isFirst = false;
+	sb.append(AreaType.LINES).append(":").append(getWorldName()).append(":")
+		.append(up).append(":").append(down).append(":").append(left).append(":").append(right);
+	for (Point point : points) {
+	    sb.append(":").append(point.getX()).append(":").append(point.getY()).append(":").append(point.getZ());
 	}
 
 	return sb.toString();
@@ -193,26 +204,18 @@ public final class LinesArea implements Area {
     public String getPrint() {
 
 	StringBuilder sb = new StringBuilder();
-	sb.append(AreaType.LINES.toString().substring(0, 3).toLowerCase()).append(":");
-	boolean isFirst = true;
-	for (LineLine line : getLines()) {
-	    if (!isFirst) {
-		sb.append(", ");
-	    }
-	    sb.append(line.getPrint(isFirst));
-	    isFirst = false;
+	sb.append(AreaType.LINES.toString().substring(0, 3).toLowerCase()).append(":")
+		.append("^").append(up).append(", V").append(down).append(", <").append(left).append(", >").append(right);
+	for (Point point : points) {
+	    sb.append(", (").append(point.getX()).append(", ").append(point.getY()).append(", ").append(point.getZ()).append(")");
 	}
 
 	return sb.toString();
     }
 
-    /**
-     *
-     * @param line
-     */
-    public void addLine(LineLine line) {
-
-	// Modify the previous line x2/y2/z2
+    public void addPoint(Point line) {
+	/*
+// Modify the previous line x2/y2/z2
 	if (!lines.isEmpty()) {
 	    lines.get(lines.size() - 1).resolveIntersection(line);
 	}
@@ -228,6 +231,7 @@ public final class LinesArea implements Area {
 	setY2(line.gety2());
 	setZ2(Calculate.greaterInt(Calculate.greaterInt(line.getLeftZ1(), line.getLeftZ2()),
 		Calculate.greaterInt(line.getRightZ1(), line.getRightZ2())));
+	 */
     }
 
     /**
@@ -235,34 +239,38 @@ public final class LinesArea implements Area {
      *
      * @return a collection of line
      */
-    public Collection<LineLine> getLines() {
+    public Collection<Point> getLines() {
 
-	return Collections.unmodifiableCollection(lines);
+	return Collections.unmodifiableCollection(points);
     }
 
     @Override
     public long getVolume() {
 
+	/*
 	long volume = 0;
 
-	for (LineLine line : lines) {
-	    volume += ((LineLine) line).getVolume();
+	for (Line line : lines) {
+	    volume += ((Line) line).getVolume();
 	}
 
 	return volume;
+	 */
+	return 0;
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
+	/*
 	if (worldName.equals(worldName)) {
-	    for (LineLine line : lines) {
-		if (((LineLine) line).isLocationInside(x, y, z)) {
+	    for (Line line : lines) {
+		if (((Line) line).isLocationInside(x, y, z)) {
 		    return true;
 		}
 	    }
 	}
-
+	 */
 	return false;
     }
 
@@ -309,11 +317,11 @@ public final class LinesArea implements Area {
     @Override
     public Area copyOf() {
 
-	final List<LineLine> newLines = new ArrayList<LineLine>();
+	final List<Point> newPoints = new ArrayList<Point>();
 
-	for (LineLine line : lines) {
-	    newLines.add(line);
+	for (Point point : points) {
+	    newPoints.add(point);
 	}
-	return new LinesArea(getWorldName(), newLines);
+	return new LinesArea(getWorldName(), up, down, left, right, newPoints);
     }
 }

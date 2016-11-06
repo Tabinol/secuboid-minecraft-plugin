@@ -23,11 +23,8 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.LinesArea;
-import me.tabinol.secuboid.lands.areas.lines.LineLine;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
-import me.tabinol.secuboid.utilities.Calculate;
-import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -60,7 +57,7 @@ public class VisualSelectionLines implements VisualSelection {
     private Land parentDetected;
 
     private final LinesArea area;
-    private LineLine curLine;
+    //private Line curLine;
     private int x1;
     private int y1;
     private int z1;
@@ -86,7 +83,7 @@ public class VisualSelectionLines implements VisualSelection {
 	if (area != null) {
 	    this.area = area;
 	} else {
-	    this.area = new LinesArea(loc.getWorld().getName(), null);
+	    this.area = null; // new LinesArea(loc.getWorld().getName(), null);
 	}
 	x1 = loc.getBlockX();
 	y1 = loc.getBlockY();
@@ -144,8 +141,8 @@ public class VisualSelectionLines implements VisualSelection {
 
 	isCollision = false;
 	Location loc = player.getLocation();
-	curLine = new LineLine(x1, y1, z1, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
-		upDist, downDist, leftDist, rightDist);
+	//curLine = new Line(x1, y1, z1, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+	//	upDist, downDist, leftDist, rightDist);
 
 	makeVisualSelection();
     }
@@ -184,6 +181,7 @@ public class VisualSelectionLines implements VisualSelection {
 
 	//MakeLine
 	if (!isFromLand) {
+	    /*
 	    // Active
 	    int x1 = Calculate.lowerInt(curLine.getX1(), curLine.getX2());
 	    int x2 = Calculate.greaterInt(curLine.getX1(), curLine.getX2());
@@ -205,13 +203,16 @@ public class VisualSelectionLines implements VisualSelection {
 		    }
 		}
 	    }
+	     */
 	} else {
+	    /*
 	    // Passive
 	    Location newloc = new Location(area.getWord(), x1, PlayersUtil.getYNearPlayer(player, x1, z1) - 1, z1);
 	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 	    newloc = new Location(area.getWord(), curLine.getX2(), PlayersUtil.getYNearPlayer(player, curLine.getX2(),
 		    curLine.getZ2()) - 1, curLine.getZ2());
 	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
+	     */
 	}
     }
 

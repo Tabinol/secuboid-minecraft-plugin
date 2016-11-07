@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -33,6 +32,7 @@ import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -42,61 +42,41 @@ import org.bukkit.entity.Player;
 public class CommandSelect extends CommandCollisionsThreadExec {
 
     /**
-     * The player.
-     */
-    private final Player player;
-
-    /**
      * The location.
      */
     private final Location location;
 
     /**
-     * The player conf.
-     */
-    private final PlayerConfEntry playerConf;
-
-    /**
-     * The arg list.
-     */
-    private final ArgList argList;
-
-    /**
      * Instantiates a new command select.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSelect(CommandEntities entity) throws SecuboidCommandException {
+    public CommandSelect(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
-	player = entity.player;
+	super(secuboid, infoCommand, sender, argList);
 	location = null;
-	playerConf = entity.playerConf;
-	argList = entity.argList;
     }
 
-    // Called from player action, not a command
     /**
-     * Instantiates a new command select.
+     * Instantiates a new command select (from a player action).
      *
+     * @param secuboid secuboid instance
      * @param player the player
      * @param argList the arg list
      * @param location the location
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSelect(Player player, ArgList argList, Location location) throws SecuboidCommandException {
+    public CommandSelect(Secuboid secuboid, Player player, ArgList argList, Location location) throws SecuboidCommandException {
 
-	super(null);
-	this.player = player;
+	super(secuboid, null, player, argList);
 	this.location = location;
-	playerConf = Secuboid.getThisPlugin().getPlayerConf().get(player);
-	this.argList = argList;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
@@ -106,16 +86,16 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	String curArg;
 
 	if (playerConf.getSelection().getArea() == null) {
-	    Secuboid.getThisPlugin().getLog().write(player.getName() + " join select mode");
+	    secuboid.getLog().write(player.getName() + " join select mode");
 
 	    if (!argList.isLast()) {
 
 		curArg = argList.getNext();
 		if (curArg.equalsIgnoreCase("worldedit") || curArg.equalsIgnoreCase("we")) {
-		    if (Secuboid.getThisPlugin().getDependPlugin().getWorldEdit() == null) {
-			throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
+		    if (secuboid.getDependPlugin().getWorldEdit() == null) {
+			throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
 		    }
-		    new CommandSelectWorldedit(player, playerConf).MakeSelect();
+		    new CommandSelectWorldedit(secuboid, player, playerConf).MakeSelect();
 
 		} else {
 
@@ -126,52 +106,52 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 			if (location != null) {
 
 			    // With an item
-			    landtest = Secuboid.getThisPlugin().getLands().getLand(location);
+			    landtest = secuboid.getLands().getLand(location);
 			} else {
 
 			    // Player location
-			    landtest = Secuboid.getThisPlugin().getLands().getLand(player.getLocation());
+			    landtest = secuboid.getLands().getLand(player.getLocation());
 			}
 
 		    } else {
 
-			landtest = Secuboid.getThisPlugin().getLands().getLand(curArg);
+			landtest = secuboid.getLands().getLand(curArg);
 		    }
 
 		    if (landtest == null) {
-			throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.NOLAND");
+			throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
 
 		    }
-		    PlayerContainer owner = landtest.getOwner();
+		    PlayerContainer ownerLocal = landtest.getOwner();
 
-		    if (!owner.hasAccess(player) && !playerConf.isAdminMode()
+		    if (!ownerLocal.hasAccess(player) && !playerConf.isAdminMode()
 			    && !(landtest.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.RESIDENT_MANAGER.getPermissionType())
 			    && (landtest.isResident(player) || landtest.isOwner(player)))) {
-			throw new SecuboidCommandException("CommandSelect", player, "GENERAL.MISSINGPERMISSION");
+			throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
 		    }
 		    if (playerConf.getSelection().getLand() == null) {
 
-			playerConf.getSelection().addSelection(new LandSelection(player, landtest));
+			playerConf.getSelection().addSelection(new LandSelection(secuboid, player, landtest));
 
-			player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.SELECTEDLAND", landtest.getName()));
+			player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.SELECTEDLAND", landtest.getName()));
 			playerConf.setAutoCancelSelect(true);
 		    } else {
 
-			player.sendMessage(ChatColor.RED + "[Secuboid] " + ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.ALREADY"));
+			player.sendMessage(ChatColor.RED + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.ALREADY"));
 		    }
 		}
 	    } else {
 
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
-		player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
-		AreaSelection select = new AreaSelection(player, null, false, AreaType.CUBOID, AreaSelection.MoveType.ACTIVE);
+		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
+		player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
+		AreaSelection select = new AreaSelection(secuboid, player, null, false, AreaType.CUBOID, AreaSelection.MoveType.ACTIVE);
 		playerConf.getSelection().addSelection(select);
 		playerConf.setAutoCancelSelect(true);
 	    }
 	} else if ((curArg = argList.getNext()) != null && curArg.equalsIgnoreCase("done")) {
 
 	    //if (playerConf.getSelection().getLand() != null) {
-	    //    throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.CANTDONE");
+	    //    throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.CANTDONE");
 	    //}
 	    //if (playerConf.getSelection().getCuboidArea() != null) {
 	    doSelectAreaDone();
@@ -182,7 +162,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	    doSelectAreaInfo();
 
 	} else {
-	    throw new SecuboidCommandException("CommandSelect", player, "COMMAND.SELECT.ALREADY");
+	    throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.ALREADY");
 	}
     }
 
@@ -196,17 +176,17 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	checkSelections(null, true);
 
 	AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
-	playerConf.getSelection().addSelection(new AreaSelection(player, select.getVisualSelection().getArea(),
+	playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, select.getVisualSelection().getArea(),
 		false, null, AreaSelection.MoveType.PASSIVE));
 	playerConf.setAutoCancelSelect(true);
 
 	if (!select.getVisualSelection().hasCollision()) {
 
 	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
+		    + secuboid.getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
 	} else {
 	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.RED
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.COLLISION"));
+		    + secuboid.getLanguage().getMessage("COMMAND.SELECT.LAND.COLLISION"));
 	}
     }
 
@@ -222,15 +202,15 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
 	Area area = select.getVisualSelection().getArea();
 
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO1",
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO1",
 		area.getPrint()));
 	if (area.getVolume() != 0) {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO2",
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO2",
 		    area.getVolume() + ""));
 	}
 
 	checkCollision(null, null, null, Collisions.LandAction.LAND_ADD,
-		0, playerConf.getSelection().getArea(), null, entity.playerConf.getPlayerContainer(), true);
+		0, playerConf.getSelection().getArea(), null, playerConf.getPlayerContainer(), true);
     }
 
     @Override
@@ -242,13 +222,13 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	// Price (economy)
 	price = collisions.getPriceLand();
 	if (price != 0L) {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
-		    Secuboid.getThisPlugin().getPlayerMoney().toFormat(price)));
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
+		    secuboid.getPlayerMoney().toFormat(price)));
 	}
 	price = collisions.getPriceArea();
 	if (price != 0L) {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
-		    Secuboid.getThisPlugin().getPlayerMoney().toFormat(price)));
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
+		    secuboid.getPlayerMoney().toFormat(price)));
 	}
     }
 }

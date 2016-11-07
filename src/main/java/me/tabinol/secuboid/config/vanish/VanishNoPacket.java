@@ -23,8 +23,6 @@ import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
-// import org.kitteh.vanish.VanishPlugin;
-
 /**
  * VanishNoPacket Function.
  *
@@ -32,32 +30,30 @@ import org.bukkit.metadata.MetadataValue;
  */
 public class VanishNoPacket implements Vanish {
 
-    // private final VanishPlugin vanishNoPacket;
+    private final Secuboid secuboid;
 
     /**
      * Instantiates a new vanish no packet.
+     *
+     * @param secuboid secuboid instance
      */
-    public VanishNoPacket() {
-
-        // vanishNoPacket = (VanishPlugin) Secuboid.getThisPlugin().getDependPlugin().getVanishNoPacket();
+    public VanishNoPacket(Secuboid secuboid) {
+	this.secuboid = secuboid;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.vanish.Vanish#isVanished(org.bukkit.entity.Player)
-     */
     @Override
     public boolean isVanished(Player player) {
 
-        if((Secuboid.getThisPlugin().getConf().isSpectatorIsVanish()
-                && BKVersion.isSpectatorMode(player))) {
-            return true;
-        }
-        
-        // return vanishNoPacket.getManager().isVanished(player);
-        for(MetadataValue value : player.getMetadata("vanished")) {
-            return value.asBoolean();
-        }
-        
-        return false;
+	if ((secuboid.getConf().isSpectatorIsVanish()
+		&& BKVersion.isSpectatorMode(player))) {
+	    return true;
+	}
+
+	// return vanishNoPacket.getManager().isVanished(player);
+	for (MetadataValue value : player.getMetadata("vanished")) {
+	    return value.asBoolean();
+	}
+
+	return false;
     }
 }

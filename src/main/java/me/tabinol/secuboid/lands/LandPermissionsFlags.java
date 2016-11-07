@@ -41,6 +41,7 @@ import org.bukkit.entity.Player;
  */
 public class LandPermissionsFlags {
 
+    private final Secuboid secuboid;
     private final Land land;
     private final RealLand realLand;
 
@@ -54,7 +55,8 @@ public class LandPermissionsFlags {
      */
     private TreeMap<FlagType, Flag> flags;
 
-    LandPermissionsFlags(Land land) {
+    LandPermissionsFlags(Secuboid secuboid, Land land) {
+	this.secuboid = secuboid;
 	this.land = land;
 	realLand = land.isRealLand() ? (RealLand) land : null;
 	permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
@@ -118,7 +120,7 @@ public class LandPermissionsFlags {
      * @param inheritance
      */
     public void addPermission(PlayerContainer pc, PermissionType permType, boolean value, boolean inheritance) {
-	addPermission(pc, new Permission((PermissionType) permType, value, inheritance));
+	addPermission(pc, secuboid.getPermissionsFlags().newPermission((PermissionType) permType, value, inheritance));
     }
 
     /**
@@ -149,12 +151,12 @@ public class LandPermissionsFlags {
 		    && perm.getValue() != perm.getPermType().getDefaultValue()) {
 
 		// Start Event for kick
-		Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+		secuboid.getServer().getPluginManager().callEvent(
 			new PlayerContainerAddNoEnterEvent(realLand, pc));
 	    }
 
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.PERMISSION_SET, perm));
 	}
     }
@@ -190,7 +192,7 @@ public class LandPermissionsFlags {
 
 	if (land.isRealLand()) {
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.PERMISSION_UNSET, perm));
 	}
 
@@ -267,7 +269,7 @@ public class LandPermissionsFlags {
 	    if (realLand.getParent() != null) {
 		return realLand.getParent().getPermissionsFlags().checkPermissionAndInherit(player, pt, true);
 	    } else {
-		return Secuboid.getThisPlugin().getLands().getPermissionInWorld(realLand.getWorldName(), player, pt, true);
+		return secuboid.getLands().getPermissionInWorld(realLand.getWorldName(), player, pt, true);
 	    }
 	}
 
@@ -282,7 +284,7 @@ public class LandPermissionsFlags {
      */
     public void addFlag(FlagType flagType, Object value, boolean inheritance) {
 
-	addFlag(new Flag(flagType, value, inheritance));
+	addFlag(secuboid.getPermissionsFlags().newFlag(flagType, value, inheritance));
     }
 
     /**
@@ -313,7 +315,7 @@ public class LandPermissionsFlags {
 	    if (realLand.getParent() != null) {
 		return realLand.getParent().getPermissionsFlags().getFlagAndInherit(ft, true);
 	    } else {
-		return Secuboid.getThisPlugin().getLands().getFlagInWorld(realLand.getWorldName(), ft, true);
+		return secuboid.getLands().getFlagInWorld(realLand.getWorldName(), ft, true);
 	    }
 	}
 
@@ -352,7 +354,7 @@ public class LandPermissionsFlags {
 		}
 
 		if (perm != null) {
-		    Secuboid.getThisPlugin().getLog().write("Container: " + permissionEntry.getKey().toString() + ", "
+		    secuboid.getLog().write("Container: " + permissionEntry.getKey().toString() + ", "
 			    + "PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Inheritable: " + perm.isInheritable());
 		    if ((onlyInherit && perm.isInheritable()) || !onlyInherit) {
 			return perm.getValue();
@@ -363,7 +365,7 @@ public class LandPermissionsFlags {
 
 	// Check in default permissions
 	if (land.isRealLand()) {
-	    return Secuboid.getThisPlugin().getLands().getDefaultConf(realLand.getType()).getPermissionsFlags().getPermission(player, pt, false, land);
+	    return secuboid.getLands().getDefaultConf(realLand.getType()).getPermissionsFlags().getPermission(player, pt, false, land);
 	}
 
 	return null;
@@ -381,7 +383,7 @@ public class LandPermissionsFlags {
 
 	if (land.isRealLand()) {
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.FLAG_SET, flag));
 	}
     }
@@ -403,7 +405,7 @@ public class LandPermissionsFlags {
 
 	if (land.isRealLand()) {
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent((RealLand) land, LandModifyEvent.LandModifyReason.FLAG_UNSET, flag));
 	}
 
@@ -448,7 +450,7 @@ public class LandPermissionsFlags {
 
 	Flag flag = flags.get(ft);
 	if (flag != null) {
-	    Secuboid.getThisPlugin().getLog().write("Flag: " + flag.toString());
+	    secuboid.getLog().write("Flag: " + flag.toString());
 
 	    if ((onlyInherit && flag.isInheritable()) || !onlyInherit) {
 		return flag.getValue();
@@ -458,7 +460,7 @@ public class LandPermissionsFlags {
 	// Check in default flags
 	if (!onlyInherit && land.isRealLand()) {
 
-	    return (Secuboid.getThisPlugin().getLands()).getDefaultConf(((RealLand) land).getType()).getPermissionsFlags().getFlag(ft, false);
+	    return (secuboid.getLands()).getDefaultConf(((RealLand) land).getType()).getPermissionsFlags().getFlag(ft, false);
 	}
 
 	return null;

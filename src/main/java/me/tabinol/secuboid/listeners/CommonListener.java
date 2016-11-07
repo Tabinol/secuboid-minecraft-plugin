@@ -37,6 +37,12 @@ import org.bukkit.entity.Projectile;
  */
 public class CommonListener {
 
+    final Secuboid secuboid;
+
+    CommonListener(Secuboid secuboid) {
+	this.secuboid = secuboid;
+    }
+
     /**
      * Check permission.
      *
@@ -45,8 +51,7 @@ public class CommonListener {
      * @param pt the pt
      * @return true, if successful
      */
-    protected boolean checkPermission(Land land, Player player,
-	    PermissionType pt) {
+    boolean checkPermission(Land land, Player player, PermissionType pt) {
 
 	return land.getPermissionsFlags().checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
     }
@@ -56,10 +61,9 @@ public class CommonListener {
      *
      * @param player the player
      */
-    protected void messagePermission(Player player) {
+    void messagePermission(Player player) {
 
-	player.sendMessage(ChatColor.GRAY + "[Secuboid] "
-		+ Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
+	player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
     }
 
     /**
@@ -68,7 +72,7 @@ public class CommonListener {
      * @param entity the entity
      * @return the source player
      */
-    protected Player getSourcePlayer(Entity entity) {
+    Player getSourcePlayer(Entity entity) {
 
 	Projectile damagerProjectile;
 
@@ -94,7 +98,7 @@ public class CommonListener {
      * @param block the block
      * @return true if the sign is attached
      */
-    protected boolean hasEcoSign(RealLand land, Block block) {
+    boolean hasEcoSign(RealLand land, Block block) {
 
 	return (land.getSaleSignLoc() != null && hasEcoSign(block, land.getSaleSignLoc()))
 		|| (land.getRentSignLoc() != null && hasEcoSign(block, land.getRentSignLoc()));

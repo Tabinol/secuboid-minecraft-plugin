@@ -20,10 +20,10 @@ package me.tabinol.secuboid.config.players;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.utilities.SecuboidRunnable;
-
 
 // Auto cancel selection
 /**
@@ -31,36 +31,37 @@ import me.tabinol.secuboid.utilities.SecuboidRunnable;
  */
 public class PlayerAutoCancelSelect extends SecuboidRunnable {
 
-    /** The entry. */
+    /**
+     * The entry.
+     */
     private final PlayerConfEntry entry;
 
     /**
      * Instantiates a new player auto cancel select.
      *
+     * @param secuboid the secuboid instance
      * @param entry the entry
      */
-    public PlayerAutoCancelSelect(PlayerConfEntry entry) {
+    public PlayerAutoCancelSelect(Secuboid secuboid, PlayerConfEntry entry) {
 
-        super();
-        this.entry = entry;
+	super(secuboid);
+	this.entry = entry;
     }
 
     /* (non-Javadoc)
      * @see java.lang.Runnable#run()
      */
-
     /**
      *
      */
-
     @Override
     public void run() {
-        
-        setOneTimeDone();
-        try {            
-            new CommandCancel(entry, true).commandExecute();
-        } catch (SecuboidCommandException ex) {
-            Logger.getLogger(PlayerAutoCancelSelect.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+	setOneTimeDone();
+	try {
+	    new CommandCancel(secuboid, null, entry.getSender(), null).commandExecute();
+	} catch (SecuboidCommandException ex) {
+	    Logger.getLogger(PlayerAutoCancelSelect.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
 }

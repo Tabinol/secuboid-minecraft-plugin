@@ -30,6 +30,8 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class ExpirableHashMap<K, V> extends HashMap<K, V> {
 
+    private final Secuboid secuboid;
+
     /**
      * The Constant serialVersionUID.
      */
@@ -43,11 +45,13 @@ public class ExpirableHashMap<K, V> extends HashMap<K, V> {
     /**
      * Instantiates a new expirable tree map.
      *
+     * @param secuboid secuboid instance
      * @param delay the delay (in ticks)
      */
-    public ExpirableHashMap(long delay) {
+    public ExpirableHashMap(Secuboid secuboid, long delay) {
 
 	super();
+	this.secuboid = secuboid;
 	this.delay = delay;
     }
 
@@ -97,7 +101,7 @@ public class ExpirableHashMap<K, V> extends HashMap<K, V> {
     @Override
     public V put(K key, V value) {
 
-	new BestBefored(key).runTaskLater(Secuboid.getThisPlugin(), delay);
+	new BestBefored(key).runTaskLater(secuboid, delay);
 	return super.put(key, value);
     }
 }

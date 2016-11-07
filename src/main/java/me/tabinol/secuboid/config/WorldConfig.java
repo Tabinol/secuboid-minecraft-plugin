@@ -26,12 +26,8 @@ import static me.tabinol.secuboid.config.Config.GLOBAL;
 import me.tabinol.secuboid.lands.GlobalLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
-import me.tabinol.secuboid.permissionsflags.FlagValueUtil;
-import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,6 +38,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * The Class WorldConfig.
  */
 public class WorldConfig {
+
+    private final Secuboid secuboid;
 
     /**
      * The land default.
@@ -60,17 +58,20 @@ public class WorldConfig {
 
     /**
      * Instantiates a new world config.
+     *
+     * @param secuboid secuboid instance
      */
-    public WorldConfig() {
+    public WorldConfig(Secuboid secuboid) {
 
-	File configFileFolder = Secuboid.getThisPlugin().getDataFolder();
+	this.secuboid = secuboid;
+	File configFileFolder = secuboid.getDataFolder();
 
 	// Create files (if not exist) and load
 	if (!new File(configFileFolder, "landdefault.yml").exists()) {
-	    Secuboid.getThisPlugin().saveResource("landdefault.yml", false);
+	    secuboid.saveResource("landdefault.yml", false);
 	}
 	if (!new File(configFileFolder, "worldconfig.yml").exists()) {
-	    Secuboid.getThisPlugin().saveResource("worldconfig.yml", false);
+	    secuboid.saveResource("worldconfig.yml", false);
 	}
 	landDefault = YamlConfiguration.loadConfiguration(new File(configFileFolder, "landdefault.yml"));
 	worldConfig = YamlConfiguration.loadConfiguration(new File(configFileFolder, "worldconfig.yml"));
@@ -109,10 +110,10 @@ public class WorldConfig {
     private void createConfForWorld(String worldName, TreeMap<String, GlobalLand> landList, boolean copyFromGlobal) {
 
 	String worldNameLower = worldName.toLowerCase();
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getLog().write("Create conf for World: " + worldNameLower);
+	if (secuboid != null) {
+	    secuboid.getLog().write("Create conf for World: " + worldNameLower);
 	}
-	GlobalLand dl = new GlobalLand(worldName);
+	GlobalLand dl = new GlobalLand(secuboid, worldName);
 	if (copyFromGlobal) {
 	    landList.get(GLOBAL).getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
 	}
@@ -127,10 +128,10 @@ public class WorldConfig {
      */
     private Land getLandDefaultConf() {
 
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
+	if (secuboid != null) {
+	    secuboid.getLog().write("Create default conf for lands");
 	}
-	return landModify(new GlobalLand(GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
+	return landModify(new GlobalLand(secuboid, GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
     }
 
     /**
@@ -150,14 +151,14 @@ public class WorldConfig {
      */
     public TreeMap<Type, GlobalLand> getTypeDefaultConf() {
 
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getLog().write("Create default conf for lands");
+	if (secuboid != null) {
+	    secuboid.getLog().write("Create default conf for lands");
 	}
 	TreeMap<Type, GlobalLand> defaultConf = new TreeMap<Type, GlobalLand>();
 
-	for (Type type : Secuboid.getThisPlugin().getTypes().getTypes()) {
+	for (Type type : secuboid.getTypes().getTypes()) {
 	    ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
-	    GlobalLand dl = new GlobalLand(GLOBAL);
+	    GlobalLand dl = new GlobalLand(secuboid, GLOBAL);
 	    defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
 	    defaultConf.put(type, landModify(dl, typeConf, "ContainerPermissions", "ContainerFlags"));
 	}
@@ -179,8 +180,8 @@ public class WorldConfig {
 		if (pcType.hasParameter()) {
 		    for (String containerName : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
 			for (String perm : fc.getConfigurationSection(perms + "." + container + "." + containerName).getKeys(false)) {
-			    if (Secuboid.getThisPlugin() != null) {
-				Secuboid.getThisPlugin().getLog().write("Container: " + container + ":" + containerName + ", " + perm);
+			    if (secuboid != null) {
+				secuboid.getLog().write("Container: " + container + ":" + containerName + ", " + perm);
 			    }
 
 			    // Remove _ if it is a Bukkit Permission
@@ -192,20 +193,22 @@ public class WorldConfig {
 			    }
 
 			    dl.getPermissionsFlags().addPermission(
-				    PlayerContainerUtil.create(null, pcType, containerNameLower),
-				    new Permission(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
+				    secuboid.getNewInstance().createPlayerContainer(null, pcType, containerNameLower),
+				    secuboid.getPermissionsFlags().newPermission(
+					    secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
 					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
 					    fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Inheritable")));
 			}
 		    }
 		} else {
 		    for (String perm : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
-			if (Secuboid.getThisPlugin() != null) {
-			    Secuboid.getThisPlugin().getLog().write("Container: " + container + ", " + perm);
+			if (secuboid != null) {
+			    secuboid.getLog().write("Container: " + container + ", " + perm);
 			}
 			dl.getPermissionsFlags().addPermission(
-				PlayerContainerUtil.create(null, pcType, null),
-				new Permission(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
+				secuboid.getNewInstance().createPlayerContainer(null, pcType, null),
+				secuboid.getPermissionsFlags().newPermission(
+					secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
 					fc.getBoolean(perms + "." + container + "." + perm + ".Value"),
 					fc.getBoolean(perms + "." + container + "." + perm + ".Inheritable")));
 		    }
@@ -216,12 +219,12 @@ public class WorldConfig {
 	// add flags
 	if (csFlags != null) {
 	    for (String flag : csFlags.getKeys(false)) {
-		if (Secuboid.getThisPlugin() != null) {
-		    Secuboid.getThisPlugin().getLog().write("Flag: " + flag);
+		if (secuboid != null) {
+		    secuboid.getLog().write("Flag: " + flag);
 		}
-		FlagType ft = Secuboid.getThisPlugin().getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
-		dl.getPermissionsFlags().addFlag(new Flag(ft,
-			FlagValueUtil.getFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
+		FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
+		dl.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags().newFlag(ft,
+			secuboid.getNewInstance().getFlagValueFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
 			fc.getBoolean(flags + "." + flag + ".Heritable")));
 	    }
 	}

@@ -18,7 +18,6 @@
 package me.tabinol.secuboid.config.chat;
 
 import com.earth2me.essentials.Essentials;
-import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 
 /**
@@ -26,15 +25,19 @@ import org.bukkit.entity.Player;
  */
 public class ChatEssentials implements Chat {
 
-    /** The essentials. */
+    /**
+     * The essentials instance.
+     */
     private final Essentials essentials;
 
     /**
      * Instantiates a new chat essentials.
+     *
+     * @param essentials essentials plugin instance
      */
-    public ChatEssentials() {
-        
-        essentials = (Essentials)Secuboid.getThisPlugin().getDependPlugin().getEssentials();
+    public ChatEssentials(Essentials essentials) {
+
+	this.essentials = essentials;
     }
 
     /* (non-Javadoc)
@@ -42,8 +45,8 @@ public class ChatEssentials implements Chat {
      */
     @Override
     public boolean isSpy(Player player) {
-        
-        return essentials.getUser(player).isSocialSpyEnabled();
+
+	return essentials.getUser(player).isSocialSpyEnabled();
     }
 
     /* (non-Javadoc)
@@ -51,8 +54,8 @@ public class ChatEssentials implements Chat {
      */
     @Override
     public boolean isMuted(Player player) {
-        
-        return essentials.getUser(player).isMuted();
+
+	return essentials.getUser(player).isMuted();
     }
 
 }

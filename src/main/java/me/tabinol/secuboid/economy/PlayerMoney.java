@@ -18,10 +18,8 @@
  */
 package me.tabinol.secuboid.economy;
 
-import me.tabinol.secuboid.Secuboid;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
-
 
 /**
  * Money from players.
@@ -30,17 +28,20 @@ import org.bukkit.OfflinePlayer;
  */
 public class PlayerMoney {
 
-    /** The economy. */
+    /**
+     * The economy.
+     */
     private final Economy economy;
 
     /**
      * Instantiates a new player money.
+     *
+     * @param economy the secuboid economy instance
      */
-    public PlayerMoney() {
-
-        economy = Secuboid.getThisPlugin().getDependPlugin().getEconomy();
+    public PlayerMoney(Economy economy) {
+	this.economy = economy;
     }
-    
+
     /**
      * Gets the player balance.
      *
@@ -49,10 +50,9 @@ public class PlayerMoney {
      * @return the player balance
      */
     public Double getPlayerBalance(OfflinePlayer offlinePlayer, String worldName) {
-        
-        return economy.getBalance(offlinePlayer, worldName);
+	return economy.getBalance(offlinePlayer, worldName);
     }
-    
+
     /**
      * Give to player.
      *
@@ -62,8 +62,7 @@ public class PlayerMoney {
      * @return true, if successful
      */
     public boolean giveToPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
-        
-        return economy.depositPlayer(offlinePlayer, worldName, amount).transactionSuccess();
+	return economy.depositPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
 
     /**
@@ -75,10 +74,9 @@ public class PlayerMoney {
      * @return the from player
      */
     public boolean getFromPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
-        
-        return economy.withdrawPlayer(offlinePlayer, worldName, amount).transactionSuccess();
+	return economy.withdrawPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
-    
+
     /**
      * To format.
      *
@@ -86,7 +84,6 @@ public class PlayerMoney {
      * @return the string
      */
     public String toFormat(Double amount) {
-        
-        return economy.format(amount);
+	return economy.format(amount);
     }
 }

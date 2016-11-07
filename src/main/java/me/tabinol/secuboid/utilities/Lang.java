@@ -28,7 +28,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * The Class Lang.
@@ -36,9 +35,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Lang {
 
     /**
-     * The Constant ACTUAL_VERSION.
+     * The actual version of lang file.
      */
-    public static final int ACTUAL_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("langVersion");
+    private final int actualVersion;
 
     /**
      * The lang.
@@ -58,14 +57,17 @@ public class Lang {
     /**
      * The plugin.
      */
-    private final JavaPlugin plugin;
+    private final Secuboid secuboid;
 
     /**
      * Instantiates a new lang.
+     *
+     * @param secuboid secuboid instance
      */
-    public Lang() {
+    public Lang(Secuboid secuboid) {
+	this.secuboid = secuboid;
+	actualVersion = secuboid.getMavenAppProperties().getPropertyInt("langVersion");
 	this.langconfig = new YamlConfiguration();
-	this.plugin = Secuboid.getThisPlugin();
 	reloadConfig();
 	checkVersion();
     }
@@ -74,9 +76,9 @@ public class Lang {
      * Reload config.
      */
     public final void reloadConfig() {
-	this.lang = Secuboid.getThisPlugin().getConf().getLang();
-	this.langFile = new File(plugin.getDataFolder() + "/lang/", lang + ".yml");
-	if (Secuboid.getThisPlugin().getConf().getLang() != null) {
+	this.lang = secuboid.getConf().getLang();
+	this.langFile = new File(secuboid.getDataFolder() + "/lang/", lang + ".yml");
+	if (secuboid.getConf().getLang() != null) {
 	    copyLang();
 	    loadYamls();
 	}
@@ -89,7 +91,7 @@ public class Lang {
 	try {
 	    if (!langFile.exists()) {
 		langFile.getParentFile().mkdirs();
-		FileCopy.copyTextFromJav(plugin.getResource("lang/" + lang + ".yml"), langFile);
+		FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
 	    }
 	} catch (IOException e) {
 	    e.printStackTrace();
@@ -118,10 +120,10 @@ public class Lang {
 	int fileVersion = langconfig.getInt("VERSION");
 
 	// We must rename the file and activate the new file
-	if (ACTUAL_VERSION != fileVersion) {
-	    langFile.renameTo(new File(plugin.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion));
+	if (actualVersion != fileVersion) {
+	    langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion));
 	    reloadConfig();
-	    plugin.getLogger().log(Level.INFO, "There is a new language file. Your old language file was renamed \"{0}.yml.v{1}\".",
+	    secuboid.getLogger().log(Level.INFO, "There is a new language file. Your old language file was renamed \"{0}.yml.v{1}\".",
 		    new Object[]{lang, fileVersion});
 	}
     }

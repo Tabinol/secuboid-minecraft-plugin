@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 /**
+ * The fly class.
  *
  * @author michel
  */
@@ -41,20 +42,16 @@ public class Fly {
     private final PermissionType permissionType;
 
     /**
+     * Instantiates a new fly instance.
      *
+     * @param secuboid secuboid instance.
      */
-    public Fly() {
+    public Fly(Secuboid secuboid) {
 
 	// Register flags
-	permissionType = Secuboid.getThisPlugin().getPermissionsFlags().registerPermissionType("FLY", false);
+	permissionType = secuboid.getPermissionsFlags().registerPermissionType("FLY", false);
     }
 
-    /**
-     *
-     * @param event
-     * @param player
-     * @param land
-     */
     public void fly(Event event, Player player, Land land) {
 
 	if (!player.hasPermission(FLY_IGNORE_PERM)) {
@@ -79,10 +76,6 @@ public class Fly {
 	}
     }
 
-    /**
-     *
-     * @param player
-     */
     public void removeFly(Player player) {
 
 	if (!player.hasPermission(FLY_IGNORE_PERM)) {

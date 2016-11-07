@@ -65,11 +65,13 @@ public class WorldListener extends CommonListener implements Listener {
 
     /**
      * Instantiates a new world listener.
+     *
+     * @param secuboid secuboid instance
      */
-    public WorldListener() {
+    public WorldListener(Secuboid secuboid) {
 
-	super();
-	conf = Secuboid.getThisPlugin().getConf();
+	super(secuboid);
+	conf = secuboid.getConf();
     }
 
     /**
@@ -85,7 +87,7 @@ public class WorldListener extends CommonListener implements Listener {
 	}
 
 	Location loc = event.getEntity().getLocation();
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+	Land land = secuboid.getLands().getLandOrOutsideArea(loc);
 	EntityType entityType = event.getEntityType();
 
 	// Check for Explosion cancel
@@ -171,7 +173,7 @@ public class WorldListener extends CommonListener implements Listener {
 	if (conf.isOverrideExplosions()) {
 	    // Check for painting
 	    if (event.getCause() == RemoveCause.EXPLOSION) {
-		Secuboid.getThisPlugin().getLog().write("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
+		secuboid.getLog().write("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
 		event.setCancelled(true);
 	    }
 	}
@@ -196,12 +198,12 @@ public class WorldListener extends CommonListener implements Listener {
 	Iterator<Block> itBlock = blocks.iterator();
 	Block block;
 
-	Secuboid.getThisPlugin().getLog().write("Explosion : " + ", Yield: " + yield + ", power: " + power);
+	secuboid.getLog().write("Explosion : " + ", Yield: " + yield + ", power: " + power);
 
 	// Check if 1 block or more is in a protected place
 	while (itBlock.hasNext() && !cancelEvent) {
 	    block = itBlock.next();
-	    value = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(block.getLocation()).getPermissionsFlags().getFlagAndInherit(ft);
+	    value = secuboid.getLands().getLandOrOutsideArea(block.getLocation()).getPermissionsFlags().getFlagAndInherit(ft);
 	    if (value.getValueBoolean() == false) {
 		cancelEvent = true;
 	    }
@@ -225,7 +227,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 	Material matFrom = event.getBlock().getType();
 	Material matTo = event.getTo();
 
@@ -252,7 +254,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 
 	if (((event.getCause() == IgniteCause.SPREAD || event.getCause() == IgniteCause.LAVA)
 		&& land.getPermissionsFlags().getFlagAndInherit(FlagList.FIRESPREAD.getFlagType()).getValueBoolean() == false)
@@ -269,7 +271,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 
 	if ((land.getPermissionsFlags().getFlagAndInherit(FlagList.FIRESPREAD.getFlagType()).getValueBoolean() == false)
 		|| (land.getPermissionsFlags().getFlagAndInherit(FlagList.FIRE.getFlagType()).getValueBoolean() == false)) {
@@ -285,7 +287,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onCreatureSpawn(CreatureSpawnEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getEntity().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getEntity().getLocation());
 
 	if ((event.getEntity() instanceof Animals
 		&& land.getPermissionsFlags().getFlagAndInherit(FlagList.ANIMAL_SPAWN.getFlagType()).getValueBoolean() == false)
@@ -305,7 +307,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeavesDecay(LeavesDecayEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 
 	if (land.getPermissionsFlags().getFlagAndInherit(FlagList.LEAF_DECAY.getFlagType()).getValueBoolean() == false) {
 	    event.setCancelled(true);
@@ -320,7 +322,7 @@ public class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockFromTo(BlockFromToEvent event) {
 
-	Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getBlock().getLocation());
+	Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
 	Material ml = event.getBlock().getType();
 
 	// Liquid flow
@@ -345,7 +347,7 @@ public class WorldListener extends CommonListener implements Listener {
 		&& (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION
 		|| event.getCause() == DamageCause.PROJECTILE)) {
 	    // Check for ItemFrame
-	    Secuboid.getThisPlugin().getLog().write("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
+	    secuboid.getLog().write("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
 	    event.setCancelled(true);
 	}
     }

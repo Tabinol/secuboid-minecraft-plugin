@@ -19,18 +19,12 @@
 package me.tabinol.secuboid.storage;
 
 import java.util.UUID;
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
 
 /**
  * The Interface Storage.
  */
 public interface Storage {
-
-    /**
-     * The Constant LAND_VERSION.
-     */
-    static final int LAND_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("landVersion");
 
     /**
      * Load all.

@@ -19,8 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.FlagList;
@@ -28,36 +27,38 @@ import me.tabinol.secuboid.permissionsflags.FlagValue;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 
 /**
- * The Class CommandTp.
+ * The Class Command teleport.
  */
 @InfoCommand(name = "tp", forceParameter = true)
 public class CommandTp extends CommandExec {
 
     /**
-     * Instantiates a new command tp.
+     * Instantiates a new command teleport.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandTp(CommandEntities entity) throws SecuboidCommandException {
+    public CommandTp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = entity.argList.getNext();
-	land = Secuboid.getThisPlugin().getLands().getLand(curArg);
+	String curArg = argList.getNext();
+	land = secuboid.getLands().getLand(curArg);
 
 	// Land not found
 	if (land == null) {
-	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.LANDNOTFOUND");
+	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.LANDNOTFOUND");
 	}
 
 	// Check adminmode or permission TP
@@ -67,16 +68,16 @@ public class CommandTp extends CommandExec {
 	FlagValue value = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
 
 	if (value.getValueString().isEmpty()) {
-	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.NOSPAWN");
+	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.NOSPAWN");
 	}
 
 	Location location = StringChanges.stringToLocation(value.getValueString());
 
 	if (location == null) {
-	    throw new SecuboidCommandException("On land tp player", entity.player, "COMMAND.TP.INVALID");
+	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.INVALID");
 	}
 
 	// Teleport player
-	entity.player.teleport(location);
+	player.teleport(location);
     }
 }

@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.selection.region;
 
 import java.util.TreeMap;
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.PlayerSelection;
@@ -48,10 +49,11 @@ public class LandSelection implements RegionSelection {
     /**
      * Instantiates a new land selection.
      *
+     * @param secuboid secuboid instance
      * @param player the player
      * @param land the land
      */
-    public LandSelection(Player player, RealLand land) {
+    public LandSelection(Secuboid secuboid, Player player, RealLand land) {
 
 	this.player = player;
 	this.land = land;
@@ -59,8 +61,7 @@ public class LandSelection implements RegionSelection {
 
 	// Add visual areas
 	for (Area area : land.getAreas()) {
-	    visualAreas.put(area, new AreaSelection(player, area, true,
-		    null, MoveType.PASSIVE));
+	    visualAreas.put(area, new AreaSelection(secuboid, player, area, true, null, MoveType.PASSIVE));
 	}
     }
 

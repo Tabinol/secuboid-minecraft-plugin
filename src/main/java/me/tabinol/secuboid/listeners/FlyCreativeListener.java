@@ -44,51 +44,44 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
+ * The fly creative class.
  *
  * @author michel
  */
 public class FlyCreativeListener implements Listener {
 
+    private final Secuboid secuboid;
     private final Fly fly;
     private final Creative creative;
     private final Config conf;
     private final ArrayList<Player> ignoredGMPlayers;
 
     /**
+     * Instantiates a new fly creative.
      *
+     * @param secuboid secuboid instance
      */
-    public FlyCreativeListener() {
+    public FlyCreativeListener(Secuboid secuboid) {
 
-	fly = new Fly();
-	creative = new Creative();
-	conf = Secuboid.getThisPlugin().getConf();
+	this.secuboid = secuboid;
+	fly = new Fly(secuboid);
+	creative = new Creative(secuboid);
+	conf = secuboid.getConf();
 	ignoredGMPlayers = new ArrayList<Player>();
     }
 
-    /**
-     *
-     * @param player
-     */
     public void addIgnoredGMPlayers(Player player) {
 
 	ignoredGMPlayers.add(player);
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
 
 	setFlyCreative(event, event.getPlayer(),
-		Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
+		secuboid.getLands().getLandOrOutsideArea(event.getPlayer().getLocation()));
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
 
@@ -96,10 +89,6 @@ public class FlyCreativeListener implements Listener {
 	ignoredGMPlayers.remove(event.getPlayer());
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
 
@@ -117,22 +106,18 @@ public class FlyCreativeListener implements Listener {
 	final Player player = event.getPlayer();
 
 	if (event.getFrom().getWorld() != event.getTo().getWorld()) {
-	    Bukkit.getScheduler().runTaskLater(Secuboid.getThisPlugin(), new Runnable() {
+	    Bukkit.getScheduler().runTaskLater(secuboid, new Runnable() {
 		@Override
 		public void run() {
 		    if (player.isOnline()) {
 			setFlyCreative(null, player,
-				Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+				secuboid.getLands().getLandOrOutsideArea(player.getLocation()));
 		    }
 		}
 	    }, 1);
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerGameModeChangeEvent(PlayerGameModeChangeEvent event) {
 
@@ -145,10 +130,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGH)
     public void onLandModify(LandModifyEvent event) {
 
@@ -160,22 +141,18 @@ public class FlyCreativeListener implements Listener {
 
 	    // Land area change, all players in the world affected
 	    for (Player player : event.getLand().getWorld().getPlayers()) {
-		setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+		setFlyCreative(event, player, secuboid.getLands().getLandOrOutsideArea(player.getLocation()));
 	    }
 	} else if (reason != LandModifyEvent.LandModifyReason.FLAG_SET && reason != LandModifyEvent.LandModifyReason.FLAG_UNSET
 		&& reason != LandModifyEvent.LandModifyReason.RENAME) {
 
 	    // No land resize or area replace, only players in the land affected
 	    for (Player player : event.getLand().getPlayersInLandAndChildren()) {
-		setFlyCreative(event, player, Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(player.getLocation()));
+		setFlyCreative(event, player, secuboid.getLands().getLandOrOutsideArea(player.getLocation()));
 	    }
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
@@ -185,10 +162,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent event) {
 
@@ -197,10 +170,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
 
@@ -211,10 +180,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
 
@@ -225,10 +190,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClose(InventoryCloseEvent event) {
 
@@ -246,10 +207,6 @@ public class FlyCreativeListener implements Listener {
 	}
     }
 
-    /**
-     *
-     * @return
-     */
     public Creative getCreative() {
 
 	return creative;

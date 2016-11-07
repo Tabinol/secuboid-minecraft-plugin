@@ -36,10 +36,12 @@ public class ApproveNotif extends SecuboidRunnable {
 
     /**
      * Instantiates a new approve notif.
+     *
+     * @param secuboid secuboid instance
      */
-    public ApproveNotif() {
+    public ApproveNotif(Secuboid secuboid) {
 
-	super();
+	super(secuboid);
     }
 
     /**
@@ -47,7 +49,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void runApproveNotifLater() {
 
-	long notifyTime = Secuboid.getThisPlugin().getConf().getApproveNotifyTime();
+	long notifyTime = secuboid.getConf().getApproveNotifyTime();
 
 	// Start only if notification is activated in configuration
 	if (notifyTime != 0) {
@@ -67,7 +69,7 @@ public class ApproveNotif extends SecuboidRunnable {
 
 	int lstCount;
 
-	if ((lstCount = Secuboid.getThisPlugin().getLands().getApproveList().getApproveList().size()) != 0) {
+	if ((lstCount = secuboid.getLands().getApproveList().getApproveList().size()) != 0) {
 
 	    // If there is some notification to done
 	    notifyListApprove(lstCount);
@@ -82,7 +84,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void notifyForApprove(String landName, String playerName) {
 
-	notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+	notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
     }
 
     /**
@@ -92,7 +94,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     private void notifyListApprove(int lstCount) {
 
-	notifyPlayer(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
+	notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
     }
 
     // Notify with a message
@@ -103,12 +105,12 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     private void notifyPlayer(String message) {
 
-	for (Player players : Secuboid.getThisPlugin().getServer().getOnlinePlayers()) {
+	for (Player players : secuboid.getServer().getOnlinePlayers()) {
 	    if (players.hasPermission(PERM_APPROVE)) {
 		players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
 	    }
 	}
 
-	Secuboid.getThisPlugin().getLogger().log(Level.INFO, "[Secuboid] {0}", message);
+	secuboid.getLogger().log(Level.INFO, "[Secuboid] {0}", message);
     }
 }

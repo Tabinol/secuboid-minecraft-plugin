@@ -21,9 +21,8 @@ package me.tabinol.secuboid.commands.executor;
 import java.util.ArrayList;
 import java.util.List;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
@@ -32,6 +31,7 @@ import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandFlag.
@@ -45,12 +45,16 @@ public class CommandFlag extends CommandExec {
     /**
      * Instantiates a new command flag.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandFlag(CommandEntities entity) throws SecuboidCommandException {
+    public CommandFlag(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -60,32 +64,32 @@ public class CommandFlag extends CommandExec {
     public void commandExecute() throws SecuboidCommandException {
 
 	checkSelections(true, null);
-	String curArg = entity.argList.getNext();
+	String curArg = argList.getNext();
 
 	if (curArg.equalsIgnoreCase("set")) {
 
 	    // Permission check is on getFlagFromArg
-	    Flag landFlag = entity.argList.getFlagFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
+	    Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), land.isOwner(player));
 
 	    if (!landFlag.getFlagType().isRegistered()) {
-		throw new SecuboidCommandException("Flag not registered", entity.player, "COMMAND.FLAGS.FLAGNULL");
+		throw new SecuboidCommandException(secuboid, "Flag not registered", player, "COMMAND.FLAGS.FLAGNULL");
 	    }
 
 	    land.getPermissionsFlags().addFlag(landFlag);
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+		    + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
 			    landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
-	    Secuboid.getThisPlugin().getLog().write("Flag set: " + landFlag.getFlagType().toString() + ", value: "
+	    secuboid.getLog().write("Flag set: " + landFlag.getFlagType().toString() + ", value: "
 		    + landFlag.getValue().getValue().toString());
 
 	} else if (curArg.equalsIgnoreCase("unset")) {
 
-	    FlagType flagType = entity.argList.getFlagTypeFromArg(entity.playerConf.isAdminMode(), land.isOwner(entity.player));
+	    FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
 	    if (!land.getPermissionsFlags().removeFlag(flagType)) {
-		throw new SecuboidCommandException("Flags", entity.player, "COMMAND.FLAGS.REMOVENOTEXIST");
+		throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
 	    }
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
-	    Secuboid.getThisPlugin().getLog().write("Flag unset: " + flagType.toString());
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
+	    secuboid.getLog().write("Flag unset: " + flagType.toString());
 
 	} else if (curArg.equalsIgnoreCase("list")) {
 
@@ -97,28 +101,28 @@ public class CommandFlag extends CommandExec {
 
 	    // For default Type
 	    if (land.getType() != null) {
-		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+		stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
 			land.getType().getName())).append(Config.NEWLINE);
-		importDisplayFlagsFrom((Secuboid.getThisPlugin().getLands()).getDefaultConf(land.getType()), false);
+		importDisplayFlagsFrom((secuboid.getLands()).getDefaultConf(land.getType()), false);
 	    }
 
 	    // For parent (if exist)
 	    RealLand parLand = land;
 	    while ((parLand = parLand.getParent()) != null) {
-		stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMPARENT",
+		stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMPARENT",
 			ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
 		importDisplayFlagsFrom(parLand, true);
 	    }
 
 	    // For world
-	    stList.append(ChatColor.DARK_GRAY).append(Secuboid.getThisPlugin().getLanguage().getMessage("GENERAL.FROMWORLD",
+	    stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD",
 		    land.getWorldName())).append(Config.NEWLINE);
-	    importDisplayFlagsFrom((Secuboid.getThisPlugin().getLands()).getOutsideArea(land.getWorldName()), true);
+	    importDisplayFlagsFrom((secuboid.getLands()).getOutsideArea(land.getWorldName()), true);
 
-	    new ChatPage("COMMAND.FLAGS.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
+	    new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
 
 	} else {
-	    throw new SecuboidCommandException("Missing information command", entity.player, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
 	}
     }
 

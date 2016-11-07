@@ -34,6 +34,8 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
  */
 public class Approve {
 
+    private final Secuboid secuboid;
+
     /**
      * The action.
      */
@@ -82,6 +84,7 @@ public class Approve {
     /**
      * Instantiates a new approve.
      *
+     * @param secuboid secuboid instance
      * @param landName the land name
      * @param type the type
      * @param action the action
@@ -92,10 +95,11 @@ public class Approve {
      * @param price the price
      * @param dateTime the date time
      */
-    public Approve(String landName, Type type, LandAction action, int removedAreaId,
+    public Approve(Secuboid secuboid, String landName, Type type, LandAction action, int removedAreaId,
 	    Area newArea, PlayerContainer owner, RealLand parent, double price,
 	    Calendar dateTime) {
 
+	this.secuboid = secuboid;
 	this.action = action;
 	this.landName = landName.toLowerCase();
 	this.type = type;
@@ -205,30 +209,30 @@ public class Approve {
 	if (action != null) {
 	    switch (action) {
 		case AREA_ADD:
-		    Secuboid.getThisPlugin().getLands().getLand(landName).addArea(newArea, price);
+		    secuboid.getLands().getLand(landName).addArea(newArea, price);
 		    break;
 		case AREA_REMOVE:
-		    Secuboid.getThisPlugin().getLands().getLand(landName).removeArea(removedAreaId);
+		    secuboid.getLands().getLand(landName).removeArea(removedAreaId);
 		    break;
 		case AREA_MODIFY:
-		    Secuboid.getThisPlugin().getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
+		    secuboid.getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
 		    break;
 		case LAND_ADD:
 		    try {
-			Secuboid.getThisPlugin().getLands().createLand(landName, owner, newArea, parent, price, type);
+			secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
 		    } catch (SecuboidLandException ex) {
 			Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land create", ex);
 		    }
 		    break;
 		case LAND_REMOVE:
 		    try {
-			Secuboid.getThisPlugin().getLands().removeLand(landName);
+			secuboid.getLands().removeLand(landName);
 		    } catch (SecuboidLandException ex) {
 			Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land remove", ex);
 		    }
 		    break;
 		case LAND_PARENT:
-		    Secuboid.getThisPlugin().getLands().getLand(landName).setParent(parent);
+		    secuboid.getLands().getLand(landName).setParent(parent);
 		    break;
 		default:
 		    break;

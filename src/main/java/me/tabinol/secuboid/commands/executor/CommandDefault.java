@@ -19,29 +19,32 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.ChatColor;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandDefault.
  */
-@InfoCommand(name="default")
+@InfoCommand(name = "default")
 public class CommandDefault extends CommandExec {
 
     /**
      * Instantiates a new command default.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandDefault(CommandEntities entity) throws SecuboidCommandException {
+    public CommandDefault(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -50,10 +53,10 @@ public class CommandDefault extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-        checkPermission(true, true, null, null);
-        
-        entity.playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, land, 0));
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CONFIRM"));
+	checkSelections(true, null);
+	checkPermission(true, true, null, null);
+
+	playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, land, 0));
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

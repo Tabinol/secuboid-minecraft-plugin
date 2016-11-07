@@ -34,13 +34,15 @@ import org.bukkit.entity.Player;
  */
 public class PlayerConfEntry {
 
+    private final Secuboid secuboid;
+
     /**
      * The player (or sender).
      */
     private final CommandSender sender;
 
     /**
-     *  // The player (if is not console).
+     * The player (if is not console).
      */
     private final Player player;
 
@@ -97,15 +99,17 @@ public class PlayerConfEntry {
     /**
      * Instantiates a new player conf entry.
      *
+     * @param secuboid secuboid instance
      * @param sender the sender
      */
-    PlayerConfEntry(CommandSender sender) {
+    PlayerConfEntry(Secuboid secuboid, CommandSender sender) {
 
+	this.secuboid = secuboid;
 	this.sender = sender;
 	if (sender instanceof Player) {
 	    player = (Player) sender;
-	    playerSelection = new PlayerSelection(this);
-	    pcp = new PlayerContainerPlayer(player.getUniqueId());
+	    playerSelection = new PlayerSelection(secuboid, this);
+	    pcp = new PlayerContainerPlayer(secuboid, player.getUniqueId());
 	} else {
 	    player = null;
 	    playerSelection = null;
@@ -292,7 +296,6 @@ public class PlayerConfEntry {
 	this.tpCancel = tpCancel;
     }
 
-    // Set auto cancel select
     /**
      * Sets the auto cancel select.
      *
@@ -300,14 +303,14 @@ public class PlayerConfEntry {
      */
     public void setAutoCancelSelect(boolean value) {
 
-	Long timeTick = Secuboid.getThisPlugin().getConf().getSelectAutoCancel();
+	Long timeTick = secuboid.getConf().getSelectAutoCancel();
 
 	if (timeTick == 0) {
 	    return;
 	}
 
 	if (cancelSelect == null && value == true) {
-	    cancelSelect = new PlayerAutoCancelSelect(this);
+	    cancelSelect = new PlayerAutoCancelSelect(secuboid, this);
 	}
 
 	if (cancelSelect == null) {

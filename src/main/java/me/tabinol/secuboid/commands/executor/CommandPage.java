@@ -18,28 +18,32 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandPage.
  */
-@InfoCommand(name="page", allowConsole=true, forceParameter=true)
+@InfoCommand(name = "page", allowConsole = true, forceParameter = true)
 public class CommandPage extends CommandExec {
 
     /**
      * Instantiates a new command page.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandPage(CommandEntities entity) throws SecuboidCommandException {
+    public CommandPage(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -48,20 +52,20 @@ public class CommandPage extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        ChatPage chatPage = entity.playerConf.getChatPage();
-        int pageNumber;
+	ChatPage chatPage = playerConf.getChatPage();
+	int pageNumber;
 
-        if (chatPage == null) {
-            throw new SecuboidCommandException("Page", entity.player, "COMMAND.PAGE.INVALID");
-        }
+	if (chatPage == null) {
+	    throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
+	}
 
-        String curArg = entity.argList.getNext();
+	String curArg = argList.getNext();
 
-        try {
-            pageNumber = Integer.parseInt(curArg);
-        } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException("Page", entity.player, "COMMAND.PAGE.INVALID");
-        }
-        chatPage.getPage(pageNumber);
+	try {
+	    pageNumber = Integer.parseInt(curArg);
+	} catch (NumberFormatException ex) {
+	    throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
+	}
+	chatPage.getPage(pageNumber);
     }
 }

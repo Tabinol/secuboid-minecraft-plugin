@@ -35,77 +35,83 @@ import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-
 // WorldEdit is in a separate class from CommandSelect because if WorldEdit
 // is not installed, we don't want to makes error.
-
 /**
  * The Class CommandSelectWorldedit.
  */
 public class CommandSelectWorldedit {
-    
-    /** The player. */
-    Player player;
-    
-    /** The entry. */
+
+    private final Secuboid secuboid;
+
+    /**
+     * The player.
+     */
+    private final Player player;
+
+    /**
+     * The entry.
+     */
     PlayerConfEntry entry;
-    
+
     /**
      * Instantiates a new command select worldedit.
      *
+     * @param secuboid secuboid instance
      * @param player the player
      * @param entry the entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSelectWorldedit(Player player, PlayerConfEntry entry) throws SecuboidCommandException{
-        
-        this.player = player;
-        this.entry = entry;
+    public CommandSelectWorldedit(Secuboid secuboid, Player player, PlayerConfEntry entry) throws SecuboidCommandException {
+
+	this.secuboid = secuboid;
+	this.player = player;
+	this.entry = entry;
     }
-    
+
     /**
      * Make select.
      *
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void MakeSelect() throws SecuboidCommandException {
-        
-        if (Secuboid.getThisPlugin().getDependPlugin().getWorldEdit() == null) {
-            throw new SecuboidCommandException("CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
-        }
-        LocalSession session = ((WorldEditPlugin) Secuboid.getThisPlugin().getDependPlugin().getWorldEdit()).getSession(player);
-        
-        try {
-            Region sel;
-            if (session.getSelectionWorld() == null
-                    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
-                    || sel instanceof CylinderRegion))) {
-                throw new SecuboidCommandException("CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
-            }
 
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
-            Secuboid.getThisPlugin().getLog().write(Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
-            
-            AreaSelection select;
-            if(sel instanceof CuboidRegion) {
-                select = new AreaSelection(player, new CuboidArea(player.getWorld().getName(), 
-                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(), 
-                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-                        false, AreaType.CUBOID, MoveType.PASSIVE);
-            } else {
-                select = new AreaSelection(player, new CylinderArea(player.getWorld().getName(), 
-                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(), 
-                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-                        false, AreaType.CYLINDER, MoveType.PASSIVE);
-            }
-            
-            entry.getSelection().addSelection(select);
-            entry.setAutoCancelSelect(true);
+	if (secuboid.getDependPlugin().getWorldEdit() == null) {
+	    throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
+	}
+	LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
 
-        } catch (IncompleteRegionException ex) {
-            throw new SecuboidCommandException("CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
-        }
+	try {
+	    Region sel;
+	    if (session.getSelectionWorld() == null
+		    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
+		    || sel instanceof CylinderRegion))) {
+		throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
+	    }
+
+	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
+	    secuboid.getLog().write(secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
+
+	    AreaSelection select;
+	    if (sel instanceof CuboidRegion) {
+		select = new AreaSelection(secuboid, player, new CuboidArea(player.getWorld().getName(),
+			sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+			sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
+			sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+			false, AreaType.CUBOID, MoveType.PASSIVE);
+	    } else {
+		select = new AreaSelection(secuboid, player, new CylinderArea(player.getWorld().getName(),
+			sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+			sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
+			sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+			false, AreaType.CYLINDER, MoveType.PASSIVE);
+	    }
+
+	    entry.getSelection().addSelection(select);
+	    entry.setAutoCancelSelect(true);
+
+	} catch (IncompleteRegionException ex) {
+	    throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
+	}
     }
 }

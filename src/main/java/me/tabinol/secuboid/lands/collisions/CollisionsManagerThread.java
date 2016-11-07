@@ -26,13 +26,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
+import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
 import org.bukkit.Bukkit;
 
 /**
  * This class is for lands and cuboids calculation. It need to be threaded
  */
 public class CollisionsManagerThread extends Thread {
+
+    private final Secuboid secuboid;
 
     /**
      * The exit request.
@@ -88,20 +90,17 @@ public class CollisionsManagerThread extends Thread {
     }
 
     /**
+     * Instantiates a new collisions manager thread.
      *
+     * @param secuboid secuboid instance
      */
-    public CollisionsManagerThread() {
+    public CollisionsManagerThread(Secuboid secuboid) {
 
+	this.secuboid = secuboid;
 	this.setName("Secuboid collisions manager");
 	requests = Collections.synchronizedList(new ArrayList<OutputRequest>());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Thread#run()
-     */
-    /**
-     *
-     */
     @Override
     public void run() {
 
@@ -118,14 +117,14 @@ public class CollisionsManagerThread extends Thread {
 
 		    // Return the result to main thread
 		    ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(output.commandExec, output.collisions);
-		    Bukkit.getScheduler().callSyncMethod(Secuboid.getThisPlugin(), returnToCommand);
+		    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
 
 		}
 
 		// wait!
 		try {
 		    commandRequest.await();
-		    Secuboid.getThisPlugin().getLog().write("Secuboid collisions manager Thread wake up!");
+		    secuboid.getLog().write("Secuboid collisions manager Thread wake up!");
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
@@ -142,7 +141,7 @@ public class CollisionsManagerThread extends Thread {
     public void stopNextRun() {
 
 	if (!isAlive()) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Problem with collisions manager Thread. Possible data loss!");
+	    secuboid.getLogger().log(Level.SEVERE, "Problem with collisions manager Thread. Possible data loss!");
 	    return;
 	}
 	exitRequest = true;
@@ -174,7 +173,7 @@ public class CollisionsManagerThread extends Thread {
 	lock.lock();
 	try {
 	    commandRequest.signal();
-	    Secuboid.getThisPlugin().getLog().write("Secuboid collisions manager request (Thread wake up...)");
+	    secuboid.getLog().write("Secuboid collisions manager request (Thread wake up...)");
 	} finally {
 	    lock.unlock();
 	}

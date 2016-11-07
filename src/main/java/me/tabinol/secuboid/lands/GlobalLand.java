@@ -5,6 +5,7 @@
  */
 package me.tabinol.secuboid.lands;
 
+import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,9 +18,9 @@ public class GlobalLand implements Land {
     private final LandPermissionsFlags landPermissionsFlags;
     private final String worldName;
 
-    public GlobalLand(String worldName) {
+    public GlobalLand(Secuboid secuboid, String worldName) {
 	this.worldName = worldName;
-	landPermissionsFlags = new LandPermissionsFlags(this);
+	landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
     }
 
     /**

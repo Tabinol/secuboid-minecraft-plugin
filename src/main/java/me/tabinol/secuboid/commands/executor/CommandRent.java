@@ -19,8 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
@@ -29,8 +28,10 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 
 /**
+ * The rent command class.
  *
  * @author michel
  */
@@ -38,46 +39,48 @@ import org.bukkit.Material;
 public class CommandRent extends CommandExec {
 
     /**
+     * Instantiates a rent command.
      *
-     * @param entity
-     * @throws SecuboidCommandException
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
+     * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandRent(CommandEntities entity) throws SecuboidCommandException {
+    public CommandRent(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
 	checkSelections(true, null);
 	checkPermission(true, true, null, null);
-	if (!entity.playerConf.isAdminMode()) {
+	if (!playerConf.isAdminMode()) {
 	    // If the player not adminmode, he must be owner && permission true
 	    checkPermission(false, false, PermissionList.ECO_LAND_FOR_RENT.getPermissionType(), null);
 	}
 
-	String curArg = entity.argList.getNext();
+	String curArg = argList.getNext();
 	double rentPrice = 0;
 	int rentRenew = 0;
 	boolean rentAutoRenew = true;
 	EcoSign ecoSign = null;
 
 	// Check for sign in hand
-	if (entity.player.getGameMode() != GameMode.CREATIVE && entity.player.getItemInHand().getType() != Material.SIGN) {
-	    throw new SecuboidCommandException("Must have a sign in hand", entity.player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
+	if (player.getGameMode() != GameMode.CREATIVE && player.getItemInHand().getType() != Material.SIGN) {
+	    throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
 	}
 
 	// If 'recreate'
 	if (curArg.equalsIgnoreCase("recreate")) {
 	    if (!land.isForRent()) {
-		throw new SecuboidCommandException("The land is not for rent", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+		throw new SecuboidCommandException(secuboid, "The land is not for rent", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
 	    }
 	    try {
-		ecoSign = new EcoSign(land, entity.player);
+		ecoSign = new EcoSign(secuboid, land, player);
 		ecoSign.createSignForRent(land.getRentPrice(), land.getRentRenew(), land.getRentAutoRenew(),
 			land.isRented() ? land.getTenant().getPlayerName() : null); // Tenant name if the land is rented
 		removeSignFromHand();
@@ -86,11 +89,11 @@ public class CommandRent extends CommandExec {
 		    land.setRentSignLoc(ecoSign.getLocation());
 		}
 	    } catch (SignException e) {
-		throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+		throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
 	    }
 
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
-	    Secuboid.getThisPlugin().getLog().write("Sign recreated for land " + land.getName() + " by: " + entity.playerName);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
+	    secuboid.getLog().write("Sign recreated for land " + land.getName() + " by: " + playerName);
 
 	    return;
 	}
@@ -99,19 +102,19 @@ public class CommandRent extends CommandExec {
 	try {
 	    rentPrice = Double.parseDouble(curArg);
 	} catch (NumberFormatException ex) {
-	    throw new SecuboidCommandException("Error in the command", entity.player, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Error in the command", player, "GENERAL.MISSINGINFO");
 	}
 
 	// get renew
-	curArg = entity.argList.getNext();
+	curArg = argList.getNext();
 	try {
 	    rentRenew = Integer.parseInt(curArg);
 	} catch (NumberFormatException ex) {
-	    throw new SecuboidCommandException("Error in the command", entity.player, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Error in the command", player, "GENERAL.MISSINGINFO");
 	}
 
 	// get auto renew
-	curArg = entity.argList.getNext();
+	curArg = argList.getNext();
 	if (curArg != null) {
 	    try {
 		rentAutoRenew = Boolean.parseBoolean(curArg);
@@ -123,19 +126,19 @@ public class CommandRent extends CommandExec {
 
 	// Land already for rent?
 	if (land.isForRent()) {
-	    throw new SecuboidCommandException("Land already for rent", entity.player, "COMMAND.ECONOMY.ALREADYRENT");
+	    throw new SecuboidCommandException(secuboid, "Land already for rent", player, "COMMAND.ECONOMY.ALREADYRENT");
 	}
 
 	// Create Sign
 	try {
-	    ecoSign = new EcoSign(land, entity.player);
+	    ecoSign = new EcoSign(secuboid, land, player);
 	    ecoSign.createSignForRent(rentPrice, rentRenew, rentAutoRenew, null);
 	    removeSignFromHand();
 	} catch (SignException e) {
-	    throw new SecuboidCommandException("Error in the command", entity.player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+	    throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
 	}
 	land.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
-	entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
-	Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + " is set to for rent by: " + entity.playerName);
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
+	secuboid.getLog().write("The land " + land.getName() + " is set to for rent by: " + playerName);
     }
 }

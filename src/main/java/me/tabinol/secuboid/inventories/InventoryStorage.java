@@ -38,36 +38,19 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 /**
+ * The inventory storage class.
  *
  * @author michel
  */
 public class InventoryStorage {
 
-    /**
-     *
-     */
-    public final static int STORAGE_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
-
-    /**
-     *
-     */
     public final static String INV_DIR = "inventories";
-
-    /**
-     *
-     */
     public final static String DEFAULT_INV = "DEFAULTINV";
-
-    /**
-     *
-     */
     public final static int MAX_FOOD_LEVEL = 20;
-
-    /**
-     *
-     */
     public final static String DEATH = "DEATH";
-    private final Secuboid thisPlugin;
+
+    private final Secuboid secuboid;
+    private final int storageVersion;
     private final HashMap<Player, PlayerInvEntry> playerInvList; // Last inventory
 
     /**
@@ -75,21 +58,9 @@ public class InventoryStorage {
      */
     public enum PlayerAction {
 
-	/**
-	 *
-	 */
 	JOIN,
-	/**
-	 *
-	 */
 	QUIT,
-	/**
-	 *
-	 */
 	CHANGE,
-	/**
-	 *
-	 */
 	DEATH
     }
 
@@ -98,20 +69,9 @@ public class InventoryStorage {
      */
     public enum InventoryType {
 
-	/**
-	 *
-	 */
 	CREATIVE,
-	/**
-	 *
-	 */
 	SURVIVAL;
 
-	/**
-	 *
-	 * @param isCreative
-	 * @return
-	 */
 	public static InventoryType getFromBoolean(boolean isCreative) {
 
 	    if (isCreative) {
@@ -123,26 +83,23 @@ public class InventoryStorage {
     }
 
     /**
+     * Instantiates a new inventory storage.
      *
+     * @param secuboid secuboid instance
      */
-    public InventoryStorage() {
+    public InventoryStorage(Secuboid secuboid) {
 
-	this.thisPlugin = Secuboid.getThisPlugin();
+	this.secuboid = secuboid;
+	storageVersion = secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
 	playerInvList = new HashMap<Player, PlayerInvEntry>();
     }
 
-    /**
-     *
-     * @param player
-     * @param invName
-     * @param isCreative
-     */
     public void deleteInventory(Player player, String invName,
 	    boolean isCreative) {
 
 	// player item file
 	String gmName = InventoryType.getFromBoolean(isCreative).name();
-	File playerItemFile = new File(thisPlugin.getDataFolder() + "/" + INV_DIR + "/"
+	File playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/"
 		+ invName + "/" + player.getUniqueId().toString() + "." + gmName + ".yml");
 
 	// Delete file if exist
@@ -151,16 +108,6 @@ public class InventoryStorage {
 	}
     }
 
-    /**
-     *
-     * @param player
-     * @param invName
-     * @param isCreative
-     * @param isDeath
-     * @param isSaveAllowed
-     * @param isDefaultInv
-     * @param enderChestOnly
-     */
     public void saveInventory(Player player, String invName, boolean isCreative,
 	    boolean isDeath, boolean isSaveAllowed, boolean isDefaultInv, boolean enderChestOnly) {
 
@@ -173,11 +120,11 @@ public class InventoryStorage {
 	String filePreName;
 
 	// Create directories (if not here)
-	file = new File(thisPlugin.getDataFolder() + "/" + INV_DIR);
+	file = new File(secuboid.getDataFolder() + "/" + INV_DIR);
 	if (!file.exists()) {
 	    file.mkdir();
 	}
-	file = new File(thisPlugin.getDataFolder() + "/" + INV_DIR + "/" + invName);
+	file = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
 	if (!file.exists()) {
 	    file.mkdir();
 	}
@@ -220,7 +167,7 @@ public class InventoryStorage {
 
 	try {
 
-	    ConfigPlayerItemFile.set("Version", STORAGE_VERSION);
+	    ConfigPlayerItemFile.set("Version", storageVersion);
 
 	    // Save Only ender chest (Death)
 	    if (enderChestOnly) {
@@ -276,15 +223,15 @@ public class InventoryStorage {
 	}
     }
 
-    // Return if the inventory exist
     /**
+     * Loads the inventory for a player.
      *
-     * @param player
-     * @param invName
-     * @param isCreative
-     * @param fromDeath
-     * @param deathVersion
-     * @return
+     * @param player the player
+     * @param invName the inventory name
+     * @param isCreative is creative inventory
+     * @param fromDeath is death before
+     * @param deathVersion the death version
+     * @return true is the inventory exist
      */
     public boolean loadInventory(Player player, String invName,
 	    boolean isCreative, boolean fromDeath, int deathVersion) {
@@ -303,13 +250,13 @@ public class InventoryStorage {
 	YamlConfiguration ConfigPlayerItemFile = new YamlConfiguration();
 
 	// player item file
-	File playerItemFile = new File(thisPlugin.getDataFolder() + "/" + INV_DIR + "/"
+	File playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/"
 		+ invName + "/" + player.getUniqueId().toString() + "." + suffixName + ".yml");
 
 	if (!fromDeath && !playerItemFile.exists()) {
 
 	    // Check for default inventory file
-	    playerItemFile = new File(thisPlugin.getDataFolder() + "/" + INV_DIR + "/"
+	    playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/"
 		    + invName + "/" + DEFAULT_INV + ".yml");
 	}
 
@@ -408,13 +355,6 @@ public class InventoryStorage {
 	}
     }
 
-    /**
-     *
-     * @param player
-     * @param land
-     * @param toIsCreative
-     * @param playerAction
-     */
     public void switchInventory(Player player, Land land, boolean toIsCreative, PlayerAction playerAction) {
 
 	PlayerInvEntry invEntry = null;
@@ -434,7 +374,7 @@ public class InventoryStorage {
 	}
 
 	// Get new inventory
-	toInv = Secuboid.getThisPlugin().getInventoryConf().getInvSpec(land);
+	toInv = secuboid.getInventoryConf().getInvSpec(land);
 
 	// check if we have to do this action
 	if (player.hasPermission(InventoryConfig.PERM_IGNORE_INV)) {
@@ -486,11 +426,6 @@ public class InventoryStorage {
 	}
     }
 
-    /**
-     *
-     * @param player
-     * @return
-     */
     public PlayerInvEntry getPlayerInvEntry(Player player) {
 
 	return playerInvList.get(player);

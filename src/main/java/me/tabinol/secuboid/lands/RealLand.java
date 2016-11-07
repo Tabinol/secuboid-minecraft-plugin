@@ -50,6 +50,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public static final short MAXIM_PRIORITY = 100;
 
+    private final Secuboid secuboid;
+
     /**
      * The uuid.
      */
@@ -193,6 +195,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * Instantiates a new real land. <br>
      * IMPORTANT: Please use createLand in Lands class to create a Land or it will not be accessible.
      *
+     * @param secuboid secuboid instance
      * @param landName the land name
      * @param uuid the uuid
      * @param owner the owner
@@ -202,9 +205,10 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param areaId the area id
      * @param type the type
      */
-    public RealLand(String landName, UUID uuid, PlayerContainer owner,
+    public RealLand(Secuboid secuboid, String landName, UUID uuid, PlayerContainer owner,
 	    Area area, int genealogy, RealLand parent, int areaId, Type type) {
 
+	this.secuboid = secuboid;
 	this.uuid = uuid;
 	name = landName.toLowerCase();
 	this.type = type;
@@ -214,7 +218,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	}
 	this.owner = owner;
 	this.genealogy = genealogy;
-	landPermissionsFlags = new LandPermissionsFlags(this);
+	landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
 	worldName = area.getWorldName();
 	addArea(area, areaId);
     }
@@ -273,7 +277,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public void addArea(Area area, double price) {
 
 	if (price > 0) {
-	    Secuboid.getThisPlugin().getLands().getPriceFromPlayer(worldName, owner, price);
+	    secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
 	}
 	addArea(area);
     }
@@ -288,11 +292,11 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
 	((Area) area).setLand(this);
 	areas.put(key, area);
-	Secuboid.getThisPlugin().getLands().addAreaToList(area);
+	secuboid.getLands().addAreaToList(area);
 	doSave();
 
 	// Start Event
-	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(new LandModifyEvent(this,
+	secuboid.getServer().getPluginManager().callEvent(new LandModifyEvent(this,
 		LandModifyEvent.LandModifyReason.AREA_ADD, area));
     }
 
@@ -307,11 +311,11 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	Area area;
 
 	if ((area = areas.remove(key)) != null) {
-	    Secuboid.getThisPlugin().getLands().removeAreaFromList(area);
+	    secuboid.getLands().removeAreaFromList(area);
 	    doSave();
 
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REMOVE, area));
 
 	    return true;
@@ -348,7 +352,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public boolean replaceArea(int key, Area newArea, double price) {
 
 	if (price > 0) {
-	    Secuboid.getThisPlugin().getLands().getPriceFromPlayer(worldName, owner, price);
+	    secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
 	}
 
 	return replaceArea(key, newArea);
@@ -366,14 +370,14 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	Area area;
 
 	if ((area = areas.remove(key)) != null) {
-	    Secuboid.getThisPlugin().getLands().removeAreaFromList(area);
+	    secuboid.getLands().removeAreaFromList(area);
 	    ((Area) newArea).setLand(this);
 	    areas.put(key, newArea);
-	    Secuboid.getThisPlugin().getLands().addAreaToList(newArea);
+	    secuboid.getLands().addAreaToList(newArea);
 	    doSave();
 
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REPLACE, area));
 
 	    return true;
@@ -521,7 +525,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	doSave();
 
 	// Start Event
-	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	secuboid.getServer().getPluginManager().callEvent(
 		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RENAME, name));
     }
 
@@ -557,7 +561,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	doSave();
 
 	// Start Event
-	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	secuboid.getServer().getPluginManager().callEvent(
 		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.OWNER_CHANGE, owner));
     }
 
@@ -573,7 +577,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	doSave();
 
 	// Start Event
-	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	secuboid.getServer().getPluginManager().callEvent(
 		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_ADD, resident));
     }
 
@@ -589,7 +593,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	    doSave();
 
 	    // Start Event
-	    Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	    secuboid.getServer().getPluginManager().callEvent(
 		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_REMOVE, resident));
 
 	    return true;
@@ -636,7 +640,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	doSave();
 
 	// Start Event
-	Secuboid.getThisPlugin().getServer().getPluginManager().callEvent(
+	secuboid.getServer().getPluginManager().callEvent(
 		new PlayerContainerLandBanEvent(this, banned));
     }
 
@@ -743,7 +747,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	    parent.removeChild(uuid);
 	    parent = null;
 	    genealogy = 0;
-	    Secuboid.getThisPlugin().getLog().write("remove parent from land: " + name);
+	    secuboid.getLog().write("remove parent from land: " + name);
 	}
 
 	// Add parent
@@ -752,7 +756,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	    parent = newParent;
 	    priority = parent.getPriority();
 	    genealogy = parent.getGenealogy() + 1;
-	    Secuboid.getThisPlugin().getLog().write("add parent " + parent.getName() + " to land: " + name);
+	    secuboid.getLog().write("add parent " + parent.getName() + " to land: " + name);
 	}
 
 	// Save
@@ -766,7 +770,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
 	for (RealLand child : children.values()) {
 	    child.setAutoSave(false);
-	    Secuboid.getThisPlugin().getStorageThread().removeLand(child);
+	    secuboid.getStorageThread().removeLand(child);
 	    child.removeChildFiles();
 	}
     }
@@ -878,7 +882,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void forceSave() {
 
-	Secuboid.getThisPlugin().getStorageThread().saveLand(this);
+	secuboid.getStorageThread().saveLand(this);
     }
 
     protected void doSave() {
@@ -1009,8 +1013,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public boolean isPlayerinLandNoVanish(Player player, Player fromPlayer) {
 
 	if (playersInLand.contains(player)
-		&& (!Secuboid.getThisPlugin().getPlayerConf().isVanished(player)
-		|| Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMode())) {
+		&& (!secuboid.getPlayerConf().isVanished(player)
+		|| secuboid.getPlayerConf().get(fromPlayer).isAdminMode())) {
 	    return true;
 	}
 
@@ -1063,7 +1067,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	Set<Player> playerList = new HashSet<Player>();
 
 	for (Player player : playersInLand) {
-	    if (!Secuboid.getThisPlugin().getPlayerConf().isVanished(player) || Secuboid.getThisPlugin().getPlayerConf().get(fromPlayer).isAdminMode()) {
+	    if (!secuboid.getPlayerConf().isVanished(player) || secuboid.getPlayerConf().get(fromPlayer).isAdminMode()) {
 		playerList.add(player);
 	    }
 	}
@@ -1097,11 +1101,11 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	if (forSale) {
 	    this.salePrice = salePrice;
 	    this.forSaleSignLoc = signLoc;
-	    Secuboid.getThisPlugin().getLands().addForSale(this);
+	    secuboid.getLands().addForSale(this);
 	} else {
 	    this.salePrice = 0;
 	    this.forSaleSignLoc = null;
-	    Secuboid.getThisPlugin().getLands().removeForSale(this);
+	    secuboid.getLands().removeForSale(this);
 	}
 	doSave();
     }
@@ -1160,7 +1164,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	this.rentRenew = rentRenew;
 	this.rentAutoRenew = rentAutoRenew;
 	this.forRentSignLoc = signLoc;
-	Secuboid.getThisPlugin().getLands().addForRent(this);
+	secuboid.getLands().addForRent(this);
 	doSave();
     }
 
@@ -1193,7 +1197,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 	rentRenew = 0;
 	rentAutoRenew = false;
 	forRentSignLoc = null;
-	Secuboid.getThisPlugin().getLands().removeForRent(this);
+	secuboid.getLands().removeForRent(this);
 	doSave();
     }
 

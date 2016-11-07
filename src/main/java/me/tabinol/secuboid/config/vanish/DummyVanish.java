@@ -22,7 +22,6 @@ import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 
-
 /**
  * Only return false if there is no Vanish plugin.
  *
@@ -30,13 +29,15 @@ import org.bukkit.entity.Player;
  */
 public class DummyVanish implements Vanish {
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.vanish.Vanish#isVanished(org.bukkit.entity.Player)
-     */
+    private final Secuboid secuboid;
+
+    public DummyVanish(Secuboid secuboid) {
+	this.secuboid = secuboid;
+    }
+
     @Override
     public boolean isVanished(Player player) {
-        
-        return Secuboid.getThisPlugin().getConf().isSpectatorIsVanish()
-                && BKVersion.isSpectatorMode(player);
+	return secuboid.getConf().isSpectatorIsVanish()
+		&& BKVersion.isSpectatorMode(player);
     }
 }

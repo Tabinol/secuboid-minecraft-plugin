@@ -19,116 +19,63 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandCancel.
  */
-@InfoCommand(name="cancel")
+@InfoCommand(name = "cancel")
 public class CommandCancel extends CommandExec {
 
-    /** The player. */
-    private final Player player;
-    
-    /** The player conf. */
-    private final PlayerConfEntry playerConf;
-    
-    /** The from auto cancel. */
-    private final boolean fromAutoCancel; // true: launched from autoCancel
-
     /**
      * Instantiates a new command cancel.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandCancel(CommandEntities entity) throws SecuboidCommandException {
+    public CommandCancel(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
-        player = entity.player;
-        playerConf = entity.playerConf;
-        fromAutoCancel = false;
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    // Called from FlyCreativeListener
-    /**
-     * Instantiates a new command cancel.
-     *
-     * @param entry the entry
-     * @param fromAutoCancel the from auto cancel
-     * @throws SecuboidCommandException the secuboid command exception
-     */
-    public CommandCancel(PlayerConfEntry entry, boolean fromAutoCancel) throws SecuboidCommandException {
-
-        super(null);
-        this.player = entry.getPlayer();
-        playerConf = entry;
-        this.fromAutoCancel = fromAutoCancel;
-    }
-    
     /* (non-Javadoc)
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        if (playerConf.getConfirm() != null) {
-            playerConf.setConfirm(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
-            Secuboid.getThisPlugin().getLog().write(player.getName() + " cancel for action");
-            
-            if(!fromAutoCancel) {
-                return;
-            }
-        }
-        
-        if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
+	if (playerConf.getConfirm() != null) {
+	    playerConf.setConfirm(null);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
+	    secuboid.getLog().write(player.getName() + " cancel for action");
 
-            playerConf.getSelection().removeSelection(SelectionType.AREA);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
-            Secuboid.getThisPlugin().getLog().write(player.getName() + ": Select cancel");
+	}
 
-            if(!fromAutoCancel) {
-                return;
-            }
-        }
+	if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
 
-/*
-        if (playerConf.getSetFlagUI() != null) {
+	    playerConf.getSelection().removeSelection(SelectionType.AREA);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
+	    secuboid.getLog().write(player.getName() + ": Select cancel");
 
-            playerConf.setSetFlagUI(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.FLAGS"));
+	}
 
-            if(!fromAutoCancel) {
-                return;
-            }
-        }
-  
-*/
-        if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
+	if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
 
-            playerConf.getSelection().removeSelection(SelectionType.LAND);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
+	    playerConf.getSelection().removeSelection(SelectionType.LAND);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
 
-            // Cancel selection (it is the last think selected)
-            playerConf.setAutoCancelSelect(false);
-            
-            if(!fromAutoCancel) {
-                return;
-            }
-        }
-        
-        // No cancel done
-        if(!fromAutoCancel) {
-            throw new SecuboidCommandException("Nothing to confirm", player, "COMMAND.CANCEL.NOCANCEL");
-        }
+	    // Cancel selection (it is the last think selected)
+	    playerConf.setAutoCancelSelect(false);
+
+	}
     }
 }

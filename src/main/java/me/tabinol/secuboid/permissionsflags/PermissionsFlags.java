@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import me.tabinol.secuboid.Secuboid;
 import org.bukkit.Material;
 
 /**
@@ -56,6 +57,8 @@ public class PermissionsFlags {
 	NODESTROY
     }
 
+    private final Secuboid secuboid;
+
     /**
      * The permissions.
      */
@@ -69,7 +72,7 @@ public class PermissionsFlags {
     /**
      * List of unregistered flags for an update *
      */
-    protected final List<Flag> unRegisteredFlags;
+    private final List<Flag> unRegisteredFlags;
 
     /**
      * Special permission Map Prefix-->Material-->PermissionType
@@ -79,8 +82,9 @@ public class PermissionsFlags {
     /**
      * Instantiates a new parameters.
      */
-    public PermissionsFlags() {
+    public PermissionsFlags(Secuboid secuboid) {
 
+	this.secuboid = secuboid;
 	permissions = new TreeMap<String, PermissionType>();
 	flags = new TreeMap<String, FlagType>();
 	unRegisteredFlags = new ArrayList<Flag>();
@@ -108,6 +112,36 @@ public class PermissionsFlags {
 	    }
 	    specialPermMap.put(pref, matPerms);
 	}
+    }
+
+    /**
+     * Instantiates a new permission.
+     *
+     * @param permType the perm type
+     * @param value the value
+     * @param inheritable the inheritable
+     * @return the permission
+     */
+    public Permission newPermission(final PermissionType permType, final boolean value, final boolean inheritable) {
+	return new Permission(permType, value, inheritable);
+    }
+
+    /**
+     * Instantiates a new land flag.
+     *
+     * @param flagType the flag type
+     * @param value the value
+     * @param inheritable the inheritable
+     * @return the flag
+     */
+    public Flag newFlag(final FlagType flagType, final Object value, final boolean inheritable) {
+
+	Flag flag = new Flag(flagType, value, inheritable);
+	if (!flagType.isRegistered()) {
+	    unRegisteredFlags.add(flag);
+	}
+
+	return flag;
     }
 
     /**
@@ -171,7 +205,7 @@ public class PermissionsFlags {
 	    Flag flag = iFlag.next();
 	    if (flagType == flag.getFlagType()) {
 		String str = flag.getValue().getValueString();
-		flag.setValue(FlagValueUtil.getFromFileFormat(str, flagType));
+		flag.setValue(secuboid.getNewInstance().getFlagValueFromFileFormat(str, flagType));
 		iFlag.remove();
 	    }
 	}

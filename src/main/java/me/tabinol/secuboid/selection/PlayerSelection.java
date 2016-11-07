@@ -20,6 +20,7 @@ package me.tabinol.secuboid.selection;
 
 import java.util.Collection;
 import java.util.EnumMap;
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -47,6 +48,8 @@ public class PlayerSelection {
 	AREA
     }
 
+    private final Secuboid secuboid;
+
     /**
      * The player conf entry.
      */
@@ -65,10 +68,12 @@ public class PlayerSelection {
     /**
      * Instantiates a new player selection.
      *
+     * @param secuboid secuboid instance
      * @param playerConfEntry the player conf entry
      */
-    public PlayerSelection(PlayerConfEntry playerConfEntry) {
+    public PlayerSelection(Secuboid secuboid, PlayerConfEntry playerConfEntry) {
 
+	this.secuboid = secuboid;
 	this.playerConfEntry = playerConfEntry;
 	selectionList = new EnumMap<SelectionType, RegionSelection>(SelectionType.class);
 	areaToReplace = null;
@@ -145,7 +150,7 @@ public class PlayerSelection {
 
 	if (land != null) {
 	    removeSelection(SelectionType.LAND);
-	    addSelection(new LandSelection(playerConfEntry.getPlayer(), land));
+	    addSelection(new LandSelection(secuboid, playerConfEntry.getPlayer(), land));
 	}
     }
 

@@ -33,6 +33,7 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandApprove.
@@ -47,13 +48,17 @@ public class CommandApprove extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command approve.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandApprove(CommandEntities entity) throws SecuboidCommandException {
+    public CommandApprove(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
-	approveList = Secuboid.getThisPlugin().getLands().getApproveList();
+	super(secuboid, infoCommand, sender, argList);
+	approveList = secuboid.getLands().getApproveList();
     }
 
     /* (non-Javadoc)
@@ -62,17 +67,17 @@ public class CommandApprove extends CommandCollisionsThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = entity.argList.getNext();
-	boolean isApprover = entity.sender.hasPermission("secuboid.collisionapprove");
+	String curArg = argList.getNext();
+	boolean isApprover = sender.hasPermission("secuboid.collisionapprove");
 	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	if (curArg.equalsIgnoreCase("clear")) {
 
 	    if (!isApprover) {
-		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
 	    }
 	    approveList.removeAll();
-	    entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
+	    sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
 
 	} else if (curArg.equalsIgnoreCase("list")) {
 
@@ -89,8 +94,8 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 	    // show Approve List
 	    for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
 		Approve app = approveEntry.getValue();
-		if (app != null && (isApprover || app.getOwner().hasAccess(entity.player))) {
-		    stList.append(ChatColor.WHITE).append(Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LIST",
+		if (app != null && (isApprover || app.getOwner().hasAccess(player))) {
+		    stList.append(ChatColor.WHITE).append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
 			    ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
 			    ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
 			    app.getOwner().getPrint() + ChatColor.WHITE,
@@ -102,34 +107,34 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 	    if (t == 0) {
 
 		// List empty
-		entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
+		sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
 	    } else {
 
 		// List not empty
-		new ChatPage("COLLISION.SHOW.LISTSTART", stList.toString(), entity.sender, null).getPage(1);
+		new ChatPage(secuboid, "COLLISION.SHOW.LISTSTART", stList.toString(), sender, null).getPage(1);
 	    }
 	} else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
 
-	    String param = entity.argList.getNext();
+	    String param = argList.getNext();
 
 	    if (param == null) {
-		throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
+		throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
 	    }
 
 	    approve = approveList.getApprove(param);
 
 	    if (approve == null) {
-		throw new SecuboidCommandException("Approve", entity.sender, "COLLISION.SHOW.PARAMNULL");
+		throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
 	    }
 
 	    // Check permission
 	    if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
 		    || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-		    && !(isApprover || approve.getOwner().hasAccess(entity.player)))) {
-		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+		    && !(isApprover || approve.getOwner().hasAccess(player)))) {
+		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
 	    }
 
-	    RealLand apprLand = Secuboid.getThisPlugin().getLands().getLand(param);
+	    RealLand apprLand = secuboid.getLands().getLand(param);
 	    Collisions.LandAction action = approve.getAction();
 	    int removeId = approve.getRemovedAreaId();
 	    Area newArea = approve.getNewArea();
@@ -141,7 +146,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 
 		// Print area
 		if (newArea != null) {
-		    entity.sender.sendMessage(newArea.getPrint());
+		    sender.sendMessage(newArea.getPrint());
 		}
 
 		if (curArg.equalsIgnoreCase("confirm")) {
@@ -155,12 +160,12 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 
 		// Remove in approve list
 		approveList.removeApprove(approve);
-		entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
+		sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
 	    } else {
-		throw new SecuboidCommandException("Approve", entity.sender, "GENERAL.MISSINGPERMISSION");
+		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
 	    }
 	} else {
-	    throw new SecuboidCommandException("Missing information command", entity.sender, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
 	}
     }
 
@@ -172,7 +177,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 	    // Create the action (if it is possible)
 	    approveList.removeApprove(approve);
 	    approve.createAction();
-	    entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COLLISION.GENERAL.DONE"));
+	    sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
 	}
     }
 }

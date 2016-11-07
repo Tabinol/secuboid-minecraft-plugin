@@ -18,69 +18,75 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.types.Type;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
+ * The type command class.
  *
  * @author michel
  */
-@InfoCommand(name="type", forceParameter=true)
+@InfoCommand(name = "type", forceParameter = true)
 public class CommandType extends CommandExec {
-    
-    /**
-     *
-     * @param entity
-     * @throws SecuboidCommandException
-     */
-    public CommandType(CommandEntities entity) throws SecuboidCommandException {
 
-        super(entity);
+    /**
+     * Instantiates a new command type.
+     *
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
+     * @throws SecuboidCommandException the secuboid command exception
+     */
+    public CommandType(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
+
+	super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-        checkPermission(true, false, null, null);
-        
-        String curArg = entity.argList.getNext();
+	checkSelections(true, null);
+	checkPermission(true, false, null, null);
 
-        if (curArg.equalsIgnoreCase("list")) {
-            
-            StringBuilder stList = new StringBuilder();
-            for (Type type : Secuboid.getThisPlugin().getTypes().getTypes()) {
-                if (stList.length() != 0) {
-                    stList.append(" ");
-                }
-                stList.append(ChatColor.WHITE).append(type.getName());
-            stList.append(Config.NEWLINE);
-            }
-            new ChatPage("COMMAND.TYPES.LISTSTART", stList.toString(), entity.player, null).getPage(1);
-        
-        } else if(curArg.equals("remove")) {
-            
-            land.setType(null);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
-            Secuboid.getThisPlugin().getLog().write("Land type removed: " + land.getName());
-        
-        } else { // Type change 
-            
-            Type type = Secuboid.getThisPlugin().getTypes().getType(curArg);
-            
-            if(type == null) {
-                throw new SecuboidCommandException("Land Types", entity.player, "COMMAND.TYPES.INVALID");
-            }
-            
-            land.setType(type);
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
-            Secuboid.getThisPlugin().getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
-        }
+	String curArg = argList.getNext();
+
+	if (curArg.equalsIgnoreCase("list")) {
+
+	    StringBuilder stList = new StringBuilder();
+	    for (Type type : secuboid.getTypes().getTypes()) {
+		if (stList.length() != 0) {
+		    stList.append(" ");
+		}
+		stList.append(ChatColor.WHITE).append(type.getName());
+		stList.append(Config.NEWLINE);
+	    }
+	    new ChatPage(secuboid, "COMMAND.TYPES.LISTSTART", stList.toString(), player, null).getPage(1);
+
+	} else if (curArg.equals("remove")) {
+
+	    land.setType(null);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
+	    secuboid.getLog().write("Land type removed: " + land.getName());
+
+	} else { // Type change
+
+	    Type type = secuboid.getTypes().getType(curArg);
+
+	    if (type == null) {
+		throw new SecuboidCommandException(secuboid, "Land Types", player, "COMMAND.TYPES.INVALID");
+	    }
+
+	    land.setType(type);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
+	    secuboid.getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
+	}
     }
 }

@@ -49,9 +49,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 /**
- * The Class Lands.
+ * The Class Lands manager.
  */
 public class Lands {
+
+    private final Secuboid secuboid;
 
     /**
      * The Constant INDEX_X1.
@@ -121,18 +123,21 @@ public class Lands {
     private final HashSet<RealLand> forRent;
 
     /**
-     * Instantiates a new lands.
+     * Instantiates a new lands manager.
+     *
+     * @param secuboid secuboid instance
      */
     @SuppressWarnings("unchecked")
-    public Lands() {
+    public Lands(Secuboid secuboid) {
 
+	this.secuboid = secuboid;
 	areaList = new TreeMap[4];
-	pm = Secuboid.getThisPlugin().getServer().getPluginManager();
+	pm = secuboid.getServer().getPluginManager();
 
 	for (int t = 0; t < areaList.length; t++) {
 	    areaList[t] = new TreeMap<String, TreeSet<AreaIndex>>();
 	}
-	WorldConfig worldConfig = new WorldConfig();
+	WorldConfig worldConfig = new WorldConfig(secuboid);
 
 	// Load World Config
 	this.outsideArea = worldConfig.getLandOutsideArea();
@@ -143,11 +148,7 @@ public class Lands {
 
 	landList = new TreeMap<String, RealLand>();
 	landUUIDList = new TreeMap<UUID, RealLand>();
-	if (Secuboid.getThisPlugin() != null) {
-	    approveList = new ApproveList();
-	} else {
-	    approveList = null;
-	}
+	approveList = new ApproveList(secuboid);
 	forSale = new HashSet<RealLand>();
 	forRent = new HashSet<RealLand>();
     }
@@ -263,15 +264,15 @@ public class Lands {
 	}
 
 	if (isNameExist(landName)) {
-	    throw new SecuboidLandException(landName, (Area) area,
+	    throw new SecuboidLandException(secuboid, landName, (Area) area,
 		    LandAction.LAND_ADD, LandError.NAME_IN_USE);
 	}
 
-	land = new RealLand(landNameLower, landUUID, owner, area, genealogy, parent, areaId, type);
+	land = new RealLand(secuboid, landNameLower, landUUID, owner, area, genealogy, parent, areaId, type);
 
 	addLandToList(land);
-	if (Secuboid.getThisPlugin() != null) {
-	    Secuboid.getThisPlugin().getLog().write("add land: " + landNameLower);
+	if (secuboid != null) {
+	    secuboid.getLog().write("add land: " + landNameLower);
 	}
 
 	return land;
@@ -308,7 +309,7 @@ public class Lands {
 
 	// If the land has children
 	if (!land.getChildren().isEmpty()) {
-	    throw new SecuboidLandException(land.getName(), null, LandAction.LAND_REMOVE, LandError.HAS_CHILDREN);
+	    throw new SecuboidLandException(secuboid, land.getName(), null, LandAction.LAND_REMOVE, LandError.HAS_CHILDREN);
 	}
 
 	// Call Land Event and check if it is cancelled
@@ -322,8 +323,8 @@ public class Lands {
 	if (land.getParent() != null) {
 	    land.getParent().removeChild(land.getUUID());
 	}
-	Secuboid.getThisPlugin().getStorageThread().removeLand(land);
-	Secuboid.getThisPlugin().getLog().write("remove land: " + land);
+	secuboid.getStorageThread().removeLand(land);
+	secuboid.getLog().write("remove land: " + land);
 
 	return true;
     }
@@ -400,7 +401,7 @@ public class Lands {
 	String newNameLower = newName.toLowerCase();
 
 	if (isNameExist(newNameLower)) {
-	    throw new SecuboidLandException(newNameLower, null, LandAction.LAND_RENAME, LandError.NAME_IN_USE);
+	    throw new SecuboidLandException(secuboid, newNameLower, null, LandAction.LAND_RENAME, LandError.NAME_IN_USE);
 	}
 
 	landList.remove(oldNameLower);
@@ -494,7 +495,7 @@ public class Lands {
 
 	// Not exist, create one
 	if (globalLand == null) {
-	    globalLand = new GlobalLand(worldName);
+	    globalLand = new GlobalLand(secuboid, worldName);
 	    outsideArea.get(Config.GLOBAL).getPermissionsFlags().copyPermsFlagsTo(globalLand.getPermissionsFlags());
 	    outsideArea.put(worldNameLower, globalLand);
 	}
@@ -569,7 +570,7 @@ public class Lands {
     protected boolean getPriceFromPlayer(String worldName, PlayerContainer pc, double price) {
 
 	if (pc.getContainerType() == PlayerContainerType.PLAYER && price > 0) {
-	    return Secuboid.getThisPlugin().getPlayerMoney()
+	    return secuboid.getPlayerMoney()
 		    .getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName, price);
 	}
 
@@ -655,7 +656,7 @@ public class Lands {
 		ForwardSearch = false;
 	    }
 	}
-	Secuboid.getThisPlugin().getLog().write("Search Index dir: " + SearchIndex + ", Forward Search: " + ForwardSearch);
+	secuboid.getLog().write("Search Index dir: " + SearchIndex + ", Forward Search: " + ForwardSearch);
 
 	// Now check for area in location
 	ais = areaList[SearchIndex].get(worldName);
@@ -672,11 +673,11 @@ public class Lands {
 	while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, SearchIndex)) {
 
 	    if (ai.getArea().isLocationInside(loc)) {
-		Secuboid.getThisPlugin().getLog().write("add this area in list for cuboid: " + ai.getArea().getLand().getName());
+		secuboid.getLog().write("add this area in list for cuboid: " + ai.getArea().getLand().getName());
 		areas.add(ai.getArea());
 	    }
 	}
-	Secuboid.getThisPlugin().getLog().write("Number of Areas found for location : " + areas.size());
+	secuboid.getLog().write("Number of Areas found for location : " + areas.size());
 
 	return areas;
     }
@@ -707,12 +708,12 @@ public class Lands {
 
 	Collection<Area> areas = getAreas(resLoc);
 
-	Secuboid.getThisPlugin().getLog().write("Area check in" + resLoc.toString());
+	secuboid.getLog().write("Area check in" + resLoc.toString());
 
 	// Compare priorities of parents (or main)
 	for (Area area : areas) {
 
-	    Secuboid.getThisPlugin().getLog().write("Check for: " + area.getLand().getName()
+	    secuboid.getLog().write("Check for: " + area.getLand().getName()
 		    + ", area: " + area.toFileFormat());
 
 	    curPrio = area.getLand().getPriority();
@@ -724,7 +725,7 @@ public class Lands {
 		actualPrio = curPrio;
 		actualGen = area.getLand().getGenealogy();
 
-		Secuboid.getThisPlugin().getLog().write("Found, update:  actualPrio: " + actualPrio + ", actualGen: " + actualGen);
+		secuboid.getLog().write("Found, update:  actualPrio: " + actualPrio + ", actualGen: " + actualGen);
 	    }
 	}
 
@@ -779,7 +780,7 @@ public class Lands {
 		areaList[t].put(area.getWorldName(), new TreeSet<AreaIndex>());
 	    }
 	}
-	Secuboid.getThisPlugin().getLog().write("Add area for " + area.getLand().getName());
+	secuboid.getLog().write("Add area for " + area.getLand().getName());
 	areaList[INDEX_X1].get(area.getWorldName()).add(new AreaIndex(area.getX1(), area));
 	areaList[INDEX_Z1].get(area.getWorldName()).add(new AreaIndex(area.getZ1(), area));
 	areaList[INDEX_X2].get(area.getWorldName()).add(new AreaIndex(area.getX2(), area));

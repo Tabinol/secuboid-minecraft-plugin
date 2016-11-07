@@ -23,33 +23,25 @@ import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 
-
 /**
  * Essentials Functions.
  *
  * @author Tabinol
  */
 public class VanishEssentials implements Vanish {
-    
-    /** The essentials. */
+
     private final Essentials essentials;
-    
-    /**
-     * Instantiates a new vanish essentials.
-     */
-    public VanishEssentials() {
-        
-        essentials = (Essentials)Secuboid.getThisPlugin().getDependPlugin().getEssentials();
+    private final Secuboid secuboid;
+
+    public VanishEssentials(Secuboid secuboid) {
+	this.secuboid = secuboid;
+	essentials = (Essentials) secuboid.getDependPlugin().getEssentials();
     }
-    
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.vanish.Vanish#isVanished(org.bukkit.entity.Player)
-     */
+
     @Override
     public boolean isVanished(Player player) {
-        
-        return (Secuboid.getThisPlugin().getConf().isSpectatorIsVanish()
-                && BKVersion.isSpectatorMode(player))
-                || essentials.getUser(player).isVanished();
+	return (secuboid.getConf().isSpectatorIsVanish()
+		&& BKVersion.isSpectatorMode(player))
+		|| essentials.getUser(player).isVanished();
     }
 }

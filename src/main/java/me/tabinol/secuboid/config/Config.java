@@ -34,7 +34,6 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public class Config {
 
-    // Global
     /**
      * The Constant NEWLINE.
      */
@@ -49,13 +48,32 @@ public class Config {
     /**
      * The this plugin.
      */
-    private final Secuboid thisPlugin;
+    private final Secuboid secuboid;
 
     /**
      * The config.
      */
     private FileConfiguration config;
-    // Configuration
+
+    /**
+     * Instantiates a new config.
+     *
+     * @param secuboid secuboid instance
+     */
+    public Config(Secuboid secuboid) {
+
+	this.secuboid = secuboid;
+	secuboid.saveDefaultConfig();
+
+	// Get Bukkit Config for this plugin, not this class!!!
+	config = secuboid.getConfig();
+
+	reloadConfig();
+    }
+
+    /*
+    * ***** CONFIGURATION SECTION *****
+     */
     /**
      * The debug.
      */
@@ -227,34 +245,6 @@ public class Config {
      */
     public long getSelectAutoCancel() {
 	return selectAutoCancel;
-    }
-
-    /**
-     * The max visual select.
-     */
-    private int maxVisualSelect;
-
-    /**
-     * Gets the max visual select.
-     *
-     * @return the max visual select
-     */
-    public int getMaxVisualSelect() {
-	return maxVisualSelect;
-    }
-
-    /**
-     * The max visual select from player.
-     */
-    private int maxVisualSelectFromPlayer;
-
-    /**
-     * Gets the max visual select from player.
-     *
-     * @return the max visual select from player
-     */
-    public int getMaxVisualSelectFromPlayer() {
-	return maxVisualSelectFromPlayer;
     }
 
     /**
@@ -473,26 +463,12 @@ public class Config {
     }
 
     /**
-     * Instantiates a new config.
-     */
-    public Config() {
-
-	thisPlugin = Secuboid.getThisPlugin();
-	thisPlugin.saveDefaultConfig();
-
-	// Get Bukkit Config for this plugin, not this class!!!
-	config = thisPlugin.getConfig();
-
-	reloadConfig();
-    }
-
-    /**
      * Reload config.
      */
     public final void reloadConfig() {
 
-	thisPlugin.reloadConfig();
-	config = thisPlugin.getConfig();
+	secuboid.reloadConfig();
+	config = secuboid.getConfig();
 	getConfig();
     }
 
@@ -511,7 +487,7 @@ public class Config {
 	try {
 	    infoItem = Material.valueOf(infoItemS.toUpperCase());
 	} catch (IllegalArgumentException ex) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on General.InfoItem : No {0} item found in Bukkit! Using default.", infoItemS);
+	    secuboid.getLogger().log(Level.WARNING, "Error in config.yml on General.InfoItem : No {0} item found in Bukkit! Using default.", infoItemS);
 	    infoItem = Material.BONE;
 	}
 
@@ -519,7 +495,7 @@ public class Config {
 	try {
 	    selectItem = Material.valueOf(selectItemS.toUpperCase());
 	} catch (IllegalArgumentException ex) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on General.SelectItem : No {0} item found in Bukkit! Using default.", selectItemS);
+	    secuboid.getLogger().log(Level.WARNING, "Error in config.yml on General.SelectItem : No {0} item found in Bukkit! Using default.", selectItemS);
 	    selectItem = Material.ROTTEN_FLESH;
 	}
 
@@ -533,8 +509,6 @@ public class Config {
 	isSpectatorIsVanish = config.getBoolean("Lands.SpectatorIsVanish", true);
 	approveNotifyTime = config.getLong("Lands.ApproveNotifyTime", 24002);
 	selectAutoCancel = config.getLong("Lands.SelectAutoCancel", 12000);
-	maxVisualSelect = config.getInt("Lands.MaxVisualSelect", 256);
-	maxVisualSelectFromPlayer = config.getInt("Lands.MaxVisualSelectFromPlayer", 128);
 	defaultXSize = config.getInt("Lands.defaultXSize", 10);
 	defaultZSize = config.getInt("Lands.defaultZSize", 10);
 	defaultBottom = config.getInt("Lands.defaultBottom", 0);
@@ -546,12 +520,12 @@ public class Config {
 	config.addDefault("Lands.OwnerCanSet.Flags", new String[]{"MESSAGE_JOIN", "MESSAGE_QUIT"});
 	ownerConfigFlag = new TreeSet<FlagType>();
 	for (String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
-	    ownerConfigFlag.add(Secuboid.getThisPlugin().getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));
+	    ownerConfigFlag.add(secuboid.getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));
 	}
 	config.addDefault("Lands.OwnerCanSet.Permissions", new String[]{"BUILD", "OPEN", "USE"});
 	ownerConfigPerm = new TreeSet<PermissionType>();
 	for (String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
-	    ownerConfigPerm.add(Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
+	    ownerConfigPerm.add(secuboid.getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
 	}
 
 	// Fly and creative
@@ -563,7 +537,7 @@ public class Config {
 	    try {
 		ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
 	    } catch (IllegalArgumentException ex) {
-		Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No {0} game mode!", value);
+		secuboid.getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No {0} game mode!", value);
 	    }
 	}
 
@@ -577,16 +551,16 @@ public class Config {
 	    try {
 		creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
 	    } catch (IllegalArgumentException ex) {
-		Secuboid.getThisPlugin().getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.Creative.BannedItems : No {0} item found in Bukkit!", value);
+		secuboid.getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.Creative.BannedItems : No {0} item found in Bukkit!", value);
 	    }
 	}
 
 	// Add types
 	for (String typeName : config.getStringList("Lands.Types.List")) {
-	    Secuboid.getThisPlugin().getTypes().addOrGetType(typeName);
+	    secuboid.getTypes().addOrGetType(typeName);
 	}
-	typeAdminMode = Secuboid.getThisPlugin().getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMode", "admin"));
-	typeNoneAdminMode = Secuboid.getThisPlugin().getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMode", "player"));
+	typeAdminMode = secuboid.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMode", "admin"));
+	typeNoneAdminMode = secuboid.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMode", "player"));
     }
 
     private String getStringOrNull(String path, String defaultSt) {

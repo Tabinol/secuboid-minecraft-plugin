@@ -38,6 +38,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public class EcoSign {
 
+    private final Secuboid secuboid;
+
     /**
      * The land.
      */
@@ -58,16 +60,17 @@ public class EcoSign {
      */
     private final boolean isWallSign;
 
-    // Create from player position
     /**
-     * Instantiates a new eco sign.
+     * Instantiates a new eco sign. Creates from player position.
      *
+     * @param secuboid the secuboid instance
      * @param land the land
      * @param player the player
      * @throws SignException the sign exception
      */
-    public EcoSign(RealLand land, Player player) throws SignException {
+    public EcoSign(Secuboid secuboid, RealLand land, Player player) throws SignException {
 
+	this.secuboid = secuboid;
 	@SuppressWarnings("deprecation")
 	Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, 10);
 	Block testBlock;
@@ -103,7 +106,7 @@ public class EcoSign {
 	    throw new SignException();
 	}
 
-	Secuboid.getThisPlugin().getLog().write("SignToCreate: PlayerYaw: " + player.getLocation().getYaw()
+	secuboid.getLog().write("SignToCreate: PlayerYaw: " + player.getLocation().getYaw()
 		+ ", Location: " + location.toString() + ", Facing: " + facing.name()
 		+ ", isWallSign: " + isWallSign);
     }
@@ -111,12 +114,14 @@ public class EcoSign {
     /**
      * Instantiates a new eco sign (If the sign is already existing only).
      *
+     * @param secuboid the secuboid instance
      * @param land the land
      * @param location the location
      * @throws SignException the sign exception
      */
-    public EcoSign(RealLand land, Location location) throws SignException {
+    public EcoSign(Secuboid secuboid, RealLand land, Location location) throws SignException {
 
+	this.secuboid = secuboid;
 	this.land = land;
 	this.location = location;
 
@@ -160,10 +165,10 @@ public class EcoSign {
 
 	String[] lines = new String[4];
 	lines[0] = ChatColor.GREEN
-		+ Secuboid.getThisPlugin().getLanguage().getMessage("SIGN.SALE.FORSALE");
+		+ secuboid.getLanguage().getMessage("SIGN.SALE.FORSALE");
 	lines[1] = ChatColor.GREEN + land.getName();
 	lines[2] = "";
-	lines[3] = ChatColor.BLUE + Secuboid.getThisPlugin().getPlayerMoney().toFormat(price);
+	lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price);
 
 	createSign(lines);
     }
@@ -184,22 +189,22 @@ public class EcoSign {
 
 	if (tenantName != null) {
 	    lines[0] = ChatColor.RED
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("SIGN.RENT.RENTED");
+		    + secuboid.getLanguage().getMessage("SIGN.RENT.RENTED");
 	    lines[1] = ChatColor.RED + tenantName;
 	} else {
 	    lines[0] = ChatColor.GREEN
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("SIGN.RENT.FORRENT");
+		    + secuboid.getLanguage().getMessage("SIGN.RENT.FORRENT");
 	    lines[1] = ChatColor.GREEN + land.getName();
 	}
 
 	if (autoRenew) {
 	    lines[2] = ChatColor.BLUE
-		    + Secuboid.getThisPlugin().getLanguage().getMessage("SIGN.RENT.AUTORENEW");
+		    + secuboid.getLanguage().getMessage("SIGN.RENT.AUTORENEW");
 	} else {
 	    lines[2] = "";
 	}
 
-	lines[3] = ChatColor.BLUE + Secuboid.getThisPlugin().getPlayerMoney().toFormat(price)
+	lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price)
 		+ "/" + renew;
 
 	createSign(lines);
@@ -216,7 +221,7 @@ public class EcoSign {
 	Block blockPlace = location.getBlock();
 
 	// Impossible to create the sign here
-	if (Secuboid.getThisPlugin().getLands().getLand(location) != land) {
+	if (secuboid.getLands().getLand(location) != land) {
 	    throw new SignException();
 	}
 

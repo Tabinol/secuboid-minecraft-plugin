@@ -19,54 +19,54 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 
 /**
  * The Class CommandWho.
  */
-@InfoCommand(name="who")
+@InfoCommand(name = "who")
 public class CommandWho extends CommandExec {
 
     /**
      * Instantiates a new command who.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandWho(CommandEntities entity) throws SecuboidCommandException {
+    public CommandWho(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        getLandFromCommandIfNoLandSelected();
-        checkSelections(true, null);
-        checkPermission(true, true, PermissionList.LAND_WHO.getPermissionType(), null);
+	getLandFromCommandIfNoLandSelected();
+	checkSelections(true, null);
+	checkPermission(true, true, PermissionList.LAND_WHO.getPermissionType(), null);
 
-        // Create list
-        StringBuilder stList = new StringBuilder();
-        for (Player player : land.getPlayersInLandNoVanish(entity.player)) {
-            stList.append(player.getDisplayName()).append(Config.NEWLINE);
-        }
+	// Create list
+	StringBuilder stList = new StringBuilder();
+	for (Player player : land.getPlayersInLandNoVanish(player)) {
+	    stList.append(player.getDisplayName()).append(Config.NEWLINE);
+	}
 
-        if (stList.length() != 0) {
-            new ChatPage("COMMAND.WHO.LISTSTART", stList.toString(), entity.player, land.getName()).getPage(1);
-        } else {
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
-        }
+	if (stList.length() != 0) {
+	    new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+	} else {
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
+	}
     }
 }

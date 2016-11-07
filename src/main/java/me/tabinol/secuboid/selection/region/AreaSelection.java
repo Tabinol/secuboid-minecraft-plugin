@@ -18,11 +18,11 @@
  */
 package me.tabinol.secuboid.selection.region;
 
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.selection.PlayerSelection;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
-import me.tabinol.secuboid.selection.visual.VisualSelectionUtil;
 import org.bukkit.entity.Player;
 
 /**
@@ -31,21 +31,16 @@ import org.bukkit.entity.Player;
 public class AreaSelection implements RegionSelection {
 
     /**
-     * The player.
-     */
-    private final Player player;
-
-    /**
      * Move Type.
      */
-    public enum MoveType { // ACTIVE = move with the player, PASSIVE = fixed
+    public enum MoveType {
 
 	/**
-	 *
+	 * Fixed
 	 */
 	PASSIVE,
 	/**
-	 *
+	 * Move with the player
 	 */
 	ACTIVE,
 	/**
@@ -65,24 +60,24 @@ public class AreaSelection implements RegionSelection {
     /**
      * Instantiates a new area selection.
      *
+     * @param secuboid secuboid instance
      * @param player the player
      * @param area the area (null will create the area from player)
      * @param isFromLand is from land or must be false
      * @param areaType area type (can be null if the area is not null)
      * @param moveType move type
      */
-    public AreaSelection(Player player, Area area, boolean isFromLand,
+    public AreaSelection(Secuboid secuboid, Player player, Area area, boolean isFromLand,
 	    AreaType areaType, MoveType moveType) {
 
-	this.player = player;
 	this.moveType = moveType;
 
 	if (area == null) {
-	    visualSelection = VisualSelectionUtil.createVisualSelection(areaType,
+	    visualSelection = secuboid.getNewInstance().createVisualSelection(areaType,
 		    isFromLand, player);
 	    visualSelection.setActiveSelection();
 	} else {
-	    visualSelection = VisualSelectionUtil.createVisualSelection(area,
+	    visualSelection = secuboid.getNewInstance().createVisualSelection(area,
 		    isFromLand, player);
 	    visualSelection.makeVisualSelection();
 	}

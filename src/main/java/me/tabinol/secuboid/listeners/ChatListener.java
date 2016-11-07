@@ -34,18 +34,16 @@ public class ChatListener extends CommonListener implements Listener {
 
     /**
      * Instantiates a new chat listener.
+     *
+     * @param secuboid secuboid instance
      */
-    public ChatListener() {
+    public ChatListener(Secuboid secuboid) {
 
-	super();
-	conf = Secuboid.getThisPlugin().getConf();
-	playerConf = Secuboid.getThisPlugin().getPlayerConf();
+	super(secuboid);
+	conf = secuboid.getConf();
+	playerConf = secuboid.getPlayerConf();
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 
@@ -61,12 +59,12 @@ public class ChatListener extends CommonListener implements Listener {
 
 	    event.setCancelled(true);
 
-	    RealLand land = Secuboid.getThisPlugin().getLands().getLand(player.getLocation());
+	    RealLand land = secuboid.getLands().getLand(player.getLocation());
 
 	    // The player is not in a land
 	    if (land == null) {
 		player.sendMessage(ChatColor.RED + "[Secuboid] "
-			+ Secuboid.getThisPlugin().getLanguage().getMessage(
+			+ secuboid.getLanguage().getMessage(
 				"CHAT.OUTSIDE"));
 		return;
 	    }

@@ -19,13 +19,13 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandMoney.
@@ -41,29 +41,30 @@ public class CommandMoney extends CommandExec {
     /**
      * Instantiates a new command money.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandMoney(CommandEntities entity) throws SecuboidCommandException {
+    public CommandMoney(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
-	playerMoney = Secuboid.getThisPlugin().getPlayerMoney();
+	super(secuboid, infoCommand, sender, argList);
+	playerMoney = secuboid.getPlayerMoney();
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
 	if (playerMoney == null) {
 
-	    throw new SecuboidCommandException("Economy not avalaible", entity.player, "COMMAND.ECONOMY.NOTAVAILABLE");
+	    throw new SecuboidCommandException(secuboid, "Economy not avalaible", player, "COMMAND.ECONOMY.NOTAVAILABLE");
 	}
 
 	checkSelections(true, null);
 
-	String curArg = entity.argList.getNext();
+	String curArg = argList.getNext();
 
 	if (curArg.equalsIgnoreCase("balance")) {
 	    balance();
@@ -72,7 +73,7 @@ public class CommandMoney extends CommandExec {
 	} else if (curArg.equalsIgnoreCase("withdraw")) {
 	    withdraw();
 	} else {
-	    throw new SecuboidCommandException("Missing information command", entity.player, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
 	}
     }
 
@@ -84,7 +85,7 @@ public class CommandMoney extends CommandExec {
     private void balance() throws SecuboidCommandException {
 
 	checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
-	entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
 		land.getName(), playerMoney.toFormat(land.getMoney())));
     }
 
@@ -100,14 +101,14 @@ public class CommandMoney extends CommandExec {
 	double amount = getAmountFromCommandLine();
 
 	// Amount is valid?
-	if (amount > playerMoney.getPlayerBalance(entity.player.getPlayer(), land.getWorldName())) {
-	    throw new SecuboidCommandException("Invalid amount", entity.player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+	if (amount > playerMoney.getPlayerBalance(player.getPlayer(), land.getWorldName())) {
+	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
 	}
 
 	// Land Deposit
-	playerMoney.getFromPlayer(entity.player.getPlayer(), land.getWorldName(), amount);
+	playerMoney.getFromPlayer(player.getPlayer(), land.getWorldName(), amount);
 	land.addMoney(amount);
-	entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
 		playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
@@ -124,13 +125,13 @@ public class CommandMoney extends CommandExec {
 
 	// Amount is valid?
 	if (amount > land.getMoney()) {
-	    throw new SecuboidCommandException("Invalid amount", entity.player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
 	}
 
 	// Land Deposit
 	land.substractMoney(amount);
-	playerMoney.giveToPlayer(entity.player.getPlayer(), land.getWorldName(), amount);
-	entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
+	playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
 		playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
@@ -146,7 +147,7 @@ public class CommandMoney extends CommandExec {
 	boolean err = false;
 
 	try {
-	    ret = Double.parseDouble(entity.argList.getNext());
+	    ret = Double.parseDouble(argList.getNext());
 	    if (ret <= 0) {
 		// Amount is 0 or less
 		err = true;
@@ -160,7 +161,7 @@ public class CommandMoney extends CommandExec {
 	}
 
 	if (err) {
-	    throw new SecuboidCommandException("Invalid amount", entity.player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
 	}
 
 	return ret;

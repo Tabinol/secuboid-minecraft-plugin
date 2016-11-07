@@ -47,7 +47,7 @@ public class Permission {
      * @param value the value
      * @param inheritable the inheritable
      */
-    public Permission(final PermissionType permType, final boolean value, final boolean inheritable) {
+    Permission(final PermissionType permType, final boolean value, final boolean inheritable) {
 
 	this.permType = permType;
 	this.value = value;

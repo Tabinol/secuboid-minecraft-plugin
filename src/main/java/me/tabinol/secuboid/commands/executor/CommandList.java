@@ -20,15 +20,15 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.Collection;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandList.
@@ -44,12 +44,16 @@ public class CommandList extends CommandPlayerThreadExec {
     /**
      * Instantiates a new command list.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandList(CommandEntities entity) throws SecuboidCommandException {
+    public CommandList(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
 
     }
 
@@ -59,41 +63,41 @@ public class CommandList extends CommandPlayerThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = entity.argList.getNext();
+	String curArg = argList.getNext();
 
 	if (curArg != null) {
 	    if (curArg.equalsIgnoreCase("world")) {
 
 		// Get worldName
-		worldName = entity.argList.getNext();
+		worldName = argList.getNext();
 		if (worldName == null) {
 		    // No worldName has parameter
-		    worldName = entity.player.getLocation().getWorld().getName().toLowerCase();
+		    worldName = player.getLocation().getWorld().getName().toLowerCase();
 		}
 
 	    } else if (curArg.equalsIgnoreCase("type")) {
 
 		// Get the category name
-		String typeName = entity.argList.getNext();
+		String typeName = argList.getNext();
 
 		if (typeName != null) {
-		    type = Secuboid.getThisPlugin().getTypes().getType(typeName);
+		    type = secuboid.getTypes().getType(typeName);
 		}
 
 		if (type == null) {
-		    throw new SecuboidCommandException("CommandList", entity.sender, "COMMAND.LAND.TYPENOTEXIST");
+		    throw new SecuboidCommandException(secuboid, "CommandList", sender, "COMMAND.LAND.TYPENOTEXIST");
 		}
 
 	    } else {
 
 		// Get the player Container
-		entity.argList.setPos(0);
-		pc = entity.argList.getPlayerContainerFromArg(null, null);
+		argList.setPos(0);
+		pc = argList.getPlayerContainerFromArg(null, null);
 
 	    }
 	}
 
-	Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
+	secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
@@ -108,10 +112,10 @@ public class CommandList extends CommandPlayerThreadExec {
 	// Check if the player is AdminMode or send only owned lands
 	Collection<RealLand> lands;
 
-	if (entity.playerConf.isAdminMode()) {
-	    lands = Secuboid.getThisPlugin().getLands().getLands();
+	if (playerConf.isAdminMode()) {
+	    lands = secuboid.getLands().getLands();
 	} else {
-	    lands = Secuboid.getThisPlugin().getLands().getLands(entity.playerConf.getPlayerContainer());
+	    lands = secuboid.getLands().getLands(playerConf.getPlayerContainer());
 	}
 
 	// Get the list of the land
@@ -127,6 +131,6 @@ public class CommandList extends CommandPlayerThreadExec {
 	    }
 	}
 
-	new ChatPage("COMMAND.LAND.LISTSTART", stList.toString(), entity.player, null).getPage(1);
+	new ChatPage(secuboid, "COMMAND.LAND.LISTSTART", stList.toString(), player, null).getPage(1);
     }
 }

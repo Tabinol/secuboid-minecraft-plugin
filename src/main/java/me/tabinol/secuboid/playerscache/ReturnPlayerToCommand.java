@@ -18,7 +18,7 @@
 package me.tabinol.secuboid.playerscache;
 
 import java.util.concurrent.Callable;
-import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
+import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
 /**

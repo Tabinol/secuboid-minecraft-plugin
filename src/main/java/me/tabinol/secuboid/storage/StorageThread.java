@@ -35,6 +35,8 @@ import me.tabinol.secuboid.storage.flat.StorageFlat;
  */
 public class StorageThread extends Thread {
 
+    private final Secuboid secuboid;
+
     /**
      * The exit request.
      */
@@ -92,11 +94,14 @@ public class StorageThread extends Thread {
 
     /**
      * Instantiates a new storage thread.
+     *
+     * @param secuboid secuboid instance
      */
-    public StorageThread() {
+    public StorageThread(Secuboid secuboid) {
 
+	this.secuboid = secuboid;
 	this.setName("Secuboid Storage");
-	storage = new StorageFlat();
+	storage = new StorageFlat(secuboid);
 	saveList = Collections.synchronizedList(new ArrayList<Object>());
 	removeList = Collections.synchronizedList(new ArrayList<Object>());
     }
@@ -158,7 +163,7 @@ public class StorageThread extends Thread {
 		// wait!
 		try {
 		    commandRequest.await();
-		    Secuboid.getThisPlugin().getLog().write("Storage Thread wake up!");
+		    secuboid.getLog().write("Storage Thread wake up!");
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
@@ -175,7 +180,7 @@ public class StorageThread extends Thread {
     public void stopNextRun() {
 
 	if (!isAlive()) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Problem with save Thread. Possible data loss!");
+	    secuboid.getLogger().log(Level.SEVERE, "Problem with save Thread. Possible data loss!");
 	    return;
 	}
 	exitRequest = true;
@@ -231,7 +236,7 @@ public class StorageThread extends Thread {
 	lock.lock();
 	try {
 	    commandRequest.signal();
-	    Secuboid.getThisPlugin().getLog().write("Storage request (Thread wake up...)");
+	    secuboid.getLog().write("Storage request (Thread wake up...)");
 	} finally {
 	    lock.unlock();
 	}

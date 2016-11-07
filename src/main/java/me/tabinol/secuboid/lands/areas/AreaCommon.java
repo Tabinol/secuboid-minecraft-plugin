@@ -18,9 +18,9 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.utilities.Calculate;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 /**
@@ -119,7 +119,7 @@ final class AreaCommon {
      * @return the word
      */
     World getWord() {
-	return Secuboid.getThisPlugin().getServer().getWorld(worldName);
+	return Bukkit.getWorld(worldName);
     }
 
     /**

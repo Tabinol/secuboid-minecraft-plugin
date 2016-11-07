@@ -32,6 +32,8 @@ import me.tabinol.secuboid.exceptions.FileLoadException;
  */
 final class ConfLoaderFlat {
 
+    private final Secuboid secuboid;
+
     /**
      * The version.
      */
@@ -80,11 +82,13 @@ final class ConfLoaderFlat {
     /**
      * Instantiates a new conf loader.
      *
+     * @param secuboid secuboid instance
      * @param file the file
      * @throws FileLoadException the file load exception
      */
-    ConfLoaderFlat(File file) throws FileLoadException {
+    ConfLoaderFlat(Secuboid secuboid, File file) throws FileLoadException {
 
+	this.secuboid = secuboid;
 	this.file = file;
 	FileReader fr = null;
 	try {
@@ -124,7 +128,7 @@ final class ConfLoaderFlat {
 	try {
 	    uuid = UUID.fromString(getValueString());
 	} catch (IllegalArgumentException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Can't read UUID.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read UUID.");
 	}
     }
 
@@ -155,7 +159,7 @@ final class ConfLoaderFlat {
 	try {
 	    actLine = br.readLine();
 	} catch (IOException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Can't read the next line.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the next line.");
 	}
 
 	if (actLine == null) {
@@ -165,7 +169,7 @@ final class ConfLoaderFlat {
 	if (lrt.isEmpty() || lrt.equals("}")) {
 	    return null;
 	}
-	Secuboid.getThisPlugin().getLog().write("Readline: " + lrt);
+	secuboid.getLog().write("Readline: " + lrt);
 	return lrt;
     }
 
@@ -229,7 +233,7 @@ final class ConfLoaderFlat {
 	try {
 	    return Integer.parseInt(value);
 	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
 	}
     }
 
@@ -244,7 +248,7 @@ final class ConfLoaderFlat {
 	try {
 	    return Short.parseShort(value);
 	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Can't read the Short parameter.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Short parameter.");
 	}
     }
 
@@ -259,7 +263,7 @@ final class ConfLoaderFlat {
 	try {
 	    return Double.parseDouble(value);
 	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Can't read the Double parameter.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Double parameter.");
 	}
     }
 
@@ -345,7 +349,7 @@ final class ConfLoaderFlat {
 	try {
 	    br.close();
 	} catch (IOException ex) {
-	    throw new FileLoadException(file.getName(), actLine, actLineNb, "Impossible to close the file.");
+	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Impossible to close the file.");
 	}
     }
 }

@@ -19,30 +19,33 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import org.bukkit.ChatColor;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandOwner.
  */
-@InfoCommand(name="owner", forceParameter=true)
+@InfoCommand(name = "owner", forceParameter = true)
 public class CommandOwner extends CommandPlayerThreadExec {
 
     /**
      * Instantiates a new command owner.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandOwner(CommandEntities entity) throws SecuboidCommandException {
+    public CommandOwner(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -51,13 +54,13 @@ public class CommandOwner extends CommandPlayerThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkSelections(true, null);
-        checkPermission(true, true, null, null);
-        
-        pc = entity.argList.getPlayerContainerFromArg(land,
-                new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-                    PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
-        Secuboid.getThisPlugin().getPlayersCache().getUUIDWithNames(this, pc);
+	checkSelections(true, null);
+	checkPermission(true, true, null, null);
+
+	pc = argList.getPlayerContainerFromArg(land,
+		new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+		    PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
+	secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     /* (non-Javadoc)
@@ -65,16 +68,16 @@ public class CommandOwner extends CommandPlayerThreadExec {
      */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-            throws SecuboidCommandException {
-        
-        convertPcIfNeeded(playerCacheEntry);
+	    throws SecuboidCommandException {
 
-        land.setOwner(pc);
-        entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
-        Secuboid.getThisPlugin().getLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
+	convertPcIfNeeded(playerCacheEntry);
 
-        // Cancel the selection
-        new CommandCancel(entity.playerConf, true).commandExecute();
+	land.setOwner(pc);
+	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
+	secuboid.getLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
+
+	// Cancel the selection
+	new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
 
     }
 }

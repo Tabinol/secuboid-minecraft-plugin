@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.config.players;
 
+import com.earth2me.essentials.Essentials;
 import java.util.HashMap;
 import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
@@ -31,48 +32,58 @@ import me.tabinol.secuboid.config.vanish.VanishNoPacket;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-
 // Contain lists for player (selection, ect, ...)
 /**
  * The Class PlayerStaticConfig.
  */
 public class PlayerStaticConfig {
-    
-    /** The player conf list. */
+
+    /**
+     * The player conf list.
+     */
     private final Map<CommandSender, PlayerConfEntry> playerConfList;
-    
-    /** The vanish. */
+
+    /**
+     * The vanish.
+     */
     private final Vanish vanish;
-    
-    /** The chat. */
+
+    /**
+     * The chat.
+     */
     private final Chat chat;
+
+    private final Secuboid secuboid;
 
     /**
      * Instantiates a new player static config.
+     *
+     * @param secuboid secuboid instance
      */
-    public PlayerStaticConfig() {
+    public PlayerStaticConfig(Secuboid secuboid) {
 
-        playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
+	this.secuboid = secuboid;
+	playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
 
-        // Check for VanishNoPacket plugin
-        if (Secuboid.getThisPlugin().getDependPlugin().getVanishNoPacket() != null) {
-            vanish = new VanishNoPacket();
+	// Check for VanishNoPacket plugin
+	if (secuboid.getDependPlugin().getVanishNoPacket() != null) {
+	    vanish = new VanishNoPacket(secuboid);
 
-            // Check for Essentials plugin
-        } else if (Secuboid.getThisPlugin().getDependPlugin().getEssentials() != null) {
-            vanish = new VanishEssentials();
+	    // Check for Essentials plugin
+	} else if (secuboid.getDependPlugin().getEssentials() != null) {
+	    vanish = new VanishEssentials(secuboid);
 
-            // Dummy Vanish if no plugins
-        } else {
-            vanish = new DummyVanish();
-        }
-        
-        // Check for Chat plugin
-        if (Secuboid.getThisPlugin().getDependPlugin().getEssentials() != null) {
-            chat = new ChatEssentials();
-        } else {
-            chat = new ChatSecuboid();
-        }
+	    // Dummy Vanish if no plugins
+	} else {
+	    vanish = new DummyVanish(secuboid);
+	}
+
+	// Check for Chat plugin
+	if (secuboid.getDependPlugin().getEssentials() != null) {
+	    chat = new ChatEssentials((Essentials) secuboid.getDependPlugin().getEssentials());
+	} else {
+	    chat = new ChatSecuboid();
+	}
     }
 
     // Methods for geting a player static config
@@ -84,10 +95,10 @@ public class PlayerStaticConfig {
      */
     public PlayerConfEntry add(CommandSender sender) {
 
-        PlayerConfEntry entry = new PlayerConfEntry(sender);
-        playerConfList.put(sender, entry);
+	PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender);
+	playerConfList.put(sender, entry);
 
-        return entry;
+	return entry;
     }
 
     /**
@@ -97,12 +108,12 @@ public class PlayerStaticConfig {
      */
     public void remove(CommandSender sender) {
 
-        PlayerConfEntry entry = playerConfList.get(sender);
-        
-        // First, remove AutoCancelSelect
-        entry.setAutoCancelSelect(false);
+	PlayerConfEntry entry = playerConfList.get(sender);
 
-        playerConfList.remove(sender);
+	// First, remove AutoCancelSelect
+	entry.setAutoCancelSelect(false);
+
+	playerConfList.remove(sender);
     }
 
     /**
@@ -112,7 +123,7 @@ public class PlayerStaticConfig {
      */
     public PlayerConfEntry get(CommandSender sender) {
 
-        return playerConfList.get(sender);
+	return playerConfList.get(sender);
     }
 
     /**
@@ -120,13 +131,13 @@ public class PlayerStaticConfig {
      */
     public void addAll() {
 
-        // Add the consle in the list
-        add(Secuboid.getThisPlugin().getServer().getConsoleSender());
+	// Add the consle in the list
+	add(secuboid.getServer().getConsoleSender());
 
-        // Add online players
-        for (CommandSender sender : Secuboid.getThisPlugin().getServer().getOnlinePlayers()) {
-            add(sender);
-        }
+	// Add online players
+	for (CommandSender sender : secuboid.getServer().getOnlinePlayers()) {
+	    add(sender);
+	}
     }
 
     /**
@@ -134,31 +145,31 @@ public class PlayerStaticConfig {
      */
     public void removeAll() {
 
-        for (PlayerConfEntry entry : playerConfList.values()) {
+	for (PlayerConfEntry entry : playerConfList.values()) {
 
-            // First, remove AutoCancelSelect
-            entry.setAutoCancelSelect(false);
+	    // First, remove AutoCancelSelect
+	    entry.setAutoCancelSelect(false);
 
-        }
-        playerConfList.clear();
+	}
+	playerConfList.clear();
     }
-    
+
     /**
      *
      * @param player
      * @return
      */
     public boolean isVanished(Player player) {
-        
-        return vanish.isVanished(player);
+
+	return vanish.isVanished(player);
     }
-    
+
     /**
      *
      * @return
      */
     public Chat getChat() {
-        
-        return chat;
+
+	return chat;
     }
 }

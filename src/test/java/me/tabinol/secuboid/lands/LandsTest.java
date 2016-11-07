@@ -66,7 +66,6 @@ public class LandsTest {
 	// Prepare Mock
 	PowerMockito.mockStatic(Secuboid.class);
 	Secuboid secuboid = mock(Secuboid.class);
-	when(Secuboid.getThisPlugin()).thenReturn(secuboid);
 
 	// log
 	Log log = mock(Log.class);
@@ -75,7 +74,7 @@ public class LandsTest {
 
 	//when(secuboid.getDataFolder()).thenReturn(new File("src/main/resources/"));
 	// Permissions Flags
-	permissionsFlags = new PermissionsFlags();
+	permissionsFlags = new PermissionsFlags(secuboid);
 	when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
 
 	// Tyles
@@ -89,7 +88,7 @@ public class LandsTest {
 	when(secuboid.getServer()).thenReturn(server);
 
 	// Lands
-	lands = new Lands();
+	lands = new Lands(secuboid);
 	when(secuboid.getLands()).thenReturn(lands);
 
 	StorageThread storageThread = mock(StorageThread.class);

@@ -18,7 +18,7 @@
 package me.tabinol.secuboid.lands.collisions;
 
 import java.util.concurrent.Callable;
-import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
+import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
 /**

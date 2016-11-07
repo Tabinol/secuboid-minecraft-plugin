@@ -32,6 +32,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 public class DependPlugin {
 
+    private final Secuboid secuboid;
+
     /**
      * The world edit.
      */
@@ -64,8 +66,12 @@ public class DependPlugin {
 
     /**
      * Instantiates a new depend plugin.
+     *
+     * @param secuboid secuboid instance
      */
-    public DependPlugin() {
+    public DependPlugin(Secuboid secuboid) {
+
+	this.secuboid = secuboid;
 
 	worldEdit = getPlugin("WorldEdit");
 	essentials = getPlugin("Essentials");
@@ -83,15 +89,15 @@ public class DependPlugin {
      */
     private Plugin getPlugin(String pluginName) {
 
-	Plugin plugin = Secuboid.getThisPlugin().getServer().getPluginManager().getPlugin(pluginName);
+	Plugin plugin = secuboid.getServer().getPluginManager().getPlugin(pluginName);
 
 	if (plugin != null) {
-	    Secuboid.getThisPlugin().getServer().getPluginManager().enablePlugin(plugin);
-	    Secuboid.getThisPlugin().getLog().write(pluginName + " detected!");
-	    Secuboid.getThisPlugin().getLogger().log(Level.INFO, "{0} detected!", pluginName);
+	    secuboid.getServer().getPluginManager().enablePlugin(plugin);
+	    secuboid.getLog().write(pluginName + " detected!");
+	    secuboid.getLogger().log(Level.INFO, "{0} detected!", pluginName);
 	} else {
-	    Secuboid.getThisPlugin().getLog().write(pluginName + " NOT detected!");
-	    Secuboid.getThisPlugin().getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
+	    secuboid.getLog().write(pluginName + " NOT detected!");
+	    secuboid.getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
 	}
 
 	return plugin;

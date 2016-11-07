@@ -30,10 +30,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
+ * The visual selection cuboid class.
  *
  * @author michel
  */
 public class VisualSelectionCuboid implements VisualSelection {
+
+    private final Secuboid secuboid;
 
     /**
      * The player.
@@ -59,13 +62,8 @@ public class VisualSelectionCuboid implements VisualSelection {
 
     private CuboidArea area;
 
-    /**
-     *
-     * @param area
-     * @param isFromLand
-     * @param player
-     */
-    public VisualSelectionCuboid(CuboidArea area, boolean isFromLand, Player player) {
+    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, boolean isFromLand, Player player) {
+	this.secuboid = secuboid;
 	changedBlocks = new ChangedBlocks(player);
 	this.isFromLand = isFromLand;
 	this.player = player;
@@ -120,11 +118,11 @@ public class VisualSelectionCuboid implements VisualSelection {
 	isCollision = false;
 
 	Location loc = player.getLocation();
-	int landXr = Secuboid.getThisPlugin().getConf().getDefaultXSize() / 2;
-	int landZr = Secuboid.getThisPlugin().getConf().getDefaultZSize() / 2;
+	int landXr = secuboid.getConf().getDefaultXSize() / 2;
+	int landZr = secuboid.getConf().getDefaultZSize() / 2;
 	area = new CuboidArea(loc.getWorld().getName(),
-		loc.getBlockX() - landXr, Secuboid.getThisPlugin().getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-		loc.getBlockX() + landXr, Secuboid.getThisPlugin().getConf().getDefaultTop(), loc.getBlockZ() + landZr);
+		loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
+		loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
 
 	makeVisualSelection();
     }
@@ -133,28 +131,28 @@ public class VisualSelectionCuboid implements VisualSelection {
     public void makeVisualSelection() {
 
 	// Detect the curent land from the 8 points
-	Land Land1 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
-	Land Land2 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
-	Land Land3 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land3 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
-	Land Land4 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land4 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
-	Land Land5 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land5 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
-	Land Land6 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land6 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
-	Land Land7 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land7 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
-	Land Land8 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	Land Land8 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
 
 	if (Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
 		&& Land1 == Land7 && Land1 == Land8) {
 	    parentDetected = Land1;
 	} else {
-	    parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
+	    parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
 	}
 
 	boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
@@ -170,16 +168,17 @@ public class VisualSelectionCuboid implements VisualSelection {
 		    if (!isFromLand) {
 
 			// Active Selection
-			Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
+			Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
-				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
+				&& (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
 			} else {
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
 			    isCollision = true;
 			}
 		    } else // Passive Selection (created area)
-		     if ((posX == area.getX1() && posZ == area.getZ1() + 1)
+		    {
+			if ((posX == area.getX1() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX1() && posZ == area.getZ2() - 1)
 				|| (posX == area.getX2() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX2() && posZ == area.getZ2() - 1)
@@ -199,6 +198,7 @@ public class VisualSelectionCuboid implements VisualSelection {
 			    // Exact corner
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 			}
+		    }
 
 		} else {
 		    // Square center, skip!

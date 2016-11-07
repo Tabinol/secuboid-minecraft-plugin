@@ -19,89 +19,62 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
 import me.tabinol.secuboid.commands.InfoCommand;
-import me.tabinol.secuboid.commands.OnCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.command.CommandSender;
-
 
 /**
  * The Class CommandHelp.
  */
-@InfoCommand(name="help", allowConsole=true)
+@InfoCommand(name = "help", allowConsole = true)
 public class CommandHelp extends CommandExec {
 
-    /** The sender. */
-    private final CommandSender sender;
-    
-    private final OnCommand onCommand;
-    
-    /** The command name. */
+    /**
+     * The command name.
+     */
     private String commandName = null;
-    
 
     /**
      * Instantiates a new command help.
      *
-     * @param entity the entity
-     * @throws SecuboidCommandException the secuboid command exception
-     */
-    public CommandHelp(CommandEntities entity) throws SecuboidCommandException {
-
-        super(entity);
-        sender = entity.sender;
-        onCommand = entity.onCommand;
-    }
-
-    // Call directly the Help without verification CommandName is UPERCASE
-    /**
-     * Instantiates a new command help.
-     *
-     * @param onCommand the on command
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
      * @param sender the sender
-     * @param commandName the command name
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandHelp(OnCommand onCommand, CommandSender sender, 
-            String commandName) throws SecuboidCommandException {
+    public CommandHelp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
 
-        super(null);
-        this.sender = sender;
-        this.commandName = commandName.toUpperCase();
-        this.onCommand = onCommand;
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        if (commandName == null) {
-            String arg = entity.argList.getNext();
+	if (commandName == null) {
+	    String arg = argList.getNext();
 
-            if (arg == null) {
-                commandName = "GENERAL";
-            } else {
-                // Will throw an exception if the command name is invalid
-                try {
-                    InfoCommand infoCommand = onCommand.getInfoCommand(arg);
-                    if(infoCommand != null) {
-                        commandName = infoCommand.name().toUpperCase();
-                    } else {
-                        // Invalid command, just arg and will run Exception with showHelp()
-                        commandName = arg;
-                    }
-                } catch (IllegalArgumentException ex) {
-                    commandName = "GENERAL";
-                }
-            }
-        }
-        
-        showHelp();
+	    if (arg == null) {
+		commandName = "GENERAL";
+	    } else {
+		// Will throw an exception if the command name is invalid
+		try {
+		    InfoCommand infoCommandLocal = secuboid.getCommandListener().getInfoCommand(arg);
+		    if (infoCommandLocal != null) {
+			commandName = infoCommandLocal.name().toUpperCase();
+		    } else {
+			// Invalid command, just arg and will run Exception with showHelp()
+			commandName = arg;
+		    }
+		} catch (IllegalArgumentException ex) {
+		    commandName = "GENERAL";
+		}
+	    }
+	}
+
+	showHelp();
     }
 
     /**
@@ -111,18 +84,18 @@ public class CommandHelp extends CommandExec {
      */
     private void showHelp() throws SecuboidCommandException {
 
-        String help = Secuboid.getThisPlugin().getLanguage().getHelp("SECUBOID", commandName);
-        
-        // If there is no help for this command
-        if(help == null) {
-            throw new SecuboidCommandException("Command with no help", sender, "HELP.NOHELP");
-        }
-        
-        if (commandName.equals("GENERAL")) {
-            new ChatPage("HELP.LISTSTART", help, sender, null).getPage(1);
-        } else {
-            sender.sendMessage(help);
-        }
+	String help = secuboid.getLanguage().getHelp("SECUBOID", commandName);
+
+	// If there is no help for this command
+	if (help == null) {
+	    throw new SecuboidCommandException(secuboid, "Command with no help", sender, "HELP.NOHELP");
+	}
+
+	if (commandName.equals("GENERAL")) {
+	    new ChatPage(secuboid, "HELP.LISTSTART", help, sender, null).getPage(1);
+	} else {
+	    sender.sendMessage(help);
+	}
     }
 
 }

@@ -64,12 +64,14 @@ public class PvpListener extends CommonListener implements Listener {
 
     /**
      * Instantiates a new pvp listener.
+     *
+     * @param secuboid secuboid instance
      */
-    public PvpListener() {
+    public PvpListener(Secuboid secuboid) {
 
-	super();
-	playerConf = Secuboid.getThisPlugin().getPlayerConf();
-	playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(FIRE_EXPIRE);
+	super(secuboid);
+	playerConf = secuboid.getPlayerConf();
+	playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(secuboid, FIRE_EXPIRE);
     }
 
     /**
@@ -84,7 +86,7 @@ public class PvpListener extends CommonListener implements Listener {
 	Player player = getSourcePlayer(event.getDamager());
 
 	if (player != null) {
-	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(
+	    Land land = secuboid.getLands().getLandOrOutsideArea(
 		    event.getEntity().getLocation());
 	    Entity entity = event.getEntity();
 
@@ -160,7 +162,7 @@ public class PvpListener extends CommonListener implements Listener {
 
 	    if (entry != null) {
 		Location loc = player.getLocation();
-		Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+		Land land = secuboid.getLands().getLandOrOutsideArea(loc);
 
 		// Check for fire near the player
 		for (Map.Entry<Location, PlayerContainerPlayer> fireEntry : playerFireLocation.entrySet()) {
@@ -172,7 +174,7 @@ public class PvpListener extends CommonListener implements Listener {
 				&& !isPvpValid(land)) {
 
 			    // remove fire
-			    Secuboid.getThisPlugin().getLog().write("Anti-pvp from "
+			    secuboid.getLog().write("Anti-pvp from "
 				    + entry.getPlayerContainer().getPlayer().getName()
 				    + " to " + player.getName());
 			    block.setType(Material.AIR);
@@ -199,7 +201,7 @@ public class PvpListener extends CommonListener implements Listener {
 	if (player != null && (entry = playerConf.get(player)) != null) {
 
 	    Location loc = event.getBlock().getLocation();
-	    Land land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+	    Land land = secuboid.getLands().getLandOrOutsideArea(loc);
 
 	    if (land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false
 		    || land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {

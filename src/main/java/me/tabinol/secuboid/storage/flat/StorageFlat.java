@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
@@ -38,12 +39,10 @@ import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.permissionsflags.Flag;
-import me.tabinol.secuboid.permissionsflags.FlagUtil;
 import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import me.tabinol.secuboid.storage.Storage;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.Location;
@@ -58,6 +57,13 @@ public class StorageFlat implements Storage {
      */
     public static final String EXT_CONF = ".conf";
 
+    private final Secuboid secuboid;
+
+    /**
+     * The Constant land file version.
+     */
+    private final int landVersion;
+
     /**
      * The lands dir.
      */
@@ -70,11 +76,12 @@ public class StorageFlat implements Storage {
 
     /**
      * Instantiates a new storage flat.
+     *
+     * @param secuboid secuboid instance
      */
-    public StorageFlat() {
-
-	super();
-
+    public StorageFlat(Secuboid secuboid) {
+	this.secuboid = secuboid;
+	landVersion = secuboid.getMavenAppProperties().getPropertyInt("landVersion");
 	createDirFiles();
     }
 
@@ -89,7 +96,7 @@ public class StorageFlat implements Storage {
      */
     private void createDirFiles() {
 
-	landsDir = Secuboid.getThisPlugin().getDataFolder() + "/" + "lands" + "/";
+	landsDir = secuboid.getDataFolder() + "/" + "lands" + "/";
 
 	createDir(landsDir);
     }
@@ -139,7 +146,7 @@ public class StorageFlat implements Storage {
 	orphans = new HashMap<RealLand, UUID>();
 
 	if (files.length == 0) {
-	    Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
+	    secuboid.getLog().write(loadedlands + " land(s) loaded.");
 	    return;
 	}
 
@@ -154,7 +161,7 @@ public class StorageFlat implements Storage {
 	// Pass 2: find parents
 	for (Map.Entry<RealLand, UUID> entry : orphans.entrySet()) {
 	    RealLand land = entry.getKey();
-	    RealLand parent = Secuboid.getThisPlugin().getLands().getLand(entry.getValue());
+	    RealLand parent = secuboid.getLands().getLand(entry.getValue());
 	    if (parent != null) {
 		land.setParent(parent);
 	    } else {
@@ -162,7 +169,7 @@ public class StorageFlat implements Storage {
 	    }
 	}
 
-	Secuboid.getThisPlugin().getLog().write(loadedlands + " land(s) loaded.");
+	secuboid.getLog().write(loadedlands + " land(s) loaded.");
     }
 
     /**
@@ -172,6 +179,7 @@ public class StorageFlat implements Storage {
      */
     private void loadLand(File file) {
 
+	NewInstance newInstance = secuboid.getNewInstance();
 	int version;
 	ConfLoaderFlat cf = null;
 	UUID uuid;
@@ -204,10 +212,10 @@ public class StorageFlat implements Storage {
 	PlayerContainerPlayer tenant = null;
 	Timestamp lastPayment = null;
 
-	Secuboid.getThisPlugin().getLog().write("Open file : " + file.getName());
+	secuboid.getLog().write("Open file : " + file.getName());
 
 	try {
-	    cf = new ConfLoaderFlat(file);
+	    cf = new ConfLoaderFlat(secuboid, file);
 	    String str;
 	    version = cf.getVersion();
 	    uuid = cf.getUUID();
@@ -220,9 +228,9 @@ public class StorageFlat implements Storage {
 	    String ownerS = cf.getValueString();
 
 	    // create owner (PlayerContainer)
-	    owner = PlayerContainerUtil.getFromFileFormat(ownerS);
+	    owner = newInstance.getPlayerContainerFromFileFormat(ownerS);
 	    if (owner == null) {
-		throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
+		throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
 	    }
 
 	    cf.readParam();
@@ -241,20 +249,20 @@ public class StorageFlat implements Storage {
 		areas.put(Integer.parseInt(multiStr[0]), AreaUtil.getFromFileFormat(multiStr[1]));
 	    }
 	    if (areas.isEmpty()) {
-		throw new FileLoadException(file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
+		throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
 	    }
 
 	    cf.readParam();
 
 	    //Residents
 	    while ((str = cf.getNextString()) != null) {
-		residents.add(PlayerContainerUtil.getFromFileFormat(str));
+		residents.add(newInstance.getPlayerContainerFromFileFormat(str));
 	    }
 	    cf.readParam();
 
 	    //Banneds
 	    while ((str = cf.getNextString()) != null) {
-		banneds.add(PlayerContainerUtil.getFromFileFormat(str));
+		banneds.add(newInstance.getPlayerContainerFromFileFormat(str));
 	    }
 	    cf.readParam();
 
@@ -262,22 +270,22 @@ public class StorageFlat implements Storage {
 	    while ((str = cf.getNextString()) != null) {
 		String[] multiStr = str.split(":");
 		TreeMap<PermissionType, Permission> permPlayer;
-		PlayerContainer pc = PlayerContainerUtil.getFromFileFormat(multiStr[0] + ":" + multiStr[1]);
-		PermissionType permType = Secuboid.getThisPlugin().getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
+		PlayerContainer pc = newInstance.getPlayerContainerFromFileFormat(multiStr[0] + ":" + multiStr[1]);
+		PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
 		if (!permissions.containsKey(pc)) {
 		    permPlayer = new TreeMap<PermissionType, Permission>();
 		    permissions.put(pc, permPlayer);
 		} else {
 		    permPlayer = permissions.get(pc);
 		}
-		permPlayer.put(permType, new Permission(permType,
+		permPlayer.put(permType, secuboid.getPermissionsFlags().newPermission(permType,
 			Boolean.parseBoolean(multiStr[3]), Boolean.parseBoolean(multiStr[4])));
 	    }
 	    cf.readParam();
 
 	    //Create flags
 	    while ((str = cf.getNextString()) != null) {
-		flags.add(FlagUtil.getFromFileFormat(str));
+		flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
 	    }
 	    cf.readParam();
 
@@ -291,7 +299,7 @@ public class StorageFlat implements Storage {
 
 	    //Players Notify
 	    while ((str = cf.getNextString()) != null) {
-		pNotifs.add((PlayerContainerPlayer) PlayerContainerUtil.getFromFileFormat(str));
+		pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
 	    }
 
 	    // Economy
@@ -319,7 +327,7 @@ public class StorageFlat implements Storage {
 		    rented = Boolean.parseBoolean(cf.getValueString());
 		    if (rented) {
 			cf.readParam();
-			tenant = (PlayerContainerPlayer) PlayerContainerUtil.getFromFileFormat(cf.getValueString());
+			tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
 			cf.readParam();
 			lastPayment = Timestamp.valueOf(cf.getValueString());
 		    }
@@ -331,7 +339,7 @@ public class StorageFlat implements Storage {
 	    // Catch errors here
 	} catch (NullPointerException ex) {
 	    try {
-		throw new FileLoadException(file.getName(),
+		throw new FileLoadException(secuboid, file.getName(),
 			cf != null ? cf.getLine() : "-NOT FOUND-",
 			cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
 	    } catch (FileLoadException ex2) {
@@ -347,8 +355,8 @@ public class StorageFlat implements Storage {
 	for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
 	    if (!isLandCreated) {
 		try {
-		    land = Secuboid.getThisPlugin().getLands().createLand(landName, owner, entry.getValue(),
-			    null, entry.getKey(), uuid, Secuboid.getThisPlugin().getTypes().addOrGetType(type));
+		    land = secuboid.getLands().createLand(landName, owner, entry.getValue(),
+			    null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
 		    orphans.put(land, UUID.fromString(parentUUID));
 		} catch (SecuboidLandException ex) {
 		    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
@@ -413,12 +421,12 @@ public class StorageFlat implements Storage {
 	try {
 	    ArrayList<String> strs;
 
-	    if (Secuboid.getThisPlugin().getStorageThread().isInLoad()) {
+	    if (secuboid.getStorageThread().isInLoad()) {
 		return;
 	    }
 
-	    Secuboid.getThisPlugin().getLog().write("Saving land: " + land.getName());
-	    ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), LAND_VERSION);
+	    secuboid.getLog().write("Saving land: " + land.getName());
+	    ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), landVersion);
 	    cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
 	    cb.writeParam("Owner", land.getOwner().toFileFormat());
 

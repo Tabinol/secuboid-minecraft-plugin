@@ -31,10 +31,12 @@ import me.tabinol.secuboid.Secuboid;
  */
 public class Log {
 
+    private final Secuboid secuboid;
+
     /**
      * The Folder.
      */
-    public File Folder;
+    private final File Folder;
 
     /**
      * The debug.
@@ -43,11 +45,14 @@ public class Log {
 
     /**
      * Instantiates a new log.
+     *
+     * @param secuboid secuboid instance
      */
-    public Log() {
+    public Log(Secuboid secuboid) {
 
-	this.debug = Secuboid.getThisPlugin().getConf().isDebug();
-	this.Folder = Secuboid.getThisPlugin().getDataFolder();
+	this.secuboid = secuboid;
+	this.debug = secuboid.getConf().isDebug();
+	this.Folder = secuboid.getDataFolder();
     }
 
     /**
@@ -74,7 +79,7 @@ public class Log {
 		fileWriter = new FileWriter(filename, true);
 		bufWriter = new BufferedWriter(fileWriter);
 		bufWriter.newLine();
-		bufWriter.write("[Secuboid][v." + Secuboid.getThisPlugin().getDescription().getVersion()
+		bufWriter.write("[Secuboid][v." + secuboid.getDescription().getVersion()
 			+ "][" + Dates.time() + "]" + text);
 		bufWriter.close();
 	    } catch (IOException ex) {

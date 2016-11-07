@@ -19,48 +19,47 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandNotify.
  */
-@InfoCommand(name="notify")
+@InfoCommand(name = "notify")
 public class CommandNotify extends CommandExec {
 
     /**
      * Instantiates a new command notify.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandNotify(CommandEntities entity) throws SecuboidCommandException {
+    public CommandNotify(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        getLandFromCommandIfNoLandSelected();
-        checkSelections(true, null);
-        checkPermission(true, true, PermissionList.LAND_NOTIFY.getPermissionType(), null);
+	getLandFromCommandIfNoLandSelected();
+	checkSelections(true, null);
+	checkPermission(true, true, PermissionList.LAND_NOTIFY.getPermissionType(), null);
 
-        
-        if (land.isPlayerNotify(entity.playerConf.getPlayerContainer())) {
-            land.removePlayerNotify(entity.playerConf.getPlayerContainer());
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
-        } else {
-            entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
-            land.addPlayerNotify(entity.playerConf.getPlayerContainer());
-        }
+	if (land.isPlayerNotify(playerConf.getPlayerContainer())) {
+	    land.removePlayerNotify(playerConf.getPlayerContainer());
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
+	} else {
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
+	    land.addPlayerNotify(playerConf.getPlayerContainer());
+	}
     }
 }

@@ -27,10 +27,17 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
+ * Economy scheduler.
  *
  * @author michel
  */
 public class EcoScheduler extends BukkitRunnable {
+
+    private final Secuboid secuboid;
+
+    public EcoScheduler(Secuboid secuboid) {
+	this.secuboid = secuboid;
+    }
 
     @Override
     public void run() {
@@ -38,20 +45,20 @@ public class EcoScheduler extends BukkitRunnable {
 	Calendar now = Calendar.getInstance();
 
 	// Check for rent renew
-	for (RealLand land : Secuboid.getThisPlugin().getLands().getForRent()) {
+	for (RealLand land : secuboid.getLands().getForRent()) {
 
 	    long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
 
 	    if (land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
 
 		//Check if the tenant has enough money or time limit whit no auto renew
-		if (Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
+		if (secuboid.getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
 			|| !land.getRentAutoRenew()) {
 
 		    // Unrent
 		    land.unSetRented();
 		    try {
-			new EcoSign(land, land.getRentSignLoc()).createSignForRent(
+			new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(
 				land.getRentPrice(), land.getRentRenew(),
 				land.getRentAutoRenew(), null);
 		    } catch (SignException e) {
@@ -60,10 +67,10 @@ public class EcoScheduler extends BukkitRunnable {
 		} else {
 
 		    // renew rent
-		    Secuboid.getThisPlugin().getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
+		    secuboid.getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
 			    land.getWorldName(), land.getRentPrice());
 		    if (land.getOwner() instanceof PlayerContainerPlayer) {
-			Secuboid.getThisPlugin().getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
+			secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
 				land.getWorldName(), land.getRentPrice());
 		    }
 		    land.setLastPaymentTime(new Timestamp(now.getTime().getTime()));

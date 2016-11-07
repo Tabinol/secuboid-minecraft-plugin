@@ -23,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-
 /**
  * Schedule task in Secuboid.
  *
@@ -31,16 +30,23 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public abstract class SecuboidRunnable extends BukkitRunnable {
 
-    /** The task id. */
+    protected final Secuboid secuboid;
+
+    /**
+     * The task id.
+     */
     private BukkitTask taskId = null;
 
     /**
      * Instantiates a new secuboid runnable.
+     *
+     * @param secuboid the secuboid instance
      */
-    public SecuboidRunnable() {
+    public SecuboidRunnable(Secuboid secuboid) {
 
-        super();
-        taskId = null;
+	super();
+	this.secuboid = secuboid;
+	taskId = null;
     }
 
     /**
@@ -51,14 +57,14 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      */
     public void runLater(Long tick, boolean multiple) {
 
-        stopNextRun();
+	stopNextRun();
 
-        if (multiple) {
-            taskId = Bukkit.getServer().getScheduler().runTaskLater(Secuboid.getThisPlugin(), (Runnable) this, tick);
-              
-        } else {
-            taskId = Bukkit.getServer().getScheduler().runTaskLater(Secuboid.getThisPlugin(), (Runnable) this, tick);
-        }
+	if (multiple) {
+	    taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+
+	} else {
+	    taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+	}
     }
 
     /**
@@ -68,16 +74,15 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      */
     public boolean isActive() {
 
-        return taskId != null;
+	return taskId != null;
     }
 
-    // *** IF IT IS NOT MULTIPLE RUN, YOU NEED TO SET DONE IN RUN() METHOD ***
     /**
-     * Sets the one time done.
+     * Sets the one time done. IF IT IS NOT MULTIPLE RUN, YOU NEED TO SET DONE IN RUN() METHOD
      */
     public void setOneTimeDone() {
 
-        taskId = null;
+	taskId = null;
     }
 
     /**
@@ -85,11 +90,11 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      */
     public void stopNextRun() {
 
-        if (taskId != null) {
+	if (taskId != null) {
 
-            taskId.cancel();
-            taskId = null;
-        }
+	    taskId.cancel();
+	    taskId = null;
+	}
     }
 
 }

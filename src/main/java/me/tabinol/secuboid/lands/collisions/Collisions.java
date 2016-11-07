@@ -137,6 +137,8 @@ public class Collisions {
 	}
     }
 
+    private final Secuboid secuboid;
+
     /**
      * The coll.
      */
@@ -206,6 +208,7 @@ public class Collisions {
     /**
      * Instantiates a new collisions.
      *
+     * @param secuboid secuboid instance
      * @param landName the land name
      * @param land the land
      * @param action the action
@@ -216,11 +219,12 @@ public class Collisions {
      * @param isFree if the land is free or not
      * @param checkApproveList the check approve list
      */
-    public Collisions(String landName, RealLand land, LandAction action, int removedAreaId, Area newArea, RealLand parent,
-	    PlayerContainer owner, boolean isFree, boolean checkApproveList) {
+    public Collisions(Secuboid secuboid, String landName, RealLand land, LandAction action, int removedAreaId, Area newArea,
+	    RealLand parent, PlayerContainer owner, boolean isFree, boolean checkApproveList) {
 
+	this.secuboid = secuboid;
 	coll = new ArrayList<CollisionsEntry>();
-	lands = Secuboid.getThisPlugin().getLands();
+	lands = secuboid.getLands();
 	this.landName = landName;
 	this.land = land;
 	this.action = action;
@@ -278,38 +282,38 @@ public class Collisions {
 	// Pass 6 check if the name is already in Approve List
 	if (landName != null && !checkApproveList
 		&& ((me.tabinol.secuboid.lands.Lands) lands).getApproveList().isInApprove(landName)) {
-	    coll.add(new CollisionsEntry(LandError.IN_APPROVE_LIST, null, 0));
+	    coll.add(new CollisionsEntry(secuboid, LandError.IN_APPROVE_LIST, null, 0));
 	}
 
 	if (owner.getContainerType() == PlayerContainerType.PLAYER) {
 
 	    // Pass 7 check if the player has enough money
 	    if ((priceArea > 0 || priceLand > 0) && newArea != null) {
-		double playerBalance = Secuboid.getThisPlugin().getPlayerMoney().getPlayerBalance(
+		double playerBalance = secuboid.getPlayerMoney().getPlayerBalance(
 			((PlayerContainerPlayer) owner).getOfflinePlayer(), newArea.getWorldName());
 		if (action == LandAction.LAND_ADD) {
 		    if ((action == LandAction.LAND_ADD && playerBalance < priceLand) || playerBalance < priceArea) {
-			coll.add(new CollisionsEntry(LandError.NOT_ENOUGH_MONEY, null, 0));
+			coll.add(new CollisionsEntry(secuboid, LandError.NOT_ENOUGH_MONEY, null, 0));
 		    }
 		}
 	    }
 
 	    // Pass 8 check if the land has more than the maximum number of areas
 	    if (land != null && action == LandAction.AREA_ADD
-		    && land.getAreas().size() >= Secuboid.getThisPlugin().getConf().getMaxAreaPerLand()) {
-		coll.add(new CollisionsEntry(LandError.MAX_AREA_FOR_LAND, land, 0));
+		    && land.getAreas().size() >= secuboid.getConf().getMaxAreaPerLand()) {
+		coll.add(new CollisionsEntry(secuboid, LandError.MAX_AREA_FOR_LAND, land, 0));
 	    }
 
 	    // Pass 9 check if the player has more than the maximum number of land
 	    if (action == LandAction.LAND_ADD
-		    && Secuboid.getThisPlugin().getLands().getLands(owner).size() >= Secuboid.getThisPlugin().getConf().getMaxLandPerPlayer()) {
-		coll.add(new CollisionsEntry(LandError.MAX_LAND_FOR_PLAYER, null, 0));
+		    && secuboid.getLands().getLands(owner).size() >= secuboid.getConf().getMaxLandPerPlayer()) {
+		coll.add(new CollisionsEntry(secuboid, LandError.MAX_LAND_FOR_PLAYER, null, 0));
 	    }
 	}
 
 	// Pass 10 check if the area to remove is the only one
 	if (action == LandAction.AREA_REMOVE && land.getAreas().size() == 1) {
-	    coll.add(new CollisionsEntry(LandError.MUST_HAVE_AT_LEAST_ONE_AREA, land, removedAreaId));
+	    coll.add(new CollisionsEntry(secuboid, LandError.MUST_HAVE_AT_LEAST_ONE_AREA, land, removedAreaId));
 	}
 
 	// End check if the action can be done or approve
@@ -330,7 +334,7 @@ public class Collisions {
 	FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
 	if (newArea != null) {
 	    if (land == null) {
-		priceLandFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
+		priceLandFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
 			.getFlagAndInherit(flagType).getValueDouble();
 
 	    } else {
@@ -338,7 +342,7 @@ public class Collisions {
 	    }
 	    if (land != null) {
 		if (land.getParent() == null) {
-		    priceAreaFlag = Secuboid.getThisPlugin().getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
+		    priceAreaFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
 			    .getFlagAndInherit(flagType).getValueDouble();
 		} else {
 		    priceAreaFlag = land.getParent().getPermissionsFlags().getFlagAndInherit(flagType).getValueDouble();
@@ -445,7 +449,7 @@ public class Collisions {
     private void checkCollisions() {
 
 	for (Area areaCol : landCollisionsList) {
-	    coll.add(new CollisionsEntry(LandError.COLLISION, areaCol.getLand(), areaCol.getKey()));
+	    coll.add(new CollisionsEntry(secuboid, LandError.COLLISION, areaCol.getLand(), areaCol.getKey()));
 	}
     }
 
@@ -472,7 +476,7 @@ public class Collisions {
     private boolean checkIfInsideParent() {
 
 	if (outsideParent) {
-	    coll.add(new CollisionsEntry(LandError.OUT_OF_PARENT, parent, 0));
+	    coll.add(new CollisionsEntry(secuboid, LandError.OUT_OF_PARENT, parent, 0));
 	    return false;
 	}
 
@@ -485,7 +489,7 @@ public class Collisions {
     private void checkIfChildrenOutside() {
 
 	for (RealLand child : childOutsideLand) {
-	    coll.add(new CollisionsEntry(LandError.CHILD_OUT_OF_BORDER, child, 0));
+	    coll.add(new CollisionsEntry(secuboid, LandError.CHILD_OUT_OF_BORDER, child, 0));
 	}
     }
 
@@ -495,7 +499,7 @@ public class Collisions {
     private void checkIfLandHasChildren() {
 
 	for (RealLand child : land.getChildren()) {
-	    coll.add(new CollisionsEntry(LandError.HAS_CHILDREN, child, 0));
+	    coll.add(new CollisionsEntry(secuboid, LandError.HAS_CHILDREN, child, 0));
 	}
     }
 
@@ -505,7 +509,7 @@ public class Collisions {
     private void checkIfNameExist() {
 
 	if (lands.isNameExist(landName)) {
-	    coll.add(new CollisionsEntry(LandError.NAME_IN_USE, null, 0));
+	    coll.add(new CollisionsEntry(secuboid, LandError.NAME_IN_USE, null, 0));
 	}
     }
 

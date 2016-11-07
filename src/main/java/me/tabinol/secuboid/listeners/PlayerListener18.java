@@ -44,18 +44,16 @@ public class PlayerListener18 extends CommonListener implements Listener {
     private final PlayerStaticConfig playerConf;
 
     /**
-     * Instantiates a new player listener.
+     * Instantiates a new player v1.8+ listener.
+     *
+     * @param secuboid secuboid instance
      */
-    public PlayerListener18() {
+    public PlayerListener18(Secuboid secuboid) {
 
-	super();
-	playerConf = Secuboid.getThisPlugin().getPlayerConf();
+	super(secuboid);
+	playerConf = secuboid.getPlayerConf();
     }
 
-    /**
-     *
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
 
@@ -66,14 +64,14 @@ public class PlayerListener18 extends CommonListener implements Listener {
 	PlayerConfEntry entry;
 	Location loc = event.getRightClicked().getLocation();
 
-	Secuboid.getThisPlugin().getLog().write(
+	secuboid.getLog().write(
 		"PlayerInteractAtEntity player name: " + event.getPlayer().getName()
 		+ ", Entity: " + et.name());
 
 	// Citizen bug, check if entry exist before
 	if ((entry = playerConf.get(player)) != null
 		&& !entry.isAdminMode()) {
-	    land = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(loc);
+	    land = secuboid.getLands().getLandOrOutsideArea(loc);
 
 	    // Remove and add an item from an armor stand
 	    if (BKVersion.isArmorStand(et)) {

@@ -34,7 +34,6 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-import me.tabinol.secuboid.playercontainer.PlayerContainerUtil;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -46,10 +45,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ApproveList {
 
+    private final Secuboid secuboid;
+
     /**
      * The approve file.
      */
-    final private File approveFile;
+    private final File approveFile;
 
     /**
      * The approve config.
@@ -59,17 +60,25 @@ public class ApproveList {
     /**
      * The land names.
      */
-    final private TreeSet<String> landNames;
+    private final TreeSet<String> landNames;
 
     /**
      * Instantiates a new approve list.
+     *
+     * @param secuboid secuboid instance
      */
-    public ApproveList() {
+    public ApproveList(Secuboid secuboid) {
 
-	approveFile = new File(Secuboid.getThisPlugin().getDataFolder() + "/approvelist.yml");
+	this.secuboid = secuboid;
 	approveConfig = new YamlConfiguration();
 	landNames = new TreeSet<String>();
-	loadFile();
+	if (secuboid.getDataFolder() != null) {
+	    approveFile = new File(secuboid.getDataFolder() + "/approvelist.yml");
+	    loadFile();
+	} else {
+	    // Unit tests
+	    approveFile = null;
+	}
     }
 
     /**
@@ -96,7 +105,7 @@ public class ApproveList {
 	section.set("Price", approve.getPrice());
 	section.set("DateTime", approve.getDateTime().getTimeInMillis());
 	saveFile();
-	Secuboid.getThisPlugin().getApproveNotif().notifyForApprove(approve.getLandName(), approve.getOwner().getPrint());
+	secuboid.getApproveNotif().notifyForApprove(approve.getLandName(), approve.getOwner().getPrint());
     }
 
     /**
@@ -153,31 +162,32 @@ public class ApproveList {
      */
     public Approve getApprove(String landName) {
 
-	Secuboid.getThisPlugin().getLog().write("Get approve for: " + landName);
+	secuboid.getLog().write("Get approve for: " + landName);
 	ConfigurationSection section = approveConfig.getConfigurationSection(landName);
 
 	if (section == null) {
-	    Secuboid.getThisPlugin().getLog().write("Error Section null");
+	    secuboid.getLog().write("Error Section null");
 	    return null;
 	}
 
 	String typeName = section.getString("Type");
 	Type type = null;
 	if (typeName != null) {
-	    type = Secuboid.getThisPlugin().getTypes().addOrGetType(typeName);
+	    type = secuboid.getTypes().addOrGetType(typeName);
 	}
 
 	String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-	PlayerContainer pc = PlayerContainerUtil.create(null, PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+	PlayerContainer pc = secuboid.getNewInstance().createPlayerContainer(null,
+		PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
 	RealLand parent = null;
 	Area newArea = null;
 
 	if (section.contains("Parent")) {
-	    parent = Secuboid.getThisPlugin().getLands().getLand(section.getString("Parent"));
+	    parent = secuboid.getLands().getLand(section.getString("Parent"));
 
 	    // If the parent does not exist
 	    if (parent == null) {
-		Secuboid.getThisPlugin().getLog().write("Error, parent not found");
+		secuboid.getLog().write("Error, parent not found");
 		return null;
 	    }
 	}
@@ -189,14 +199,14 @@ public class ApproveList {
 	LandAction action = LandAction.valueOf(section.getString("Action"));
 
 	// If the land was deleted
-	if (action != LandAction.LAND_ADD && Secuboid.getThisPlugin().getLands().getLand(landName) == null) {
+	if (action != LandAction.LAND_ADD && secuboid.getLands().getLand(landName) == null) {
 	    return null;
 	}
 
 	Calendar cal = Calendar.getInstance();
 	cal.setTimeInMillis(section.getLong("DateTime"));
 
-	return new Approve(landName, type, action,
+	return new Approve(secuboid, landName, type, action,
 		section.getInt("RemovedAreaId"), newArea, pc,
 		parent, section.getDouble("Price"), cal);
     }
@@ -218,7 +228,7 @@ public class ApproveList {
      */
     public void removeApprove(String landName) {
 
-	Secuboid.getThisPlugin().getLog().write("Remove Approve from list: " + landName);
+	secuboid.getLog().write("Remove Approve from list: " + landName);
 
 	approveConfig.set(landName, null);
 	landNames.remove(landName);
@@ -230,7 +240,7 @@ public class ApproveList {
      */
     public void removeAll() {
 
-	Secuboid.getThisPlugin().getLog().write("Remove all Approves from list.");
+	secuboid.getLog().write("Remove all Approves from list.");
 
 	// Delete file
 	if (approveFile.exists()) {
@@ -250,7 +260,7 @@ public class ApproveList {
      */
     private void loadFile() {
 
-	Secuboid.getThisPlugin().getLog().write("Loading Approve list file");
+	secuboid.getLog().write("Loading Approve list file");
 
 	if (!approveFile.exists()) {
 	    try {
@@ -278,7 +288,7 @@ public class ApproveList {
      */
     private void saveFile() {
 
-	Secuboid.getThisPlugin().getLog().write("Saving Approve list file");
+	secuboid.getLog().write("Saving Approve list file");
 
 	try {
 	    approveConfig.save(approveFile);

@@ -88,24 +88,26 @@ public final class InventoryConfig {
      */
     public static final String INVENTORY_CONFIG_FILE = "inventory.yml";
     private final FlagType invFlag; // Registered inventory Flag (Factoid)
-    private final Secuboid thisPlugin;
+    private final Secuboid secuboid;
     private FileConfiguration config;
     private HashMap<String, InventorySpec> invList; // World-->Land-->Inventory
 
     /**
+     * Instantiates a new inventory configuration.
      *
+     * @param secuboid secuboid instance
      */
-    public InventoryConfig() {
+    public InventoryConfig(Secuboid secuboid) {
 
-	thisPlugin = Secuboid.getThisPlugin();
+	this.secuboid = secuboid;
 
 	// Create files (if not exist) and load
-	if (!new File(thisPlugin.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
-	    thisPlugin.saveResource(INVENTORY_CONFIG_FILE, false);
+	if (!new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
+	    secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
 	}
 
 	// Connect to the data file and register flag to Factoid
-	invFlag = Secuboid.getThisPlugin().getPermissionsFlags().registerFlagType("INVENTORY", new String());
+	invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", new String());
 
 	reloadConfig();
     }
@@ -115,7 +117,7 @@ public final class InventoryConfig {
      */
     public void reloadConfig() {
 
-	config = YamlConfiguration.loadConfiguration(new File(thisPlugin.getDataFolder(), INVENTORY_CONFIG_FILE));
+	config = YamlConfiguration.loadConfiguration(new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE));
 	invList = new HashMap<String, InventorySpec>();
 	loadInventory();
     }
@@ -159,8 +161,8 @@ public final class InventoryConfig {
 
 	// If the flag is set with wrong inventory
 	if (invSpec == null) {
-	    thisPlugin.getLogger().log(Level.WARNING, "Inventory name \"{0}" + "\" is not found " + "in {1}/plugin.yml!",
-		    new Object[]{invFlagValue.getValueString(), thisPlugin.getName()});
+	    secuboid.getLogger().log(Level.WARNING, "Inventory name \"{0}" + "\" is not found " + "in {1}/plugin.yml!",
+		    new Object[]{invFlagValue.getValueString(), secuboid.getName()});
 	    return invList.get(GLOBAL);
 	}
 

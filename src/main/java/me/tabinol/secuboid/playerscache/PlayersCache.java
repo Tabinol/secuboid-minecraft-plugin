@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandPlayerThreadExec;
+import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
@@ -49,10 +49,12 @@ import org.bukkit.Bukkit;
  */
 public final class PlayersCache extends Thread {
 
+    private final Secuboid secuboid;
+
     /**
-     * The Constant PLAYERS_CACHE_VERSION.
+     * The player cache version.
      */
-    public static final int PLAYERS_CACHE_VERSION = Secuboid.getThisPlugin().getMavenAppProperties().getPropertyInt("playersCacheVersion");
+    public final int playerCacheVersion;
 
     /**
      * The file name.
@@ -139,11 +141,15 @@ public final class PlayersCache extends Thread {
 
     /**
      * Instantiates a new players cache.
+     *
+     * @param secuboid secuboid instance
      */
-    public PlayersCache() {
+    public PlayersCache(Secuboid secuboid) {
 
+	this.secuboid = secuboid;
+	playerCacheVersion = secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
 	this.setName("Secuboid Players cache");
-	fileName = Secuboid.getThisPlugin().getDataFolder() + "/" + "playerscache.conf";
+	fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
 	file = new File(fileName);
 	outputList = Collections.synchronizedList(new ArrayList<OutputRequest>());
 	updateList = Collections.synchronizedList(new ArrayList<PlayerCacheEntry>());
@@ -163,7 +169,7 @@ public final class PlayersCache extends Thread {
 	lock.lock();
 	try {
 	    commandRequest.signal();
-	    Secuboid.getThisPlugin().getLog().write("Name request (Thread wake up...)");
+	    secuboid.getLog().write("Name request (Thread wake up...)");
 	} finally {
 	    lock.unlock();
 	}
@@ -213,7 +219,7 @@ public final class PlayersCache extends Thread {
 	lock.lock();
 	try {
 	    commandRequest.signal();
-	    Secuboid.getThisPlugin().getLog().write("Name request (Thread wake up...)");
+	    secuboid.getLog().write("Name request (Thread wake up...)");
 	} finally {
 	    lock.unlock();
 	}
@@ -246,7 +252,7 @@ public final class PlayersCache extends Thread {
 
 		    // Pass 2 check in Minecraft website
 		    if (!names.isEmpty()) {
-			Secuboid.getThisPlugin().getLog().write("HTTP profile request: " + names);
+			secuboid.getLog().write("HTTP profile request: " + names);
 			Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[names.size()]));
 			for (Profile profile : profiles) {
 			    // Put in the correct position
@@ -254,7 +260,7 @@ public final class PlayersCache extends Thread {
 
 			    while (compt != length) {
 				if (entries[compt] == null) {
-				    Secuboid.getThisPlugin().getLog().write("HTTP Found : " + profile.getName() + ", " + profile.getId());
+				    secuboid.getLog().write("HTTP Found : " + profile.getName() + ", " + profile.getId());
 				    UUID uuid = stringToUUID(profile.getId());
 				    if (uuid != null) {
 					entries[compt] = new PlayerCacheEntry(uuid,
@@ -269,7 +275,7 @@ public final class PlayersCache extends Thread {
 		    }
 		    // Return the output of the request on the main thread
 		    ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec, entries);
-		    Bukkit.getScheduler().callSyncMethod(Secuboid.getThisPlugin(), returnToCommand);
+		    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
 		}
 
 		// Update playerList
@@ -280,7 +286,7 @@ public final class PlayersCache extends Thread {
 		// wait!
 		try {
 		    commandRequest.await();
-		    Secuboid.getThisPlugin().getLog().write("PlayersCache Thread wake up!");
+		    secuboid.getLog().write("PlayersCache Thread wake up!");
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
@@ -315,7 +321,7 @@ public final class PlayersCache extends Thread {
     public void stopNextRun() {
 
 	if (!isAlive()) {
-	    Secuboid.getThisPlugin().getLogger().log(Level.SEVERE, "Problem with Players Cache Thread. Possible data loss!");
+	    secuboid.getLogger().log(Level.SEVERE, "Problem with Players Cache Thread. Possible data loss!");
 	    return;
 	}
 	exitRequest = true;
@@ -386,7 +392,7 @@ public final class PlayersCache extends Thread {
 		return;
 	    }
 
-	    bw.write("Version:" + PLAYERS_CACHE_VERSION);
+	    bw.write("Version:" + playerCacheVersion);
 	    bw.newLine();
 	    bw.write("# Name:PlayerUUID");
 	    bw.newLine();

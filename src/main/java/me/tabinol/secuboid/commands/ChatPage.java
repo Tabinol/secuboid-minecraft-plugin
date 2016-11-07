@@ -24,50 +24,67 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.ChatPaginator;
 
-
 /**
  * The Class ChatPage.
  */
 public class ChatPage {
 
-    /** The page height. */
+    private final Secuboid secuboid;
+
+    /**
+     * The page height.
+     */
     private final int pageHeight;
-    
-    /** The page width. */
+
+    /**
+     * The page width.
+     */
     private final int pageWidth;
-    
-    /** The header. */
+
+    /**
+     * The header.
+     */
     private final String header;
-    
-    /** The text. */
+
+    /**
+     * The text.
+     */
     private final String text;
-    
-    /** The sender. */
+
+    /**
+     * The sender.
+     */
     private final CommandSender sender;
-    
-    /** The param. */
+
+    /**
+     * The param.
+     */
     private final String param;
-    
-    /** The total pages. */
+
+    /**
+     * The total pages.
+     */
     private int totalPages;
 
     /**
      * Instantiates a new chat page.
      *
+     * @param secuboid secuboid instance
      * @param header the header
      * @param text the text
      * @param sender the sender
      * @param param the param
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public ChatPage(String header, String text, CommandSender sender, String param) throws SecuboidCommandException {
+    public ChatPage(Secuboid secuboid, String header, String text, CommandSender sender, String param) throws SecuboidCommandException {
 
-        pageHeight = ChatPaginator.CLOSED_CHAT_PAGE_HEIGHT - 2;
-        pageWidth = ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH;
-        this.header = header;
-        this.text = text;
-        this.sender = sender;
-        this.param = param;
+	this.secuboid = secuboid;
+	pageHeight = ChatPaginator.CLOSED_CHAT_PAGE_HEIGHT - 2;
+	pageWidth = ChatPaginator.AVERAGE_CHAT_PAGE_WIDTH;
+	this.header = header;
+	this.text = text;
+	this.sender = sender;
+	this.param = param;
     }
 
     /**
@@ -78,35 +95,35 @@ public class ChatPage {
      */
     public void getPage(int pageNumber) throws SecuboidCommandException {
 
-        // Create page with Bukkit paginator
-        ChatPaginator.ChatPage page = ChatPaginator.paginate(text, pageNumber, pageWidth, pageHeight);
-        totalPages = page.getTotalPages();
+	// Create page with Bukkit paginator
+	ChatPaginator.ChatPage page = ChatPaginator.paginate(text, pageNumber, pageWidth, pageHeight);
+	totalPages = page.getTotalPages();
 
-        // If the requested page is more than the last age
-        if (pageNumber > totalPages) {
-            throw new SecuboidCommandException("Page error", sender, "COMMAND.PAGE.INVALID");
-        }
-        
-        // Check if there is a parameter
-        if (param != null) {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage(header,
-                    ChatColor.GREEN + param + ChatColor.GRAY));
-        } else {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage(header));
-        }
-        
-        // Send lines to sender
-        sender.sendMessage(page.getLines());
-        
-        // If there is one or multiple page, put the number of page at the bottom
-        if (totalPages > 1) {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PAGE.MULTIPAGE",
-                    "" + pageNumber, "" + totalPages));
-            Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(this);
-        } else {
-            sender.sendMessage(ChatColor.GRAY + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.PAGE.ONEPAGE"));
-            Secuboid.getThisPlugin().getPlayerConf().get(sender).setChatPage(null);
-        }
+	// If the requested page is more than the last age
+	if (pageNumber > totalPages) {
+	    throw new SecuboidCommandException(secuboid, "Page error", sender, "COMMAND.PAGE.INVALID");
+	}
+
+	// Check if there is a parameter
+	if (param != null) {
+	    sender.sendMessage(ChatColor.GRAY + secuboid.getLanguage().getMessage(header,
+		    ChatColor.GREEN + param + ChatColor.GRAY));
+	} else {
+	    sender.sendMessage(ChatColor.GRAY + secuboid.getLanguage().getMessage(header));
+	}
+
+	// Send lines to sender
+	sender.sendMessage(page.getLines());
+
+	// If there is one or multiple page, put the number of page at the bottom
+	if (totalPages > 1) {
+	    sender.sendMessage(ChatColor.GRAY + secuboid.getLanguage().getMessage("COMMAND.PAGE.MULTIPAGE",
+		    "" + pageNumber, "" + totalPages));
+	    secuboid.getPlayerConf().get(sender).setChatPage(this);
+	} else {
+	    sender.sendMessage(ChatColor.GRAY + secuboid.getLanguage().getMessage("COMMAND.PAGE.ONEPAGE"));
+	    secuboid.getPlayerConf().get(sender).setChatPage(null);
+	}
 
     }
 
@@ -117,6 +134,6 @@ public class ChatPage {
      */
     public final int getTotalPages() {
 
-        return totalPages;
+	return totalPages;
     }
 }

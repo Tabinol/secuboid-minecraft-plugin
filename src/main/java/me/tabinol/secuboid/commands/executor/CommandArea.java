@@ -20,9 +20,8 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.Map;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.CommandCollisionsThreadExec;
-import me.tabinol.secuboid.commands.CommandEntities;
 import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -32,6 +31,7 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandArea.
@@ -44,12 +44,18 @@ public class CommandArea extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command area.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
+     *
+     *
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandArea(CommandEntities entity) throws SecuboidCommandException {
+    public CommandArea(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -58,14 +64,14 @@ public class CommandArea extends CommandCollisionsThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	fonction = entity.argList.getNext();
+	fonction = argList.getNext();
 
 	if (fonction.equalsIgnoreCase("add")) {
 
 	    checkPermission(true, true, null, null);
 	    checkSelections(true, true);
 
-	    Area area = entity.playerConf.getSelection().getArea();
+	    Area area = playerConf.getSelection().getArea();
 
 	    // Check for collision
 	    checkCollision(land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(),
@@ -76,11 +82,11 @@ public class CommandArea extends CommandCollisionsThreadExec {
 	    checkPermission(true, true, null, null);
 	    checkSelections(true, null);
 
-	    String areaNbStr = entity.argList.getNext();
+	    String areaNbStr = argList.getNext();
 	    int areaNb = 0;
 
 	    // check here if there is an area to replace
-	    Area areaToReplace = entity.playerConf.getSelection().getAreaToReplace();
+	    Area areaToReplace = playerConf.getSelection().getAreaToReplace();
 	    if (areaToReplace != null) {
 		areaNb = areaToReplace.getKey();
 	    }
@@ -93,15 +99,15 @@ public class CommandArea extends CommandCollisionsThreadExec {
 	    // 0 is same has not set
 	    if (areaNb == 0) {
 		if (areaNbStr == null) {
-		    throw new SecuboidCommandException("Area", entity.player, "COMMAND.REMOVE.AREA.EMPTY");
+		    throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.EMPTY");
 		}
 		try {
 		    areaNb = Integer.parseInt(areaNbStr);
 		} catch (NumberFormatException ex) {
-		    throw new SecuboidCommandException("Area", entity.player, "COMMAND.REMOVE.AREA.INVALID");
+		    throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
 		}
 		if (land.getArea(areaNb) == null) {
-		    throw new SecuboidCommandException("Area", entity.player, "COMMAND.REMOVE.AREA.INVALID");
+		    throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
 		}
 	    }
 
@@ -117,7 +123,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
 		//Only for a replace
 		checkSelections(true, true);
 
-		Area area = entity.playerConf.getSelection().getArea();
+		Area area = playerConf.getSelection().getArea();
 
 		// Check for collision
 		checkCollision(land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area, land.getParent(),
@@ -131,9 +137,9 @@ public class CommandArea extends CommandCollisionsThreadExec {
 	    for (Map.Entry<Integer, Area> entry : land.getIdsAndAreas().entrySet()) {
 		stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint()).append(Config.NEWLINE);
 	    }
-	    new ChatPage("COMMAND.AREA.LISTSTART", stList.toString(), entity.sender, land.getName()).getPage(1);
+	    new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, land.getName()).getPage(1);
 	} else {
-	    throw new SecuboidCommandException("Missing information command", entity.sender, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
 	}
     }
 
@@ -149,29 +155,29 @@ public class CommandArea extends CommandCollisionsThreadExec {
 	    // Add Area
 	    land.addArea(newArea, collisions.getPrice());
 
-	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + ".");
-	    new CommandCancel(entity.playerConf, false).commandExecute();
-	    entity.playerConf.getSelection().refreshLand();
+	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+	    secuboid.getLog().write(playerName + " have create an area named " + land.getName() + ".");
+	    new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
+	    playerConf.getSelection().refreshLand();
 	} else if (fonction.equalsIgnoreCase("remove")) {
 
 	    // Check if exist
 	    if (land.getArea(removeId) == null) {
-		throw new SecuboidCommandException("Area", entity.sender, "COMMAND.REMOVE.AREA.INVALID");
+		throw new SecuboidCommandException(secuboid, "Area", sender, "COMMAND.REMOVE.AREA.INVALID");
 	    }
 
-	    entity.playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, land, removeId));
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CONFIRM"));
+	    playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, land, removeId));
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
 
 	} else if (fonction.equalsIgnoreCase("replace")) {
 
 	    // Replace Area
 	    land.replaceArea(removeId, newArea, collisions.getPrice());
 
-	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have create an area named " + land.getName() + ".");
-	    new CommandCancel(entity.playerConf, false).commandExecute();
-	    entity.playerConf.getSelection().refreshLand();
+	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+	    secuboid.getLog().write(playerName + " have create an area named " + land.getName() + ".");
+	    new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
+	    playerConf.getSelection().refreshLand();
 	}
 
     }

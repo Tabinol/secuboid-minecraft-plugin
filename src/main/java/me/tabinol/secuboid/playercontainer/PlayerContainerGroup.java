@@ -30,16 +30,18 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerGroup implements PlayerContainer {
 
-    String groupName;
+    private final Secuboid secuboid;
+    private final String groupName;
 
-    public PlayerContainerGroup(String groupName) {
+    public PlayerContainerGroup(Secuboid secuboid, String groupName) {
+	this.secuboid = secuboid;
 	this.groupName = groupName;
     }
 
     @Override
     public boolean hasAccess(Player player) {
 	if (player != null) {
-	    return Secuboid.getThisPlugin().getDependPlugin().getPermission().playerInGroup(player, groupName);
+	    return secuboid.getDependPlugin().getPermission().playerInGroup(player, groupName);
 	} else {
 	    return false;
 	}

@@ -33,10 +33,12 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerPlayer implements PlayerContainer {
 
+    private final Secuboid secuboid;
     private final UUID minecraftUUID;
     private final String name;
 
-    public PlayerContainerPlayer(UUID minecraftUUID) {
+    public PlayerContainerPlayer(Secuboid secuboid, UUID minecraftUUID) {
+	this.secuboid = secuboid;
 	name = "ID-" + minecraftUUID.toString();
 	this.minecraftUUID = minecraftUUID;
     }
@@ -84,7 +86,7 @@ public class PlayerContainerPlayer implements PlayerContainer {
 	}
 
 	// Pass 2 get from Secuboid cache
-	playerName = Secuboid.getThisPlugin().getPlayersCache().getNameFromUUID(minecraftUUID);
+	playerName = secuboid.getPlayersCache().getNameFromUUID(minecraftUUID);
 	if (playerName != null) {
 	    return playerName;
 	}

@@ -19,28 +19,31 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.ChatColor;
-
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandReload.
  */
-@InfoCommand(name="reload", allowConsole=true)
+@InfoCommand(name = "reload", allowConsole = true)
 public class CommandReload extends CommandExec {
-    
+
     /**
      * Instantiates a new command reload.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandReload(CommandEntities entity) throws SecuboidCommandException {
+    public CommandReload(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-        super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -49,10 +52,10 @@ public class CommandReload extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        checkPermission(false, false, null, "secuboid.reload");
+	checkPermission(false, false, null, "secuboid.reload");
 
-        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RELOAD.START"));
-        Secuboid.getThisPlugin().reload();
-        entity.sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.RELOAD.COMPLETE"));
+	sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RELOAD.START"));
+	secuboid.reload();
+	sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RELOAD.COMPLETE"));
     }
 }

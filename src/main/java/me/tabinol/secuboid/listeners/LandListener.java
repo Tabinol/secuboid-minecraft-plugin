@@ -76,7 +76,7 @@ public class LandListener extends CommonListener implements Listener {
 
 	    for (Player player : playerHeal) {
 		if (!player.isDead()) {
-		    Secuboid.getThisPlugin().getLog().write("Healing: " + player.getName());
+		    secuboid.getLog().write("Healing: " + player.getName());
 		    foodLevel = player.getFoodLevel();
 		    if (foodLevel < 20) {
 			foodLevel += 5;
@@ -101,20 +101,21 @@ public class LandListener extends CommonListener implements Listener {
 
     /**
      * Instantiates a new land listener.
+     *
+     * @param secuboid secuboid instance
      */
-    public LandListener() {
+    public LandListener(Secuboid secuboid) {
 
-	super();
-	playerConf = Secuboid.getThisPlugin().getPlayerConf();
+	super(secuboid);
+	playerConf = secuboid.getPlayerConf();
 	playerHeal = new ArrayList<Player>();
 	landHeal = new LandHeal();
-	landHeal.runTaskTimer(Secuboid.getThisPlugin(), 20, 20);
+	landHeal.runTaskTimer(secuboid, 20, 20);
 
     }
 
-    // Must be running before FlyCreativeListener
     /**
-     * On player quit.
+     * On player quit. Must be running before FlyCreativeListener.
      *
      * @param event the events
      */
@@ -182,7 +183,7 @@ public class LandListener extends CommonListener implements Listener {
 			tpSpawn(player, land, message);
 			return;
 		    } else {
-			player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));
+			player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message, land.getName()));
 			event.setCancelled(true);
 			return;
 		    }
@@ -206,11 +207,11 @@ public class LandListener extends CommonListener implements Listener {
 
 
 	    /*for(String playername:land.getPlayersInLand()){
-             Secuboid.getThisPlugin().iScoreboard().sendScoreboard(land.getPlayersInLand(), Secuboid.getThisPlugin().getServer().getPlayer(playername), land.getName());
+             secuboid.iScoreboard().sendScoreboard(land.getPlayersInLand(), secuboid.getServer().getPlayer(playername), land.getName());
              }
-             Secuboid.getThisPlugin().iScoreboard().sendScoreboard(land.getPlayersInLand(), player, land.getName());*/
+             secuboid.iScoreboard().sendScoreboard(land.getPlayersInLand(), player, land.getName());*/
 	} else {
-	    dummyLand = Secuboid.getThisPlugin().getLands().getOutsideArea(event.getToLoc());
+	    dummyLand = secuboid.getLands().getOutsideArea(event.getToLoc());
 	}
 
 	//Check for Healing
@@ -317,7 +318,7 @@ public class LandListener extends CommonListener implements Listener {
 	    if (player != null && player != playerIn
 		    // Only adminmode can see vanish
 		    && (!playerConf.isVanished(playerIn) || playerConf.get(player).isAdminMode())) {
-		player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(
+		player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(
 			message, playerIn.getDisplayName(), land.getName() + ChatColor.GRAY));
 	    }
 	}
@@ -333,6 +334,6 @@ public class LandListener extends CommonListener implements Listener {
     private void tpSpawn(Player player, RealLand land, String message) {
 
 	player.teleport(player.getWorld().getSpawnLocation());
-	player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage(message, land.getName()));
+	player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message, land.getName()));
     }
 }

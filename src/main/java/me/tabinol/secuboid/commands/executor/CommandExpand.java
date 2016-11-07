@@ -19,8 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
@@ -29,6 +28,7 @@ import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandExpand.
@@ -39,12 +39,16 @@ public class CommandExpand extends CommandExec {
     /**
      * Instantiates a new command expand.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandExpand(CommandEntities entity) throws SecuboidCommandException {
+    public CommandExpand(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -56,58 +60,62 @@ public class CommandExpand extends CommandExec {
 	checkSelections(null, null);
 	// checkPermission(false, false, null, null);
 
-	RealLand selLand = entity.playerConf.getSelection().getLand();
-	String curArg = entity.argList.getNext();
+	RealLand selLand = playerConf.getSelection().getLand();
+	String curArg = argList.getNext();
 
 	if (curArg == null) {
 
-	    if (entity.playerConf.getSelection().getSelection(SelectionType.AREA) instanceof AreaSelection
-		    && ((AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA)).getMoveType() == AreaSelection.MoveType.EXPAND) {
-		throw new SecuboidCommandException("Player Expand", entity.player, "COMMAND.EXPAND.ALREADY");
+	    if (playerConf.getSelection().getSelection(SelectionType.AREA) instanceof AreaSelection
+		    && ((AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA)).getMoveType() == AreaSelection.MoveType.EXPAND) {
+		throw new SecuboidCommandException(secuboid, "Player Expand", player, "COMMAND.EXPAND.ALREADY");
 	    }
 
-	    entity.player.sendMessage(ChatColor.GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.EXPAND.JOINMODE"));
-	    entity.player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.EXPAND.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
-	    Secuboid.getThisPlugin().getLog().write(entity.player.getName() + " have join ExpandMode.");
+	    player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.EXPAND.JOINMODE"));
+	    player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.EXPAND.HINT",
+		    ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
+	    secuboid.getLog().write(player.getName() + " have join ExpandMode.");
 
 	    // Check the selection before (if exist)
-	    Area area = entity.playerConf.getSelection().getArea();
+	    Area area = playerConf.getSelection().getArea();
 
 	    if (area == null && selLand != null && (area = selLand.getArea(1)) != null) {
 
 		// Expand an existing area?
-		entity.playerConf.getSelection().setAreaToReplace(area);
+		playerConf.getSelection().setAreaToReplace(area);
 	    }
 
 	    if (area == null) {
-		entity.playerConf.getSelection().addSelection(new AreaSelection(entity.player, null, false, AreaType.CUBOID, AreaSelection.MoveType.EXPAND));
+		playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, null, false,
+			AreaType.CUBOID, AreaSelection.MoveType.EXPAND));
 	    } else {
-		entity.playerConf.getSelection().addSelection(new AreaSelection(entity.player, area.copyOf(), false, AreaType.CUBOID, AreaSelection.MoveType.EXPAND));
+		playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, area.copyOf(), false,
+			AreaType.CUBOID, AreaSelection.MoveType.EXPAND));
 	    }
 
 	} else if (curArg.equalsIgnoreCase("done")) {
 
 	    // Expand done
-	    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.EXPAND.COMPLETE"));
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.EXPAND.QUITMODE"));
-	    Secuboid.getThisPlugin().getLog().write(entity.playerName + " have quit ExpandMode.");
+	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.EXPAND.COMPLETE"));
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.EXPAND.QUITMODE"));
+	    secuboid.getLog().write(playerName + " have quit ExpandMode.");
 
-	    Area area = entity.playerConf.getSelection().getArea();
+	    Area area = playerConf.getSelection().getArea();
 	    if (area != null) {
 
-		entity.playerConf.getSelection().addSelection(new AreaSelection(entity.player, area, false, AreaType.CUBOID, AreaSelection.MoveType.PASSIVE));
+		playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, area, false, AreaType.CUBOID,
+			AreaSelection.MoveType.PASSIVE));
 
-		if (!((AreaSelection) entity.playerConf.getSelection().getSelection(SelectionType.AREA)).getVisualSelection().hasCollision()) {
-		    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
-			    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
+		if (!((AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA)).getVisualSelection().hasCollision()) {
+		    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
+			    + secuboid.getLanguage().getMessage("COMMAND.SELECT.LAND.NOCOLLISION"));
 		} else {
-		    entity.player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.RED
-			    + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.SELECT.LAND.COLLISION"));
+		    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.RED
+			    + secuboid.getLanguage().getMessage("COMMAND.SELECT.LAND.COLLISION"));
 		}
 	    }
 
 	} else {
-	    throw new SecuboidCommandException("Missing information command", entity.player, "GENERAL.MISSINGINFO");
+	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
 	}
     }
 }

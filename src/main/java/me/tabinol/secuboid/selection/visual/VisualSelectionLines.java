@@ -29,14 +29,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
+ * The visual selection lines class.
  *
  * @author michel
  */
 public class VisualSelectionLines implements VisualSelection {
 
-    /**
-     *
-     */
+    private final Secuboid secuboid;
     private final Player player;
 
     private final ChangedBlocks changedBlocks;
@@ -67,13 +66,8 @@ public class VisualSelectionLines implements VisualSelection {
     private int rightDist;
     private boolean canCreate;
 
-    /**
-     *
-     * @param area
-     * @param isFromLand
-     * @param player
-     */
-    public VisualSelectionLines(LinesArea area, boolean isFromLand, Player player) {
+    public VisualSelectionLines(Secuboid secuboid, LinesArea area, boolean isFromLand, Player player) {
+	this.secuboid = secuboid;
 	changedBlocks = new ChangedBlocks(player);
 	this.isFromLand = isFromLand;
 	this.player = player;
@@ -152,28 +146,28 @@ public class VisualSelectionLines implements VisualSelection {
 
 	if (area.getLines().isEmpty()) {
 	    // Detect the curent land from the 8 points
-	    Land Land1 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
-	    Land Land2 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
-	    Land Land3 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land3 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
-	    Land Land4 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land4 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
-	    Land Land5 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land5 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
-	    Land Land6 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land6 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
-	    Land Land7 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land7 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
-	    Land Land8 = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(new Location(
+	    Land Land8 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
 
 	    if (Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
 		    && Land1 == Land7 && Land1 == Land8) {
 		parentDetected = Land1;
 	    } else {
-		parentDetected = Secuboid.getThisPlugin().getLands().getOutsideArea(Land1.getWorldName());
+		parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
 	    }
 
 	    canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
@@ -192,9 +186,9 @@ public class VisualSelectionLines implements VisualSelection {
 		    int correctZ = (int) ((curLine.getA() * posX) + curLine.getB());
 		    if (posZ == correctZ) {
 			Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
-			Land testCuboidarea = Secuboid.getThisPlugin().getLands().getLandOrOutsideArea(newloc);
+			Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
-				&& (canCreate || Secuboid.getThisPlugin().getPlayerConf().get(player).isAdminMode())) {
+				&& (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
 			} else {
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);

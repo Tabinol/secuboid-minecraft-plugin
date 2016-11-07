@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.permissionsflags;
 
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -48,7 +47,7 @@ public class Flag {
      * @param value the value
      * @param inheritable the inheritable
      */
-    public Flag(final FlagType flagType, final Object value, final boolean inheritable) {
+    Flag(final FlagType flagType, final Object value, final boolean inheritable) {
 
 	this.flagType = flagType;
 	if (value instanceof FlagValue) {
@@ -57,10 +56,6 @@ public class Flag {
 	    this.value = new FlagValue(value);
 	}
 	this.inheritable = inheritable;
-
-	if (!flagType.isRegistered()) {
-	    Secuboid.getThisPlugin().getPermissionsFlags().unRegisteredFlags.add(this);
-	}
     }
 
     /**

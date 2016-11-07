@@ -19,11 +19,11 @@
 package me.tabinol.secuboid.commands.executor;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.CommandEntities;
-import me.tabinol.secuboid.commands.CommandExec;
+import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandAdminmode.
@@ -34,12 +34,18 @@ public class CommandAdminmode extends CommandExec {
     /**
      * Instantiates a new command adminmode.
      *
-     * @param entity the entity
+     * @param secuboid secuboid instance
+     * @param infoCommand the info command
+     * @param sender the sender
+     * @param argList the arg list
+     *
+     *
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandAdminmode(CommandEntities entity) throws SecuboidCommandException {
+    public CommandAdminmode(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+	    throws SecuboidCommandException {
 
-	super(entity);
+	super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -50,12 +56,12 @@ public class CommandAdminmode extends CommandExec {
 
 	checkPermission(false, false, null, "secuboid.adminmode");
 
-	if (entity.playerConf.isAdminMode()) {
-	    entity.playerConf.setAdminMode(false);
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMODE.QUIT"));
+	if (playerConf.isAdminMode()) {
+	    playerConf.setAdminMode(false);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.QUIT"));
 	} else {
-	    entity.player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + Secuboid.getThisPlugin().getLanguage().getMessage("COMMAND.ADMINMODE.JOIN"));
-	    entity.playerConf.setAdminMode(true);
+	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.JOIN"));
+	    playerConf.setAdminMode(true);
 	}
     }
 }

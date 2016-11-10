@@ -21,6 +21,7 @@ package me.tabinol.secuboid.lands.areas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.Location;
@@ -34,9 +35,18 @@ public final class LinesArea implements Area {
     private final AreaCommon areaCommon;
     private final int up;
     private final int down;
-    private final int left;
-    private final int right;
+    private final int radius;
     private final List<Point> points;
+
+    /**
+     * a in z = mx + b (slopes)
+     */
+    private final List<Double> ms;
+
+    /**
+     * b in z = mx + b
+     */
+    private final List<Double> bs;
 
     /**
      * Instantiates a line area.
@@ -44,11 +54,10 @@ public final class LinesArea implements Area {
      * @param worldName the world name
      * @param up the up distance (from the point)
      * @param down the down distance (from the point)
-     * @param left the left distance (from the point)
-     * @param right the right distance (from the point)
+     * @param radius the radius distance (left-right) (from the point)
      * @param points the points (can be null for a new lines area)
      */
-    public LinesArea(String worldName, int up, int down, int left, int right, List<Point> points) {
+    public LinesArea(String worldName, int up, int down, int radius, List<Point> points) {
 
 	areaCommon = new AreaCommon(this, worldName, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
 		Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
@@ -57,13 +66,14 @@ public final class LinesArea implements Area {
 	} else {
 	    this.points = new ArrayList<Point>();
 	}
+	ms = new ArrayList<Double>();
+	bs = new ArrayList<Double>();
 	this.up = up;
 	this.down = down;
-	this.left = left;
-	this.right = right;
+	this.radius = radius;
 
 	// Know the minimal x/z and maximal x/z
-	for (Point point : points) {
+	for (Point point : this.points) {
 	    addPoint(point);
 	}
     }
@@ -187,7 +197,7 @@ public final class LinesArea implements Area {
 
 	StringBuilder sb = new StringBuilder();
 	sb.append(AreaType.LINES).append(":").append(getWorldName()).append(":")
-		.append(up).append(":").append(down).append(":").append(left).append(":").append(right);
+		.append(up).append(":").append(down).append(":").append(radius);
 	for (Point point : points) {
 	    sb.append(":").append(point.getX()).append(":").append(point.getY()).append(":").append(point.getZ());
 	}
@@ -205,7 +215,7 @@ public final class LinesArea implements Area {
 
 	StringBuilder sb = new StringBuilder();
 	sb.append(AreaType.LINES.toString().substring(0, 3).toLowerCase()).append(":")
-		.append("^").append(up).append(", V").append(down).append(", <").append(left).append(", >").append(right);
+		.append("u:").append(up).append(", d:").append(down).append(", r:").append(radius);
 	for (Point point : points) {
 	    sb.append(", (").append(point.getX()).append(", ").append(point.getY()).append(", ").append(point.getZ()).append(")");
 	}
@@ -213,25 +223,28 @@ public final class LinesArea implements Area {
 	return sb.toString();
     }
 
-    public void addPoint(Point line) {
-	/*
-// Modify the previous line x2/y2/z2
-	if (!lines.isEmpty()) {
-	    lines.get(lines.size() - 1).resolveIntersection(line);
-	}
+    /**
+     * Adds a point to the multiple lines. Do not use if this area is already in a land.
+     *
+     * @param point the point
+     */
+    public void addPoint(Point point) {
 
-	this.lines.add(line);
-	setX1(Calculate.lowerInt(Calculate.lowerInt(line.getLeftX1(), line.getLeftX2()),
-		Calculate.lowerInt(line.getRightX1(), line.getRightX2())));
-	setY1(line.getY1());
-	setZ1(Calculate.lowerInt(Calculate.lowerInt(line.getLeftZ1(), line.getLeftZ2()),
-		Calculate.lowerInt(line.getRightZ1(), line.getRightZ2())));
-	setX2(Calculate.greaterInt(Calculate.greaterInt(line.getLeftX1(), line.getLeftX2()),
-		Calculate.greaterInt(line.getRightX1(), line.getRightX2())));
-	setY2(line.gety2());
-	setZ2(Calculate.greaterInt(Calculate.greaterInt(line.getLeftZ1(), line.getLeftZ2()),
-		Calculate.greaterInt(line.getRightZ1(), line.getRightZ2())));
-	 */
+	points.add(point);
+	if (points.size() > 1) {
+	    Point previous = points.get(points.size() - 2);
+
+	    // slope and prevents infinite
+	    double m;
+	    if (point.getX() - previous.getX() == 0) {
+		m = Double.MAX_VALUE;
+	    } else {
+		m = (point.getZ() - previous.getZ()) / (point.getX() - previous.getX());
+	    }
+	    double b = point.getZ() - m * point.getX();
+	    ms.add(m);
+	    bs.add(b);
+	}
     }
 
     /**
@@ -246,31 +259,23 @@ public final class LinesArea implements Area {
 
     @Override
     public long getVolume() {
-
-	/*
-	long volume = 0;
-
-	for (Line line : lines) {
-	    volume += ((Line) line).getVolume();
-	}
-
-	return volume;
-	 */
+	// TODO
 	return 0;
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
-	/*
 	if (worldName.equals(worldName)) {
-	    for (Line line : lines) {
-		if (((Line) line).isLocationInside(x, y, z)) {
-		    return true;
-		}
+	    Iterator<Point> iterator = points.iterator();
+	    Point previous = iterator.next();
+	    while (iterator.hasNext()) {
+		Point point = iterator.next();
+
+		previous = point;
 	    }
 	}
-	 */
+
 	return false;
     }
 
@@ -322,6 +327,6 @@ public final class LinesArea implements Area {
 	for (Point point : points) {
 	    newPoints.add(point);
 	}
-	return new LinesArea(getWorldName(), up, down, left, right, newPoints);
+	return new LinesArea(getWorldName(), up, down, radius, newPoints);
     }
 }

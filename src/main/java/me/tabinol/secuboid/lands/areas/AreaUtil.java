@@ -61,7 +61,7 @@ public class AreaUtil {
 	// Create lines area
 	if (multiStr[0].equals(AreaType.LINES.toString())) {
 	    List<Point> points = new ArrayList<Point>();
-	    for (int t = 6; t < multiStr.length; t += 3) {
+	    for (int t = 5; t < multiStr.length; t += 3) {
 		points.add(new Point(
 			Integer.parseInt(multiStr[t]),
 			Integer.parseInt(multiStr[t + 1]),
@@ -71,7 +71,6 @@ public class AreaUtil {
 		    Integer.parseInt(multiStr[2]),
 		    Integer.parseInt(multiStr[3]),
 		    Integer.parseInt(multiStr[4]),
-		    Integer.parseInt(multiStr[5]),
 		    points);
 	}
 

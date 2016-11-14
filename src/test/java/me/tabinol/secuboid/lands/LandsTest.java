@@ -18,10 +18,16 @@
  */
 package me.tabinol.secuboid.lands;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
+import me.tabinol.secuboid.lands.areas.LinesArea;
+import me.tabinol.secuboid.lands.areas.Point;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
@@ -72,7 +78,6 @@ public class LandsTest {
 	doNothing().when(log).write(anyString());
 	when(secuboid.getLog()).thenReturn(log);
 
-	//when(secuboid.getDataFolder()).thenReturn(new File("src/main/resources/"));
 	// Permissions Flags
 	permissionsFlags = new PermissionsFlags(secuboid);
 	when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
@@ -98,11 +103,12 @@ public class LandsTest {
 	// Create lands for test
 	lands.createLand(TEST_CUBOID, new PlayerContainerNobody(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
 	lands.createLand(TEST_CYLINDER, new PlayerContainerNobody(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
-	//List<Line> lines = new ArrayList<Line>();
-	//lines.add(new Line(150, 70, 150, 150, 70, 200, 5, 5, 5, 5));
-	//lines.add(new Line(150, 70, 200, 200, 70, 250, 5, 5, 5, 5));
-	//lines.add(new Line(200, 70, 250, 250, 70, 250, 5, 5, 5, 5));
-	//lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, lines));
+	List<Point> points = new ArrayList<Point>();
+	points.add(new Point(150, 70, 150));
+	points.add(new Point(150, 70, 200));
+	points.add(new Point(200, 70, 250));
+	points.add(new Point(250, 70, 250));
+	lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, 5, 5, 5, points));
     }
 
     /**
@@ -167,16 +173,34 @@ public class LandsTest {
     @Test
     public void verifyLines() throws Exception {
 
-	//Land land = lands.getLand(TEST_LINES);
-	//System.out.println(lands.getLand(TEST_LINES).getArea(1).getVolume());
+	RealLand land = lands.getLand(TEST_LINES);
+
+	SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	Date now = new Date();
+	String strDate = sdfDate.format(now);
+	System.out.println("x1: " + lands.getLand(TEST_LINES).getArea(1).getX1());
+	System.out.println("y1: " + lands.getLand(TEST_LINES).getArea(1).getY1());
+	System.out.println("z1: " + lands.getLand(TEST_LINES).getArea(1).getZ1());
+	System.out.println("x2: " + lands.getLand(TEST_LINES).getArea(1).getX2());
+	System.out.println("y2: " + lands.getLand(TEST_LINES).getArea(1).getY2());
+	System.out.println("z2: " + lands.getLand(TEST_LINES).getArea(1).getZ2());
+	System.out.println("startvolume : " + strDate);
+	System.out.println(lands.getLand(TEST_LINES).getArea(1).getVolume());
+	sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	now = new Date();
+	strDate = sdfDate.format(now);
+	System.out.println("endvolume : " + strDate);
+
 	// Inside point check
-	// TODO Activate tests
-	//if(!land.isLocationInside(WORLD, 151, 71, 1225)) {
-	//    throw new Exception("Location error");
-	//}
+	if (!land.isLocationInside(WORLD, 150, 70, 150)) {
+	    throw new Exception("Location error");
+	}
+	if (!land.isLocationInside(WORLD, 151, 69, 151)) {
+	    throw new Exception("Location error");
+	}
 	// Outside point check
-	//if(land.isLocationInside(WORLD, 149, 71, 249)) {
-	//    throw new Exception("Location error");
-	//}
+	if (land.isLocationInside(WORLD, 149, 71, 249)) {
+	    throw new Exception("Location error");
+	}
     }
 }

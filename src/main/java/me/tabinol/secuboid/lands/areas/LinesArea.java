@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.utilities.Calculate;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -59,13 +60,15 @@ public final class LinesArea implements Area {
      */
     public LinesArea(String worldName, int up, int down, int radius, List<Point> points) {
 
-	areaCommon = new AreaCommon(this, worldName, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
-		Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
-	if (points != null) {
-	    this.points = points;
-	} else {
-	    this.points = new ArrayList<Point>();
-	}
+	// We need to set x, y and z after the new instance to have a reversed order
+	areaCommon = new AreaCommon(this, worldName, 0, 0, 0, 0, 0, 0);
+	areaCommon.setX1(Integer.MAX_VALUE);
+	areaCommon.setY1(Integer.MAX_VALUE);
+	areaCommon.setZ1(Integer.MAX_VALUE);
+	areaCommon.setX2(Integer.MIN_VALUE);
+	areaCommon.setY2(Integer.MIN_VALUE);
+	areaCommon.setZ2(Integer.MIN_VALUE);
+	this.points = new ArrayList<Point>();
 	ms = new ArrayList<Double>();
 	bs = new ArrayList<Double>();
 	this.up = up;
@@ -73,8 +76,10 @@ public final class LinesArea implements Area {
 	this.radius = radius;
 
 	// Know the minimal x/z and maximal x/z
-	for (Point point : this.points) {
-	    addPoint(point);
+	if (points != null) {
+	    for (Point point : points) {
+		addPoint(point);
+	    }
 	}
     }
 
@@ -138,60 +143,6 @@ public final class LinesArea implements Area {
 	return areaCommon.getZ2();
     }
 
-    /**
-     * Sets the x1. Do not use if the area is already in a land.
-     *
-     * @param x1 x1
-     */
-    public void setX1(int x1) {
-	areaCommon.setX1(x1);
-    }
-
-    /**
-     * Sets the y1. Do not use if the area is already in a land.
-     *
-     * @param y1 y1
-     */
-    public void setY1(int y1) {
-	areaCommon.setY1(y1);
-    }
-
-    /**
-     * Sets the z1. Do not use if the area is already in a land.
-     *
-     * @param z1 z1
-     */
-    public void setZ1(int z1) {
-	areaCommon.setZ1(z1);
-    }
-
-    /**
-     * Sets the x2. Do not use if the area is already in a land.
-     *
-     * @param x2 x2
-     */
-    public void setX2(int x2) {
-	areaCommon.setX2(x2);
-    }
-
-    /**
-     * Sets the y2. Do not use if the area is already in a land.
-     *
-     * @param y2 y2
-     */
-    public void setY2(int y2) {
-	areaCommon.setY2(y2);
-    }
-
-    /**
-     * Sets the z2. Do not use if the area is already in a land.
-     *
-     * @param z2 z2
-     */
-    public void setZ2(int z2) {
-	areaCommon.setZ2(z2);
-    }
-
     @Override
     public String toFileFormat() {
 
@@ -236,31 +187,66 @@ public final class LinesArea implements Area {
 
 	    // slope and prevents infinite
 	    double m;
-	    if (point.getX() - previous.getX() == 0) {
+	    double b;
+	    if (point.getX() == previous.getX()) {
 		m = Double.MAX_VALUE;
+		b = point.getX();
 	    } else {
 		m = (point.getZ() - previous.getZ()) / (point.getX() - previous.getX());
+		b = point.getZ() - m * point.getX();
 	    }
-	    double b = point.getZ() - m * point.getX();
 	    ms.add(m);
 	    bs.add(b);
+	}
+	updateAreaCommon(point);
+    }
+
+    private void updateAreaCommon(Point point) {
+
+	if (point.getX() - radius < areaCommon.getX1()) {
+	    areaCommon.setX1(point.getX() - radius);
+	}
+	if (point.getX() + radius > areaCommon.getX2()) {
+	    areaCommon.setX2(point.getX() + radius);
+	}
+	if (point.getY() - down < areaCommon.getY1()) {
+	    areaCommon.setY1(point.getY() - down);
+	}
+	if (point.getY() + up > areaCommon.getY2()) {
+	    areaCommon.setY2(point.getY() + up);
+	}
+	if (point.getZ() - radius < areaCommon.getZ1()) {
+	    areaCommon.setZ1(point.getZ() - radius);
+	}
+	if (point.getZ() + radius > areaCommon.getZ2()) {
+	    areaCommon.setZ2(point.getZ() + radius);
 	}
     }
 
     /**
-     * Gets all lines.
+     * Gets all Points.
      *
-     * @return a collection of line
+     * @return a collection of point
      */
-    public Collection<Point> getLines() {
+    public Collection<Point> getPoints() {
 
 	return Collections.unmodifiableCollection(points);
     }
 
     @Override
     public long getVolume() {
-	// TODO
-	return 0;
+	// Points by points is very slow solution but for now, I don't have an other solution
+	int volume = 0;
+	for (int x = areaCommon.getX1(); x <= areaCommon.getX2(); x++) {
+	    for (int y = areaCommon.getY1(); y <= areaCommon.getY2(); y++) {
+		for (int z = areaCommon.getZ1(); z <= areaCommon.getZ2(); z++) {
+		    if (isLocationInside(areaCommon.getWorldName(), x, y, z)) {
+			volume++;
+		    }
+		}
+	    }
+	}
+	return volume;
     }
 
     @Override
@@ -269,9 +255,53 @@ public final class LinesArea implements Area {
 	if (worldName.equals(worldName)) {
 	    Iterator<Point> iterator = points.iterator();
 	    Point previous = iterator.next();
+	    int i = 0;
 	    while (iterator.hasNext()) {
 		Point point = iterator.next();
+		double m = ms.get(i);
+		double b = bs.get(i);
 
+		// first, check for y
+		int yl = Calculate.lowerInt(point.getY(), previous.getY());
+		int yh = Calculate.greaterInt(point.getY(), previous.getY());
+		if (y >= yl - down && y <= yh + up) {
+		    // check in z
+		    int zMinLine;
+		    int zMaxLine;
+		    // infinite slope
+		    if (m == Double.MAX_VALUE) {
+			zMinLine = Calculate.lowerInt(point.getZ(), previous.getZ()) - radius;
+			zMaxLine = Calculate.greaterInt(point.getZ(), previous.getZ()) + radius;
+		    } else {
+			int zLine = (int) (m * x + b);
+			zMinLine = zLine - radius;
+			zMaxLine = zLine + radius;
+		    }
+		    if (z >= zMinLine && z <= zMaxLine) {
+			// check in x
+			int xMinLine;
+			int xMaxLine;
+
+			if (m == 0) {
+			    // zero slope
+			    xMinLine = Calculate.lowerInt(point.getX(), previous.getX()) - radius;
+			    xMaxLine = Calculate.greaterInt(point.getX(), previous.getX()) + radius;
+			} else if (m == Double.MAX_VALUE) {
+			    // infinite slope
+			    xMinLine = (int) b - radius;
+			    xMaxLine = (int) b + radius;
+			} else {
+			    // normal slope
+			    int xLine = (int) ((z - b) / m);
+			    xMinLine = xLine - radius;
+			    xMaxLine = xLine + radius;
+			}
+			if (x >= xMinLine && x <= xMaxLine) {
+			    return true;
+			}
+		    }
+		}
+		i++;
 		previous = point;
 	    }
 	}

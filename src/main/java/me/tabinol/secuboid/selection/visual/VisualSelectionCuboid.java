@@ -82,18 +82,11 @@ public class VisualSelectionCuboid implements VisualSelection {
 	return isCollision;
     }
 
-    /**
-     *
-     */
     @Override
     public void removeSelection() {
 	changedBlocks.resetBlocks();
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public RealLand getParentDetected() {
 	if (parentDetected.isRealLand()) {
@@ -102,13 +95,8 @@ public class VisualSelectionCuboid implements VisualSelection {
 	return null;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Area getArea() {
-
 	return area;
     }
 
@@ -177,8 +165,7 @@ public class VisualSelectionCuboid implements VisualSelection {
 			    isCollision = true;
 			}
 		    } else // Passive Selection (created area)
-		    {
-			if ((posX == area.getX1() && posZ == area.getZ1() + 1)
+		     if ((posX == area.getX1() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX1() && posZ == area.getZ2() - 1)
 				|| (posX == area.getX2() && posZ == area.getZ1() + 1)
 				|| (posX == area.getX2() && posZ == area.getZ2() - 1)
@@ -198,7 +185,6 @@ public class VisualSelectionCuboid implements VisualSelection {
 			    // Exact corner
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 			}
-		    }
 
 		} else {
 		    // Square center, skip!
@@ -208,10 +194,6 @@ public class VisualSelectionCuboid implements VisualSelection {
 	}
     }
 
-    /**
-     *
-     * @param moveType
-     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
 

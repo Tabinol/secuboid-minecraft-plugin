@@ -78,19 +78,12 @@ public class VisualSelectionCylinder implements VisualSelection {
 	return isCollision;
     }
 
-    /**
-     *
-     */
     @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
 	changedBlocks.resetBlocks();
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public RealLand getParentDetected() {
 	if (parentDetected.isRealLand()) {
@@ -99,13 +92,8 @@ public class VisualSelectionCylinder implements VisualSelection {
 	return null;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Area getArea() {
-
 	return area;
     }
 
@@ -180,7 +168,8 @@ public class VisualSelectionCylinder implements VisualSelection {
 			isCollision = true;
 		    }
 		} else // Passive Selection (created area)
-		 if (posX == area.getOriginH() - 1
+		{
+		    if (posX == area.getOriginH() - 1
 			    || posX == area.getOriginH() + 1
 			    || posZ == area.getOriginK() - 1
 			    || posZ == area.getOriginK() + 1) {
@@ -193,14 +182,11 @@ public class VisualSelectionCylinder implements VisualSelection {
 			// Exact corner
 			changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
 		    }
+		}
 	    }
 	}
     }
 
-    /**
-     *
-     * @param moveType
-     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
 

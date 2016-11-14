@@ -18,13 +18,16 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
+import java.util.Collections;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.LinesArea;
+import me.tabinol.secuboid.lands.areas.Point;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
+import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -34,6 +37,10 @@ import org.bukkit.entity.Player;
  * @author michel
  */
 public class VisualSelectionLines implements VisualSelection {
+
+    public static final int DEFAULT_UP = 5;
+    public static final int DEFAULT_DOWN = 5;
+    public static final int DEFAULT_RADIUS = 5;
 
     private final Secuboid secuboid;
     private final Player player;
@@ -55,16 +62,7 @@ public class VisualSelectionLines implements VisualSelection {
      */
     private Land parentDetected;
 
-    private final LinesArea area;
-    //private Line curLine;
-    private int x1;
-    private int y1;
-    private int z1;
-    private int upDist;
-    private int downDist;
-    private int leftDist;
-    private int rightDist;
-    private boolean canCreate;
+    private LinesArea area;
 
     public VisualSelectionLines(Secuboid secuboid, LinesArea area, boolean isFromLand, Player player) {
 	this.secuboid = secuboid;
@@ -73,20 +71,7 @@ public class VisualSelectionLines implements VisualSelection {
 	this.player = player;
 	isCollision = false;
 	parentDetected = null;
-	Location loc = player.getLocation();
-	if (area != null) {
-	    this.area = area;
-	} else {
-	    this.area = null; // new LinesArea(loc.getWorld().getName(), null);
-	}
-	x1 = loc.getBlockX();
-	y1 = loc.getBlockY();
-	z1 = loc.getBlockZ();
-	// TODO get correct dist
-	this.upDist = 5;
-	this.downDist = 5;
-	this.leftDist = 5;
-	this.rightDist = 5;
+	this.area = area;
     }
 
     /**
@@ -99,19 +84,12 @@ public class VisualSelectionLines implements VisualSelection {
 	return isCollision;
     }
 
-    /**
-     *
-     */
     @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
 	changedBlocks.resetBlocks();
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public RealLand getParentDetected() {
 	if (parentDetected.isRealLand()) {
@@ -120,10 +98,6 @@ public class VisualSelectionLines implements VisualSelection {
 	return null;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public Area getArea() {
 
@@ -134,9 +108,12 @@ public class VisualSelectionLines implements VisualSelection {
     public void setActiveSelection() {
 
 	isCollision = false;
+
 	Location loc = player.getLocation();
-	//curLine = new Line(x1, y1, z1, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
-	//	upDist, downDist, leftDist, rightDist);
+	int landXr = secuboid.getConf().getDefaultXSize() / 2;
+	int landZr = secuboid.getConf().getDefaultZSize() / 2;
+	area = new LinesArea(loc.getWorld().getName(), DEFAULT_UP, DEFAULT_DOWN, DEFAULT_RADIUS,
+		Collections.singletonList(new Point(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())));
 
 	makeVisualSelection();
     }
@@ -144,7 +121,7 @@ public class VisualSelectionLines implements VisualSelection {
     @Override
     public void makeVisualSelection() {
 
-	if (area.getLines().isEmpty()) {
+	if (area.getPoints().isEmpty()) {
 	    // Detect the curent land from the 8 points
 	    Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
 		    area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
@@ -169,23 +146,21 @@ public class VisualSelectionLines implements VisualSelection {
 	    } else {
 		parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
 	    }
-
-	    canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 	}
 
-	//MakeLine
-	if (!isFromLand) {
-	    /*
-	    // Active
-	    int x1 = Calculate.lowerInt(curLine.getX1(), curLine.getX2());
-	    int x2 = Calculate.greaterInt(curLine.getX1(), curLine.getX2());
-	    int z1 = Calculate.lowerInt(curLine.getZ1(), curLine.getZ2());
-	    int z2 = Calculate.greaterInt(curLine.getZ1(), curLine.getZ2());
-	    for (int posX = x1; posX <= x2; posX++) {
-		for (int posZ = z1; posZ <= z2; posZ++) {
-		    int correctZ = (int) ((curLine.getA() * posX) + curLine.getB());
-		    if (posZ == correctZ) {
-			Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+	boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+
+	//MakeLines TODO ******************* IM HERE ************************
+	for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
+	    for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+		if (posX == area.getX1() || posX == area.getX2()
+			|| posZ == area.getZ1() || posZ == area.getZ2()) {
+
+		    Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+
+		    if (!isFromLand) {
+
+			// Active Selection
 			Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
 			if (parentDetected == testCuboidarea
 				&& (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
@@ -194,26 +169,36 @@ public class VisualSelectionLines implements VisualSelection {
 			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
 			    isCollision = true;
 			}
-		    }
+		    } else // Passive Selection (created area)
+		     if ((posX == area.getX1() && posZ == area.getZ1() + 1)
+				|| (posX == area.getX1() && posZ == area.getZ2() - 1)
+				|| (posX == area.getX2() && posZ == area.getZ1() + 1)
+				|| (posX == area.getX2() && posZ == area.getZ2() - 1)
+				|| (posX == area.getX1() + 1 && posZ == area.getZ1())
+				|| (posX == area.getX2() - 1 && posZ == area.getZ1())
+				|| (posX == area.getX1() + 1 && posZ == area.getZ2())
+				|| (posX == area.getX2() - 1 && posZ == area.getZ2())) {
+
+			    // Subcorner
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
+
+			} else if ((posX == area.getX1() && posZ == area.getZ1())
+				|| (posX == area.getX2() && posZ == area.getZ1())
+				|| (posX == area.getX1() && posZ == area.getZ2())
+				|| (posX == area.getX2() && posZ == area.getZ2())) {
+
+			    // Exact corner
+			    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
+			}
+
+		} else {
+		    // Square center, skip!
+		    posZ = area.getZ2() - 1;
 		}
 	    }
-	     */
-	} else {
-	    /*
-	    // Passive
-	    Location newloc = new Location(area.getWord(), x1, PlayersUtil.getYNearPlayer(player, x1, z1) - 1, z1);
-	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-	    newloc = new Location(area.getWord(), curLine.getX2(), PlayersUtil.getYNearPlayer(player, curLine.getX2(),
-		    curLine.getZ2()) - 1, curLine.getZ2());
-	    changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-	     */
 	}
     }
 
-    /**
-     *
-     * @param moveType
-     */
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
 

@@ -32,7 +32,7 @@ public enum AreaType {
      */
     CYLINDER,
     /**
-     * line type
+     * Road type
      */
-    LINES
+    ROAD
 }

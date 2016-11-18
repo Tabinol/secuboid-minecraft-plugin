@@ -24,26 +24,39 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
- * Represents a cuboid area.
+ * Represents a road area.
  */
-public final class CuboidArea implements Area {
+public final class RoadArea implements Area {
 
     private final AreaCommon areaCommon;
 
     /**
+     * points is represented: RegionX, RegionZ: CheckX, CheckZ: x, z
+     */
+    private final RegionMatrix regionMatrix;
+
+    /**
      * Instantiates a new cuboid area.
      *
-     * @param worldName the world name
-     * @param x1        the x1
-     * @param y1        the y1
-     * @param z1        the z1
-     * @param x2        the x2
-     * @param y2        the y2
-     * @param z2        the z2
+     * @param worldName    the world name
+     * @param regionMatrix the region matrix (can be null)
      */
-    public CuboidArea(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 
-        areaCommon = new AreaCommon(this, worldName, x1, y1, z1, x2, y2, z2);
+    public RoadArea(String worldName, RegionMatrix regionMatrix) {
+
+        // We need to set x, y and z after the new instance to have a reversed order
+        areaCommon = new AreaCommon(this, worldName, 0, 0, 0, 0, 0, 0);
+        areaCommon.setX1(Integer.MAX_VALUE);
+        areaCommon.setY1(Integer.MAX_VALUE);
+        areaCommon.setZ1(Integer.MAX_VALUE);
+        areaCommon.setX2(Integer.MIN_VALUE);
+        areaCommon.setY2(Integer.MIN_VALUE);
+        areaCommon.setZ2(Integer.MIN_VALUE);
+        if (regionMatrix == null) {
+            this.regionMatrix = new RegionMatrix();
+        } else {
+            this.regionMatrix = regionMatrix;
+        }
     }
 
     /**
@@ -167,7 +180,7 @@ public final class CuboidArea implements Area {
      */
     @Override
     public long getVolume() {
-        return (getX2() - getX1() + 1) * (getY2() - getY1() + 1) * (getZ2() - getZ1() + 1);
+        return regionMatrix.countPoints() * (getY2() - getY1());
     }
 
     @Override

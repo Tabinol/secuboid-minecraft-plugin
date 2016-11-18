@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Area utilities
  */
@@ -56,22 +53,6 @@ public class AreaUtil {
 		    Integer.parseInt(multiStr[5]),
 		    Integer.parseInt(multiStr[6]),
 		    Integer.parseInt(multiStr[7]));
-	}
-
-	// Create lines area
-	if (multiStr[0].equals(AreaType.LINES.toString())) {
-	    List<Point> points = new ArrayList<Point>();
-	    for (int t = 5; t < multiStr.length; t += 3) {
-		points.add(new Point(
-			Integer.parseInt(multiStr[t]),
-			Integer.parseInt(multiStr[t + 1]),
-			Integer.parseInt(multiStr[t + 2])));
-	    }
-	    return new LinesArea(multiStr[1],
-		    Integer.parseInt(multiStr[2]),
-		    Integer.parseInt(multiStr[3]),
-		    Integer.parseInt(multiStr[4]),
-		    points);
 	}
 
 	// Create CuboidArea (old version)

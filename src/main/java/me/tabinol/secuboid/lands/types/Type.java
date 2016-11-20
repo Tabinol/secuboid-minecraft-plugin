@@ -14,43 +14,36 @@
 
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 package me.tabinol.secuboid.lands.types;
 
 /**
- *
- * @author michel
+ * The class for area types.
  */
 public class Type implements Comparable<Type> {
 
     private final String typeName;
-    
+
     /**
+     * Create an instance of area type.
      *
-     * @param typeName
+     * @param typeName the type name
      */
     protected Type(String typeName) {
-        
         this.typeName = typeName;
     }
-    
-    /**
-     *
-     * @param arg0
-     * @return
-     */
+
     @Override
     public int compareTo(Type arg0) {
-        
         return typeName.compareTo(arg0.typeName);
     }
 
     /**
+     * Gets the type name.
      *
-     * @return
+     * @return the type name
      */
     public String getName() {
-
         return typeName;
     }
 }

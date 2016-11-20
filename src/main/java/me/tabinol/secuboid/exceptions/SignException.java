@@ -24,14 +24,15 @@ package me.tabinol.secuboid.exceptions;
  */
 public class SignException extends Exception {
 
-    /** The Constant serialVersionUID. */
+    /**
+     * The Constant serialVersionUID.
+     */
     private static final long serialVersionUID = -4613764478447824840L;
 
     /**
      * The Constructor.
      */
     public SignException() {
-        
         super("Can not create the sign!");
     }
 }

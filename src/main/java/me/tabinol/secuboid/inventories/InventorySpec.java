@@ -22,8 +22,7 @@ package me.tabinol.secuboid.inventories;
 import java.util.List;
 
 /**
- *
- * @author michel
+ * The class for inventory specifications.
  */
 public class InventorySpec {
 
@@ -33,16 +32,8 @@ public class InventorySpec {
     private final boolean isAllowDrop;
     private final List<String> disabledCommands;
 
-    /**
-     *
-     * @param inventoryName
-     * @param isCreativeChange
-     * @param isSaveInventory
-     * @param isAllowDrop
-     * @param disabledCommands
-     */
     public InventorySpec(String inventoryName, boolean isCreativeChange,
-            boolean isSaveInventory, boolean isAllowDrop, List<String> disabledCommands) {
+                         boolean isSaveInventory, boolean isAllowDrop, List<String> disabledCommands) {
 
         this.inventoryName = inventoryName;
         this.isCreativeChange = isCreativeChange;
@@ -51,47 +42,22 @@ public class InventorySpec {
         this.disabledCommands = disabledCommands;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getInventoryName() {
-
         return inventoryName;
     }
 
-    /**
-     *
-     * @return
-     */
     public boolean isCreativeChange() {
-
         return isCreativeChange;
     }
 
-    /**
-     *
-     * @return
-     */
     public boolean isSaveInventory() {
-
         return isSaveInventory;
     }
 
-    /**
-     *
-     * @return
-     */
     public boolean isAllowDrop() {
-
         return isAllowDrop;
     }
 
-    /**
-     *
-     * @param command
-     * @return
-     */
     public boolean isDisabledCommand(String command) {
 
         // We have to check for no cas sensitive

@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.lands.areas;
 
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -173,9 +173,9 @@ public final class CuboidArea implements Area {
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
         return worldName.equals(areaCommon.getWorldName())
-                && Calculate.isInInterval(x, getX1(), getX2())
-                && Calculate.isInInterval(y, getY1(), getY2())
-                && Calculate.isInInterval(z, getZ1(), getZ2());
+                && LocalMath.isInInterval(x, getX1(), getX2())
+                && LocalMath.isInInterval(y, getY1(), getY2())
+                && LocalMath.isInInterval(z, getZ1(), getZ2());
     }
 
     @Override

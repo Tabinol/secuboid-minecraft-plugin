@@ -33,19 +33,14 @@ import org.bukkit.entity.Player;
 public class LandSelection implements RegionSelection {
 
     /**
-     * The player.
-     */
-    private final Player player;
-
-    /**
      * The land.
      */
     private final RealLand land;
 
     /**
-     * The visual areas.
+     * The visual areas list.
      */
-    private final TreeMap<Area, AreaSelection> visualAreas; // Visuals arealist
+    private final TreeMap<Area, AreaSelection> visualAreas;
 
     /**
      * Instantiates a new land selection.
@@ -56,7 +51,6 @@ public class LandSelection implements RegionSelection {
      */
     public LandSelection(Secuboid secuboid, Player player, RealLand land) {
 
-        this.player = player;
         this.land = land;
         visualAreas = new TreeMap<Area, AreaSelection>();
 
@@ -82,11 +76,9 @@ public class LandSelection implements RegionSelection {
 
     @Override
     public void removeSelection() {
-
         for (AreaSelection areaSel : visualAreas.values()) {
             areaSel.removeSelection();
         }
-
         visualAreas.clear();
     }
 }

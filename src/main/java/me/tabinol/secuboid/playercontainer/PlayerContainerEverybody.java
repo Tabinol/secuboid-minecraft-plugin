@@ -30,17 +30,17 @@ public class PlayerContainerEverybody implements PlayerContainer {
 
     @Override
     public boolean hasAccess(Player player) {
-	return true;
+        return true;
     }
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {
-	return true;
+        return true;
     }
 
     @Override
     public RealLand getLand() {
-	return null;
+        return null;
     }
 
     @Override
@@ -49,26 +49,26 @@ public class PlayerContainerEverybody implements PlayerContainer {
 
     @Override
     public String getName() {
-	return "";
+        return "";
     }
 
     @Override
     public PlayerContainerType getContainerType() {
-	return PlayerContainerType.EVERYBODY;
+        return PlayerContainerType.EVERYBODY;
     }
 
     @Override
     public int compareTo(PlayerContainer t) {
-	return PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
+        return PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
     }
 
     @Override
     public String getPrint() {
-	return PlayerContainerType.EVERYBODY.getPrint();
+        return PlayerContainerType.EVERYBODY.getPrint();
     }
 
     @Override
     public String toFileFormat() {
-	return PlayerContainerType.EVERYBODY.getPrint() + ":";
+        return PlayerContainerType.EVERYBODY.getPrint() + ":";
     }
 }

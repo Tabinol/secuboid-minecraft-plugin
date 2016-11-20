@@ -22,17 +22,18 @@ package me.tabinol.secuboid.exceptions;
  * The Class SecuboidLandException. Called when the land can not be created
  */
 public abstract class ApiSecuboidLandException extends Exception {
-    
-    /** The Constant serialVersionUID. */
+
+    /**
+     * The Constant serialVersionUID.
+     */
     private static final long serialVersionUID = -4561559858019587492L;
-    
+
     /**
      * Instantiates a new a secuboid land exception.
      *
      * @param err the err
      */
-    protected ApiSecuboidLandException(String err) {
-        
+    ApiSecuboidLandException(String err) {
         super(err);
     }
 }

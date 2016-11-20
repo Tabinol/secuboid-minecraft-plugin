@@ -44,27 +44,27 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      */
     public SecuboidRunnable(Secuboid secuboid) {
 
-	super();
-	this.secuboid = secuboid;
-	taskId = null;
+        super();
+        this.secuboid = secuboid;
+        taskId = null;
     }
 
     /**
      * Run later.
      *
-     * @param tick the tick
+     * @param tick     the tick
      * @param multiple the multiple
      */
     public void runLater(Long tick, boolean multiple) {
 
-	stopNextRun();
+        stopNextRun();
 
-	if (multiple) {
-	    taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+        if (multiple) {
+            taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
 
-	} else {
-	    taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
-	}
+        } else {
+            taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+        }
     }
 
     /**
@@ -73,28 +73,25 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      * @return true, if is active
      */
     public boolean isActive() {
-
-	return taskId != null;
+        return taskId != null;
     }
 
     /**
      * Sets the one time done. IF IT IS NOT MULTIPLE RUN, YOU NEED TO SET DONE IN RUN() METHOD
      */
-    public void setOneTimeDone() {
-
-	taskId = null;
+    protected void setOneTimeDone() {
+        taskId = null;
     }
 
     /**
      * Stop next run.
      */
     public void stopNextRun() {
+        if (taskId != null) {
 
-	if (taskId != null) {
-
-	    taskId.cancel();
-	    taskId = null;
-	}
+            taskId.cancel();
+            taskId = null;
+        }
     }
 
 }

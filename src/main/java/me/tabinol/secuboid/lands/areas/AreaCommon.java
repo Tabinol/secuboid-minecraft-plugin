@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.lands.areas;
 
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -51,25 +51,25 @@ final class AreaCommon {
     /**
      * Instantiates a new area.
      *
-     * @param area the area
+     * @param area      the area
      * @param worldName the world name
-     * @param x1 the x1
-     * @param y1 the y1
-     * @param z1 the z1
-     * @param x2 the x2
-     * @param y2 the y2
-     * @param z2 the z2
+     * @param x1        the x1
+     * @param y1        the y1
+     * @param z1        the z1
+     * @param x2        the x2
+     * @param y2        the y2
+     * @param z2        the z2
      */
     AreaCommon(Area area, String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 
-	this.area = area;
-	this.worldName = worldName;
-	this.x1 = Calculate.lowerInt(x1, x2);
-	this.x2 = Calculate.greaterInt(x1, x2);
-	this.y1 = Calculate.lowerInt(y1, y2);
-	this.y2 = Calculate.greaterInt(y1, y2);
-	this.z1 = Calculate.lowerInt(z1, z2);
-	this.z2 = Calculate.greaterInt(z1, z2);
+        this.area = area;
+        this.worldName = worldName;
+        this.x1 = LocalMath.lowerInt(x1, x2);
+        this.x2 = LocalMath.greaterInt(x1, x2);
+        this.y1 = LocalMath.lowerInt(y1, y2);
+        this.y2 = LocalMath.greaterInt(y1, y2);
+        this.z1 = LocalMath.lowerInt(z1, z2);
+        this.z2 = LocalMath.greaterInt(z1, z2);
     }
 
     /**
@@ -79,11 +79,11 @@ final class AreaCommon {
      */
     Integer getKey() {
 
-	if (land != null) {
-	    return land.getAreaKey(area);
-	}
+        if (land != null) {
+            return land.getAreaKey(area);
+        }
 
-	return null;
+        return null;
     }
 
     /**
@@ -92,7 +92,7 @@ final class AreaCommon {
      * @param land the new land
      */
     final void setLand(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     /**
@@ -101,7 +101,7 @@ final class AreaCommon {
      * @return the land
      */
     RealLand getLand() {
-	return land;
+        return land;
     }
 
     /**
@@ -110,7 +110,7 @@ final class AreaCommon {
      * @return the world name
      */
     String getWorldName() {
-	return worldName;
+        return worldName;
     }
 
     /**
@@ -119,7 +119,7 @@ final class AreaCommon {
      * @return the word
      */
     World getWord() {
-	return Bukkit.getWorld(worldName);
+        return Bukkit.getWorld(worldName);
     }
 
     /**
@@ -128,7 +128,7 @@ final class AreaCommon {
      * @return the x1
      */
     int getX1() {
-	return x1;
+        return x1;
     }
 
     /**
@@ -137,7 +137,7 @@ final class AreaCommon {
      * @return the y1
      */
     int getY1() {
-	return y1;
+        return y1;
     }
 
     /**
@@ -146,7 +146,7 @@ final class AreaCommon {
      * @return the z1
      */
     int getZ1() {
-	return z1;
+        return z1;
     }
 
     /**
@@ -155,7 +155,7 @@ final class AreaCommon {
      * @return the x2
      */
     int getX2() {
-	return x2;
+        return x2;
     }
 
     /**
@@ -164,7 +164,7 @@ final class AreaCommon {
      * @return the y2
      */
     int getY2() {
-	return y2;
+        return y2;
     }
 
     /**
@@ -173,7 +173,7 @@ final class AreaCommon {
      * @return the z2
      */
     int getZ2() {
-	return z2;
+        return z2;
     }
 
     /**
@@ -182,7 +182,7 @@ final class AreaCommon {
      * @param x1 x1
      */
     void setX1(int x1) {
-	this.x1 = x1;
+        this.x1 = x1;
     }
 
     /**
@@ -191,7 +191,7 @@ final class AreaCommon {
      * @param x2 x2
      */
     void setX2(int x2) {
-	this.x2 = x2;
+        this.x2 = x2;
     }
 
     /**
@@ -200,7 +200,7 @@ final class AreaCommon {
      * @param y1 y1
      */
     void setY1(int y1) {
-	this.y1 = y1;
+        this.y1 = y1;
     }
 
     /**
@@ -209,7 +209,7 @@ final class AreaCommon {
      * @param y2 y2
      */
     void setY2(int y2) {
-	this.y2 = y2;
+        this.y2 = y2;
     }
 
     /**
@@ -218,7 +218,7 @@ final class AreaCommon {
      * @param z1 z1
      */
     void setZ1(int z1) {
-	this.z1 = z1;
+        this.z1 = z1;
     }
 
     /**
@@ -227,7 +227,7 @@ final class AreaCommon {
      * @param z2 z2
      */
     void setZ2(int z2) {
-	this.z2 = z2;
+        this.z2 = z2;
     }
 
     /**
@@ -238,46 +238,46 @@ final class AreaCommon {
      */
     int compareToArea(Area t) {
 
-	int worldCompare = worldName.compareTo(t.getWorldName());
-	if (worldCompare != 0) {
-	    return worldCompare;
-	}
-	if (x1 < t.getX1()) {
-	    return -1;
-	}
-	if (x1 > t.getX1()) {
-	    return 1;
-	}
-	if (z1 < t.getZ1()) {
-	    return -1;
-	}
-	if (z1 > t.getZ1()) {
-	    return 1;
-	}
-	if (y1 < t.getY1()) {
-	    return -1;
-	}
-	if (y1 > t.getY1()) {
-	    return 1;
-	}
-	if (x2 < t.getX2()) {
-	    return -1;
-	}
-	if (x2 > t.getX2()) {
-	    return 1;
-	}
-	if (z2 < t.getZ2()) {
-	    return -1;
-	}
-	if (z2 > t.getZ2()) {
-	    return 1;
-	}
-	if (y2 < t.getY2()) {
-	    return -1;
-	}
-	if (y2 > t.getY2()) {
-	    return 1;
-	}
-	return 0;
+        int worldCompare = worldName.compareTo(t.getWorldName());
+        if (worldCompare != 0) {
+            return worldCompare;
+        }
+        if (x1 < t.getX1()) {
+            return -1;
+        }
+        if (x1 > t.getX1()) {
+            return 1;
+        }
+        if (z1 < t.getZ1()) {
+            return -1;
+        }
+        if (z1 > t.getZ1()) {
+            return 1;
+        }
+        if (y1 < t.getY1()) {
+            return -1;
+        }
+        if (y1 > t.getY1()) {
+            return 1;
+        }
+        if (x2 < t.getX2()) {
+            return -1;
+        }
+        if (x2 > t.getX2()) {
+            return 1;
+        }
+        if (z2 < t.getZ2()) {
+            return -1;
+        }
+        if (z2 > t.getZ2()) {
+            return 1;
+        }
+        if (y2 < t.getY2()) {
+            return -1;
+        }
+        if (y2 > t.getY2()) {
+            return 1;
+        }
+        return 0;
     }
 }

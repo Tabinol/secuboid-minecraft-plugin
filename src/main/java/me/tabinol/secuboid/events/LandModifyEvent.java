@@ -30,54 +30,54 @@ public class LandModifyEvent extends LandEvent {
      */
     public enum LandModifyReason {
 
-	/**
-	 * The area add.
-	 */
-	AREA_ADD,
-	/**
-	 * The area remove.
-	 */
-	AREA_REMOVE,
-	/**
-	 * The area replace.
-	 */
-	AREA_REPLACE,
-	/**
-	 * The resident add.
-	 */
-	RESIDENT_ADD,
-	/**
-	 * The resident remove.
-	 */
-	RESIDENT_REMOVE,
-	/**
-	 * The permission set.
-	 */
-	PERMISSION_SET,
-	/**
-	 * The permission unset.
-	 */
-	PERMISSION_UNSET,
-	/**
-	 * The flag set.
-	 */
-	FLAG_SET,
-	/**
-	 * The flag unset.
-	 */
-	FLAG_UNSET,
-	/**
-	 * The owner change.
-	 */
-	OWNER_CHANGE,
-	/**
-	 * The land rename.
-	 */
-	RENAME,
-	/**
-	 * Change the faction territory or siege
-	 */
-	FACTION_TERRITORY_CHANGE
+        /**
+         * The area add.
+         */
+        AREA_ADD,
+        /**
+         * The area remove.
+         */
+        AREA_REMOVE,
+        /**
+         * The area replace.
+         */
+        AREA_REPLACE,
+        /**
+         * The resident add.
+         */
+        RESIDENT_ADD,
+        /**
+         * The resident remove.
+         */
+        RESIDENT_REMOVE,
+        /**
+         * The permission set.
+         */
+        PERMISSION_SET,
+        /**
+         * The permission unset.
+         */
+        PERMISSION_UNSET,
+        /**
+         * The flag set.
+         */
+        FLAG_SET,
+        /**
+         * The flag unset.
+         */
+        FLAG_UNSET,
+        /**
+         * The owner change.
+         */
+        OWNER_CHANGE,
+        /**
+         * The land rename.
+         */
+        RENAME,
+        /**
+         * Change the faction territory or siege
+         */
+        FACTION_TERRITORY_CHANGE
     }
 
     /**
@@ -98,25 +98,20 @@ public class LandModifyEvent extends LandEvent {
     /**
      * Instantiates a new land modify events.
      *
-     * @param land the land
+     * @param land             the land
      * @param landModifyReason the land modify reason
-     * @param newObject the new object
+     * @param newObject        the new object
      */
     public LandModifyEvent(final RealLand land, final LandModifyReason landModifyReason, final Object newObject) {
 
-	super(land);
-	this.newObject = newObject;
-	this.landModifyReason = landModifyReason;
+        super(land);
+        this.newObject = newObject;
+        this.landModifyReason = landModifyReason;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public HandlerList getHandlers() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -125,8 +120,7 @@ public class LandModifyEvent extends LandEvent {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -135,8 +129,7 @@ public class LandModifyEvent extends LandEvent {
      * @return the land modify reason
      */
     public LandModifyReason getLandModifyReason() {
-
-	return landModifyReason;
+        return landModifyReason;
     }
 
     /**
@@ -146,7 +139,6 @@ public class LandModifyEvent extends LandEvent {
      * @return the new object
      */
     public Object getNewObject() {
-
-	return newObject;
+        return newObject;
     }
 }

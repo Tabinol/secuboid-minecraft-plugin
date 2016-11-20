@@ -37,19 +37,19 @@ final class ConfBuilderFlat {
     /**
      * Instantiates a new conf builder.
      *
-     * @param name the name
-     * @param uuid the uuid
-     * @param file the file
+     * @param name    the name
+     * @param uuid    the uuid
+     * @param file    the file
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
     ConfBuilderFlat(String name, UUID uuid, File file, int version) throws IOException {
 
-	FileWriter fr = new FileWriter(file, false);
-	br = new BufferedWriter(fr);
-	writeVersion(version);
-	writeUUID(uuid);
-	writeName(name);
+        FileWriter fr = new FileWriter(file, false);
+        br = new BufferedWriter(fr);
+        writeVersion(version);
+        writeUUID(uuid);
+        writeName(name);
     }
 
     /**
@@ -58,9 +58,9 @@ final class ConfBuilderFlat {
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeVersion(int version) throws IOException {
+    private void writeVersion(int version) throws IOException {
 
-	writeParam("Version", version);
+        writeParam("Version", version);
     }
 
     /**
@@ -69,9 +69,9 @@ final class ConfBuilderFlat {
      * @param uuid the uuid
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeUUID(UUID uuid) throws IOException {
+    private void writeUUID(UUID uuid) throws IOException {
 
-	writeParam("UUID", uuid.toString());
+        writeParam("UUID", uuid.toString());
     }
 
     /**
@@ -80,9 +80,9 @@ final class ConfBuilderFlat {
      * @param name the name
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeName(String name) throws IOException {
+    private void writeName(String name) throws IOException {
 
-	writeParam("Name", name);
+        writeParam("Name", name);
     }
 
     /**
@@ -91,81 +91,81 @@ final class ConfBuilderFlat {
      * @param string the string
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeln(String string) throws IOException {
+    private void writeln(String string) throws IOException {
 
-	br.write(string);
-	br.newLine();
+        br.write(string);
+        br.newLine();
     }
 
     /**
      * Write param.
      *
      * @param paramName the param name
-     * @param param the param
+     * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void writeParam(String paramName, String param) throws IOException {
 
-	if (param == null) {
-	    writeln(paramName + ":-null-");
-	} else {
-	    writeln(paramName + ":" + param);
-	}
+        if (param == null) {
+            writeln(paramName + ":-null-");
+        } else {
+            writeln(paramName + ":" + param);
+        }
     }
 
     /**
      * Write param.
      *
      * @param paramName the param name
-     * @param param the param
+     * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void writeParam(String paramName, int param) throws IOException {
 
-	writeln(paramName + ":" + param);
+        writeln(paramName + ":" + param);
     }
 
     /**
      * Write param.
      *
      * @param paramName the param name
-     * @param param the param
+     * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void writeParam(String paramName, short param) throws IOException {
 
-	writeln(paramName + ":" + param);
+        writeln(paramName + ":" + param);
     }
 
     /**
      * Write param.
      *
      * @param paramName the param name
-     * @param param the param
+     * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void writeParam(String paramName, double param) throws IOException {
 
-	writeln(paramName + ":" + param);
+        writeln(paramName + ":" + param);
     }
 
     /**
      * Write param.
      *
      * @param ParamName the param name
-     * @param params the params
+     * @param params    the params
      * @throws IOException Signals that an I/O exception has occurred.
      */
     void writeParam(String ParamName, String[] params) throws IOException {
 
-	if (params == null) {
-	    return;
-	}
-	writeln(ParamName + "{");
-	for (String param : params) {
-	    writeln("  " + param);
-	}
-	writeln("}");
+        if (params == null) {
+            return;
+        }
+        writeln(ParamName + "{");
+        for (String param : params) {
+            writeln("  " + param);
+        }
+        writeln("}");
     }
 
     /**
@@ -175,6 +175,6 @@ final class ConfBuilderFlat {
      */
     void close() throws IOException {
 
-	br.close();
+        br.close();
     }
 }

@@ -35,31 +35,22 @@ public class PlayerContainerLandBanEvent extends LandEvent {
     /**
      * The player container.
      */
-    PlayerContainer playerContainer;
+    private PlayerContainer playerContainer;
 
     /**
      * Instantiates a new player container land ban events.
      *
-     * @param land the land
+     * @param land            the land
      * @param playerContainer the player container
      */
     public PlayerContainerLandBanEvent(final RealLand land, final PlayerContainer playerContainer) {
-
-	super(land);
-	this.playerContainer = playerContainer;
+        super(land);
+        this.playerContainer = playerContainer;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.events.LandEvent#getHandlers()
-     */
-    /**
-     *
-     * @return
-     */
     @Override
     public HandlerList getHandlers() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -68,8 +59,7 @@ public class PlayerContainerLandBanEvent extends LandEvent {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -78,7 +68,6 @@ public class PlayerContainerLandBanEvent extends LandEvent {
      * @return the player container
      */
     public PlayerContainer getPlayerContainer() {
-
-	return playerContainer;
+        return playerContainer;
     }
 }

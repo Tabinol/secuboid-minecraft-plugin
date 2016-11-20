@@ -39,37 +39,37 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /**
      * The cancelled.
      */
-    protected boolean cancelled = false;
+    private boolean cancelled = false;
 
     /**
      * The player.
      */
-    Player player;
+    private Player player;
 
     /**
      * The from loc.
      */
-    Location fromLoc;
+    private Location fromLoc;
 
     /**
      * The to loc.
      */
-    Location toLoc;
+    private Location toLoc;
 
     /**
      * The last land.
      */
-    RealLand lastLand;
+    private RealLand lastLand;
 
     /**
      * The last dummy land.
      */
-    Land lastDummyLand;
+    private Land lastDummyLand;
 
     /**
      * The if this is a player teleport.
      */
-    boolean isTp;
+    private boolean isTp;
 
     /**
      * Instantiates a new player land change events.
@@ -99,16 +99,8 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
 	this.isTp = isTp;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
-     */
-    /**
-     *
-     * @return
-     */
     @Override
     public HandlerList getHandlers() {
-
 	return handlers;
     }
 
@@ -118,19 +110,16 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
 	return handlers;
     }
 
     @Override
     public boolean isCancelled() {
-
 	return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-
 	cancelled = bln;
     }
 
@@ -140,7 +129,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the player
      */
     public Player getPlayer() {
-
 	return player;
     }
 
@@ -150,7 +138,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the last land
      */
     public RealLand getLastLand() {
-
 	return lastLand;
     }
 
@@ -160,7 +147,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the last land or dummy land (World)
      */
     public Land getLastLandOrOutside() {
-
 	return lastDummyLand;
     }
 
@@ -170,7 +156,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the from location
      */
     public Location getFromLoc() {
-
 	return fromLoc;
     }
 
@@ -190,7 +175,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return true, if it is a player teleport
      */
     public boolean isTp() {
-
 	return isTp;
     }
 }

@@ -30,13 +30,13 @@ public interface Chat {
      * @param player the player
      * @return true, if is spy
      */
-    public boolean isSpy(Player player);
-    
+    boolean isSpy(Player player);
+
     /**
      * Checks if is muted.
      *
      * @param player the player
      * @return true, if is muted
      */
-    public boolean isMuted(Player player);
+    boolean isMuted(Player player);
 }

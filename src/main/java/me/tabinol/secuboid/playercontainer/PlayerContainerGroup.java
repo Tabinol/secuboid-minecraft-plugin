@@ -34,27 +34,23 @@ public class PlayerContainerGroup implements PlayerContainer {
     private final String groupName;
 
     public PlayerContainerGroup(Secuboid secuboid, String groupName) {
-	this.secuboid = secuboid;
-	this.groupName = groupName;
+        this.secuboid = secuboid;
+        this.groupName = groupName;
     }
 
     @Override
     public boolean hasAccess(Player player) {
-	if (player != null) {
-	    return secuboid.getDependPlugin().getPermission().playerInGroup(player, groupName);
-	} else {
-	    return false;
-	}
+        return player != null && secuboid.getDependPlugin().getPermission().playerInGroup(player, groupName);
     }
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {
-	return hasAccess(player);
+        return hasAccess(player);
     }
 
     @Override
     public RealLand getLand() {
-	return null;
+        return null;
     }
 
     @Override
@@ -64,30 +60,30 @@ public class PlayerContainerGroup implements PlayerContainer {
     @Override
     public String getPrint() {
 
-	return ChatColor.BLUE + "G:" + ChatColor.WHITE + groupName;
+        return ChatColor.BLUE + "G:" + ChatColor.WHITE + groupName;
     }
 
     @Override
     public String getName() {
-	return groupName;
+        return groupName;
     }
 
     @Override
     public PlayerContainerType getContainerType() {
-	return PlayerContainerType.GROUP;
+        return PlayerContainerType.GROUP;
     }
 
     @Override
     public String toFileFormat() {
-	return PlayerContainerType.GROUP + ":" + groupName;
+        return PlayerContainerType.GROUP + ":" + groupName;
     }
 
     @Override
     public int compareTo(PlayerContainer t) {
-	int result = PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
-	if (result == 0) {
-	    return result;
-	}
-	return groupName.compareTo(t.getName());
+        int result = PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
+        if (result == 0) {
+            return result;
+        }
+        return groupName.compareTo(t.getName());
     }
 }

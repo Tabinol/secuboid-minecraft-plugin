@@ -20,58 +20,23 @@
 package me.tabinol.secuboid.inventories;
 
 /**
- *
- * @author michel
+ * The class for inventory entries.
  */
 public class PlayerInvEntry {
-    
+
     private InventorySpec actualInv;
     private boolean isCreativeInv;
-    
-    /**
-     *
-     * @param actualInv
-     * @param isCreativeInv
-     */
-    public PlayerInvEntry(InventorySpec actualInv, boolean isCreativeInv) {
-        
+
+    PlayerInvEntry(InventorySpec actualInv, boolean isCreativeInv) {
         this.actualInv = actualInv;
         this.isCreativeInv = isCreativeInv;
     }
-    
-    /**
-     *
-     * @return
-     */
+
     public InventorySpec getActualInv() {
-        
         return actualInv;
     }
-    
-    /**
-     *
-     * @param actualInv
-     */
-    public void setActualInv(InventorySpec actualInv) {
-        
-        this.actualInv = actualInv;
-    }
-    
-    /**
-     *
-     * @return
-     */
+
     public boolean isCreativeInv() {
-        
         return isCreativeInv;
-    }
-    
-    /**
-     *
-     * @param isCreativeInv
-     */
-    public void setCreativeInv(boolean isCreativeInv) {
-        
-        this.isCreativeInv = isCreativeInv;
     }
 }

@@ -22,22 +22,25 @@ package me.tabinol.secuboid.permissionsflags;
  * The Class PermissionType.
  */
 public class PermissionType extends PermissionsFlagsType {
-    
-    /** The default value. */
+
+    /**
+     * The default value.
+     */
     private boolean defaultValue;
 
-    /** If the permission has a parent */
+    /**
+     * If the permission has a parent
+     */
     private final PermissionType parent;
-    
+
     /**
      * Instantiates a new permission type with parent.
      *
      * @param permissionName the permission name
-     * @param defaultValue the default value
-     * @param parent the parent permission (or null)
+     * @param defaultValue   the default value
+     * @param parent         the parent permission (or null)
      */
     PermissionType(String permissionName, boolean defaultValue, PermissionType parent) {
-
         super(permissionName);
         this.defaultValue = defaultValue;
         this.parent = parent;
@@ -49,35 +52,33 @@ public class PermissionType extends PermissionsFlagsType {
      * @param defaultValue the new default value
      */
     void setDefaultValue(boolean defaultValue) {
-        
         this.defaultValue = defaultValue;
     }
-    
+
     /**
      * Gets the default value.
      *
      * @return the default value
      */
     public boolean getDefaultValue() {
-        
         return defaultValue;
     }
 
     /**
      * Gets if there is a parent
+     *
      * @return true if there is a parent
      */
     public boolean hasParent() {
-
         return parent != null;
     }
 
     /**
      * Gets the parent permission type
+     *
      * @return the parent permission type
      */
     public PermissionType getParent() {
-
         return parent;
     }
 }

@@ -22,84 +22,71 @@ package me.tabinol.secuboid.lands.areas;
  * The Class AreaIndex.
  */
 public class AreaIndex implements Comparable<AreaIndex> {
-    
-    /** The index nb. */
+
+    /**
+     * The index nb.
+     */
     private final int indexNb;
-    
-    /** The area. */
+
+    /**
+     * The area.
+     */
     private final Area area;
-    
+
     /**
      * Instantiates a new area index.
      *
      * @param indexNb the index nb
-     * @param area the area
+     * @param area    the area
      */
     public AreaIndex(int indexNb, Area area) {
-        
         this.indexNb = indexNb;
         this.area = area;
     }
 
-    /**
-     * Equals.
-     *
-     * @param index2 the index2
-     * @return true, if successful
-     */
-    public boolean equals(AreaIndex index2) {
-        
-        return indexNb == index2.indexNb && area == index2.area;
-    }
-    
     /**
      * Copy of.
      *
      * @return the area index
      */
     public AreaIndex copyOf() {
-        
         return new AreaIndex(indexNb, area);
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
 
-    /**
-     *
-     * @param t
-     * @return
-     */
-
-    @Override
-    public int compareTo(AreaIndex t) {
-        if(indexNb < t.indexNb) {
-            return -1;
-        }
-        if(indexNb > t.indexNb) {
-            return 1;
-        }
-        return ((Area) area).compareTo((Area) t.area);
-    }
-    
-    /**
-     * Gets the index nb.
-     *
-     * @return the index nb
-     */
-    public int getIndexNb() {
-        
-        return indexNb;
-    }
-    
     /**
      * Gets the area.
      *
      * @return the area
      */
     public Area getArea() {
-        
-        return (Area) area;
+        return area;
+    }
+
+    @Override
+    public int compareTo(AreaIndex t) {
+        if (indexNb < t.indexNb) {
+            return -1;
+        }
+        if (indexNb > t.indexNb) {
+            return 1;
+        }
+        return area.compareTo(t.area);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AreaIndex areaIndex = (AreaIndex) o;
+
+        return indexNb == areaIndex.indexNb && area.equals(areaIndex.area);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = indexNb;
+        result = 31 * result + area.hashCode();
+        return result;
     }
 }

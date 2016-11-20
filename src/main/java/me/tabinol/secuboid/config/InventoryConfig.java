@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.lands.Land;
@@ -33,60 +34,19 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- *
- * @author michel
+ * The class for inventory configuration.
  */
 public final class InventoryConfig {
 
-    /**
-     *
-     */
     public static final String GLOBAL = "Default"; // Means it is assigned to all
-
-    /**
-     *
-     */
-    public static final String PERM_USE = "secuboid.inv.use";
-
-    /**
-     *
-     */
-    public static final String PERM_RELOAD = "secuboid.inv.reload";
-
-    /**
-     *
-     */
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
-
-    /**
-     *
-     */
     public static final String PERM_DEFAULT = "secuboid.inv.default";
-
-    /**
-     *
-     */
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";
-
-    /**
-     *
-     */
     public static final String PERM_IGNORE_CREATIVE_INV = "secuboid.inv.ignorecreativeinv";
-
-    /**
-     *
-     */
     public static final String PERM_IGNORE_INV = "secuboid.inv.ignoreinv";
-
-    /**
-     *
-     */
     public static final String PERM_IGNORE_DISABLED_COMMANDS = "secuboid.inv.ignoredisabledcommands";
+    private static final String INVENTORY_CONFIG_FILE = "inventory.yml";
 
-    /**
-     *
-     */
-    public static final String INVENTORY_CONFIG_FILE = "inventory.yml";
     private final FlagType invFlag; // Registered inventory Flag (Factoid)
     private final Secuboid secuboid;
     private FileConfiguration config;
@@ -99,90 +59,65 @@ public final class InventoryConfig {
      */
     public InventoryConfig(Secuboid secuboid) {
 
-	this.secuboid = secuboid;
+        this.secuboid = secuboid;
 
-	// Create files (if not exist) and load
-	if (!new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
-	    secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
-	}
+        // Create files (if not exist) and load
+        if (!new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
+            secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
+        }
 
-	// Connect to the data file and register flag to Factoid
-	invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", new String());
+        // Connect to the data file and register flag to Factoid
+        invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", "");
 
-	reloadConfig();
+        reloadConfig();
     }
 
-    /**
-     *
-     */
     public void reloadConfig() {
 
-	config = YamlConfiguration.loadConfiguration(new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE));
-	invList = new HashMap<String, InventorySpec>();
-	loadInventory();
+        config = YamlConfiguration.loadConfiguration(new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE));
+        invList = new HashMap<String, InventorySpec>();
+        loadInventory();
     }
 
     private void loadInventory() {
 
-	// Load World and Land inventories
-	ConfigurationSection configSec = config.getConfigurationSection("Inventories");
-	for (Map.Entry<String, Object> invEntry : configSec.getValues(false).entrySet()) {
-	    if (invEntry.getValue() instanceof ConfigurationSection) {
-		boolean isCreativeChange = ((ConfigurationSection) invEntry.getValue()).getBoolean("SeparateCreative", true);
-		boolean isSaveInventory = ((ConfigurationSection) invEntry.getValue()).getBoolean("SaveInventory", true);
-		boolean isAllowDrop = ((ConfigurationSection) invEntry.getValue()).getBoolean("AllowDrop", true);
-		List<String> disabledCommands = ((ConfigurationSection) invEntry.getValue()).getStringList("DisabledCommands");
-		createInventoryEntry(invEntry.getKey(), isCreativeChange, isSaveInventory, isAllowDrop, disabledCommands);
-	    }
-	}
+        // Load World and Land inventories
+        ConfigurationSection configSec = config.getConfigurationSection("Inventories");
+        for (Map.Entry<String, Object> invEntry : configSec.getValues(false).entrySet()) {
+            if (invEntry.getValue() instanceof ConfigurationSection) {
+                boolean isCreativeChange = ((ConfigurationSection) invEntry.getValue()).getBoolean("SeparateCreative", true);
+                boolean isSaveInventory = ((ConfigurationSection) invEntry.getValue()).getBoolean("SaveInventory", true);
+                boolean isAllowDrop = ((ConfigurationSection) invEntry.getValue()).getBoolean("AllowDrop", true);
+                List<String> disabledCommands = ((ConfigurationSection) invEntry.getValue()).getStringList("DisabledCommands");
+                createInventoryEntry(invEntry.getKey(), isCreativeChange, isSaveInventory, isAllowDrop, disabledCommands);
+            }
+        }
     }
 
     private void createInventoryEntry(String key, boolean creativeChange, boolean saveInventory, boolean allowDrop,
-	    List<String> disabledCommands) {
+                                      List<String> disabledCommands) {
 
-	invList.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
+        invList.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
-    /**
-     *
-     * @param dummyLand
-     * @return
-     */
     public InventorySpec getInvSpec(Land dummyLand) {
 
-	FlagValue invFlagValue = dummyLand.getPermissionsFlags().getFlagAndInherit(invFlag);
+        FlagValue invFlagValue = dummyLand.getPermissionsFlags().getFlagAndInherit(invFlag);
 
-	// If the flag is not set
-	if (invFlagValue.getValueString().isEmpty()) {
-	    return invList.get(GLOBAL);
-	}
+        // If the flag is not set
+        if (invFlagValue.getValueString().isEmpty()) {
+            return invList.get(GLOBAL);
+        }
 
-	InventorySpec invSpec = invList.get(invFlagValue.getValueString());
+        InventorySpec invSpec = invList.get(invFlagValue.getValueString());
 
-	// If the flag is set with wrong inventory
-	if (invSpec == null) {
-	    secuboid.getLogger().log(Level.WARNING, "Inventory name \"{0}" + "\" is not found " + "in {1}/plugin.yml!",
-		    new Object[]{invFlagValue.getValueString(), secuboid.getName()});
-	    return invList.get(GLOBAL);
-	}
+        // If the flag is set with wrong inventory
+        if (invSpec == null) {
+            secuboid.getLogger().log(Level.WARNING, "Inventory name \"{0}" + "\" is not found " + "in {1}/plugin.yml!",
+                    new Object[]{invFlagValue.getValueString(), secuboid.getName()});
+            return invList.get(GLOBAL);
+        }
 
-	return invSpec;
-    }
-
-    /**
-     *
-     * @param invName
-     * @return
-     */
-    public InventorySpec getFromString(String invName) {
-
-	InventorySpec invSpec = invList.get(invName);
-
-	// Tu prevent null pointer
-	if (invSpec == null) {
-	    return invList.get(GLOBAL);
-	}
-
-	return invSpec;
+        return invSpec;
     }
 }

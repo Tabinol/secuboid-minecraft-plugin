@@ -83,12 +83,8 @@ public class AreaSelection implements RegionSelection {
         return PlayerSelection.SelectionType.AREA;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.selection.region.RegionSelection#removeSelection()
-     */
     @Override
     public void removeSelection() {
-
         visualSelection.removeSelection();
     }
 
@@ -98,12 +94,10 @@ public class AreaSelection implements RegionSelection {
      * @return the visual selection
      */
     public VisualSelection getVisualSelection() {
-
         return visualSelection;
     }
 
     public MoveType getMoveType() {
-
         return moveType;
     }
 
@@ -111,7 +105,6 @@ public class AreaSelection implements RegionSelection {
      * Called from then player listener
      */
     public void playerMove() {
-
         visualSelection.playerMove(moveType);
     }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
 import org.bukkit.Bukkit;
@@ -66,27 +67,27 @@ public class CollisionsManagerThread extends Thread {
      */
     private class OutputRequest {
 
-	/**
-	 * The command exec.
-	 */
-	CommandCollisionsThreadExec commandExec;
+        /**
+         * The command exec.
+         */
+        CommandCollisionsThreadExec commandExec;
 
-	/**
-	 * The collisions.
-	 */
-	Collisions collisions;
+        /**
+         * The collisions.
+         */
+        Collisions collisions;
 
-	/**
-	 * Instantiates a new output request.
-	 *
-	 * @param commandExec the command exec
-	 * @param collisions the collisions
-	 */
-	OutputRequest(CommandCollisionsThreadExec commandExec, Collisions collisions) {
+        /**
+         * Instantiates a new output request.
+         *
+         * @param commandExec the command exec
+         * @param collisions  the collisions
+         */
+        OutputRequest(CommandCollisionsThreadExec commandExec, Collisions collisions) {
 
-	    this.commandExec = commandExec;
-	    this.collisions = collisions;
-	}
+            this.commandExec = commandExec;
+            this.collisions = collisions;
+        }
     }
 
     /**
@@ -96,43 +97,43 @@ public class CollisionsManagerThread extends Thread {
      */
     public CollisionsManagerThread(Secuboid secuboid) {
 
-	this.secuboid = secuboid;
-	this.setName("Secuboid collisions manager");
-	requests = Collections.synchronizedList(new ArrayList<OutputRequest>());
+        this.secuboid = secuboid;
+        this.setName("Secuboid collisions manager");
+        requests = Collections.synchronizedList(new ArrayList<OutputRequest>());
     }
 
     @Override
     public void run() {
 
-	lock.lock();
-	try {
-	    // Output request loop (waiting for a command)
-	    while (!exitRequest) {
+        lock.lock();
+        try {
+            // Output request loop (waiting for a command)
+            while (!exitRequest) {
 
-		while (!requests.isEmpty()) {
+                while (!requests.isEmpty()) {
 
-		    // Do collsion and price check
-		    OutputRequest output = requests.remove(0);
-		    output.collisions.doCollisionCheck();
+                    // Do collsion and price check
+                    OutputRequest output = requests.remove(0);
+                    output.collisions.doCollisionCheck();
 
-		    // Return the result to main thread
-		    ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(output.commandExec, output.collisions);
-		    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
+                    // Return the result to main thread
+                    ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(output.commandExec, output.collisions);
+                    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
 
-		}
+                }
 
-		// wait!
-		try {
-		    commandRequest.await();
-		    secuboid.getLog().write("Secuboid collisions manager Thread wake up!");
-		} catch (InterruptedException e) {
-		    e.printStackTrace();
-		}
-	    }
-	    notSaved.signal();
-	} finally {
-	    lock.unlock();
-	}
+                // wait!
+                try {
+                    commandRequest.await();
+                    secuboid.getLog().write("Secuboid collisions manager Thread wake up!");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            notSaved.signal();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -140,42 +141,42 @@ public class CollisionsManagerThread extends Thread {
      */
     public void stopNextRun() {
 
-	if (!isAlive()) {
-	    secuboid.getLogger().log(Level.SEVERE, "Problem with collisions manager Thread. Possible data loss!");
-	    return;
-	}
-	exitRequest = true;
-	lock.lock();
-	commandRequest.signal();
-	try {
-	    notSaved.await();
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
-	} finally {
-	    lock.unlock();
-	}
+        if (!isAlive()) {
+            secuboid.getLogger().log(Level.SEVERE, "Problem with collisions manager Thread. Possible data loss!");
+            return;
+        }
+        exitRequest = true;
+        lock.lock();
+        commandRequest.signal();
+        try {
+            notSaved.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Wake up the thread and check for collisions
      *
      * @param commandThreadExec The command instance
-     * @param collisionsReq An instance of collision
+     * @param collisionsReq     An instance of collision
      */
     public void lookForCollisions(CommandCollisionsThreadExec commandThreadExec, Collisions collisionsReq) {
 
-	requests.add(new OutputRequest(commandThreadExec, collisionsReq));
-	wakeUp();
+        requests.add(new OutputRequest(commandThreadExec, collisionsReq));
+        wakeUp();
     }
 
     private void wakeUp() {
 
-	lock.lock();
-	try {
-	    commandRequest.signal();
-	    secuboid.getLog().write("Secuboid collisions manager request (Thread wake up...)");
-	} finally {
-	    lock.unlock();
-	}
+        lock.lock();
+        try {
+            commandRequest.signal();
+            secuboid.getLog().write("Secuboid collisions manager request (Thread wake up...)");
+        } finally {
+            lock.unlock();
+        }
     }
 }

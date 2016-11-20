@@ -43,39 +43,24 @@ public class Flag {
     /**
      * Instantiates a new land flag.
      *
-     * @param flagType the flag type
-     * @param value the value
+     * @param flagType    the flag type
+     * @param value       the value
      * @param inheritable the inheritable
      */
     Flag(final FlagType flagType, final Object value, final boolean inheritable) {
 
-	this.flagType = flagType;
-	if (value instanceof FlagValue) {
-	    this.value = (FlagValue) value;
-	} else {
-	    this.value = new FlagValue(value);
-	}
-	this.inheritable = inheritable;
+        this.flagType = flagType;
+        if (value instanceof FlagValue) {
+            this.value = (FlagValue) value;
+        } else {
+            this.value = new FlagValue(value);
+        }
+        this.inheritable = inheritable;
     }
 
-    /**
-     *
-     * @return
-     */
     public Flag copyOf() {
 
-	return new Flag(flagType, value.copyOf(), inheritable);
-    }
-
-    /**
-     * Equals.
-     *
-     * @param lf2 the lf2
-     * @return true, if successful
-     */
-    public boolean equals(Flag lf2) {
-
-	return flagType == lf2.getFlagType();
+        return new Flag(flagType, value.copyOf(), inheritable);
     }
 
     /**
@@ -85,7 +70,7 @@ public class Flag {
      */
     public final FlagType getFlagType() {
 
-	return flagType;
+        return flagType;
     }
 
     /**
@@ -95,7 +80,7 @@ public class Flag {
      */
     public final FlagValue getValue() {
 
-	return value;
+        return value;
     }
 
     /**
@@ -105,7 +90,7 @@ public class Flag {
      */
     protected void setValue(FlagValue value) {
 
-	this.value = value;
+        this.value = value;
     }
 
     /**
@@ -115,39 +100,51 @@ public class Flag {
      */
     public boolean isInheritable() {
 
-	return inheritable;
+        return inheritable;
     }
 
-    /**
-     *
-     * @return
-     */
     public String toFileFormat() {
 
-	if (!flagType.isRegistered()) {
-	    return flagType.toString() + ":" + value.getValue() + ":" + inheritable;
-	}
+        if (!flagType.isRegistered()) {
+            return flagType.toString() + ":" + value.getValue() + ":" + inheritable;
+        }
 
-	if (value.getValue() instanceof Boolean) {
-	    return flagType.toString() + ":" + value.getValueBoolean() + ":" + inheritable;
-	}
+        if (value.getValue() instanceof Boolean) {
+            return flagType.toString() + ":" + value.getValueBoolean() + ":" + inheritable;
+        }
 
-	if (value.getValue() instanceof Double) {
-	    return flagType.toString() + ":" + value.getValueDouble() + ":" + inheritable;
-	}
+        if (value.getValue() instanceof Double) {
+            return flagType.toString() + ":" + value.getValueDouble() + ":" + inheritable;
+        }
 
-	if (value.getValue() instanceof String) {
-	    return flagType.toString() + ":" + StringChanges.toQuote(value.getValueString()) + ":" + inheritable;
-	}
+        if (value.getValue() instanceof String) {
+            return flagType.toString() + ":" + StringChanges.toQuote(value.getValueString()) + ":" + inheritable;
+        }
 
-	if (value.getValue() instanceof String[]) {
-	    StringBuilder sb = new StringBuilder();
-	    for (String st : value.getValueStringList()) {
-		sb.append(StringChanges.toQuote(st)).append(";");
-	    }
-	    return flagType.toString() + ":" + sb.toString() + ":" + inheritable;
-	}
+        if (value.getValue() instanceof String[]) {
+            StringBuilder sb = new StringBuilder();
+            for (String st : value.getValueStringList()) {
+                sb.append(StringChanges.toQuote(st)).append(";");
+            }
+            return flagType.toString() + ":" + sb.toString() + ":" + inheritable;
+        }
 
-	return null;
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Flag flag = (Flag) o;
+
+        return flagType.equals(flag.flagType);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return flagType.hashCode();
     }
 }

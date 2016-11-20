@@ -34,7 +34,7 @@ public class FileCopy {
     /**
      * Copy text from jar.
      *
-     * @param in the file from (FileInputStream)
+     * @param in     the file from (FileInputStream)
      * @param fileTo the file to (File)
      * @throws IOException Signals that an I/O exception has occurred.
      */
@@ -43,12 +43,12 @@ public class FileCopy {
         Scanner scan = new Scanner(in, "UTF8");
         OutputStream out = new FileOutputStream(fileTo);
         BufferedWriter outbw = new BufferedWriter(new OutputStreamWriter(out));
-        
+
         while (scan.hasNext()) {
             outbw.write(scan.nextLine());
             outbw.newLine();
         }
-        
+
         outbw.close();
         scan.close();
     }

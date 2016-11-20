@@ -32,71 +32,71 @@ public class PlayerContainerResident implements PlayerContainer {
     private RealLand land;
 
     public PlayerContainerResident(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public boolean hasAccess(Player player) {
-	return hasAccess(player, land);
+        return hasAccess(player, land);
     }
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {
 
-	if (land == null) {
-	    return false;
-	}
+        if (land == null) {
+            return false;
+        }
 
-	boolean value = land.isResident(player);
-	RealLand actual = land;
-	RealLand parent;
+        boolean value = land.isResident(player);
+        RealLand actual = land;
+        RealLand parent;
 
-	while (!value && (parent = actual.getParent()) != null
-		&& actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean() == true) {
+        while (!value && (parent = actual.getParent()) != null
+                && actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()) {
 
-	    value = parent.isResident(player);
-	    actual = parent;
-	}
+            value = parent.isResident(player);
+            actual = parent;
+        }
 
-	return value;
+        return value;
     }
 
     @Override
     public RealLand getLand() {
-	return land;
+        return land;
     }
 
     @Override
     public void setLand(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public String getName() {
-	return "";
+        return "";
     }
 
     @Override
     public PlayerContainerType getContainerType() {
-	return PlayerContainerType.RESIDENT;
+        return PlayerContainerType.RESIDENT;
     }
 
     @Override
     public String getPrint() {
-	return PlayerContainerType.RESIDENT.getPrint();
+        return PlayerContainerType.RESIDENT.getPrint();
     }
 
     @Override
     public String toFileFormat() {
-	return PlayerContainerType.RESIDENT.getPrint() + ":";
+        return PlayerContainerType.RESIDENT.getPrint() + ":";
     }
 
     @Override
     public int compareTo(PlayerContainer t) {
-	int result = PlayerContainerType.RESIDENT.compareTo(t.getContainerType());
-	if (result == 0) {
-	    return result;
-	}
-	return land.compareTo(t.getLand());
+        int result = PlayerContainerType.RESIDENT.compareTo(t.getContainerType());
+        if (result == 0) {
+            return result;
+        }
+        return land.compareTo(t.getLand());
     }
 }

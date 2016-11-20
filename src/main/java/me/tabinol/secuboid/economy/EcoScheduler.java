@@ -20,6 +20,7 @@ package me.tabinol.secuboid.economy;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.RealLand;
@@ -28,54 +29,52 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Economy scheduler.
- *
- * @author michel
  */
 public class EcoScheduler extends BukkitRunnable {
 
     private final Secuboid secuboid;
 
     public EcoScheduler(Secuboid secuboid) {
-	this.secuboid = secuboid;
+        this.secuboid = secuboid;
     }
 
     @Override
     public void run() {
 
-	Calendar now = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
 
-	// Check for rent renew
-	for (RealLand land : secuboid.getLands().getForRent()) {
+        // Check for rent renew
+        for (RealLand land : secuboid.getLands().getForRent()) {
 
-	    long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
+            long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
 
-	    if (land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
+            if (land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
 
-		//Check if the tenant has enough money or time limit whit no auto renew
-		if (secuboid.getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
-			|| !land.getRentAutoRenew()) {
+                //Check if the tenant has enough money or time limit whit no auto renew
+                if (secuboid.getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
+                        || !land.getRentAutoRenew()) {
 
-		    // Unrent
-		    land.unSetRented();
-		    try {
-			new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(
-				land.getRentPrice(), land.getRentRenew(),
-				land.getRentAutoRenew(), null);
-		    } catch (SignException e) {
-			e.printStackTrace();
-		    }
-		} else {
+                    // Unrent
+                    land.unSetRented();
+                    try {
+                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(
+                                land.getRentPrice(), land.getRentRenew(),
+                                land.getRentAutoRenew(), null);
+                    } catch (SignException e) {
+                        e.printStackTrace();
+                    }
+                } else {
 
-		    // renew rent
-		    secuboid.getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
-			    land.getWorldName(), land.getRentPrice());
-		    if (land.getOwner() instanceof PlayerContainerPlayer) {
-			secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
-				land.getWorldName(), land.getRentPrice());
-		    }
-		    land.setLastPaymentTime(new Timestamp(now.getTime().getTime()));
-		}
-	    }
-	}
+                    // renew rent
+                    secuboid.getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
+                            land.getWorldName(), land.getRentPrice());
+                    if (land.getOwner() instanceof PlayerContainerPlayer) {
+                        secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
+                                land.getWorldName(), land.getRentPrice());
+                    }
+                    land.setLastPaymentTime(new Timestamp(now.getTime().getTime()));
+                }
+            }
+        }
     }
 }

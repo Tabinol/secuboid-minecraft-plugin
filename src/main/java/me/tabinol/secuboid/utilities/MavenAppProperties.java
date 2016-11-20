@@ -36,8 +36,10 @@ import java.util.logging.Logger;
  */
 public class MavenAppProperties {
 
-    /** The properties. */
-    Properties properties;
+    /**
+     * The properties.
+     */
+    private Properties properties;
 
     /**
      * Instantiates a new maven app properties.
@@ -52,7 +54,7 @@ public class MavenAppProperties {
     public void loadProperties() {
 
         try {
-            
+
             File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getCanonicalFile();
             JarFile jar = new JarFile(jarloc);
             JarEntry entry = jar.getJarEntry("app.properties");
@@ -60,7 +62,7 @@ public class MavenAppProperties {
             properties.load(resource);
             resource.close();
             jar.close();
-        
+
         } catch (URISyntaxException ex) {
             Logger.getLogger(MavenAppProperties.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

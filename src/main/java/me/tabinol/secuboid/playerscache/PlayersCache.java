@@ -34,8 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
@@ -165,7 +163,7 @@ public final class PlayersCache extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().write("Name request (Thread wake up...)");
+            secuboid.getLog().debug("Name request (Thread wake up...)");
         } finally {
             lock.unlock();
         }
@@ -210,7 +208,7 @@ public final class PlayersCache extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().write("Name request (Thread wake up...)");
+            secuboid.getLog().debug("Name request (Thread wake up...)");
         } finally {
             lock.unlock();
         }
@@ -243,7 +241,7 @@ public final class PlayersCache extends Thread {
 
                     // Pass 2 check in Minecraft website
                     if (!names.isEmpty()) {
-                        secuboid.getLog().write("HTTP profile request: " + names);
+                        secuboid.getLog().debug("HTTP profile request: " + names);
                         Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[names.size()]));
                         for (Profile profile : profiles) {
                             // Put in the correct position
@@ -251,7 +249,7 @@ public final class PlayersCache extends Thread {
 
                             while (compt != length) {
                                 if (entries[compt] == null) {
-                                    secuboid.getLog().write("HTTP Found : " + profile.getName() + ", " + profile.getId());
+                                    secuboid.getLog().debug("HTTP Found : " + profile.getName() + ", " + profile.getId());
                                     UUID uuid = stringToUUID(profile.getId());
                                     if (uuid != null) {
                                         entries[compt] = new PlayerCacheEntry(uuid,
@@ -277,9 +275,9 @@ public final class PlayersCache extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().write("PlayersCache Thread wake up!");
+                    secuboid.getLog().debug("PlayersCache Thread wake up!");
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Players cache thread error: " + e.getLocalizedMessage());
                 }
             }
             saveAll();
@@ -312,7 +310,7 @@ public final class PlayersCache extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLogger().log(Level.SEVERE, "Problem with Players Cache Thread. Possible data loss!");
+            secuboid.getLog().severe("Problem with Players Cache Thread. Possible data loss!");
             return;
         }
         exitRequest = true;
@@ -321,7 +319,7 @@ public final class PlayersCache extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            secuboid.getLog().severe("Players cache thread error: " + e.getLocalizedMessage());
         } finally {
             lock.unlock();
         }
@@ -363,7 +361,7 @@ public final class PlayersCache extends Thread {
             br.close();
 
         } catch (IOException ex) {
-            Logger.getLogger(PlayersCache.class.getName()).log(Level.SEVERE, "I can't load the players cache list", ex);
+            secuboid.getLog().severe("I can't load the players cache list: " + ex.getLocalizedMessage());
         }
 
     }
@@ -396,7 +394,7 @@ public final class PlayersCache extends Thread {
             bw.close();
 
         } catch (IOException ex) {
-            Logger.getLogger(PlayersCache.class.getName()).log(Level.SEVERE, "I can't save the players cache list", ex);
+            secuboid.getLog().severe("I can't save the players cache list: " + ex.getLocalizedMessage());
         }
     }
 

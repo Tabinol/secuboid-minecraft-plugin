@@ -84,31 +84,6 @@ public class Secuboid extends JavaPlugin {
     private CommandListener commandListener;
 
     /**
-     * The player listener.
-     */
-    private PlayerListener playerListener;
-
-    /**
-     * The player listener.
-     */
-    private PvpListener pvpListener;
-
-    /**
-     * The world listener.
-     */
-    private WorldListener worldListener;
-
-    /**
-     * The land listener.
-     */
-    private LandListener landListener;
-
-    /**
-     * The chat listener.
-     */
-    private ChatListener chatListener;
-
-    /**
      * The inventory listener
      */
     private InventoryListener inventoryListener = null;
@@ -117,11 +92,6 @@ public class Secuboid extends JavaPlugin {
      * The inventory listener
      */
     private FlyCreativeListener flyCreativeListener = null;
-
-    /**
-     * The economy scheduler.
-     */
-    private EcoScheduler ecoScheduler;
 
     /**
      * The approve notif.
@@ -185,7 +155,7 @@ public class Secuboid extends JavaPlugin {
             inventoryConf = new InventoryConfig(this);
         }
 
-        log = new Log(this);
+        log = new Log(conf.isDebug());
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
@@ -201,15 +171,15 @@ public class Secuboid extends JavaPlugin {
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
-        worldListener = new WorldListener(this);
-        playerListener = new PlayerListener(this);
-        pvpListener = new PvpListener(this);
-        landListener = new LandListener(this);
-        chatListener = new ChatListener(this);
+        WorldListener worldListener = new WorldListener(this);
+        PlayerListener playerListener = new PlayerListener(this);
+        PvpListener pvpListener = new PvpListener(this);
+        LandListener landListener = new LandListener(this);
+        ChatListener chatListener = new ChatListener(this);
         commandListener = new CommandListener(this);
         approveNotif = new ApproveNotif(this);
         approveNotif.runApproveNotifLater();
-        ecoScheduler = new EcoScheduler(this);
+        EcoScheduler ecoScheduler = new EcoScheduler(this);
         ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         playersCache = new PlayersCache(this);
         playersCache.start();
@@ -232,7 +202,7 @@ public class Secuboid extends JavaPlugin {
             getServer().getPluginManager().registerEvents(flyCreativeListener, this);
         }
 
-        log.write(getLanguage().getMessage("ENABLE"));
+        log.debug(getLanguage().getMessage("ENABLE"));
     }
 
     /**
@@ -251,7 +221,7 @@ public class Secuboid extends JavaPlugin {
         } else {
             playerMoney = null;
         }
-        log.setDebug(conf.isDebug());
+        log = new Log(conf.isDebug());
         language.reloadConfig();
         lands = new Lands(this);
         storageThread.stopNextRun();
@@ -261,17 +231,10 @@ public class Secuboid extends JavaPlugin {
         approveNotif.runApproveNotifLater();
     }
 
-    /* (non-Javadoc)
-     * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
-     */
-
-    /**
-     *
-     */
     @Override
     public void onDisable() {
 
-        log.write(getLanguage().getMessage("DISABLE"));
+        log.debug(getLanguage().getMessage("DISABLE"));
 
         // Save all inventories
         if (inventoryListener != null) {

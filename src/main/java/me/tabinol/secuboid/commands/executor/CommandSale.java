@@ -54,6 +54,7 @@ public class CommandSale extends CommandExec {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(true, null);
@@ -90,7 +91,7 @@ public class CommandSale extends CommandExec {
             }
 
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
-            secuboid.getLog().write("Sign recreated for land " + land.getName() + " by: " + playerName);
+            secuboid.getLog().debug("Sign recreated for land " + land.getName() + " by: " + playerName);
 
             return;
         }
@@ -117,6 +118,6 @@ public class CommandSale extends CommandExec {
         }
         land.setForSale(true, salePrice, ecoSign.getLocation());
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
-        secuboid.getLog().write("The land " + land.getName() + " is set to for sale by: " + playerName);
+        secuboid.getLog().debug("The land " + land.getName() + " is set to for sale by: " + playerName);
     }
 }

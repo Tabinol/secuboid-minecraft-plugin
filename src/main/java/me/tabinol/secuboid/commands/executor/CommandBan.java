@@ -117,7 +117,7 @@ public class CommandBan extends CommandPlayerThreadExec {
 
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.ISDONE",
                     pc.getPrint() + ChatColor.YELLOW, land.getName()));
-            secuboid.getLog().write("Ban added: " + pc.getPrint());
+            secuboid.getLog().debug("Ban added: " + pc.getPrint());
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
@@ -126,7 +126,7 @@ public class CommandBan extends CommandPlayerThreadExec {
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.REMOVEISDONE",
                     pc.getPrint() + ChatColor.YELLOW, land.getName()));
-            secuboid.getLog().write("Ban removed: " + pc.getPrint());
+            secuboid.getLog().debug("Ban removed: " + pc.getPrint());
         }
     }
 }

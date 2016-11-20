@@ -77,7 +77,7 @@ public class LandListener extends CommonListener implements Listener {
 
             for (Player player : playerHeal) {
                 if (!player.isDead()) {
-                    secuboid.getLog().write("Healing: " + player.getName());
+                    secuboid.getLog().debug("Healing: " + player.getName());
                     foodLevel = player.getFoodLevel();
                     if (foodLevel < 20) {
                         foodLevel += 5;

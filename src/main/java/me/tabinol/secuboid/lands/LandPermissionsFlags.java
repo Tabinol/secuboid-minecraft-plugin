@@ -302,7 +302,7 @@ public class LandPermissionsFlags {
                 }
 
                 if (perm != null) {
-                    secuboid.getLog().write("Container: " + permissionEntry.getKey().toString() + ", "
+                    secuboid.getLog().debug("Container: " + permissionEntry.getKey().toString() + ", "
                             + "PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Inheritable: " + perm.isInheritable());
                     if (!onlyInherit || perm.isInheritable()) {
                         return perm.getValue();
@@ -398,7 +398,7 @@ public class LandPermissionsFlags {
 
         Flag flag = flags.get(ft);
         if (flag != null) {
-            secuboid.getLog().write("Flag: " + flag.toString());
+            secuboid.getLog().debug("Flag: " + flag.toString());
 
             if (!onlyInherit || flag.isInheritable()) {
                 return flag.getValue();

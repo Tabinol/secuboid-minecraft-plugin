@@ -71,6 +71,6 @@ public class CommandPriority extends CommandExec {
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
                 "COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
-        secuboid.getLog().write("Priority for land " + land.getName() + " changed for " + land.getPriority());
+        secuboid.getLog().debug("Priority for land " + land.getName() + " changed for " + land.getPriority());
     }
 }

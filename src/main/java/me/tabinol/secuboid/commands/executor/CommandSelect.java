@@ -86,7 +86,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 	String curArg;
 
 	if (playerConf.getSelection().getArea() == null) {
-	    secuboid.getLog().write(player.getName() + " join select mode");
+	    secuboid.getLog().debug(player.getName() + " join select mode");
 
 	    if (!argList.isLast()) {
 

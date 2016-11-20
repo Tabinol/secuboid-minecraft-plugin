@@ -20,7 +20,6 @@ package me.tabinol.secuboid.config;
 
 import java.util.EnumSet;
 import java.util.TreeSet;
-import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.types.Type;
@@ -71,8 +70,9 @@ public class Config {
         reloadConfig();
     }
 
-    /*
+    /* ************************************************************************
      * ***** CONFIGURATION SECTION *****
+     * ************************************************************************
      */
 
     /**
@@ -514,7 +514,7 @@ public class Config {
         try {
             infoItem = Material.valueOf(infoItemS.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            secuboid.getLogger().log(Level.WARNING, "Error in config.yml on General.InfoItem : No {0} item found in Bukkit! Using default.", infoItemS);
+            secuboid.getLog().warning("Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
             infoItem = Material.BONE;
         }
 
@@ -522,7 +522,7 @@ public class Config {
         try {
             selectItem = Material.valueOf(selectItemS.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            secuboid.getLogger().log(Level.WARNING, "Error in config.yml on General.SelectItem : No {0} item found in Bukkit! Using default.", selectItemS);
+            secuboid.getLog().warning("Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
             selectItem = Material.ROTTEN_FLESH;
         }
 
@@ -551,7 +551,7 @@ public class Config {
             try {
                 defaultNonSelectedMaterials.add(Material.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().log(Level.WARNING, "Error in config.yml on Lands.DefaultNonSelectedMaterials : No {0} item found in Bukkit!", value);
+                secuboid.getLog().warning("Error in config.yml on Lands.DefaultNonSelectedMaterials : No " + value + " item found in Bukkit!");
             }
         }
 
@@ -579,7 +579,7 @@ public class Config {
             try {
                 ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No {0} game mode!", value);
+                secuboid.getLog().warning("Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
             }
         }
 
@@ -593,7 +593,7 @@ public class Config {
             try {
                 creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().log(Level.WARNING, "Error in config.yml on FlyCreativeListener.Creative.BannedItems : No {0} item found in Bukkit!", value);
+                secuboid.getLog().warning("Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + "item found in Bukkit!");
             }
         }
 

@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
@@ -108,14 +106,10 @@ public class StorageFlat implements Storage {
 
         File file = new File(dir);
 
-        try {
-            if (!file.exists()) {
-                if (!file.mkdir()) {
-                    throw new IOException("Unable to create directory " + file.getPath() + ".");
-                }
+        if (!file.exists()) {
+            if (!file.mkdir()) {
+                secuboid.getLog().severe("Unable to create directory " + file.getPath() + ".");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -148,7 +142,7 @@ public class StorageFlat implements Storage {
 
         assert files != null;
         if (files.length == 0) {
-            secuboid.getLog().write(loadedlands + " land(s) loaded.");
+            secuboid.getLog().debug(loadedlands + " land(s) loaded.");
             return;
         }
 
@@ -167,11 +161,11 @@ public class StorageFlat implements Storage {
             if (parent != null) {
                 land.setParent(parent);
             } else {
-                Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: The parent is not found for land: {0}", land);
+                secuboid.getLog().severe("Error: The parent is not found for land: " + land);
             }
         }
 
-        secuboid.getLog().write(loadedlands + " land(s) loaded.");
+        secuboid.getLog().debug(loadedlands + " land(s) loaded.");
     }
 
     /**
@@ -214,7 +208,7 @@ public class StorageFlat implements Storage {
         PlayerContainerPlayer tenant = null;
         Timestamp lastPayment = null;
 
-        secuboid.getLog().write("Open file : " + file.getName());
+        secuboid.getLog().debug("Open file : " + file.getName());
 
         try {
             cf = new ConfLoaderFlat(secuboid, file);
@@ -361,13 +355,13 @@ public class StorageFlat implements Storage {
                             null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
                     orphans.put(land, UUID.fromString(parentUUID));
                 } catch (SecuboidLandException ex) {
-                    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
+                    secuboid.getLog().severe("Error on loading land " + landName + ":" + ex.getLocalizedMessage());
                     return;
                 }
                 isLandCreated = true;
             } else {
                 if (land == null) {
-                    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+                    secuboid.getLog().severe("Error: Land not created: " + landName);
                     return;
                 }
                 land.addArea(entry.getValue(), entry.getKey());
@@ -375,7 +369,7 @@ public class StorageFlat implements Storage {
         }
 
         if (land == null) {
-            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+            secuboid.getLog().severe("Error: Land not created: " + landName);
             return;
         }
 
@@ -427,7 +421,7 @@ public class StorageFlat implements Storage {
                 return;
             }
 
-            secuboid.getLog().write("Saving land: " + land.getName());
+            secuboid.getLog().debug("Saving land: " + land.getName());
             ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), landVersion);
             cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
             cb.writeParam("Owner", land.getOwner().toFileFormat());
@@ -510,21 +504,21 @@ public class StorageFlat implements Storage {
 
             cb.close();
         } catch (IOException ex) {
-            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on saving land: " + land.getName(), ex);
+            secuboid.getLog().severe("Error on saving land " + land.getName() + ":" + ex);
         }
     }
 
     @Override
     public void removeLand(RealLand land) {
         if (!getLandFile(land).delete()) {
-            Logger.getLogger("Secuboid").log(Level.SEVERE, "Enable to delete the land " + land.getName());
+            secuboid.getLog().severe("Enable to delete the land " + land.getName());
         }
     }
 
     @Override
     public void removeLand(UUID landUUID, int landGenealogy) {
         if (!getLandFile(landUUID).delete()) {
-            Logger.getLogger("Secuboid").log(Level.SEVERE, "Enable to delete the land " + landUUID);
+            secuboid.getLog().severe("Enable to delete the land " + landUUID);
         }
     }
 }

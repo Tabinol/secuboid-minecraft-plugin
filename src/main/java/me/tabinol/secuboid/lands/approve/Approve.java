@@ -19,8 +19,6 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
@@ -213,14 +211,14 @@ public class Approve {
                     try {
                         secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
                     } catch (SecuboidLandException ex) {
-                        Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land create", ex);
+                        secuboid.getLog().severe("On land create:" + ex.getLocalizedMessage());
                     }
                     break;
                 case LAND_REMOVE:
                     try {
                         secuboid.getLands().removeLand(landName);
                     } catch (SecuboidLandException ex) {
-                        Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land remove", ex);
+                        secuboid.getLog().severe("On land remove:" + ex.getLocalizedMessage());
                     }
                     break;
                 case LAND_PARENT:

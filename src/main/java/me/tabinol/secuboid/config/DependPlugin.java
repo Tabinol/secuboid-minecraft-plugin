@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.config;
 
-import java.util.logging.Level;
-
 import me.tabinol.secuboid.Secuboid;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -96,11 +94,9 @@ public class DependPlugin {
 
         if (plugin != null) {
             secuboid.getServer().getPluginManager().enablePlugin(plugin);
-            secuboid.getLog().write(pluginName + " detected!");
-            secuboid.getLogger().log(Level.INFO, "{0} detected!", pluginName);
+            secuboid.getLog().info(pluginName + " detected!");
         } else {
-            secuboid.getLog().write(pluginName + " NOT detected!");
-            secuboid.getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
+            secuboid.getLog().info(pluginName + " IS NOT Detected!");
         }
 
         return plugin;

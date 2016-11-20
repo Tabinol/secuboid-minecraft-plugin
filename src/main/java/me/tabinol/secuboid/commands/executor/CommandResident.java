@@ -111,7 +111,7 @@ public class CommandResident extends CommandPlayerThreadExec {
 
             land.addResident(pc);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RESIDENT.ISDONE", pc.getPrint(), land.getName()));
-            secuboid.getLog().write("Resident added: " + pc.toString());
+            secuboid.getLog().debug("Resident added: " + pc.toString());
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
@@ -119,7 +119,7 @@ public class CommandResident extends CommandPlayerThreadExec {
                 throw new SecuboidCommandException(secuboid, "Resident", player, "COMMAND.RESIDENT.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RESIDENT.REMOVEISDONE", pc.getPrint(), land.getName()));
-            secuboid.getLog().write("Resident removed: " + pc.toString());
+            secuboid.getLog().debug("Resident removed: " + pc.toString());
         }
     }
 }

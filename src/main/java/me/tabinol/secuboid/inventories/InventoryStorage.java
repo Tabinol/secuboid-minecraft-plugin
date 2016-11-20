@@ -45,8 +45,8 @@ public class InventoryStorage {
 
     public final static String INV_DIR = "inventories";
     public final static String DEFAULT_INV = "DEFAULTINV";
-    public final static int MAX_FOOD_LEVEL = 20;
-    public final static String DEATH = "DEATH";
+    private final static int MAX_FOOD_LEVEL = 20;
+    private final static String DEATH = "DEATH";
 
     private final Secuboid secuboid;
     private final int storageVersion;
@@ -65,7 +65,7 @@ public class InventoryStorage {
     /**
      * Get a name of Game Mode Inventory type
      */
-    public enum InventoryType {
+    private enum InventoryType {
         CREATIVE,
         SURVIVAL;
 
@@ -91,7 +91,7 @@ public class InventoryStorage {
     }
 
     public void saveInventory(Player player, String invName, boolean isCreative,
-                              boolean isDeath, boolean isSaveAllowed, boolean isDefaultInv, boolean enderChestOnly) throws IOException {
+                              boolean isDeath, boolean isSaveAllowed, boolean isDefaultInv, boolean enderChestOnly) {
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
         if (!isSaveAllowed) {
@@ -105,13 +105,13 @@ public class InventoryStorage {
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                throw new IOException("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                throw new IOException("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
 
@@ -126,7 +126,7 @@ public class InventoryStorage {
             File actFile = new File(file, "/" + player.getUniqueId().toString() + "." + gmName + "." + DEATH + ".9.yml");
             if (actFile.exists()) {
                 if (!actFile.delete()) {
-                    throw new IOException("Impossible to delete the file " + actFile.getPath() + ".");
+                    secuboid.getLog().severe("Impossible to delete the file " + actFile.getPath() + ".");
                 }
             }
             for (int t = 8; t >= 1; t--) {
@@ -135,7 +135,7 @@ public class InventoryStorage {
                 if (actFile.exists()) {
                     if (!actFile.renameTo(new File(file, "/"
                             + player.getUniqueId().toString() + "." + gmName + "." + DEATH + "." + (t + 1) + ".yml"))) {
-                        throw new IOException("Impossible to rename the file " + actFile.getPath() + ".");
+                        secuboid.getLog().severe("Impossible to rename the file " + actFile.getPath() + ".");
                     }
                 }
             }
@@ -208,8 +208,7 @@ public class InventoryStorage {
             ConfigPlayerItemFile.save(playerItemFile);
 
         } catch (IOException ex) {
-            Logger.getLogger(InventoryStorage.class.getName()).log(Level.SEVERE,
-                    "Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath(), ex);
+            secuboid.getLog().severe("Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath());
         }
     }
 
@@ -311,11 +310,9 @@ public class InventoryStorage {
                 }
 
             } catch (IOException ex) {
-                Logger.getLogger(InventoryStorage.class.getName()).log(Level.SEVERE,
-                        "Error on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath(), ex);
+                secuboid.getLog().severe("Error on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
             } catch (InvalidConfigurationException ex) {
-                Logger.getLogger(InventoryStorage.class.getName()).log(Level.SEVERE,
-                        "Invalid configuration on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath(), ex);
+                secuboid.getLog().severe("Invalid configuration on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
             }
         } else if (!fromDeath) {
 
@@ -391,20 +388,16 @@ public class InventoryStorage {
             return;
         }
 
-        try {
-            // If the player is death, save a renamed file
-            if (playerAction == PlayerAction.DEATH && fromInv != null) {
-                saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
-                        true, fromInv.isSaveInventory(), false, false);
-            }
+        // If the player is death, save a renamed file
+        if (playerAction == PlayerAction.DEATH && fromInv != null) {
+            saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
+                    true, fromInv.isSaveInventory(), false, false);
+        }
 
-            // Save last inventory (only EnderChest if death)
-            if (playerAction != PlayerAction.JOIN && fromInv != null) {
-                saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
-                        false, fromInv.isSaveInventory(), false, playerAction == PlayerAction.DEATH);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Save last inventory (only EnderChest if death)
+        if (playerAction != PlayerAction.JOIN && fromInv != null) {
+            saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
+                    false, fromInv.isSaveInventory(), false, playerAction == PlayerAction.DEATH);
         }
 
         // Don't load a new inventory if the player quit

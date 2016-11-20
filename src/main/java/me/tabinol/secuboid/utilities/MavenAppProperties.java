@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.utilities;
 
+import org.bukkit.Bukkit;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +28,6 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  * Load app.properties from Maven properties
@@ -64,9 +64,9 @@ public class MavenAppProperties {
             jar.close();
 
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MavenAppProperties.class.getName()).log(Level.SEVERE, null, ex);
+            Bukkit.getLogger().log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(MavenAppProperties.class.getName()).log(Level.SEVERE, null, ex);
+            Bukkit.getLogger().log(Level.SEVERE, null, ex);
         }
     }
 

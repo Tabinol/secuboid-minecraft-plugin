@@ -36,48 +36,42 @@ public class CommandOwner extends CommandPlayerThreadExec {
     /**
      * Instantiates a new command owner.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandOwner(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	pc = argList.getPlayerContainerFromArg(land,
-		new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-		    PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
-	secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+        pc = argList.getPlayerContainerFromArg(land,
+                new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                        PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
+        secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
-     */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
-	land.setOwner(pc);
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
-	secuboid.getLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
+        land.setOwner(pc);
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
+        secuboid.getLog().write("The land " + land.getName() + "is set to owner: " + pc.getPrint());
 
-	// Cancel the selection
-	new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        // Cancel the selection
+        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
 
     }
 }

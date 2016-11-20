@@ -35,31 +35,31 @@ public class CommandNotify extends CommandExec {
     /**
      * Instantiates a new command notify.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandNotify(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	getLandFromCommandIfNoLandSelected();
-	checkSelections(true, null);
-	checkPermission(true, true, PermissionList.LAND_NOTIFY.getPermissionType(), null);
+        getLandFromCommandIfNoLandSelected();
+        checkSelections(true, null);
+        checkPermission(true, true, PermissionList.LAND_NOTIFY.getPermissionType(), null);
 
-	if (land.isPlayerNotify(playerConf.getPlayerContainer())) {
-	    land.removePlayerNotify(playerConf.getPlayerContainer());
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
-	} else {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
-	    land.addPlayerNotify(playerConf.getPlayerContainer());
-	}
+        if (land.isPlayerNotify(playerConf.getPlayerContainer())) {
+            land.removePlayerNotify(playerConf.getPlayerContainer());
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
+        } else {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
+            land.addPlayerNotify(playerConf.getPlayerContainer());
+        }
     }
 }

@@ -6,7 +6,7 @@ General:                             # ----General Config----
   Lang: english                      # english, french for now (or your own)
   Storage: flat                      # Only flat is supported for now
 
-  # The next value is if you want the Factoid explosion protection.
+  # The next value is if you want the Secuboid explosion protection.
   # Set it to "False" if you prefer to disable explosions from Essentials
   # or avoiding plugin conflicts. Flags (???_DAMAGE) will be ignored.
   OverrideExplosions: true
@@ -41,7 +41,7 @@ Lands:
 
   # AllowCollision:
   # true: Collisions are permitted without verification.
-  # approve: A player with permission factoid.approvecollision must approve
+  # approve: A player with permission secuboid.approvecollision must approve
   #          the land created if there is a collision.
   # false: No collision permitted.
   AllowCollision: approve            # true, approve, false
@@ -53,18 +53,44 @@ Lands:
                                      # or 0 for disabling
   SelectAutoCancel: 12000            # Time before auto cancel a selection
                                      # or 0 for disabling
-  DefaultXsize: 10
+  DefaultXsize: 10                   # Size on selection start
   DefaultZsize: 10
-  DefaultBottom: 0
+  DefaultBottom: 0                   # Default selection high
   DefaultTop: 255
+  DefaultRadius: 10                  # Default selection radius for roads
+  MaxBottom: 0                       # Maximum selection high
+  MaxTop: 255
+  # Not selected blocks in road selection
+  DefaultNonSelectedMaterials:
+    - BEDROCK
+    - DIRT
+    - ENDER_STONE
+    - GRASS
+    - LOG
+    - NETHERRACK
+    - SAND
+    - SOUL_SAND
+    - STONE
   MaxLandPerPlayer: 5
 
   Areas:
     MaxAreaPerLand: 3
 
   OwnerCanSet:                     # What the owner can set on his land?
-    Permissions: [BUILD, OPEN, USE, ANIMAL_KILL, TAMED_KILL, VILLAGER_KILL, VILLAGER_GOLEM_KILL, HORSE_KILL]
-    Flags: [TNT_EXPLOSION, TNT_DAMAGE, MESSAGE_JOIN, MESSAGE_QUIT]
+    Permissions:
+      - BUILD
+      - OPEN
+      - USE
+      - ANIMAL_KILL
+      - TAMED_KILL
+      - VILLAGER_KILL
+      - VILLAGER_GOLEM_KILL
+      - HORSE_KILL
+    Flags:
+      - TNT_EXPLOSION
+      - TNT_DAMAGE
+      - MESSAGE_JOIN
+      - MESSAGE_QUIT
 
 # Fly and Creative configuration (only if general.FlyAndCreative is activated)
 FlyCreative:

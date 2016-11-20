@@ -40,39 +40,39 @@ public class CommandSetspawn extends CommandExec {
     /**
      * Instantiates a new command set spawn.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandSetspawn(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	Location loc = player.getLocation();
+        Location loc = player.getLocation();
 
-	// If the player is not inside the land
-	if (!land.isLocationInside(loc)) {
-	    throw new SecuboidCommandException(secuboid, "On land tp create", player, "COMMAND.TP.OUTSIDE");
-	}
+        // If the player is not inside the land
+        if (!land.isLocationInside(loc)) {
+            throw new SecuboidCommandException(secuboid, "On land tp create", player, "COMMAND.TP.OUTSIDE");
+        }
 
-	// put player position to String
-	String posStr = StringChanges.locationToString(loc);
+        // put player position to String
+        String posStr = StringChanges.locationToString(loc);
 
-	// Set flag
-	Flag flag = secuboid.getPermissionsFlags().newFlag(FlagList.SPAWN.getFlagType(), posStr, true);
-	land.getPermissionsFlags().addFlag(flag);
+        // Set flag
+        Flag flag = secuboid.getPermissionsFlags().newFlag(FlagList.SPAWN.getFlagType(), posStr, true);
+        land.getPermissionsFlags().addFlag(flag);
 
-	player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TP.CREATED"));
+        player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TP.CREATED"));
     }
 
 }

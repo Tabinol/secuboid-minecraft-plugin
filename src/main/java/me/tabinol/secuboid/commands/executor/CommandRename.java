@@ -20,6 +20,7 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -39,58 +40,55 @@ public class CommandRename extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command rename.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandRename(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	String curArg = argList.getNext();
-	if (BannedWords.isBannedWord(curArg)) {
-	    throw new SecuboidCommandException(secuboid, "CommandRename", player, "COMMAND.RENAME.HINTUSE");
-	}
+        String curArg = argList.getNext();
+        if (BannedWords.isBannedWord(curArg)) {
+            throw new SecuboidCommandException(secuboid, "CommandRename", player, "COMMAND.RENAME.HINTUSE");
+        }
 
-	// Check for collision
-	checkCollision(curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
-		null, land.getParent(), land.getOwner(), true);
+        // Check for collision
+        checkCollision(curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
+                null, land.getParent(), land.getOwner(), true);
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-	// Check for collision
-	if (collisions.hasCollisions()) {
-	    return;
-	}
+        // Check for collision
+        if (collisions.hasCollisions()) {
+            return;
+        }
 
-	String oldName = land.getName();
-	String newName = collisions.getLandName();
+        String oldName = land.getName();
+        String newName = collisions.getLandName();
 
-	try {
-	    secuboid.getLands().renameLand(oldName, newName);
-	} catch (SecuboidLandException ex) {
-	    Logger.getLogger(CommandRename.class.getName()).log(Level.SEVERE, "On land rename", ex);
-	    throw new SecuboidCommandException(secuboid, "On land rename", player, "GENERAL.ERROR");
-	}
-	player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, newName));
-	secuboid.getLog().write(playerName + " has renamed " + oldName + " to " + newName);
+        try {
+            secuboid.getLands().renameLand(oldName, newName);
+        } catch (SecuboidLandException ex) {
+            Logger.getLogger(CommandRename.class.getName()).log(Level.SEVERE, "On land rename", ex);
+            throw new SecuboidCommandException(secuboid, "On land rename", player, "GENERAL.ERROR");
+        }
+        player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, newName));
+        secuboid.getLog().write(playerName + " has renamed " + oldName + " to " + newName);
 
-	// Cancel the selection
-	new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        // Cancel the selection
+        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
     }
 }

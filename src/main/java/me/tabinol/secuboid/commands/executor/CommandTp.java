@@ -38,46 +38,46 @@ public class CommandTp extends CommandExec {
     /**
      * Instantiates a new command teleport.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandTp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = argList.getNext();
-	land = secuboid.getLands().getLand(curArg);
+        String curArg = argList.getNext();
+        land = secuboid.getLands().getLand(curArg);
 
-	// Land not found
-	if (land == null) {
-	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.LANDNOTFOUND");
-	}
+        // Land not found
+        if (land == null) {
+            throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.LANDNOTFOUND");
+        }
 
-	// Check adminmode or permission TP
-	checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
+        // Check adminmode or permission TP
+        checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
-	// Try to get Location
-	FlagValue value = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
+        // Try to get Location
+        FlagValue value = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
 
-	if (value.getValueString().isEmpty()) {
-	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.NOSPAWN");
-	}
+        if (value.getValueString().isEmpty()) {
+            throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.NOSPAWN");
+        }
 
-	Location location = StringChanges.stringToLocation(value.getValueString());
+        Location location = StringChanges.stringToLocation(value.getValueString());
 
-	if (location == null) {
-	    throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.INVALID");
-	}
+        if (location == null) {
+            throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.INVALID");
+        }
 
-	// Teleport player
-	player.teleport(location);
+        // Teleport player
+        player.teleport(location);
     }
 }

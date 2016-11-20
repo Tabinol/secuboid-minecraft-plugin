@@ -35,28 +35,25 @@ public class CommandDefault extends CommandExec {
     /**
      * Instantiates a new command default.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandDefault(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, land, 0));
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
+        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, land, 0));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

@@ -36,51 +36,48 @@ public class CommandKick extends CommandExec {
     /**
      * Instantiates a new command kick.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandKick(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String playerKickName = argList.getNext();
+        String playerKickName = argList.getNext();
 
-	getLandFromCommandIfNoLandSelected();
+        getLandFromCommandIfNoLandSelected();
 
-	// Only if it is from Kick command
-	checkSelections(true, null);
-	checkPermission(true, true, PermissionList.LAND_KICK.getPermissionType(), null);
+        // Only if it is from Kick command
+        checkSelections(true, null);
+        checkPermission(true, true, PermissionList.LAND_KICK.getPermissionType(), null);
 
-	// No player name?
-	if (playerKickName == null) {
-	    throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.PLAYERNULL");
-	}
+        // No player name?
+        if (playerKickName == null) {
+            throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.PLAYERNULL");
+        }
 
-	@SuppressWarnings("deprecation")
-	Player playerKick = secuboid.getServer().getPlayer(playerKickName);
+        @SuppressWarnings("deprecation")
+        Player playerKick = secuboid.getServer().getPlayer(playerKickName);
 
-	// Player not in land?
-	if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
-		|| secuboid.getPlayerConf().get(playerKick).isAdminMode()
-		|| playerKick.hasPermission("secuboid.bypassban")) {
-	    throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.NOTINLAND");
-	}
+        // Player not in land?
+        if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
+                || secuboid.getPlayerConf().get(playerKick).isAdminMode()
+                || playerKick.hasPermission("secuboid.bypassban")) {
+            throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.NOTINLAND");
+        }
 
-	//Kick the player
-	playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
-	playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
-	secuboid.getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
+        //Kick the player
+        playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
+        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
+        secuboid.getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
     }
 }

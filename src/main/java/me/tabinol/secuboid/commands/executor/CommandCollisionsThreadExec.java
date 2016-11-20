@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Calendar;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -38,54 +39,27 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CommandCollisionsThreadExec extends CommandExec {
 
-    /**
-     *
-     */
-    protected boolean addForApprove = false;
-
-    /**
-     *
-     */
-    protected Type type = null;
-
-    /**
-     *
-     */
-    protected Collisions.LandAction action = null;
-
-    /**
-     *
-     */
-    protected int removeId = 0;
-
-    /**
-     *
-     */
-    protected Area newArea = null;
-
-    /**
-     *
-     */
-    protected PlayerContainer owner = null;
-
-    /**
-     *
-     */
-    protected RealLand parent = null;
+    private boolean addForApprove = false;
+    private Collisions.LandAction action = null;
+    Type type = null;
+    int removeId = 0;
+    Area newArea = null;
+    PlayerContainer owner = null;
+    RealLand parent = null;
 
     /**
      * Instantiates a new command collisions thread exec.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandCollisionsThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     /**
@@ -95,38 +69,38 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public abstract void commandThreadExecute(Collisions collisions)
-	    throws SecuboidCommandException;
+            throws SecuboidCommandException;
 
     /**
      * Check collision. Why Land paramater? The land can be an other land, not the land stored here.
      *
-     * @param landName the land name
-     * @param land the land
-     * @param type the type
-     * @param action the action
-     * @param removeId the remove id
-     * @param newArea the new area
-     * @param parent the parent
-     * @param owner the owner of the land (PlayerContainer)
+     * @param landName      the land name
+     * @param land          the land
+     * @param type          the type
+     * @param action        the action
+     * @param removeId      the remove id
+     * @param newArea       the new area
+     * @param parent        the parent
+     * @param owner         the owner of the land (PlayerContainer)
      * @param addForApprove the add for approve
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkCollision(String landName, RealLand land, Type type, Collisions.LandAction action,
-	    int removeId, Area newArea, RealLand parent, PlayerContainer owner,
-	    boolean addForApprove) throws SecuboidCommandException {
+    void checkCollision(String landName, RealLand land, Type type, Collisions.LandAction action,
+                        int removeId, Area newArea, RealLand parent, PlayerContainer owner,
+                        boolean addForApprove) throws SecuboidCommandException {
 
-	// allowApprove: false: The command can absolutely not be done if there is error!
-	this.addForApprove = addForApprove;
-	this.type = type;
-	this.action = action;
-	this.removeId = removeId;
-	this.newArea = newArea;
-	this.owner = owner;
-	this.parent = parent;
-	boolean isFree = !isPlayerMustPay();
-	Collisions coll = new Collisions(secuboid, landName, land, action, removeId, newArea, parent,
-		owner, isFree, !addForApprove);
-	secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
+        // allowApprove: false: The command can absolutely not be done if there is error!
+        this.addForApprove = addForApprove;
+        this.type = type;
+        this.action = action;
+        this.removeId = removeId;
+        this.newArea = newArea;
+        this.owner = owner;
+        this.parent = parent;
+        boolean isFree = !isPlayerMustPay();
+        Collisions coll = new Collisions(secuboid, landName, land, action, removeId, newArea, parent,
+                owner, isFree, !addForApprove);
+        secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
     }
 
     /**
@@ -137,28 +111,28 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      */
     public void commandThreadParentExecute(Collisions collisions) throws SecuboidCommandException {
 
-	boolean allowApprove = collisions.getAllowApprove();
+        boolean allowApprove = collisions.getAllowApprove();
 
-	if (collisions.hasCollisions()) {
-	    sender.sendMessage(collisions.getPrints());
+        if (collisions.hasCollisions()) {
+            sender.sendMessage(collisions.getPrints());
 
-	    if (addForApprove) {
-		if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove == true) {
+            if (addForApprove) {
+                if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove) {
 
-		    sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
-		    secuboid.getLog().write("land " + collisions.getLandName() + " has collision and needs approval.");
-		    secuboid.getLands().getApproveList().addApprove(new Approve(secuboid, collisions.getLandName(), type, action, removeId, newArea,
-			    owner, parent, collisions.getPrice(), Calendar.getInstance()));
-		    new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+                    sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
+                    secuboid.getLog().write("land " + collisions.getLandName() + " has collision and needs approval.");
+                    secuboid.getLands().getApproveList().addApprove(new Approve(secuboid, collisions.getLandName(), type, action, removeId, newArea,
+                            owner, parent, collisions.getPrice(), Calendar.getInstance()));
+                    new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
 
-		} else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || allowApprove == false) {
+                } else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || !allowApprove) {
 
-		    throw new SecuboidCommandException(secuboid, "Land collision", sender, "COLLISION.GENERAL.CANNOTDONE");
-		}
-	    }
-	}
+                    throw new SecuboidCommandException(secuboid, "Land collision", sender, "COLLISION.GENERAL.CANNOTDONE");
+                }
+            }
+        }
 
-	commandThreadExecute(collisions);
+        commandThreadExecute(collisions);
     }
 
     /**
@@ -166,11 +140,11 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      *
      * @return true, if is player must pay
      */
-    protected boolean isPlayerMustPay() {
-	// Is Economy?
+    private boolean isPlayerMustPay() {
+        // Is Economy?
 
-	return !(secuboid.getPlayerMoney() == null
-		|| !secuboid.getConf().useEconomy()
-		|| playerConf.isAdminMode());
+        return !(secuboid.getPlayerMoney() == null
+                || !secuboid.getConf().useEconomy()
+                || playerConf.isAdminMode());
     }
 }

@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.io.File;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -34,8 +35,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Represents an inventory command.
- *
- * @author michel
  */
 @InfoCommand(name = "inv", aliases = {"inventory"}, allowConsole = true, forceParameter = true)
 public class CommandInv extends CommandExec {
@@ -43,115 +42,114 @@ public class CommandInv extends CommandExec {
     /**
      * Instantiates a new command inventory.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandInv(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	// Verify if Multiple inventories is active
-	if (secuboid.getInventoryConf() == null) {
-	    throw new SecuboidCommandException(secuboid, "Multiple Inventories is not active", player, "COMMAND.INV.NOTACTIVE");
-	}
+        // Verify if Multiple inventories is active
+        if (secuboid.getInventoryConf() == null) {
+            throw new SecuboidCommandException(secuboid, "Multiple Inventories is not active", player, "COMMAND.INV.NOTACTIVE");
+        }
 
-	checkPermission(false, false, PermissionList.RESIDENT_MANAGER.getPermissionType(), null);
+        checkPermission(false, false, PermissionList.RESIDENT_MANAGER.getPermissionType(), null);
 
-	String function = argList.getNext();
+        String function = argList.getNext();
 
-	if (function.equalsIgnoreCase("default")) {
-	    checkPermission(false, false, null, InventoryConfig.PERM_DEFAULT);
-	    saveDefault();
-	} else if (function.equalsIgnoreCase("loaddeath")) {
-	    checkPermission(false, false, null, InventoryConfig.PERM_LOADDEATH);
-	    loadDeath();
-	} else if (function.equalsIgnoreCase("forcesave")) {
-	    checkPermission(false, false, null, InventoryConfig.PERM_FORCESAVE);
-	    forceSave();
-	} else {
-	    throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
-	}
+        if (function.equalsIgnoreCase("default")) {
+            checkPermission(false, false, null, InventoryConfig.PERM_DEFAULT);
+            saveDefault();
+        } else if (function.equalsIgnoreCase("loaddeath")) {
+            checkPermission(false, false, null, InventoryConfig.PERM_LOADDEATH);
+            loadDeath();
+        } else if (function.equalsIgnoreCase("forcesave")) {
+            checkPermission(false, false, null, InventoryConfig.PERM_FORCESAVE);
+            forceSave();
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
+        }
     }
 
     private void saveDefault() throws SecuboidCommandException {
 
-	if (player == null) {
-	    throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
-	}
+        if (player == null) {
+            throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
+        }
 
-	// Get the land name
-	InventorySpec invSpec = secuboid.getInventoryListener().getPlayerInvEntry(player).getActualInv();
-	String subCom = argList.getNext();
+        // Get the land name
+        InventorySpec invSpec = secuboid.getInventoryListener().getPlayerInvEntry(player).getActualInv();
+        String subCom = argList.getNext();
 
-	if (subCom != null && subCom.equalsIgnoreCase("save")) {
+        if (subCom != null && subCom.equalsIgnoreCase("save")) {
 
-	    // Save the inventory
-	    secuboid.getInventoryListener().saveDefaultInventory(player, invSpec);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTSAVE"));
+            // Save the inventory
+            secuboid.getInventoryListener().saveDefaultInventory(player, invSpec);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTSAVE"));
 
-	} else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
+        } else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
 
-	    // Remove inventory
-	    new File(secuboid.getDataFolder()
-		    + "/" + InventoryStorage.INV_DIR + "/" + invSpec.getInventoryName() + "/" + InventoryStorage.DEFAULT_INV + ".yml").delete();
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));
+            // Remove inventory
+            new File(secuboid.getDataFolder()
+                    + "/" + InventoryStorage.INV_DIR + "/" + invSpec.getInventoryName() + "/" + InventoryStorage.DEFAULT_INV + ".yml").delete();
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));
 
-	} else {
+        } else {
 
-	    // Bad parameter
-	    player.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.ERRORSAVEREMOVE"));
-	}
+            // Bad parameter
+            player.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.ERRORSAVEREMOVE"));
+        }
     }
 
     private void loadDeath() throws SecuboidCommandException {
 
-	String playerName = argList.getNext();
+        String playerName = argList.getNext();
 
-	if (playerName == null) {
-	    throw new SecuboidCommandException(secuboid, "No player!", sender, "COMMAND.INV.ERRORNOPLAYER");
-	}
+        if (playerName == null) {
+            throw new SecuboidCommandException(secuboid, "No player!", sender, "COMMAND.INV.ERRORNOPLAYER");
+        }
 
-	// Check for player
-	@SuppressWarnings("deprecation")
-	Player player = Bukkit.getPlayer(playerName);
+        // Check for player
+        Player player = Bukkit.getPlayer(playerName);
 
-	if (player == null) {
-	    throw new SecuboidCommandException(secuboid, "Player offline!", sender, "COMMAND.INV.ERRORPLAYEROFFLINE");
-	}
+        if (player == null) {
+            throw new SecuboidCommandException(secuboid, "Player offline!", sender, "COMMAND.INV.ERRORPLAYEROFFLINE");
+        }
 
-	// Check for the last time version
-	int lastTime;
-	String stNumber = argList.getNext();
-	if (stNumber != null) {
-	    try {
-		lastTime = Integer.parseInt(stNumber);
-	    } catch (NumberFormatException ex) {
-		// Number unreadable
-		lastTime = 1;
-	    }
-	} else {
-	    lastTime = 1;
-	}
+        // Check for the last time version
+        int lastTime;
+        String stNumber = argList.getNext();
+        if (stNumber != null) {
+            try {
+                lastTime = Integer.parseInt(stNumber);
+            } catch (NumberFormatException ex) {
+                // Number unreadable
+                lastTime = 1;
+            }
+        } else {
+            lastTime = 1;
+        }
 
-	// Execute
-	if (!secuboid.getInventoryListener().loadDeathInventory(player, lastTime)) {
-	    throw new SecuboidCommandException(secuboid, "Death save not found!", sender, "COMMAND.INV.ERRORDEATHNOTFOUND");
-	}
+        // Execute
+        if (!secuboid.getInventoryListener().loadDeathInventory(player, lastTime)) {
+            throw new SecuboidCommandException(secuboid, "Death save not found!", sender, "COMMAND.INV.ERRORDEATHNOTFOUND");
+        }
 
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEATHDONE",
-		player.getName()));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEATHDONE",
+                player.getName()));
     }
 
     private void forceSave() {
-	secuboid.getInventoryListener().forceSave();
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.SAVEDONE"));
+        secuboid.getInventoryListener().forceSave();
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.SAVEDONE"));
     }
 }

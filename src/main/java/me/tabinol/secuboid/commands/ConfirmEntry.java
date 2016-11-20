@@ -25,24 +25,23 @@ import me.tabinol.secuboid.lands.RealLand;
  */
 public class ConfirmEntry {
 
-    // Represent a Entry for a "/secuboid confirm"
     /**
-     * The Enum ConfirmType.
+     * The Enum ConfirmType. Represent a Entry for a "/secuboid confirm".
      */
     public enum ConfirmType {
 
-	/**
-	 * The remove land.
-	 */
-	REMOVE_LAND,
-	/**
-	 * The remove area.
-	 */
-	REMOVE_AREA,
-	/**
-	 * The land default.
-	 */
-	LAND_DEFAULT;
+        /**
+         * The remove land.
+         */
+        REMOVE_LAND,
+        /**
+         * The remove area.
+         */
+        REMOVE_AREA,
+        /**
+         * The land default.
+         */
+        LAND_DEFAULT;
     }
 
     /**
@@ -64,13 +63,13 @@ public class ConfirmEntry {
      * Instantiates a new confirm entry.
      *
      * @param confirmType the confirm type
-     * @param land the land
-     * @param areaNb the area nb
+     * @param land        the land
+     * @param areaNb      the area nb
      */
     public ConfirmEntry(ConfirmType confirmType, RealLand land, int areaNb) {
 
-	this.confirmType = confirmType;
-	this.land = land;
-	this.areaNb = areaNb;
+        this.confirmType = confirmType;
+        this.land = land;
+        this.areaNb = areaNb;
     }
 }

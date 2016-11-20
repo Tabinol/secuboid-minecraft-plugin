@@ -34,39 +34,39 @@ public class CommandRemove extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command remove.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandRemove(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	// Check for collision
-	checkCollision(land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
-		0, null, land.getParent(), land.getOwner(), true);
+        // Check for collision
+        checkCollision(land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
+                0, null, land.getParent(), land.getOwner(), true);
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-	// Check for collision
-	if (collisions.hasCollisions()) {
-	    return;
-	}
+        // Check for collision
+        if (collisions.hasCollisions()) {
+            return;
+        }
 
-	new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
-	playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, land, 0));
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
+        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, land, 0));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

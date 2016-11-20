@@ -39,42 +39,42 @@ public class CommandHelp extends CommandExec {
     /**
      * Instantiates a new command help.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandHelp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	if (commandName == null) {
-	    String arg = argList.getNext();
+        if (commandName == null) {
+            String arg = argList.getNext();
 
-	    if (arg == null) {
-		commandName = "GENERAL";
-	    } else {
-		// Will throw an exception if the command name is invalid
-		try {
-		    InfoCommand infoCommandLocal = secuboid.getCommandListener().getInfoCommand(arg);
-		    if (infoCommandLocal != null) {
-			commandName = infoCommandLocal.name().toUpperCase();
-		    } else {
-			// Invalid command, just arg and will run Exception with showHelp()
-			commandName = arg;
-		    }
-		} catch (IllegalArgumentException ex) {
-		    commandName = "GENERAL";
-		}
-	    }
-	}
+            if (arg == null) {
+                commandName = "GENERAL";
+            } else {
+                // Will throw an exception if the command name is invalid
+                try {
+                    InfoCommand infoCommandLocal = secuboid.getCommandListener().getInfoCommand(arg);
+                    if (infoCommandLocal != null) {
+                        commandName = infoCommandLocal.name().toUpperCase();
+                    } else {
+                        // Invalid command, just arg and will run Exception with showHelp()
+                        commandName = arg;
+                    }
+                } catch (IllegalArgumentException ex) {
+                    commandName = "GENERAL";
+                }
+            }
+        }
 
-	showHelp();
+        showHelp();
     }
 
     /**
@@ -84,18 +84,18 @@ public class CommandHelp extends CommandExec {
      */
     private void showHelp() throws SecuboidCommandException {
 
-	String help = secuboid.getLanguage().getHelp("SECUBOID", commandName);
+        String help = secuboid.getLanguage().getHelp("SECUBOID", commandName);
 
-	// If there is no help for this command
-	if (help == null) {
-	    throw new SecuboidCommandException(secuboid, "Command with no help", sender, "HELP.NOHELP");
-	}
+        // If there is no help for this command
+        if (help == null) {
+            throw new SecuboidCommandException(secuboid, "Command with no help", sender, "HELP.NOHELP");
+        }
 
-	if (commandName.equals("GENERAL")) {
-	    new ChatPage(secuboid, "HELP.LISTSTART", help, sender, null).getPage(1);
-	} else {
-	    sender.sendMessage(help);
-	}
+        if (commandName.equals("GENERAL")) {
+            new ChatPage(secuboid, "HELP.LISTSTART", help, sender, null).getPage(1);
+        } else {
+            sender.sendMessage(help);
+        }
     }
 
 }

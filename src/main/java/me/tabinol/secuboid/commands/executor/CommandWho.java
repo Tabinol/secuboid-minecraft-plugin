@@ -38,35 +38,35 @@ public class CommandWho extends CommandExec {
     /**
      * Instantiates a new command who.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandWho(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	getLandFromCommandIfNoLandSelected();
-	checkSelections(true, null);
-	checkPermission(true, true, PermissionList.LAND_WHO.getPermissionType(), null);
+        getLandFromCommandIfNoLandSelected();
+        checkSelections(true, null);
+        checkPermission(true, true, PermissionList.LAND_WHO.getPermissionType(), null);
 
-	// Create list
-	StringBuilder stList = new StringBuilder();
-	for (Player player : land.getPlayersInLandNoVanish(player)) {
-	    stList.append(player.getDisplayName()).append(Config.NEWLINE);
-	}
+        // Create list
+        StringBuilder stList = new StringBuilder();
+        for (Player playerListed : land.getPlayersInLandNoVanish(player)) {
+            stList.append(playerListed.getDisplayName()).append(Config.NEWLINE);
+        }
 
-	if (stList.length() != 0) {
-	    new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
-	} else {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
-	}
+        if (stList.length() != 0) {
+            new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+        } else {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
+        }
     }
 }

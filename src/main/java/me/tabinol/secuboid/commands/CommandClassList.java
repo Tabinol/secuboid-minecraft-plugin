@@ -33,7 +33,6 @@ public enum CommandClassList {
     CONFIRM(CommandConfirm.class),
     CREATE(CommandCreate.class),
     DEFAULT(CommandDefault.class),
-    EXPAND(CommandExpand.class),
     FLAG(CommandFlag.class),
     HELP(CommandHelp.class),
     INFO(CommandInfo.class),
@@ -63,11 +62,11 @@ public enum CommandClassList {
 
     private CommandClassList(Class<?> commandClass) {
 
-	this.commandClass = commandClass;
+        this.commandClass = commandClass;
     }
 
     public Class<?> getCommandClass() {
 
-	return commandClass;
+        return commandClass;
     }
 }

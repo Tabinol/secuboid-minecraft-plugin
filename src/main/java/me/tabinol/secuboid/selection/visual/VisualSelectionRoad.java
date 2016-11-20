@@ -19,10 +19,10 @@
 package me.tabinol.secuboid.selection.visual;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.GlobalLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
@@ -31,7 +31,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
- * The visual selection cuboid class.
+ * The visual selection cuboid class. Parent is not detected.
  */
 public class VisualSelectionRoad implements VisualSelection {
 
@@ -54,11 +54,6 @@ public class VisualSelectionRoad implements VisualSelection {
      */
     private boolean isCollision;
 
-    /**
-     * Parent detected
-     */
-    private Land parentDetected;
-
     private RoadArea area;
 
     public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
@@ -67,7 +62,6 @@ public class VisualSelectionRoad implements VisualSelection {
         this.isFromLand = isFromLand;
         this.player = player;
         isCollision = false;
-        parentDetected = null;
         this.area = area;
     }
 
@@ -88,9 +82,6 @@ public class VisualSelectionRoad implements VisualSelection {
 
     @Override
     public RealLand getParentDetected() {
-        if (parentDetected.isRealLand()) {
-            return (RealLand) parentDetected;
-        }
         return null;
     }
 
@@ -105,11 +96,8 @@ public class VisualSelectionRoad implements VisualSelection {
         isCollision = false;
 
         Location loc = player.getLocation();
-        int landXr = secuboid.getConf().getDefaultXSize() / 2;
-        int landZr = secuboid.getConf().getDefaultZSize() / 2;
-        //area = new CuboidArea(loc.getWorld().getName(),
-                //loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-                //loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
+        area = new RoadArea(loc.getWorld().getName(), secuboid.getConf().getDefaultBottom(),
+                secuboid.getConf().getDefaultTop(), null);
 
         makeVisualSelection();
     }
@@ -117,32 +105,9 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public void makeVisualSelection() {
 
-        // Detect the curent land from the 8 points
-        Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
-        Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
-        Land Land3 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
-        Land Land4 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
-        Land Land5 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
-        Land Land6 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
-        Land Land7 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
-        Land Land8 = secuboid.getLands().getLandOrOutsideArea(new Location(
-                area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
-
-        if (Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
-                && Land1 == Land7 && Land1 == Land8) {
-            parentDetected = Land1;
-        } else {
-            parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
-        }
-
-        boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+        GlobalLand outsideArea = secuboid.getLands().getOutsideArea(area.getWorldName());
+        boolean canCreate = outsideArea.getPermissionsFlags()
+                .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
         //MakeSquare
         for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
@@ -156,7 +121,7 @@ public class VisualSelectionRoad implements VisualSelection {
 
                         // Active Selection
                         Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
-                        if (parentDetected == testCuboidarea
+                        if (outsideArea == testCuboidarea
                                 && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
                             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
                         } else {
@@ -198,12 +163,6 @@ public class VisualSelectionRoad implements VisualSelection {
 
         switch (moveType) {
             case ACTIVE:
-
-                removeSelection();
-                setActiveSelection();
-                break;
-
-            case EXPAND:
 
                 removeSelection();
                 Location playerLoc = player.getLocation();

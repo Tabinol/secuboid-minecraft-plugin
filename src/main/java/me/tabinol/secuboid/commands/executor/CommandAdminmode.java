@@ -34,18 +34,16 @@ public class CommandAdminmode extends CommandExec {
     /**
      * Instantiates a new command adminmode.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
-     *
-     *
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandAdminmode(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -54,14 +52,14 @@ public class CommandAdminmode extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkPermission(false, false, null, "secuboid.adminmode");
+        checkPermission(false, false, null, "secuboid.adminmode");
 
-	if (playerConf.isAdminMode()) {
-	    playerConf.setAdminMode(false);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.QUIT"));
-	} else {
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.JOIN"));
-	    playerConf.setAdminMode(true);
-	}
+        if (playerConf.isAdminMode()) {
+            playerConf.setAdminMode(false);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.QUIT"));
+        } else {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ADMINMODE.JOIN"));
+            playerConf.setAdminMode(true);
+        }
     }
 }

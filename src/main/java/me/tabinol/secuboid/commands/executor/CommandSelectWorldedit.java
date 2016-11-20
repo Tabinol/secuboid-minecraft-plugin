@@ -35,12 +35,11 @@ import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-// WorldEdit is in a separate class from CommandSelect because if WorldEdit
-// is not installed, we don't want to makes error.
 /**
  * The Class CommandSelectWorldedit.
+ * WorldEdit is in a separate class from CommandSelect because if WorldEdit is not installed, we don't want to makes error.
  */
-public class CommandSelectWorldedit {
+class CommandSelectWorldedit {
 
     private final Secuboid secuboid;
 
@@ -52,21 +51,21 @@ public class CommandSelectWorldedit {
     /**
      * The entry.
      */
-    PlayerConfEntry entry;
+    private PlayerConfEntry entry;
 
     /**
      * Instantiates a new command select worldedit.
      *
      * @param secuboid secuboid instance
-     * @param player the player
-     * @param entry the entry
+     * @param player   the player
+     * @param entry    the entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSelectWorldedit(Secuboid secuboid, Player player, PlayerConfEntry entry) throws SecuboidCommandException {
+    CommandSelectWorldedit(Secuboid secuboid, Player player, PlayerConfEntry entry) throws SecuboidCommandException {
 
-	this.secuboid = secuboid;
-	this.player = player;
-	this.entry = entry;
+        this.secuboid = secuboid;
+        this.player = player;
+        this.entry = entry;
     }
 
     /**
@@ -74,44 +73,44 @@ public class CommandSelectWorldedit {
      *
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void MakeSelect() throws SecuboidCommandException {
+    void MakeSelect() throws SecuboidCommandException {
 
-	if (secuboid.getDependPlugin().getWorldEdit() == null) {
-	    throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
-	}
-	LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
+        if (secuboid.getDependPlugin().getWorldEdit() == null) {
+            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
+        }
+        LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
 
-	try {
-	    Region sel;
-	    if (session.getSelectionWorld() == null
-		    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
-		    || sel instanceof CylinderRegion))) {
-		throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
-	    }
+        try {
+            Region sel;
+            if (session.getSelectionWorld() == null
+                    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
+                    || sel instanceof CylinderRegion))) {
+                throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
+            }
 
-	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
-	    secuboid.getLog().write(secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
+            secuboid.getLog().write(secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
 
-	    AreaSelection select;
-	    if (sel instanceof CuboidRegion) {
-		select = new AreaSelection(secuboid, player, new CuboidArea(player.getWorld().getName(),
-			sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-			sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
-			sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-			false, AreaType.CUBOID, MoveType.PASSIVE);
-	    } else {
-		select = new AreaSelection(secuboid, player, new CylinderArea(player.getWorld().getName(),
-			sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-			sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
-			sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-			false, AreaType.CYLINDER, MoveType.PASSIVE);
-	    }
+            AreaSelection select;
+            if (sel instanceof CuboidRegion) {
+                select = new AreaSelection(secuboid, player, new CuboidArea(player.getWorld().getName(),
+                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
+                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                        false, AreaType.CUBOID, MoveType.PASSIVE);
+            } else {
+                select = new AreaSelection(secuboid, player, new CylinderArea(player.getWorld().getName(),
+                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
+                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
+                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                        false, AreaType.CYLINDER, MoveType.PASSIVE);
+            }
 
-	    entry.getSelection().addSelection(select);
-	    entry.setAutoCancelSelect(true);
+            entry.getSelection().addSelection(select);
+            entry.setAutoCancelSelect(true);
 
-	} catch (IncompleteRegionException ex) {
-	    throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
-	}
+        } catch (IncompleteRegionException ex) {
+            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
+        }
     }
 }

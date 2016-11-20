@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.selection.region;
 
 import java.util.TreeMap;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -50,19 +51,19 @@ public class LandSelection implements RegionSelection {
      * Instantiates a new land selection.
      *
      * @param secuboid secuboid instance
-     * @param player the player
-     * @param land the land
+     * @param player   the player
+     * @param land     the land
      */
     public LandSelection(Secuboid secuboid, Player player, RealLand land) {
 
-	this.player = player;
-	this.land = land;
-	visualAreas = new TreeMap<Area, AreaSelection>();
+        this.player = player;
+        this.land = land;
+        visualAreas = new TreeMap<Area, AreaSelection>();
 
-	// Add visual areas
-	for (Area area : land.getAreas()) {
-	    visualAreas.put(area, new AreaSelection(secuboid, player, area, true, null, MoveType.PASSIVE));
-	}
+        // Add visual areas
+        for (Area area : land.getAreas()) {
+            visualAreas.put(area, new AreaSelection(secuboid, player, area, true, null, MoveType.PASSIVE));
+        }
     }
 
     /**
@@ -71,25 +72,21 @@ public class LandSelection implements RegionSelection {
      * @return the land
      */
     public RealLand getLand() {
-
-	return land;
+        return land;
     }
 
     @Override
     public PlayerSelection.SelectionType getSelectionType() {
-	return PlayerSelection.SelectionType.LAND;
+        return PlayerSelection.SelectionType.LAND;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.selection.region.RegionSelection#removeSelection()
-     */
     @Override
     public void removeSelection() {
 
-	for (AreaSelection areaSel : visualAreas.values()) {
-	    areaSel.removeSelection();
-	}
+        for (AreaSelection areaSel : visualAreas.values()) {
+            areaSel.removeSelection();
+        }
 
-	visualAreas.clear();
+        visualAreas.clear();
     }
 }

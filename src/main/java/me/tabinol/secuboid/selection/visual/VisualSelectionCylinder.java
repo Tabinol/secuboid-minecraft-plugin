@@ -31,8 +31,6 @@ import org.bukkit.entity.Player;
 
 /**
  * The visual selection cylinder class.
- *
- * @author michel
  */
 public class VisualSelectionCylinder implements VisualSelection {
 
@@ -59,13 +57,13 @@ public class VisualSelectionCylinder implements VisualSelection {
     private CylinderArea area;
 
     public VisualSelectionCylinder(Secuboid secuboid, CylinderArea area, boolean isFromLand, Player player) {
-	this.secuboid = secuboid;
-	changedBlocks = new ChangedBlocks(player);
-	this.isFromLand = isFromLand;
-	this.player = player;
-	isCollision = false;
-	parentDetected = null;
-	this.area = area;
+        this.secuboid = secuboid;
+        changedBlocks = new ChangedBlocks(player);
+        this.isFromLand = isFromLand;
+        this.player = player;
+        isCollision = false;
+        parentDetected = null;
+        this.area = area;
     }
 
     /**
@@ -75,151 +73,151 @@ public class VisualSelectionCylinder implements VisualSelection {
      */
     @Override
     public boolean hasCollision() {
-	return isCollision;
+        return isCollision;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
-	changedBlocks.resetBlocks();
+        changedBlocks.resetBlocks();
     }
 
     @Override
     public RealLand getParentDetected() {
-	if (parentDetected.isRealLand()) {
-	    return (RealLand) parentDetected;
-	}
-	return null;
+        if (parentDetected.isRealLand()) {
+            return (RealLand) parentDetected;
+        }
+        return null;
     }
 
     @Override
     public Area getArea() {
-	return area;
+        return area;
     }
 
     @Override
     public void setActiveSelection() {
 
-	isCollision = false;
+        isCollision = false;
 
-	Location loc = player.getLocation();
-	int landXr = secuboid.getConf().getDefaultXSize() / 2;
-	int landZr = secuboid.getConf().getDefaultZSize() / 2;
-	area = new CylinderArea(loc.getWorld().getName(),
-		loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-		loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
+        Location loc = player.getLocation();
+        int landXr = secuboid.getConf().getDefaultXSize() / 2;
+        int landZr = secuboid.getConf().getDefaultZSize() / 2;
+        area = new CylinderArea(loc.getWorld().getName(),
+                loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
+                loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
 
-	makeVisualSelection();
+        makeVisualSelection();
     }
 
     @Override
     public void makeVisualSelection() {
 
-	// Detect the curent land from the 8 points
-	Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getX1(), area.getY1(), area.getOriginK()));
-	Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getOriginH(), area.getY1(), area.getZ1()));
-	Land Land3 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getX2(), area.getY1(), area.getOriginK()));
-	Land Land4 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getOriginH(), area.getY1(), area.getZ2()));
-	Land Land5 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getX1(), area.getY2(), area.getOriginK()));
-	Land Land6 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getOriginH(), area.getY2(), area.getZ1()));
-	Land Land7 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getX2(), area.getY2(), area.getOriginK()));
-	Land Land8 = secuboid.getLands().getLandOrOutsideArea(new Location(
-		area.getWord(), area.getOriginH(), area.getY2(), area.getZ2()));
+        // Detect the curent land from the 8 points
+        Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY1(), area.getOriginK()));
+        Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getOriginH(), area.getY1(), area.getZ1()));
+        Land Land3 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY1(), area.getOriginK()));
+        Land Land4 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getOriginH(), area.getY1(), area.getZ2()));
+        Land Land5 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX1(), area.getY2(), area.getOriginK()));
+        Land Land6 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getOriginH(), area.getY2(), area.getZ1()));
+        Land Land7 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getX2(), area.getY2(), area.getOriginK()));
+        Land Land8 = secuboid.getLands().getLandOrOutsideArea(new Location(
+                area.getWord(), area.getOriginH(), area.getY2(), area.getZ2()));
 
-	if (Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
-		&& Land1 == Land7 && Land1 == Land8) {
-	    parentDetected = Land1;
-	} else {
-	    parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
-	}
+        if (Land1 == Land2 && Land1 == Land3 && Land1 == Land4 && Land1 == Land5 && Land1 == Land6
+                && Land1 == Land7 && Land1 == Land8) {
+            parentDetected = Land1;
+        } else {
+            parentDetected = secuboid.getLands().getOutsideArea(Land1.getWorldName());
+        }
 
-	boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+        boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
-	//Make Cylinder
-	for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-	    int zNeg = area.getZNegFromX(posX);
-	    int zPos = area.getZPosFromX(posX);
-	    int[] zPositions;
-	    if (zNeg == zPos) {
-		zPositions = new int[]{zNeg};
-	    } else {
-		zPositions = new int[]{zNeg, zPos};
-	    }
-	    for (int posZ : zPositions) {
+        //Make Cylinder
+        for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
+            int zNeg = area.getZNegFromX(posX);
+            int zPos = area.getZPosFromX(posX);
+            int[] zPositions;
+            if (zNeg == zPos) {
+                zPositions = new int[]{zNeg};
+            } else {
+                zPositions = new int[]{zNeg, zPos};
+            }
+            for (int posZ : zPositions) {
 
-		Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+                Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 
-		if (!isFromLand) {
+                if (!isFromLand) {
 
-		    // Active Selection
-		    Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
-		    if (parentDetected == testCuboidarea
-			    && (canCreate == true || secuboid.getPlayerConf().get(player).isAdminMode())) {
-			changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
-		    } else {
-			changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
-			isCollision = true;
-		    }
-		} else // Passive Selection (created area)
-		{
-		    if (posX == area.getOriginH() - 1
-			    || posX == area.getOriginH() + 1
-			    || posZ == area.getOriginK() - 1
-			    || posZ == area.getOriginK() + 1) {
+                    // Active Selection
+                    Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
+                    if (parentDetected == testCuboidarea
+                            && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+                    } else {
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
+                        isCollision = true;
+                    }
+                } else // Passive Selection (created area)
+                {
+                    if (posX == area.getOriginH() - 1
+                            || posX == area.getOriginH() + 1
+                            || posZ == area.getOriginK() - 1
+                            || posZ == area.getOriginK() + 1) {
 
-			// Subcorner
-			changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
+                        // Subcorner
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
 
-		    } else {
+                    } else {
 
-			// Exact corner
-			changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-		    }
-		}
-	    }
-	}
+                        // Exact corner
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
 
-	switch (moveType) {
-	    case ACTIVE:
+        switch (moveType) {
+            case ACTIVE:
 
-		removeSelection();
-		setActiveSelection();
-		break;
+                removeSelection();
+                setActiveSelection();
+                break;
 
-	    case EXPAND:
+            case EXPAND:
 
-		removeSelection();
-		Location playerLoc = player.getLocation();
+                removeSelection();
+                Location playerLoc = player.getLocation();
 
-		// Check where the player is outside the land
-		if (playerLoc.getBlockX() - 1 < area.getX1()) {
-		    ((CylinderArea) area).setX1(playerLoc.getBlockX() - 1);
-		}
-		if (playerLoc.getBlockX() + 1 > area.getX2()) {
-		    ((CylinderArea) area).setX2(playerLoc.getBlockX() + 1);
-		}
-		if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
-		    ((CylinderArea) area).setZ1(playerLoc.getBlockZ() - 1);
-		}
-		if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
-		    ((CylinderArea) area).setZ2(playerLoc.getBlockZ() + 1);
-		}
+                // Check where the player is outside the land
+                if (playerLoc.getBlockX() - 1 < area.getX1()) {
+                    area.setX1(playerLoc.getBlockX() - 1);
+                }
+                if (playerLoc.getBlockX() + 1 > area.getX2()) {
+                    area.setX2(playerLoc.getBlockX() + 1);
+                }
+                if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
+                    area.setZ1(playerLoc.getBlockZ() - 1);
+                }
+                if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
+                    area.setZ2(playerLoc.getBlockZ() + 1);
+                }
 
-		makeVisualSelection();
-		break;
+                makeVisualSelection();
+                break;
 
-	    default:
-	}
+            default:
+        }
     }
 }

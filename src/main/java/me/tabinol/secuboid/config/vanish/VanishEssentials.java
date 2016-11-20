@@ -21,6 +21,7 @@ package me.tabinol.secuboid.config.vanish;
 import com.earth2me.essentials.Essentials;
 import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
@@ -34,14 +35,14 @@ public class VanishEssentials implements Vanish {
     private final Secuboid secuboid;
 
     public VanishEssentials(Secuboid secuboid) {
-	this.secuboid = secuboid;
-	essentials = (Essentials) secuboid.getDependPlugin().getEssentials();
+        this.secuboid = secuboid;
+        essentials = (Essentials) secuboid.getDependPlugin().getEssentials();
     }
 
     @Override
     public boolean isVanished(Player player) {
-	return (secuboid.getConf().isSpectatorIsVanish()
-		&& BKVersion.isSpectatorMode(player))
-		|| essentials.getUser(player).isVanished();
+        return (secuboid.getConf().isSpectatorIsVanish()
+                && player.getGameMode() == GameMode.SPECTATOR)
+                || essentials.getUser(player).isVanished();
     }
 }

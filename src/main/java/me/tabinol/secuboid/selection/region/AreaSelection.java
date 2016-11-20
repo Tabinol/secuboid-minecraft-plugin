@@ -35,18 +35,18 @@ public class AreaSelection implements RegionSelection {
      */
     public enum MoveType {
 
-	/**
-	 * Fixed
-	 */
-	PASSIVE,
-	/**
-	 * Move with the player
-	 */
-	ACTIVE,
-	/**
-	 *
-	 */
-	EXPAND
+        /**
+         * Fixed
+         */
+        PASSIVE,
+        /**
+         * Move with the player
+         */
+        ACTIVE,
+        /**
+         * Expend selection
+         */
+        EXPAND
 
     }
 
@@ -60,32 +60,32 @@ public class AreaSelection implements RegionSelection {
     /**
      * Instantiates a new area selection.
      *
-     * @param secuboid secuboid instance
-     * @param player the player
-     * @param area the area (null will create the area from player)
+     * @param secuboid   secuboid instance
+     * @param player     the player
+     * @param area       the area (null will create the area from player)
      * @param isFromLand is from land or must be false
-     * @param areaType area type (can be null if the area is not null)
-     * @param moveType move type
+     * @param areaType   area type (can be null if the area is not null)
+     * @param moveType   move type
      */
     public AreaSelection(Secuboid secuboid, Player player, Area area, boolean isFromLand,
-	    AreaType areaType, MoveType moveType) {
+                         AreaType areaType, MoveType moveType) {
 
-	this.moveType = moveType;
+        this.moveType = moveType;
 
-	if (area == null) {
-	    visualSelection = secuboid.getNewInstance().createVisualSelection(areaType,
-		    isFromLand, player);
-	    visualSelection.setActiveSelection();
-	} else {
-	    visualSelection = secuboid.getNewInstance().createVisualSelection(area,
-		    isFromLand, player);
-	    visualSelection.makeVisualSelection();
-	}
+        if (area == null) {
+            visualSelection = secuboid.getNewInstance().createVisualSelection(areaType,
+                    isFromLand, player);
+            visualSelection.setActiveSelection();
+        } else {
+            visualSelection = secuboid.getNewInstance().createVisualSelection(area,
+                    isFromLand, player);
+            visualSelection.makeVisualSelection();
+        }
     }
 
     @Override
     public PlayerSelection.SelectionType getSelectionType() {
-	return PlayerSelection.SelectionType.AREA;
+        return PlayerSelection.SelectionType.AREA;
     }
 
     /* (non-Javadoc)
@@ -94,7 +94,7 @@ public class AreaSelection implements RegionSelection {
     @Override
     public void removeSelection() {
 
-	visualSelection.removeSelection();
+        visualSelection.removeSelection();
     }
 
     /**
@@ -104,24 +104,19 @@ public class AreaSelection implements RegionSelection {
      */
     public VisualSelection getVisualSelection() {
 
-	return visualSelection;
+        return visualSelection;
     }
 
-    /**
-     *
-     * @return
-     */
     public MoveType getMoveType() {
 
-	return moveType;
+        return moveType;
     }
 
-    // Called from then player listenner
     /**
-     *
+     * Called from then player listener
      */
     public void playerMove() {
 
-	visualSelection.playerMove(moveType);
+        visualSelection.playerMove(moveType);
     }
 }

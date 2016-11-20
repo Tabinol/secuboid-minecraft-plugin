@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.Map;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerStaticConfig;
@@ -69,9 +70,9 @@ public class PvpListener extends CommonListener implements Listener {
      */
     public PvpListener(Secuboid secuboid) {
 
-	super(secuboid);
-	playerConf = secuboid.getPlayerConf();
-	playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(secuboid, FIRE_EXPIRE);
+        super(secuboid);
+        playerConf = secuboid.getPlayerConf();
+        playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(secuboid, FIRE_EXPIRE);
     }
 
     /**
@@ -82,20 +83,20 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 
-	// Check if a player break a ItemFrame
-	Player player = getSourcePlayer(event.getDamager());
+        // Check if a player break a ItemFrame
+        Player player = getSourcePlayer(event.getDamager());
 
-	if (player != null) {
-	    Land land = secuboid.getLands().getLandOrOutsideArea(
-		    event.getEntity().getLocation());
-	    Entity entity = event.getEntity();
+        if (player != null) {
+            Land land = secuboid.getLands().getLandOrOutsideArea(
+                    event.getEntity().getLocation());
+            Entity entity = event.getEntity();
 
-	    // For PVP
-	    if (entity instanceof Player && playerConf.get(player) != null && playerConf.get((Player) entity) != null
-		    && !isPvpValid(land)) {
-		event.setCancelled(true);
-	    }
-	}
+            // For PVP
+            if (entity instanceof Player && playerConf.get(player) != null && playerConf.get((Player) entity) != null
+                    && !isPvpValid(land)) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**
@@ -106,11 +107,11 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
 
-	if (event.getBlockPlaced().getType() == Material.FIRE) {
+        if (event.getBlockPlaced().getType() == Material.FIRE) {
 
-	    Player player = event.getPlayer();
-	    checkForPvpFire(event, player);
-	}
+            Player player = event.getPlayer();
+            checkForPvpFire(event, player);
+        }
 
     }
 
@@ -122,8 +123,8 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
 
-	Player player = event.getPlayer();
-	checkForPvpFire(event, player);
+        Player player = event.getPlayer();
+        checkForPvpFire(event, player);
     }
 
     /**
@@ -134,14 +135,14 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockSpread(BlockSpreadEvent event) {
 
-	Block blockSource = event.getSource();
-	PlayerContainerPlayer pc = playerFireLocation.get(blockSource.getLocation());
+        Block blockSource = event.getSource();
+        PlayerContainerPlayer pc = playerFireLocation.get(blockSource.getLocation());
 
-	if (pc != null) {
+        if (pc != null) {
 
-	    // Add fire for pvp listen
-	    playerFireLocation.put(event.getBlock().getLocation(), pc);
-	}
+            // Add fire for pvp listen
+            playerFireLocation.put(event.getBlock().getLocation(), pc);
+        }
     }
 
     /**
@@ -152,64 +153,64 @@ public class PvpListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 
-	// Check for fire cancel
-	if (event.getEntity() instanceof Player
-		&& (event.getCause() == DamageCause.FIRE
-		|| event.getCause() == DamageCause.FIRE_TICK)) {
+        // Check for fire cancel
+        if (event.getEntity() instanceof Player
+                && (event.getCause() == DamageCause.FIRE
+                || event.getCause() == DamageCause.FIRE_TICK)) {
 
-	    Player player = (Player) event.getEntity();
-	    PlayerConfEntry entry = playerConf.get(player);
+            Player player = (Player) event.getEntity();
+            PlayerConfEntry entry = playerConf.get(player);
 
-	    if (entry != null) {
-		Location loc = player.getLocation();
-		Land land = secuboid.getLands().getLandOrOutsideArea(loc);
+            if (entry != null) {
+                Location loc = player.getLocation();
+                Land land = secuboid.getLands().getLandOrOutsideArea(loc);
 
-		// Check for fire near the player
-		for (Map.Entry<Location, PlayerContainerPlayer> fireEntry : playerFireLocation.entrySet()) {
+                // Check for fire near the player
+                for (Map.Entry<Location, PlayerContainerPlayer> fireEntry : playerFireLocation.entrySet()) {
 
-		    if (loc.getWorld() == fireEntry.getKey().getWorld()
-			    && loc.distanceSquared(fireEntry.getKey()) < 5) {
-			Block block = loc.getBlock();
-			if ((block.getType() == Material.FIRE || block.getType() == Material.AIR)
-				&& !isPvpValid(land)) {
+                    if (loc.getWorld() == fireEntry.getKey().getWorld()
+                            && loc.distanceSquared(fireEntry.getKey()) < 5) {
+                        Block block = loc.getBlock();
+                        if ((block.getType() == Material.FIRE || block.getType() == Material.AIR)
+                                && !isPvpValid(land)) {
 
-			    // remove fire
-			    secuboid.getLog().write("Anti-pvp from "
-				    + entry.getPlayerContainer().getPlayer().getName()
-				    + " to " + player.getName());
-			    block.setType(Material.AIR);
-			    player.setFireTicks(0);
-			    event.setDamage(0);
-			    event.setCancelled(true);
-			}
-		    }
-		}
-	    }
-	}
+                            // remove fire
+                            secuboid.getLog().write("Anti-pvp from "
+                                    + entry.getPlayerContainer().getPlayer().getName()
+                                    + " to " + player.getName());
+                            block.setType(Material.AIR);
+                            player.setFireTicks(0);
+                            event.setDamage(0);
+                            event.setCancelled(true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
      * Check when a player deposits fire and add it to list
      *
-     * @param event the events
+     * @param event  the events
      * @param player the player
      */
     private void checkForPvpFire(BlockEvent event, Player player) {
 
-	PlayerConfEntry entry;
+        PlayerConfEntry entry;
 
-	if (player != null && (entry = playerConf.get(player)) != null) {
+        if (player != null && (entry = playerConf.get(player)) != null) {
 
-	    Location loc = event.getBlock().getLocation();
-	    Land land = secuboid.getLands().getLandOrOutsideArea(loc);
+            Location loc = event.getBlock().getLocation();
+            Land land = secuboid.getLands().getLandOrOutsideArea(loc);
 
-	    if (land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false
-		    || land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() == false) {
+            if (!land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean()
+                    || !land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean()) {
 
-		// Add fire for pvp listen
-		playerFireLocation.put(loc, entry.getPlayerContainer());
-	    }
-	}
+                // Add fire for pvp listen
+                playerFireLocation.put(loc, entry.getPlayerContainer());
+            }
+        }
     }
 
     /**
@@ -219,6 +220,6 @@ public class PvpListener extends CommonListener implements Listener {
      * @return true, if is pvp valid
      */
     private boolean isPvpValid(Land land) {
-	return land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean() != false;
+        return land.getPermissionsFlags().getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean();
     }
 }

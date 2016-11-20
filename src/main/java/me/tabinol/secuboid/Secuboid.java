@@ -89,11 +89,6 @@ public class Secuboid extends JavaPlugin {
     private PlayerListener playerListener;
 
     /**
-     * The player listener 18.
-     */
-    private PlayerListener18 playerListener18;
-
-    /**
      * The player listener.
      */
     private PvpListener pvpListener;
@@ -178,74 +173,66 @@ public class Secuboid extends JavaPlugin {
     @Override
     public void onEnable() {
 
-	mavenAppProperties = new MavenAppProperties();
-	mavenAppProperties.loadProperties();
-	// Static access to «this» Secuboid
-	BKVersion.initVersion();
-	// TODO Ractivate API ApiSecuboidSta.initSecuboidPluginAccess();
-	PermissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
-	types = new Types();
-	conf = new Config(this);
+        mavenAppProperties = new MavenAppProperties();
+        mavenAppProperties.loadProperties();
+        // Static access to «this» Secuboid
+        PermissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
+        types = new Types();
+        conf = new Config(this);
 
-	// For inventory config
-	if (conf.isMultipleInventories()) {
-	    inventoryConf = new InventoryConfig(this);
-	}
+        // For inventory config
+        if (conf.isMultipleInventories()) {
+            inventoryConf = new InventoryConfig(this);
+        }
 
-	log = new Log(this);
-	newInstance = new NewInstance(this);
-	dependPlugin = new DependPlugin(this);
-	if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-	    playerMoney = new PlayerMoney(dependPlugin.getEconomy());
-	} else {
-	    playerMoney = null;
-	}
-	playerConf = new PlayerStaticConfig(this);
-	playerConf.addAll();
-	language = new Lang(this);
-	storageThread = new StorageThread(this);
-	lands = new Lands(this);
-	collisionsManagerThread = new CollisionsManagerThread(this);
-	collisionsManagerThread.start();
-	storageThread.loadAllAndStart();
-	worldListener = new WorldListener(this);
-	playerListener = new PlayerListener(this);
-	if (BKVersion.isPlayerInteractAtEntityEventExist()) {
-	    playerListener18 = new PlayerListener18(this);
-	}
-	pvpListener = new PvpListener(this);
-	landListener = new LandListener(this);
-	chatListener = new ChatListener(this);
-	commandListener = new CommandListener(this);
-	approveNotif = new ApproveNotif(this);
-	approveNotif.runApproveNotifLater();
-	ecoScheduler = new EcoScheduler(this);
-	ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
-	playersCache = new PlayersCache(this);
-	playersCache.start();
-	getServer().getPluginManager().registerEvents(worldListener, this);
-	getServer().getPluginManager().registerEvents(playerListener, this);
-	if (BKVersion.isPlayerInteractAtEntityEventExist()) {
-	    getServer().getPluginManager().registerEvents(playerListener18, this);
-	}
-	getServer().getPluginManager().registerEvents(pvpListener, this);
-	getServer().getPluginManager().registerEvents(landListener, this);
-	getServer().getPluginManager().registerEvents(chatListener, this);
-	getCommand("secuboid").setExecutor(commandListener);
+        log = new Log(this);
+        newInstance = new NewInstance(this);
+        dependPlugin = new DependPlugin(this);
+        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        } else {
+            playerMoney = null;
+        }
+        playerConf = new PlayerStaticConfig(this);
+        playerConf.addAll();
+        language = new Lang(this);
+        storageThread = new StorageThread(this);
+        lands = new Lands(this);
+        collisionsManagerThread = new CollisionsManagerThread(this);
+        collisionsManagerThread.start();
+        storageThread.loadAllAndStart();
+        worldListener = new WorldListener(this);
+        playerListener = new PlayerListener(this);
+        pvpListener = new PvpListener(this);
+        landListener = new LandListener(this);
+        chatListener = new ChatListener(this);
+        commandListener = new CommandListener(this);
+        approveNotif = new ApproveNotif(this);
+        approveNotif.runApproveNotifLater();
+        ecoScheduler = new EcoScheduler(this);
+        ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
+        playersCache = new PlayersCache(this);
+        playersCache.start();
+        getServer().getPluginManager().registerEvents(worldListener, this);
+        getServer().getPluginManager().registerEvents(playerListener, this);
+        getServer().getPluginManager().registerEvents(pvpListener, this);
+        getServer().getPluginManager().registerEvents(landListener, this);
+        getServer().getPluginManager().registerEvents(chatListener, this);
+        getCommand("secuboid").setExecutor(commandListener);
 
-	// Register events only if Inventory is active
-	if (inventoryConf != null) {
-	    inventoryListener = new InventoryListener(this);
-	    getServer().getPluginManager().registerEvents(inventoryListener, this);
-	}
+        // Register events only if Inventory is active
+        if (inventoryConf != null) {
+            inventoryListener = new InventoryListener(this);
+            getServer().getPluginManager().registerEvents(inventoryListener, this);
+        }
 
-	// Register events only if Fly and Creative is active
-	if (conf.isFlyAndCreative()) {
-	    flyCreativeListener = new FlyCreativeListener(this);
-	    getServer().getPluginManager().registerEvents(flyCreativeListener, this);
-	}
+        // Register events only if Fly and Creative is active
+        if (conf.isFlyAndCreative()) {
+            flyCreativeListener = new FlyCreativeListener(this);
+            getServer().getPluginManager().registerEvents(flyCreativeListener, this);
+        }
 
-	log.write(getLanguage().getMessage("ENABLE"));
+        log.write(getLanguage().getMessage("ENABLE"));
     }
 
     /**
@@ -253,48 +240,49 @@ public class Secuboid extends JavaPlugin {
      */
     public void reload() {
 
-	types = new Types();
-	// No reload of Parameters to avoid Deregistering external parameters
-	conf.reloadConfig();
-	if (inventoryConf != null) {
-	    inventoryConf.reloadConfig();
-	}
-	if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-	    playerMoney = new PlayerMoney(dependPlugin.getEconomy());
-	} else {
-	    playerMoney = null;
-	}
-	log.setDebug(conf.isDebug());
-	language.reloadConfig();
-	lands = new Lands(this);
-	storageThread.stopNextRun();
-	storageThread = new StorageThread(this);
-	storageThread.loadAllAndStart();
-	approveNotif.stopNextRun();
-	approveNotif.runApproveNotifLater();
+        types = new Types();
+        // No reload of Parameters to avoid Deregistering external parameters
+        conf.reloadConfig();
+        if (inventoryConf != null) {
+            inventoryConf.reloadConfig();
+        }
+        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        } else {
+            playerMoney = null;
+        }
+        log.setDebug(conf.isDebug());
+        language.reloadConfig();
+        lands = new Lands(this);
+        storageThread.stopNextRun();
+        storageThread = new StorageThread(this);
+        storageThread.loadAllAndStart();
+        approveNotif.stopNextRun();
+        approveNotif.runApproveNotifLater();
     }
 
     /* (non-Javadoc)
      * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
      */
+
     /**
      *
      */
     @Override
     public void onDisable() {
 
-	log.write(getLanguage().getMessage("DISABLE"));
+        log.write(getLanguage().getMessage("DISABLE"));
 
-	// Save all inventories
-	if (inventoryListener != null) {
-	    inventoryListener.removeAndSave();
-	}
+        // Save all inventories
+        if (inventoryListener != null) {
+            inventoryListener.removeAndSave();
+        }
 
-	collisionsManagerThread.stopNextRun();
-	playersCache.stopNextRun();
-	approveNotif.stopNextRun();
-	storageThread.stopNextRun();
-	playerConf.removeAll();
+        collisionsManagerThread.stopNextRun();
+        playersCache.stopNextRun();
+        approveNotif.stopNextRun();
+        storageThread.stopNextRun();
+        playerConf.removeAll();
     }
 
     /**
@@ -303,7 +291,7 @@ public class Secuboid extends JavaPlugin {
      * @return the maven app properties
      */
     public MavenAppProperties getMavenAppProperties() {
-	return mavenAppProperties;
+        return mavenAppProperties;
     }
 
     /**
@@ -312,7 +300,7 @@ public class Secuboid extends JavaPlugin {
      * @return the new instance
      */
     public NewInstance getNewInstance() {
-	return newInstance;
+        return newInstance;
     }
 
     /**
@@ -321,7 +309,7 @@ public class Secuboid extends JavaPlugin {
      * @return the config
      */
     public Config getConf() {
-	return conf;
+        return conf;
     }
 
     /**
@@ -330,7 +318,7 @@ public class Secuboid extends JavaPlugin {
      * @return the config
      */
     public InventoryConfig getInventoryConf() {
-	return inventoryConf;
+        return inventoryConf;
     }
 
     /**
@@ -339,7 +327,7 @@ public class Secuboid extends JavaPlugin {
      * @return the inventory listener
      */
     public InventoryListener getInventoryListener() {
-	return inventoryListener;
+        return inventoryListener;
     }
 
     /**
@@ -348,7 +336,7 @@ public class Secuboid extends JavaPlugin {
      * @return the fly and creative listener
      */
     public FlyCreativeListener getFlyCreativeListener() {
-	return flyCreativeListener;
+        return flyCreativeListener;
     }
 
     /**
@@ -357,7 +345,7 @@ public class Secuboid extends JavaPlugin {
      * @return the player static config
      */
     public PlayerStaticConfig getPlayerConf() {
-	return playerConf;
+        return playerConf;
     }
 
     /**
@@ -366,7 +354,7 @@ public class Secuboid extends JavaPlugin {
      * @return the lang
      */
     public Lang getLanguage() {
-	return language;
+        return language;
     }
 
     /**
@@ -375,31 +363,34 @@ public class Secuboid extends JavaPlugin {
      * @return the log
      */
     public Log getLog() {
-	return log;
+        return log;
     }
 
     /**
+     * Gets permissions and flags instance.
      *
-     * @return
+     * @return the permissions and flags instance
      */
     public PermissionsFlags getPermissionsFlags() {
-	return PermissionsFlags;
+        return PermissionsFlags;
     }
 
     /**
+     * Gets lands.
      *
-     * @return
+     * @return the lands
      */
     public Lands getLands() {
-	return lands;
+        return lands;
     }
 
     /**
+     * Gets land types.
      *
-     * @return
+     * @return the land types
      */
     public Types getTypes() {
-	return types;
+        return types;
     }
 
     /**
@@ -408,7 +399,7 @@ public class Secuboid extends JavaPlugin {
      * @return the storage thread
      */
     public StorageThread getStorageThread() {
-	return storageThread;
+        return storageThread;
     }
 
     /**
@@ -417,7 +408,7 @@ public class Secuboid extends JavaPlugin {
      * @return the lands manager thread
      */
     public CollisionsManagerThread getCollisionsManagerThread() {
-	return collisionsManagerThread;
+        return collisionsManagerThread;
     }
 
     /**
@@ -426,7 +417,7 @@ public class Secuboid extends JavaPlugin {
      * @return the depend plugin
      */
     public DependPlugin getDependPlugin() {
-	return dependPlugin;
+        return dependPlugin;
     }
 
     /**
@@ -435,7 +426,7 @@ public class Secuboid extends JavaPlugin {
      * @return the approve notif
      */
     public ApproveNotif getApproveNotif() {
-	return approveNotif;
+        return approveNotif;
     }
 
     /**
@@ -444,7 +435,7 @@ public class Secuboid extends JavaPlugin {
      * @return the player money
      */
     public PlayerMoney getPlayerMoney() {
-	return playerMoney;
+        return playerMoney;
     }
 
     /**
@@ -453,7 +444,7 @@ public class Secuboid extends JavaPlugin {
      * @return the players cache
      */
     public PlayersCache getPlayersCache() {
-	return playersCache;
+        return playersCache;
     }
 
     /**
@@ -462,6 +453,6 @@ public class Secuboid extends JavaPlugin {
      * @return the command listener
      */
     public CommandListener getCommandListener() {
-	return commandListener;
+        return commandListener;
     }
 }

@@ -23,6 +23,7 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.PlayersUtil;
@@ -32,7 +33,7 @@ import org.bukkit.entity.Player;
 /**
  * The visual selection cuboid class.
  */
-public class VisualSelectionCuboid implements VisualSelection {
+public class VisualSelectionRoad implements VisualSelection {
 
     private final Secuboid secuboid;
 
@@ -58,9 +59,9 @@ public class VisualSelectionCuboid implements VisualSelection {
      */
     private Land parentDetected;
 
-    private CuboidArea area;
+    private RoadArea area;
 
-    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, boolean isFromLand, Player player) {
+    public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
         changedBlocks = new ChangedBlocks(player);
         this.isFromLand = isFromLand;
@@ -106,9 +107,9 @@ public class VisualSelectionCuboid implements VisualSelection {
         Location loc = player.getLocation();
         int landXr = secuboid.getConf().getDefaultXSize() / 2;
         int landZr = secuboid.getConf().getDefaultZSize() / 2;
-        area = new CuboidArea(loc.getWorld().getName(),
-                loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-                loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
+        //area = new CuboidArea(loc.getWorld().getName(),
+                //loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
+                //loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
 
         makeVisualSelection();
     }
@@ -208,18 +209,18 @@ public class VisualSelectionCuboid implements VisualSelection {
                 Location playerLoc = player.getLocation();
 
                 // Check where the player is outside the land
-                if (playerLoc.getBlockX() - 1 < area.getX1()) {
-                    area.setX1(playerLoc.getBlockX() - 1);
-                }
-                if (playerLoc.getBlockX() + 1 > area.getX2()) {
-                    area.setX2(playerLoc.getBlockX() + 1);
-                }
-                if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
-                    area.setZ1(playerLoc.getBlockZ() - 1);
-                }
-                if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
-                    area.setZ2(playerLoc.getBlockZ() + 1);
-                }
+               //if (playerLoc.getBlockX() - 1 < area.getX1()) {
+               //     area.setX1(playerLoc.getBlockX() - 1);
+                //}
+                //if (playerLoc.getBlockX() + 1 > area.getX2()) {
+                //    area.setX2(playerLoc.getBlockX() + 1);
+                //}
+                //if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
+                //    area.setZ1(playerLoc.getBlockZ() - 1);
+                //}
+                //if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
+                //    area.setZ2(playerLoc.getBlockZ() + 1);
+                //}
 
                 makeVisualSelection();
                 break;

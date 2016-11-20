@@ -20,6 +20,7 @@ package me.tabinol.secuboid.selection.visual;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -54,27 +55,27 @@ class ChangedBlocks {
     private final Map<Location, Byte> blockByteList;
 
     ChangedBlocks(Player player) {
-	this.player = player;
-	blockList = new HashMap<Location, Material>();
-	blockByteList = new HashMap<Location, Byte>();
+        this.player = player;
+        blockList = new HashMap<Location, Material>();
+        blockByteList = new HashMap<Location, Byte>();
     }
 
     @SuppressWarnings("deprecation")
     void changeBlock(Location location, Material material) {
-	if (player.getLocation().distanceSquared(location) <= MAX_DISTANCE) {
-	    Block block = location.getBlock();
-	    blockList.put(location, block.getType());
-	    blockByteList.put(location, block.getData());
-	    player.sendBlockChange(location, material, (byte) 0);
-	}
+        if (player.getLocation().distanceSquared(location) <= MAX_DISTANCE) {
+            Block block = location.getBlock();
+            blockList.put(location, block.getType());
+            blockByteList.put(location, block.getData());
+            player.sendBlockChange(location, material, (byte) 0);
+        }
     }
 
     @SuppressWarnings("deprecation")
     void resetBlocks() {
-	for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-	    player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
-	}
-	blockList.clear();
-	blockByteList.clear();
+        for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
+            player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
+        }
+        blockList.clear();
+        blockByteList.clear();
     }
 }

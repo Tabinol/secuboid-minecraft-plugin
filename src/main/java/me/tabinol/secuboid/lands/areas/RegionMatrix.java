@@ -31,10 +31,17 @@ public class RegionMatrix {
     private final Map<Integer, Map<Integer, ChunkMatrix>> points;
 
     /**
-     * Creates a new region matrix for roads
+     * Creates a new region matrix for roads.
      */
     public RegionMatrix() {
         points = new HashMap<Integer, Map<Integer, ChunkMatrix>>();
+    }
+
+    /**
+     * Creates a new region. Only for copyOf() and from save files.
+     */
+    RegionMatrix(Map<Integer, Map<Integer, ChunkMatrix>> points) {
+        this.points = points;
     }
 
     /**
@@ -109,5 +116,32 @@ public class RegionMatrix {
             }
         }
         return nbPoints;
+    }
+
+    public String toFileFormat() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
+            for (Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
+                sb.append(':').append(entryX.getKey()).append(':').append(entryZ.getKey()).append(':')
+                        .append(entryZ.getValue().toFileFormat());
+            }
+        }
+        return sb.toString();
+    }
+
+    public RegionMatrix copyOf() {
+        Map<Integer, Map<Integer, ChunkMatrix>> newPoints = new HashMap<Integer, Map<Integer, ChunkMatrix>>();
+        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
+            Map<Integer, ChunkMatrix> newPointsZ = new HashMap<Integer, ChunkMatrix>();
+            for (Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
+                if (!entryZ.getValue().isEmpty()) {
+                    newPointsZ.put(entryZ.getKey(), entryZ.getValue().copyOf());
+                }
+            }
+            if (!newPointsZ.isEmpty()) {
+                newPoints.put(entryX.getKey(), newPointsZ);
+            }
+        }
+        return new RegionMatrix(newPoints);
     }
 }

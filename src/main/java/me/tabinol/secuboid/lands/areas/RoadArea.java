@@ -39,18 +39,18 @@ public final class RoadArea implements Area {
      * Instantiates a new cuboid area.
      *
      * @param worldName    the world name
+     * @param y1           the y1
+     * @param y2           the y2
      * @param regionMatrix the region matrix (can be null)
      */
 
-    public RoadArea(String worldName, RegionMatrix regionMatrix) {
+    public RoadArea(String worldName, int y1, int y2, RegionMatrix regionMatrix) {
 
         // We need to set x, y and z after the new instance to have a reversed order
-        areaCommon = new AreaCommon(this, worldName, 0, 0, 0, 0, 0, 0);
+        areaCommon = new AreaCommon(this, worldName, 0, y1, 0, 0, y2, 0);
         areaCommon.setX1(Integer.MAX_VALUE);
-        areaCommon.setY1(Integer.MAX_VALUE);
         areaCommon.setZ1(Integer.MAX_VALUE);
         areaCommon.setX2(Integer.MIN_VALUE);
-        areaCommon.setY2(Integer.MIN_VALUE);
         areaCommon.setZ2(Integer.MIN_VALUE);
         if (regionMatrix == null) {
             this.regionMatrix = new RegionMatrix();
@@ -120,15 +120,6 @@ public final class RoadArea implements Area {
     }
 
     /**
-     * Sets the x1. Do not use if the area is already in a land.
-     *
-     * @param x1 x1
-     */
-    public void setX1(int x1) {
-        areaCommon.setX1(x1);
-    }
-
-    /**
      * Sets the y1. Do not use if the area is already in a land.
      *
      * @param y1 y1
@@ -138,39 +129,12 @@ public final class RoadArea implements Area {
     }
 
     /**
-     * Sets the z1. Do not use if the area is already in a land.
-     *
-     * @param z1 z1
-     */
-    public void setZ1(int z1) {
-        areaCommon.setZ1(z1);
-    }
-
-    /**
-     * Sets the x2. Do not use if the area is already in a land.
-     *
-     * @param x2 x2
-     */
-    public void setX2(int x2) {
-        areaCommon.setX2(x2);
-    }
-
-    /**
      * Sets the y2. Do not use if the area is already in a land.
      *
      * @param y2 y2
      */
     public void setY2(int y2) {
         areaCommon.setY2(y2);
-    }
-
-    /**
-     * Sets the z2. Do not use if the area is already in a land.
-     *
-     * @param z2 z2
-     */
-    public void setZ2(int z2) {
-        areaCommon.setZ2(z2);
     }
 
     /**
@@ -186,9 +150,8 @@ public final class RoadArea implements Area {
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
         return worldName.equals(areaCommon.getWorldName())
-                && Calculate.isInInterval(x, getX1(), getX2())
-                && Calculate.isInInterval(y, getY1(), getY2())
-                && Calculate.isInInterval(z, getZ1(), getZ2());
+                && Calculate.isInInterval(z, getZ1(), getZ2())
+                && regionMatrix.getPoint(x, z);
     }
 
     @Override
@@ -198,8 +161,7 @@ public final class RoadArea implements Area {
 
     @Override
     public String toFileFormat() {
-        return AreaType.CUBOID + ":" + areaCommon.getWorldName()
-                + ":" + getX1() + ":" + getY1() + ":" + getZ1() + ":" + getX2() + ":" + getY2() + ":" + getZ2();
+        return AreaType.ROAD + ":" + areaCommon.getWorldName() + ":" + getY1() + ":" + getY2() + regionMatrix.toFileFormat();
     }
 
     /**
@@ -209,14 +171,14 @@ public final class RoadArea implements Area {
      */
     @Override
     public String getPrint() {
-        return AreaType.CUBOID.toString().substring(0, 3).toLowerCase()
+        return AreaType.ROAD.toString().substring(0, 3).toLowerCase()
                 + ":(" + getX1() + ", " + getY1() + ", " + getZ1() + ")-("
                 + getX2() + ", " + getY2() + ", " + getZ2() + ")";
     }
 
     @Override
     public AreaType getAreaType() {
-        return AreaType.CUBOID;
+        return AreaType.ROAD;
     }
 
     @Override
@@ -251,6 +213,6 @@ public final class RoadArea implements Area {
 
     @Override
     public Area copyOf() {
-        return new CuboidArea(getWorldName(), getX1(), getY1(), getZ1(), getX2(), getY2(), getZ2());
+        return new RoadArea(getWorldName(), getY1(), getY2(), regionMatrix.copyOf());
     }
 }

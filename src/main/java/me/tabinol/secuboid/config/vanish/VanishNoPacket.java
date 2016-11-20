@@ -18,8 +18,8 @@
  */
 package me.tabinol.secuboid.config.vanish;
 
-import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
@@ -38,22 +38,22 @@ public class VanishNoPacket implements Vanish {
      * @param secuboid secuboid instance
      */
     public VanishNoPacket(Secuboid secuboid) {
-	this.secuboid = secuboid;
+        this.secuboid = secuboid;
     }
 
     @Override
     public boolean isVanished(Player player) {
 
-	if ((secuboid.getConf().isSpectatorIsVanish()
-		&& BKVersion.isSpectatorMode(player))) {
-	    return true;
-	}
+        if ((secuboid.getConf().isSpectatorIsVanish()
+                && player.getGameMode() == GameMode.SPECTATOR)) {
+            return true;
+        }
 
-	// return vanishNoPacket.getManager().isVanished(player);
-	for (MetadataValue value : player.getMetadata("vanished")) {
-	    return value.asBoolean();
-	}
+        // return vanishNoPacket.getManager().isVanished(player);
+        for (MetadataValue value : player.getMetadata("vanished")) {
+            return value.asBoolean();
+        }
 
-	return false;
+        return false;
     }
 }

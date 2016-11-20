@@ -42,12 +42,7 @@ public class AreaSelection implements RegionSelection {
         /**
          * Move with the player
          */
-        ACTIVE,
-        /**
-         * Expend selection
-         */
-        EXPAND
-
+        ACTIVE
     }
 
     private final MoveType moveType;

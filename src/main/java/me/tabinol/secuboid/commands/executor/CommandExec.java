@@ -86,56 +86,56 @@ public abstract class CommandExec {
     /**
      * The reset select cancel.
      */
-    public boolean resetSelectCancel = false; // If reset select cancel is done (1 time only)
+    private boolean resetSelectCancel = false; // If reset select cancel is done (1 time only)
 
     /**
      * Instantiates a new command exec.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected CommandExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	this.secuboid = secuboid;
-	this.infoCommand = infoCommand;
-	this.sender = sender;
-	if (argList != null) {
-	    this.argList = argList;
-	} else {
-	    this.argList = new ArgList(secuboid, new String[0], sender);
-	}
+        this.secuboid = secuboid;
+        this.infoCommand = infoCommand;
+        this.sender = sender;
+        if (argList != null) {
+            this.argList = argList;
+        } else {
+            this.argList = new ArgList(secuboid, new String[0], sender);
+        }
 
-	if (sender instanceof Player) {
-	    player = (Player) sender;
-	} else {
-	    player = null;
-	}
+        if (sender instanceof Player) {
+            player = (Player) sender;
+        } else {
+            player = null;
+        }
 
-	playerName = sender.getName();
-	playerConf = secuboid.getPlayerConf().get(sender);
+        playerName = sender.getName();
+        playerConf = secuboid.getPlayerConf().get(sender);
 
-	if (player != null) {
-	    // get the land Selected or null
-	    land = playerConf.getSelection().getLand();
-	}
+        if (player != null) {
+            // get the land Selected or null
+            land = playerConf.getSelection().getLand();
+        }
 
-	if (player
-		== null && !infoCommand.allowConsole()) {
+        if (player
+                == null && !infoCommand.allowConsole()) {
 
-	    // Send a message if this command is player only
-	    throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
-	}
+            // Send a message if this command is player only
+            throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
+        }
 
-	// Show help if there is no more parameter and the command needs one
-	if (infoCommand.forceParameter()
-		&& argList != null && argList.isLast()) {
-	    new CommandHelp(secuboid, infoCommand, sender, argList).commandExecute();
-	    isExecutable = false;
-	}
+        // Show help if there is no more parameter and the command needs one
+        if (infoCommand.forceParameter()
+                && argList != null && argList.isLast()) {
+            new CommandHelp(secuboid, infoCommand, sender, argList).commandExecute();
+            isExecutable = false;
+        }
     }
 
     /**
@@ -151,114 +151,110 @@ public abstract class CommandExec {
      * @return true, if is executable
      */
     public boolean isExecutable() {
-
-	return isExecutable;
+        return isExecutable;
     }
 
-    // Check for needed selection and not needed (null for no verification)
     /**
-     * Check selections.
+     * Check for needed selection and not needed (null for no verification).
      *
-     * @param mustBeSelectMode the must be select mode
+     * @param mustBeSelectMode   the must be select mode
      * @param mustBeAreaSelected the must be area selected
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected) throws SecuboidCommandException {
 
-	if (mustBeSelectMode != null) {
-	    // Pasted to variable land, can take direcly
-	    checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
-		    playerConf.getSelection().getLand() != null);
-	}
-	if (mustBeAreaSelected != null) {
-	    checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
-	}
+        if (mustBeSelectMode != null) {
+            // Pasted to variable land, can take direcly
+            checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
+                    playerConf.getSelection().getLand() != null);
+        }
+        if (mustBeAreaSelected != null) {
+            checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
+        }
     }
 
-    // Check selection for per type
     /**
-     * Check selection.
+     * Check selection for per type.
      *
-     * @param result the result
-     * @param neededResult the needed result
-     * @param messageTrue the message true
-     * @param messageFalse the message false
+     * @param result            the result
+     * @param neededResult      the needed result
+     * @param messageTrue       the message true
+     * @param messageFalse      the message false
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
     private void checkSelection(boolean result, boolean neededResult, String messageTrue, String messageFalse,
-	    boolean startSelectCancel) throws SecuboidCommandException {
+                                boolean startSelectCancel) throws SecuboidCommandException {
 
-	if (result != neededResult) {
-	    if (result == true) {
-		throw new SecuboidCommandException(secuboid, "Player Select", player, messageTrue);
-	    } else {
-		throw new SecuboidCommandException(secuboid, "Player Select", player, messageFalse);
-	    }
-	} else if (startSelectCancel && !resetSelectCancel && result == true) {
+        if (result != neededResult) {
+            if (result) {
+                throw new SecuboidCommandException(secuboid, "Player Select", player, messageTrue);
+            } else {
+                throw new SecuboidCommandException(secuboid, "Player Select", player, messageFalse);
+            }
+        } else if (startSelectCancel && !resetSelectCancel && result) {
 
-	    // Reset autocancel if there is a command executed that need it
-	    playerConf.setAutoCancelSelect(true);
-	    resetSelectCancel = true;
-	}
+            // Reset autocancel if there is a command executed that need it
+            playerConf.setAutoCancelSelect(true);
+            resetSelectCancel = true;
+        }
     }
 
     // Check if the player has permission
+
     /**
      * Check permission.
      *
-     * @param mustBeAdminMode the must be admin mod
-     * @param mustBeOwner the must be owner
-     * @param neededPerm the needed perm
+     * @param mustBeAdminMode  the must be admin mod
+     * @param mustBeOwner      the must be owner
+     * @param neededPerm       the needed perm
      * @param bukkitPermission the bukkit permission
      * @throws SecuboidCommandException the secuboid command exception
      */
     protected void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner,
-	    PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
+                                   PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
 
-	boolean canDo = false;
+        boolean canDo = false;
 
-	if (mustBeAdminMode && playerConf.isAdminMode()) {
-	    canDo = true;
-	}
-	if (mustBeOwner && (land == null || (land != null && new PlayerContainerOwner(land).hasAccess(player)))) {
-	    canDo = true;
-	}
-	if (neededPerm != null && land.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
-	    canDo = true;
-	}
-	if (bukkitPermission != null && sender.hasPermission(bukkitPermission)) {
-	    canDo = true;
-	}
+        if (mustBeAdminMode && playerConf.isAdminMode()) {
+            canDo = true;
+        } else if (mustBeOwner && (land == null || new PlayerContainerOwner(land).hasAccess(player))) {
+            canDo = true;
+        } else if (neededPerm != null && land.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
+            canDo = true;
+        } else if (bukkitPermission != null && sender.hasPermission(bukkitPermission)) {
+            canDo = true;
+        }
 
-	// No permission, this is an exception
-	if (canDo == false) {
-	    throw new SecuboidCommandException(secuboid, "No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
-	}
+        // No permission, this is an exception
+        if (!canDo) {
+            throw new SecuboidCommandException(secuboid, "No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
+        }
     }
 
     // The name says what it does!!!
+
     /**
      * Gets the land from command if no land selected.
      */
-    protected void getLandFromCommandIfNoLandSelected() {
+    void getLandFromCommandIfNoLandSelected() {
 
-	if (land == null && !argList.isLast()) {
-	    land = secuboid.getLands().getLand(argList.getNext());
-	}
+        if (land == null && !argList.isLast()) {
+            land = secuboid.getLands().getLand(argList.getNext());
+        }
     }
 
     /**
      * Removes the sign from hand.
      */
-    protected void removeSignFromHand() {
+    void removeSignFromHand() {
 
-	if (player.getGameMode() != GameMode.CREATIVE) {
-	    if (player.getItemInHand().getAmount() == 1) {
-		player.setItemInHand(new ItemStack(Material.AIR));
-	    } else {
-		player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
-	    }
-	}
+        if (player.getGameMode() != GameMode.CREATIVE) {
+            if (player.getItemInHand().getAmount() == 1) {
+                player.setItemInHand(new ItemStack(Material.AIR));
+            } else {
+                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+            }
+        }
     }
 }

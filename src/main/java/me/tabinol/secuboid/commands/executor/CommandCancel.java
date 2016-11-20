@@ -35,47 +35,44 @@ public class CommandCancel extends CommandExec {
     /**
      * Instantiates a new command cancel.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandCancel(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	if (playerConf.getConfirm() != null) {
-	    playerConf.setConfirm(null);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
-	    secuboid.getLog().write(player.getName() + " cancel for action");
+        if (playerConf.getConfirm() != null) {
+            playerConf.setConfirm(null);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
+            secuboid.getLog().write(player.getName() + " cancel for action");
 
-	}
+        }
 
-	if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
+        if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
 
-	    playerConf.getSelection().removeSelection(SelectionType.AREA);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
-	    secuboid.getLog().write(player.getName() + ": Select cancel");
+            playerConf.getSelection().removeSelection(SelectionType.AREA);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
+            secuboid.getLog().write(player.getName() + ": Select cancel");
 
-	}
+        }
 
-	if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
+        if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
 
-	    playerConf.getSelection().removeSelection(SelectionType.LAND);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
+            playerConf.getSelection().removeSelection(SelectionType.LAND);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
 
-	    // Cancel selection (it is the last think selected)
-	    playerConf.setAutoCancelSelect(false);
+            // Cancel selection (it is the last think selected)
+            playerConf.setAutoCancelSelect(false);
 
-	}
+        }
     }
 }

@@ -33,23 +33,20 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CommandPlayerThreadExec extends CommandExec {
 
-    /**
-     *
-     */
     protected PlayerContainer pc;
 
     /**
      * Instantiates a new command thread exec.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandPlayerThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
+    CommandPlayerThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     /**
@@ -59,7 +56,7 @@ public abstract class CommandPlayerThreadExec extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public abstract void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException;
+            throws SecuboidCommandException;
 
     /**
      * Convert only if the PlayerContainer is a PlayerContainerPlayerName It takes the result from the UUID request.
@@ -67,15 +64,14 @@ public abstract class CommandPlayerThreadExec extends CommandExec {
      * @param playerCacheEntry the player cache entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void convertPcIfNeeded(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException {
+    void convertPcIfNeeded(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
-	if (pc instanceof PlayerContainerPlayerName) {
-	    if (playerCacheEntry.length == 1 && playerCacheEntry[0] != null) {
-		pc = new PlayerContainerPlayer(secuboid, playerCacheEntry[0].getUUID());
-	    } else {
-		throw new SecuboidCommandException(secuboid, "Player not exist Error", player, "COMMAND.CONTAINER.PLAYERNOTEXIST");
-	    }
-	}
+        if (pc instanceof PlayerContainerPlayerName) {
+            if (playerCacheEntry.length == 1 && playerCacheEntry[0] != null) {
+                pc = new PlayerContainerPlayer(secuboid, playerCacheEntry[0].getUUID());
+            } else {
+                throw new SecuboidCommandException(secuboid, "Player not exist Error", player, "COMMAND.CONTAINER.PLAYERNOTEXIST");
+            }
+        }
     }
 }

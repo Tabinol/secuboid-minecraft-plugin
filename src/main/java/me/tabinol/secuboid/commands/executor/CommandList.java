@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Collection;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
@@ -44,93 +45,87 @@ public class CommandList extends CommandPlayerThreadExec {
     /**
      * Instantiates a new command list.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandList(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
 
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = argList.getNext();
+        String curArg = argList.getNext();
 
-	if (curArg != null) {
-	    if (curArg.equalsIgnoreCase("world")) {
+        if (curArg != null) {
+            if (curArg.equalsIgnoreCase("world")) {
 
-		// Get worldName
-		worldName = argList.getNext();
-		if (worldName == null) {
-		    // No worldName has parameter
-		    worldName = player.getLocation().getWorld().getName().toLowerCase();
-		}
+                // Get worldName
+                worldName = argList.getNext();
+                if (worldName == null) {
+                    // No worldName has parameter
+                    worldName = player.getLocation().getWorld().getName().toLowerCase();
+                }
 
-	    } else if (curArg.equalsIgnoreCase("type")) {
+            } else if (curArg.equalsIgnoreCase("type")) {
 
-		// Get the category name
-		String typeName = argList.getNext();
+                // Get the category name
+                String typeName = argList.getNext();
 
-		if (typeName != null) {
-		    type = secuboid.getTypes().getType(typeName);
-		}
+                if (typeName != null) {
+                    type = secuboid.getTypes().getType(typeName);
+                }
 
-		if (type == null) {
-		    throw new SecuboidCommandException(secuboid, "CommandList", sender, "COMMAND.LAND.TYPENOTEXIST");
-		}
+                if (type == null) {
+                    throw new SecuboidCommandException(secuboid, "CommandList", sender, "COMMAND.LAND.TYPENOTEXIST");
+                }
 
-	    } else {
+            } else {
 
-		// Get the player Container
-		argList.setPos(0);
-		pc = argList.getPlayerContainerFromArg(null, null);
+                // Get the player Container
+                argList.setPos(0);
+                pc = argList.getPlayerContainerFromArg(null, null);
 
-	    }
-	}
+            }
+        }
 
-	secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+        secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
-     */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
-	// Check if the player is AdminMode or send only owned lands
-	Collection<RealLand> lands;
+        // Check if the player is AdminMode or send only owned lands
+        Collection<RealLand> lands;
 
-	if (playerConf.isAdminMode()) {
-	    lands = secuboid.getLands().getLands();
-	} else {
-	    lands = secuboid.getLands().getLands(playerConf.getPlayerContainer());
-	}
+        if (playerConf.isAdminMode()) {
+            lands = secuboid.getLands().getLands();
+        } else {
+            lands = secuboid.getLands().getLands(playerConf.getPlayerContainer());
+        }
 
-	// Get the list of the land
-	StringBuilder stList = new StringBuilder();
-	stList.append(ChatColor.YELLOW);
+        // Get the list of the land
+        StringBuilder stList = new StringBuilder();
+        stList.append(ChatColor.YELLOW);
 
-	for (RealLand land : lands) {
-	    if (((worldName != null && worldName.equals(land.getWorldName()))
-		    || (type != null && type == land.getType())
-		    || (worldName == null && type == null))
-		    && (pc == null || land.getOwner().equals(pc))) {
-		stList.append(land.getName()).append(" ");
-	    }
-	}
+        for (RealLand land : lands) {
+            if (((worldName != null && worldName.equals(land.getWorldName()))
+                    || (type != null && type == land.getType())
+                    || (worldName == null && type == null))
+                    && (pc == null || land.getOwner().equals(pc))) {
+                stList.append(land.getName()).append(" ");
+            }
+        }
 
-	new ChatPage(secuboid, "COMMAND.LAND.LISTSTART", stList.toString(), player, null).getPage(1);
+        new ChatPage(secuboid, "COMMAND.LAND.LISTSTART", stList.toString(), player, null).getPage(1);
     }
 }

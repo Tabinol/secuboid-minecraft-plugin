@@ -45,14 +45,14 @@ public @interface InfoCommand {
      * @return the string[]
      */
     String[] aliases() default {};
-    
+
     /**
      * Allowing from console?
      *
      * @return true, if successful
      */
     boolean allowConsole() default false;
-    
+
     /**
      * Need a parameter? If "true", no parameter = help
      *

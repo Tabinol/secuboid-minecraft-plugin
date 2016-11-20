@@ -20,6 +20,7 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
@@ -51,152 +52,146 @@ public class CommandPermission extends CommandPlayerThreadExec {
     /**
      * Instantiates a new command permission.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandPermission(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
+        checkSelections(true, null);
 
-	fonction = argList.getNext();
+        fonction = argList.getNext();
 
-	if (fonction.equalsIgnoreCase("set")) {
+        if (fonction.equalsIgnoreCase("set")) {
 
-	    pc = argList.getPlayerContainerFromArg(land, null);
+            pc = argList.getPlayerContainerFromArg(land, null);
 
-	    secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
-	} else if (fonction.equalsIgnoreCase("unset")) {
+        } else if (fonction.equalsIgnoreCase("unset")) {
 
-	    pc = argList.getPlayerContainerFromArg(land, null);
-	    secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            pc = argList.getPlayerContainerFromArg(land, null);
+            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
-	} else if (fonction.equalsIgnoreCase("list")) {
+        } else if (fonction.equalsIgnoreCase("list")) {
 
-	    precDL = new ArrayList<Land>();
-	    stList = new StringBuilder();
+            precDL = new ArrayList<Land>();
+            stList = new StringBuilder();
 
-	    // For the actual land
-	    importDisplayPermsFrom(land, false);
+            // For the actual land
+            importDisplayPermsFrom(land, false);
 
-	    // For default Type
-	    if (land.getType() != null) {
-		stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
-			land.getType().getName())).append(Config.NEWLINE);
-		importDisplayPermsFrom(((Lands) secuboid.getLands()).getDefaultConf(land.getType()), false);
-	    }
+            // For default Type
+            if (land.getType() != null) {
+                stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+                        land.getType().getName())).append(Config.NEWLINE);
+                importDisplayPermsFrom(((Lands) secuboid.getLands()).getDefaultConf(land.getType()), false);
+            }
 
-	    // For parent (if exist)
-	    RealLand parLand = land;
-	    while ((parLand = parLand.getParent()) != null) {
-		stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMPARENT",
-			ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
-		importDisplayPermsFrom(parLand, true);
-	    }
+            // For parent (if exist)
+            RealLand parLand = land;
+            while ((parLand = parLand.getParent()) != null) {
+                stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMPARENT",
+                        ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
+                importDisplayPermsFrom(parLand, true);
+            }
 
-	    // For world
-	    stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD",
-		    land.getWorldName())).append(Config.NEWLINE);
-	    importDisplayPermsFrom((secuboid.getLands()).getOutsideArea(land.getWorldName()), true);
+            // For world
+            stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD",
+                    land.getWorldName())).append(Config.NEWLINE);
+            importDisplayPermsFrom((secuboid.getLands()).getOutsideArea(land.getWorldName()), true);
 
-	    new ChatPage(secuboid, "COMMAND.PERMISSION.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.PERMISSION.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
 
-	} else {
-	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
-	}
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
+        }
     }
 
     private void importDisplayPermsFrom(Land land, boolean onlyInherit) {
 
-	boolean addToList = false;
+        boolean addToList = false;
 
-	for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
-	    StringBuilder stSubList = new StringBuilder();
+        for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
+            StringBuilder stSubList = new StringBuilder();
 
-	    for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
-		if ((!onlyInherit || perm.isInheritable()) && !permInList(pc, perm)) {
-		    addToList = true;
-		    stSubList.append(" ").append(perm.getPermType().getPrint()).append(":").append(perm.getValuePrint());
-		}
-	    }
+            for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
+                if ((!onlyInherit || perm.isInheritable()) && !permInList(pc, perm)) {
+                    addToList = true;
+                    stSubList.append(" ").append(perm.getPermType().getPrint()).append(":").append(perm.getValuePrint());
+                }
+            }
 
-	    // Append to list
-	    if (stSubList.length() > 0) {
-		stList.append(ChatColor.WHITE).append(pc.getPrint()).append(":");
-		stList.append(stSubList).append(Config.NEWLINE);
-	    }
+            // Append to list
+            if (stSubList.length() > 0) {
+                stList.append(ChatColor.WHITE).append(pc.getPrint()).append(":");
+                stList.append(stSubList).append(Config.NEWLINE);
+            }
 
-	}
+        }
 
-	if (addToList) {
-	    precDL.add(land);
-	}
+        if (addToList) {
+            precDL.add(land);
+        }
     }
 
     private boolean permInList(PlayerContainer pc, Permission perm) {
 
-	for (Land listLand : precDL) {
+        for (Land listLand : precDL) {
 
-	    if (listLand.getPermissionsFlags().getSetPCHavePermission().contains(pc)) {
-		for (Permission listPerm : listLand.getPermissionsFlags().getPermissionsForPC(pc)) {
-		    if (perm.getPermType() == listPerm.getPermType()) {
-			return true;
-		    }
-		}
-	    }
-	}
+            if (listLand.getPermissionsFlags().getSetPCHavePermission().contains(pc)) {
+                for (Permission listPerm : listLand.getPermissionsFlags().getPermissionsForPC(pc)) {
+                    if (perm.getPermType() == listPerm.getPermType()) {
+                        return true;
+                    }
+                }
+            }
+        }
 
-	return false;
+        return false;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec#commandThreadExecute(me.tabinol.secuboid.playerscache.PlayerCacheEntry[])
-     */
     @Override
     public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
-	if (fonction.equalsIgnoreCase("set")) {
+        if (fonction.equalsIgnoreCase("set")) {
 
-	    Permission perm = argList.getPermissionFromArg(playerConf.isAdminMode(), land.isOwner(player));
+            Permission perm = argList.getPermissionFromArg(playerConf.isAdminMode(), land.isOwner(player));
 
-	    if (!perm.getPermType().isRegistered()) {
-		throw new SecuboidCommandException(secuboid, "Permission not registered", player, "COMMAND.PERMISSIONTYPE.TYPENULL");
-	    }
+            if (!perm.getPermType().isRegistered()) {
+                throw new SecuboidCommandException(secuboid, "Permission not registered", player, "COMMAND.PERMISSIONTYPE.TYPENULL");
+            }
 
-	    if (perm.getPermType() == PermissionList.LAND_ENTER.getPermissionType()
-		    && perm.getValue() != perm.getPermType().getDefaultValue()
-		    && land.isLocationInside(land.getWorld().getSpawnLocation())) {
-		throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.NOENTERNOTINSPAWN");
-	    }
-	    land.getPermissionsFlags().addPermission(pc, perm);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
-		    pc.getPrint() + ChatColor.YELLOW, land.getName()));
-	    secuboid.getLog().write("Permission set: " + perm.getPermType().toString() + ", value: " + perm.getValue());
+            if (perm.getPermType() == PermissionList.LAND_ENTER.getPermissionType()
+                    && perm.getValue() != perm.getPermType().getDefaultValue()
+                    && land.isLocationInside(land.getWorld().getSpawnLocation())) {
+                throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.NOENTERNOTINSPAWN");
+            }
+            land.getPermissionsFlags().addPermission(pc, perm);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
+                    pc.getPrint() + ChatColor.YELLOW, land.getName()));
+            secuboid.getLog().write("Permission set: " + perm.getPermType().toString() + ", value: " + perm.getValue());
 
-	} else if (fonction.equalsIgnoreCase("unset")) {
+        } else if (fonction.equalsIgnoreCase("unset")) {
 
-	    PermissionType pt = argList.getPermissionTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
-	    if (!land.getPermissionsFlags().removePermission(pc, pt)) {
-		throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.REMOVENOTEXIST");
-	    }
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.REMOVEISDONE", pt.toString()));
-	    secuboid.getLog().write("Permission unset: " + pt.toString());
-	}
+            PermissionType pt = argList.getPermissionTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
+            if (!land.getPermissionsFlags().removePermission(pc, pt)) {
+                throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.REMOVENOTEXIST");
+            }
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.REMOVEISDONE", pt.toString()));
+            secuboid.getLog().write("Permission unset: " + pt.toString());
+        }
     }
 }

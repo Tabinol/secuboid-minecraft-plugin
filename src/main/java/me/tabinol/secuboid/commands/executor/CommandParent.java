@@ -29,8 +29,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * The parent command.
- *
- * @author michel
  */
 @InfoCommand(name = "parent", forceParameter = true)
 public class CommandParent extends CommandCollisionsThreadExec {
@@ -38,63 +36,62 @@ public class CommandParent extends CommandCollisionsThreadExec {
     /**
      * Create a parent command.
      *
-     * @param entity
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandParent(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, null, null);
+        checkSelections(true, null);
+        checkPermission(true, true, null, null);
 
-	String curArg = argList.getNext();
-	RealLand parent = null;
+        String curArg = argList.getNext();
+        RealLand parent = null;
 
-	if (!curArg.equalsIgnoreCase("unset")) {
-	    parent = secuboid.getLands().getLand(curArg);
+        if (!curArg.equalsIgnoreCase("unset")) {
+            parent = secuboid.getLands().getLand(curArg);
 
-	    // Check if the parent exist
-	    if (parent == null) {
-		throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.INVALID");
-	    }
+            // Check if the parent exist
+            if (parent == null) {
+                throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.INVALID");
+            }
 
-	    // Check if the land is a children
-	    if (land.isDescendants(parent)) {
-		throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.NOTCHILD");
-	    }
-	}
+            // Check if the land is a children
+            if (land.isDescendants(parent)) {
+                throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.NOTCHILD");
+            }
+        }
 
-	// Check for collision
-	checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
-		land.getOwner(), true);
+        // Check for collision
+        checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
+                land.getOwner(), true);
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-	// Check for collision
-	if (collisions.hasCollisions()) {
-	    return;
-	}
+        // Check for collision
+        if (collisions.hasCollisions()) {
+            return;
+        }
 
-	// Set parent
-	land.setParent(parent);
-	if (parent == null) {
-	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
-	    secuboid.getLog().write(playerName + " has set land " + land.getName() + " to no parent ");
-	} else {
-	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
-	    secuboid.getLog().write(playerName + " has set land " + land.getName() + " to parent " + parent.getName());
-	}
+        // Set parent
+        land.setParent(parent);
+        if (parent == null) {
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
+            secuboid.getLog().write(playerName + " has set land " + land.getName() + " to no parent ");
+        } else {
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
+            secuboid.getLog().write(playerName + " has set land " + land.getName() + " to parent " + parent.getName());
+        }
     }
 }

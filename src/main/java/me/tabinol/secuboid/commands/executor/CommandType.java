@@ -29,8 +29,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * The type command class.
- *
- * @author michel
  */
 @InfoCommand(name = "type", forceParameter = true)
 public class CommandType extends CommandExec {
@@ -38,55 +36,55 @@ public class CommandType extends CommandExec {
     /**
      * Instantiates a new command type.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandType(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, false, null, null);
+        checkSelections(true, null);
+        checkPermission(true, false, null, null);
 
-	String curArg = argList.getNext();
+        String curArg = argList.getNext();
 
-	if (curArg.equalsIgnoreCase("list")) {
+        if (curArg.equalsIgnoreCase("list")) {
 
-	    StringBuilder stList = new StringBuilder();
-	    for (Type type : secuboid.getTypes().getTypes()) {
-		if (stList.length() != 0) {
-		    stList.append(" ");
-		}
-		stList.append(ChatColor.WHITE).append(type.getName());
-		stList.append(Config.NEWLINE);
-	    }
-	    new ChatPage(secuboid, "COMMAND.TYPES.LISTSTART", stList.toString(), player, null).getPage(1);
+            StringBuilder stList = new StringBuilder();
+            for (Type type : secuboid.getTypes().getTypes()) {
+                if (stList.length() != 0) {
+                    stList.append(" ");
+                }
+                stList.append(ChatColor.WHITE).append(type.getName());
+                stList.append(Config.NEWLINE);
+            }
+            new ChatPage(secuboid, "COMMAND.TYPES.LISTSTART", stList.toString(), player, null).getPage(1);
 
-	} else if (curArg.equals("remove")) {
+        } else if (curArg.equals("remove")) {
 
-	    land.setType(null);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
-	    secuboid.getLog().write("Land type removed: " + land.getName());
+            land.setType(null);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
+            secuboid.getLog().write("Land type removed: " + land.getName());
 
-	} else { // Type change
+        } else { // Type change
 
-	    Type type = secuboid.getTypes().getType(curArg);
+            Type type = secuboid.getTypes().getType(curArg);
 
-	    if (type == null) {
-		throw new SecuboidCommandException(secuboid, "Land Types", player, "COMMAND.TYPES.INVALID");
-	    }
+            if (type == null) {
+                throw new SecuboidCommandException(secuboid, "Land Types", player, "COMMAND.TYPES.INVALID");
+            }
 
-	    land.setType(type);
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
-	    secuboid.getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
-	}
+            land.setType(type);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
+            secuboid.getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
+        }
     }
 }

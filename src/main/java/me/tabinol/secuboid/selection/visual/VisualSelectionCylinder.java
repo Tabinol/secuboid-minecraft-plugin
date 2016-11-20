@@ -113,7 +113,7 @@ public class VisualSelectionCylinder implements VisualSelection {
     @Override
     public void makeVisualSelection() {
 
-        // Detect the curent land from the 8 points
+        // Detect the current land from the 8 points
         Land Land1 = secuboid.getLands().getLandOrOutsideArea(new Location(
                 area.getWord(), area.getX1(), area.getY1(), area.getOriginK()));
         Land Land2 = secuboid.getLands().getLandOrOutsideArea(new Location(
@@ -190,12 +190,6 @@ public class VisualSelectionCylinder implements VisualSelection {
 
         switch (moveType) {
             case ACTIVE:
-
-                removeSelection();
-                setActiveSelection();
-                break;
-
-            case EXPAND:
 
                 removeSelection();
                 Location playerLoc = player.getLocation();

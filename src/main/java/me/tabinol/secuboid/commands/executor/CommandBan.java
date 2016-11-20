@@ -42,18 +42,16 @@ public class CommandBan extends CommandPlayerThreadExec {
     /**
      * Instantiates a new command ban.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
-     *
-     *
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandBan(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     /* (non-Javadoc)
@@ -62,43 +60,43 @@ public class CommandBan extends CommandPlayerThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(true, null);
-	checkPermission(true, true, PermissionList.LAND_BAN.getPermissionType(), null);
+        checkSelections(true, null);
+        checkPermission(true, true, PermissionList.LAND_BAN.getPermissionType(), null);
 
-	fonction = argList.getNext();
+        fonction = argList.getNext();
 
-	if (fonction.equalsIgnoreCase("add")) {
+        if (fonction.equalsIgnoreCase("add")) {
 
-	    pc = argList.getPlayerContainerFromArg(land,
-		    new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-			PlayerContainerType.OWNER, PlayerContainerType.VISITOR,
-			PlayerContainerType.RESIDENT});
-	    secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            pc = argList.getPlayerContainerFromArg(land,
+                    new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                            PlayerContainerType.OWNER, PlayerContainerType.VISITOR,
+                            PlayerContainerType.RESIDENT});
+            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
-	} else if (fonction.equalsIgnoreCase("remove")) {
+        } else if (fonction.equalsIgnoreCase("remove")) {
 
-	    pc = argList.getPlayerContainerFromArg(land, null);
-	    secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            pc = argList.getPlayerContainerFromArg(land, null);
+            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
-	} else if (fonction.equalsIgnoreCase("list")) {
+        } else if (fonction.equalsIgnoreCase("list")) {
 
-	    StringBuilder stList = new StringBuilder();
-	    if (!land.getBanneds().isEmpty()) {
-		for (PlayerContainer pc : land.getBanneds()) {
-		    if (stList.length() != 0) {
-			stList.append(" ");
-		    }
-		    stList.append(ChatColor.WHITE).append(pc.getPrint());
-		}
-		stList.append(Config.NEWLINE);
-	    } else {
-		player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.LISTROWNULL"));
-	    }
-	    new ChatPage(secuboid, "COMMAND.BANNED.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            StringBuilder stList = new StringBuilder();
+            if (!land.getBanneds().isEmpty()) {
+                for (PlayerContainer pc : land.getBanneds()) {
+                    if (stList.length() != 0) {
+                        stList.append(" ");
+                    }
+                    stList.append(ChatColor.WHITE).append(pc.getPrint());
+                }
+                stList.append(Config.NEWLINE);
+            } else {
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.LISTROWNULL"));
+            }
+            new ChatPage(secuboid, "COMMAND.BANNED.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
 
-	} else {
-	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
-	}
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
+        }
     }
 
     /* (non-Javadoc)
@@ -106,29 +104,29 @@ public class CommandBan extends CommandPlayerThreadExec {
      */
     @Override
     public synchronized void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	convertPcIfNeeded(playerCacheEntry);
+        convertPcIfNeeded(playerCacheEntry);
 
-	if (fonction.equalsIgnoreCase("add")) {
+        if (fonction.equalsIgnoreCase("add")) {
 
-	    if (land.isLocationInside(land.getWorld().getSpawnLocation())) {
-		throw new SecuboidCommandException(secuboid, "Banned", player, "COMMAND.BANNED.NOTINSPAWN");
-	    }
-	    land.addBanned(pc);
+            if (land.isLocationInside(land.getWorld().getSpawnLocation())) {
+                throw new SecuboidCommandException(secuboid, "Banned", player, "COMMAND.BANNED.NOTINSPAWN");
+            }
+            land.addBanned(pc);
 
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.ISDONE",
-		    pc.getPrint() + ChatColor.YELLOW, land.getName()));
-	    secuboid.getLog().write("Ban added: " + pc.getPrint());
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.ISDONE",
+                    pc.getPrint() + ChatColor.YELLOW, land.getName()));
+            secuboid.getLog().write("Ban added: " + pc.getPrint());
 
-	} else if (fonction.equalsIgnoreCase("remove")) {
+        } else if (fonction.equalsIgnoreCase("remove")) {
 
-	    if (!land.removeBanned(pc)) {
-		throw new SecuboidCommandException(secuboid, "Banned", player, "COMMAND.BANNED.REMOVENOTEXIST");
-	    }
-	    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.REMOVEISDONE",
-		    pc.getPrint() + ChatColor.YELLOW, land.getName()));
-	    secuboid.getLog().write("Ban removed: " + pc.getPrint());
-	}
+            if (!land.removeBanned(pc)) {
+                throw new SecuboidCommandException(secuboid, "Banned", player, "COMMAND.BANNED.REMOVENOTEXIST");
+            }
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.BANNED.REMOVEISDONE",
+                    pc.getPrint() + ChatColor.YELLOW, land.getName()));
+            secuboid.getLog().write("Ban removed: " + pc.getPrint());
+        }
     }
 }

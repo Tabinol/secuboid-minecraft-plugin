@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.Config;
@@ -48,17 +49,17 @@ public class CommandApprove extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command approve.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandApprove(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
-	approveList = secuboid.getLands().getApproveList();
+        super(secuboid, infoCommand, sender, argList);
+        approveList = secuboid.getLands().getApproveList();
     }
 
     /* (non-Javadoc)
@@ -67,117 +68,117 @@ public class CommandApprove extends CommandCollisionsThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	String curArg = argList.getNext();
-	boolean isApprover = sender.hasPermission("secuboid.collisionapprove");
-	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String curArg = argList.getNext();
+        boolean isApprover = sender.hasPermission("secuboid.collisionapprove");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-	if (curArg.equalsIgnoreCase("clear")) {
+        if (curArg.equalsIgnoreCase("clear")) {
 
-	    if (!isApprover) {
-		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
-	    }
-	    approveList.removeAll();
-	    sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
+            if (!isApprover) {
+                throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
+            }
+            approveList.removeAll();
+            sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
 
-	} else if (curArg.equalsIgnoreCase("list")) {
+        } else if (curArg.equalsIgnoreCase("list")) {
 
-	    // List of Approve
-	    StringBuilder stList = new StringBuilder();
-	    int t = 0;
-	    TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
+            // List of Approve
+            StringBuilder stList = new StringBuilder();
+            int t = 0;
+            TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
 
-	    //create list (short by date/time)
-	    for (Approve app : approveList.getApproveList().values()) {
-		approveTree.put(app.getDateTime().getTime(), app);
-	    }
+            //create list (short by date/time)
+            for (Approve app : approveList.getApproveList().values()) {
+                approveTree.put(app.getDateTime().getTime(), app);
+            }
 
-	    // show Approve List
-	    for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
-		Approve app = approveEntry.getValue();
-		if (app != null && (isApprover || app.getOwner().hasAccess(player))) {
-		    stList.append(ChatColor.WHITE).append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
-			    ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
-			    ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
-			    app.getOwner().getPrint() + ChatColor.WHITE,
-			    ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
-		    stList.append(Config.NEWLINE);
-		    t++;
-		}
-	    }
-	    if (t == 0) {
+            // show Approve List
+            for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
+                Approve app = approveEntry.getValue();
+                if (app != null && (isApprover || app.getOwner().hasAccess(player))) {
+                    stList.append(ChatColor.WHITE).append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
+                            ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
+                            ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
+                            app.getOwner().getPrint() + ChatColor.WHITE,
+                            ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
+                    stList.append(Config.NEWLINE);
+                    t++;
+                }
+            }
+            if (t == 0) {
 
-		// List empty
-		sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
-	    } else {
+                // List empty
+                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
+            } else {
 
-		// List not empty
-		new ChatPage(secuboid, "COLLISION.SHOW.LISTSTART", stList.toString(), sender, null).getPage(1);
-	    }
-	} else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
+                // List not empty
+                new ChatPage(secuboid, "COLLISION.SHOW.LISTSTART", stList.toString(), sender, null).getPage(1);
+            }
+        } else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
 
-	    String param = argList.getNext();
+            String param = argList.getNext();
 
-	    if (param == null) {
-		throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
-	    }
+            if (param == null) {
+                throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
+            }
 
-	    approve = approveList.getApprove(param);
+            approve = approveList.getApprove(param);
 
-	    if (approve == null) {
-		throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
-	    }
+            if (approve == null) {
+                throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
+            }
 
-	    // Check permission
-	    if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
-		    || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-		    && !(isApprover || approve.getOwner().hasAccess(player)))) {
-		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
-	    }
+            // Check permission
+            if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
+                    || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
+                    && !(isApprover || approve.getOwner().hasAccess(player)))) {
+                throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
+            }
 
-	    RealLand apprLand = secuboid.getLands().getLand(param);
-	    Collisions.LandAction action = approve.getAction();
-	    int removeId = approve.getRemovedAreaId();
-	    Area newArea = approve.getNewArea();
-	    RealLand parent = approve.getParent();
-	    Double price = approve.getPrice();
-	    PlayerContainer owner = approve.getOwner();
+            RealLand apprLand = secuboid.getLands().getLand(param);
+            Collisions.LandAction action = approve.getAction();
+            int removeId = approve.getRemovedAreaId();
+            Area newArea = approve.getNewArea();
+            RealLand parent = approve.getParent();
+            Double price = approve.getPrice();
+            PlayerContainer owner = approve.getOwner();
 
-	    if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
+            if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
 
-		// Print area
-		if (newArea != null) {
-		    sender.sendMessage(newArea.getPrint());
-		}
+                // Print area
+                if (newArea != null) {
+                    sender.sendMessage(newArea.getPrint());
+                }
 
-		if (curArg.equalsIgnoreCase("confirm")) {
-		    // Paste to the After Thread
-		    confirm = true;
-		}
-		// Info on the specified land (Collision)
-		checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
+                if (curArg.equalsIgnoreCase("confirm")) {
+                    // Paste to the After Thread
+                    confirm = true;
+                }
+                // Info on the specified land (Collision)
+                checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
 
-	    } else if (curArg.equalsIgnoreCase("cancel")) {
+            } else if (curArg.equalsIgnoreCase("cancel")) {
 
-		// Remove in approve list
-		approveList.removeApprove(approve);
-		sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
-	    } else {
-		throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
-	    }
-	} else {
-	    throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
-	}
+                // Remove in approve list
+                approveList.removeApprove(approve);
+                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
+            } else {
+                throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
+            }
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
+        }
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-	if (confirm) {
+        if (confirm) {
 
-	    // Create the action (if it is possible)
-	    approveList.removeApprove(approve);
-	    approve.createAction();
-	    sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
-	}
+            // Create the action (if it is possible)
+            approveList.removeApprove(approve);
+            approve.createAction();
+            sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
+        }
     }
 }

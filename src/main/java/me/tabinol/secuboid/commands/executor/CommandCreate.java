@@ -20,6 +20,7 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
@@ -47,107 +48,107 @@ public class CommandCreate extends CommandCollisionsThreadExec {
     /**
      * Instantiates a new command create.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandCreate(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	checkSelections(null, true);
-	// checkPermission(false, false, null, null);
+        checkSelections(null, true);
+        // checkPermission(false, false, null, null);
 
-	AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
+        AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
 
-	Area area = select.getVisualSelection().getArea();
-	RealLand localParent;
+        Area area = select.getVisualSelection().getArea();
+        RealLand localParent;
 
-	// Quit select mod
-	// playerConf.setAreaSelection(null);
-	// playerConf.setLandSelected(null);
-	// select.resetSelection();
-	String curArg = argList.getNext();
+        // Quit select mod
+        // playerConf.setAreaSelection(null);
+        // playerConf.setLandSelected(null);
+        // select.resetSelection();
+        String curArg = argList.getNext();
 
-	// Check if is is a banned word
-	if (BannedWords.isBannedWord(curArg.toUpperCase())) {
-	    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.HINTUSE");
-	}
+        // Check if is is a banned word
+        if (BannedWords.isBannedWord(curArg.toUpperCase())) {
+            throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.HINTUSE");
+        }
 
-	// Check for parent
-	if (!argList.isLast()) {
+        // Check for parent
+        if (!argList.isLast()) {
 
-	    String curString = argList.getNext();
+            String curString = argList.getNext();
 
-	    if (curString.equalsIgnoreCase("noparent")) {
+            if (curString.equalsIgnoreCase("noparent")) {
 
-		localParent = null;
-	    } else {
+                localParent = null;
+            } else {
 
-		localParent = secuboid.getLands().getLand(curString);
+                localParent = secuboid.getLands().getLand(curString);
 
-		if (localParent == null) {
-		    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.PARENTNOTEXIST");
-		}
-	    }
-	} else {
+                if (localParent == null) {
+                    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.PARENTNOTEXIST");
+                }
+            }
+        } else {
 
-	    // Autodetect parent
-	    localParent = select.getVisualSelection().getParentDetected();
-	}
+            // Autodetect parent
+            localParent = select.getVisualSelection().getParentDetected();
+        }
 
-	// Not complicated! The player must be AdminMode, or access to create (in world)
-	// or access to create in parent if it is a subland.
-	if (!playerConf.isAdminMode() && (localParent == null
-		|| !localParent.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
-	    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
-	}
+        // Not complicated! The player must be AdminMode, or access to create (in world)
+        // or access to create in parent if it is a subland.
+        if (!playerConf.isAdminMode() && (localParent == null
+                || !localParent.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
+            throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
+        }
 
-	// If the player is adminmode, the owner is nobody, and set type
-	PlayerContainer localOwner;
-	Type localType;
-	if (playerConf.isAdminMode()) {
-	    localOwner = new PlayerContainerNobody();
-	    localType = secuboid.getConf().getTypeAdminMode();
-	} else {
-	    localOwner = playerConf.getPlayerContainer();
-	    localType = secuboid.getConf().getTypeNoneAdminMode();
-	}
+        // If the player is adminmode, the owner is nobody, and set type
+        PlayerContainer localOwner;
+        Type localType;
+        if (playerConf.isAdminMode()) {
+            localOwner = new PlayerContainerNobody();
+            localType = secuboid.getConf().getTypeAdminMode();
+        } else {
+            localOwner = playerConf.getPlayerContainer();
+            localType = secuboid.getConf().getTypeNoneAdminMode();
+        }
 
-	checkCollision(curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
+        checkCollision(curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
 
-	// Check for collision
-	if (collisions.hasCollisions()) {
-	    new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
-	    return;
-	}
+        // Check for collision
+        if (collisions.hasCollisions()) {
+            new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+            return;
+        }
 
-	// Create Land
-	try {
-	    RealLand cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
+        // Create Land
+        try {
+            RealLand cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
 
-	    player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
-	    secuboid.getLog().write(playerName + " have create a land named " + cLand.getName() + ".");
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
+            secuboid.getLog().write(playerName + " has create a land named " + cLand.getName() + ".");
 
-	    // Cancel and select the land
-	    new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
-	    new CommandSelect(secuboid, infoCommand, player, new ArgList(secuboid, new String[]{cLand.getName()},
-		    player)).commandExecute();
+            // Cancel and select the land
+            new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+            new CommandSelect(secuboid, infoCommand, player, new ArgList(secuboid, new String[]{cLand.getName()},
+                    player)).commandExecute();
 
-	} catch (SecuboidLandException ex) {
-	    Logger.getLogger(CommandCreate.class.getName()).log(Level.SEVERE, "On land create", ex);
-	}
+        } catch (SecuboidLandException ex) {
+            Logger.getLogger(CommandCreate.class.getName()).log(Level.SEVERE, "On land create", ex);
+        }
 
     }
 }

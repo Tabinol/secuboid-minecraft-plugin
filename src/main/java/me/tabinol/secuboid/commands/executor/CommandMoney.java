@@ -41,40 +41,40 @@ public class CommandMoney extends CommandExec {
     /**
      * Instantiates a new command money.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandMoney(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
-	playerMoney = secuboid.getPlayerMoney();
+        super(secuboid, infoCommand, sender, argList);
+        playerMoney = secuboid.getPlayerMoney();
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	if (playerMoney == null) {
+        if (playerMoney == null) {
 
-	    throw new SecuboidCommandException(secuboid, "Economy not avalaible", player, "COMMAND.ECONOMY.NOTAVAILABLE");
-	}
+            throw new SecuboidCommandException(secuboid, "Economy not avalaible", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+        }
 
-	checkSelections(true, null);
+        checkSelections(true, null);
 
-	String curArg = argList.getNext();
+        String curArg = argList.getNext();
 
-	if (curArg.equalsIgnoreCase("balance")) {
-	    balance();
-	} else if (curArg.equalsIgnoreCase("deposit")) {
-	    deposit();
-	} else if (curArg.equalsIgnoreCase("withdraw")) {
-	    withdraw();
-	} else {
-	    throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
-	}
+        if (curArg.equalsIgnoreCase("balance")) {
+            balance();
+        } else if (curArg.equalsIgnoreCase("deposit")) {
+            deposit();
+        } else if (curArg.equalsIgnoreCase("withdraw")) {
+            withdraw();
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
+        }
     }
 
     /**
@@ -84,9 +84,9 @@ public class CommandMoney extends CommandExec {
      */
     private void balance() throws SecuboidCommandException {
 
-	checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
-		land.getName(), playerMoney.toFormat(land.getMoney())));
+        checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
+                land.getName(), playerMoney.toFormat(land.getMoney())));
     }
 
     /**
@@ -96,20 +96,20 @@ public class CommandMoney extends CommandExec {
      */
     private void deposit() throws SecuboidCommandException {
 
-	checkPermission(true, false, PermissionList.MONEY_DEPOSIT.getPermissionType(), null);
+        checkPermission(true, false, PermissionList.MONEY_DEPOSIT.getPermissionType(), null);
 
-	double amount = getAmountFromCommandLine();
+        double amount = getAmountFromCommandLine();
 
-	// Amount is valid?
-	if (amount > playerMoney.getPlayerBalance(player.getPlayer(), land.getWorldName())) {
-	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
-	}
+        // Amount is valid?
+        if (amount > playerMoney.getPlayerBalance(player.getPlayer(), land.getWorldName())) {
+            throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+        }
 
-	// Land Deposit
-	playerMoney.getFromPlayer(player.getPlayer(), land.getWorldName(), amount);
-	land.addMoney(amount);
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
-		playerMoney.toFormat(land.getMoney()), land.getName()));
+        // Land Deposit
+        playerMoney.getFromPlayer(player.getPlayer(), land.getWorldName(), amount);
+        land.addMoney(amount);
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
+                playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
     /**
@@ -119,20 +119,20 @@ public class CommandMoney extends CommandExec {
      */
     private void withdraw() throws SecuboidCommandException {
 
-	checkPermission(true, false, PermissionList.MONEY_WITHDRAW.getPermissionType(), null);
+        checkPermission(true, false, PermissionList.MONEY_WITHDRAW.getPermissionType(), null);
 
-	double amount = getAmountFromCommandLine();
+        double amount = getAmountFromCommandLine();
 
-	// Amount is valid?
-	if (amount > land.getMoney()) {
-	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
-	}
+        // Amount is valid?
+        if (amount > land.getMoney()) {
+            throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+        }
 
-	// Land Deposit
-	land.substractMoney(amount);
-	playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
-	player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
-		playerMoney.toFormat(land.getMoney()), land.getName()));
+        // Land Deposit
+        land.substractMoney(amount);
+        playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
+                playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
     /**
@@ -143,27 +143,27 @@ public class CommandMoney extends CommandExec {
      */
     private double getAmountFromCommandLine() throws SecuboidCommandException {
 
-	double ret = 0;
-	boolean err = false;
+        double ret = 0;
+        boolean err = false;
 
-	try {
-	    ret = Double.parseDouble(argList.getNext());
-	    if (ret <= 0) {
-		// Amount is 0 or less
-		err = true;
-	    }
-	} catch (NullPointerException ex) {
-	    // Amount is null
-	    err = true;
-	} catch (NumberFormatException ex) {
-	    // Amount is unreadable
-	    err = true;
-	}
+        try {
+            ret = Double.parseDouble(argList.getNext());
+            if (ret <= 0) {
+                // Amount is 0 or less
+                err = true;
+            }
+        } catch (NullPointerException ex) {
+            // Amount is null
+            err = true;
+        } catch (NumberFormatException ex) {
+            // Amount is unreadable
+            err = true;
+        }
 
-	if (err) {
-	    throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
-	}
+        if (err) {
+            throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
+        }
 
-	return ret;
+        return ret;
     }
 }

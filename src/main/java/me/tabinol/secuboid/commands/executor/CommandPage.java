@@ -34,38 +34,35 @@ public class CommandPage extends CommandExec {
     /**
      * Instantiates a new command page.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
      * @param infoCommand the info command
-     * @param sender the sender
-     * @param argList the arg list
+     * @param sender      the sender
+     * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandPage(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-	    throws SecuboidCommandException {
+            throws SecuboidCommandException {
 
-	super(secuboid, infoCommand, sender, argList);
+        super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
-     */
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-	ChatPage chatPage = playerConf.getChatPage();
-	int pageNumber;
+        ChatPage chatPage = playerConf.getChatPage();
+        int pageNumber;
 
-	if (chatPage == null) {
-	    throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
-	}
+        if (chatPage == null) {
+            throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
+        }
 
-	String curArg = argList.getNext();
+        String curArg = argList.getNext();
 
-	try {
-	    pageNumber = Integer.parseInt(curArg);
-	} catch (NumberFormatException ex) {
-	    throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
-	}
-	chatPage.getPage(pageNumber);
+        try {
+            pageNumber = Integer.parseInt(curArg);
+        } catch (NumberFormatException ex) {
+            throw new SecuboidCommandException(secuboid, "Page", player, "COMMAND.PAGE.INVALID");
+        }
+        chatPage.getPage(pageNumber);
     }
 }

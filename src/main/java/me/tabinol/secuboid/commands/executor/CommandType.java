@@ -72,7 +72,7 @@ public class CommandType extends CommandExec {
 
             land.setType(null);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
-            secuboid.getLog().write("Land type removed: " + land.getName());
+            secuboid.getLog().debug("Land type removed: " + land.getName());
 
         } else { // Type change
 
@@ -84,7 +84,7 @@ public class CommandType extends CommandExec {
 
             land.setType(type);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
-            secuboid.getLog().write("Land type: " + type.getName() + " for land: " + land.getName());
+            secuboid.getLog().debug("Land type: " + type.getName() + " for land: " + land.getName());
         }
     }
 }

@@ -112,7 +112,7 @@ public class WorldConfig {
 
         String worldNameLower = worldName.toLowerCase();
         if (secuboid != null) {
-            secuboid.getLog().write("Create conf for World: " + worldNameLower);
+            secuboid.getLog().debug("Create conf for World: " + worldNameLower);
         }
         GlobalLand dl = new GlobalLand(secuboid, worldName);
         if (copyFromGlobal) {
@@ -130,7 +130,7 @@ public class WorldConfig {
     private Land getLandDefaultConf() {
 
         if (secuboid != null) {
-            secuboid.getLog().write("Create default conf for lands");
+            secuboid.getLog().debug("Create default conf for lands");
         }
         return landModify(new GlobalLand(secuboid, GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
     }
@@ -153,7 +153,7 @@ public class WorldConfig {
     public TreeMap<Type, GlobalLand> getTypeDefaultConf() {
 
         if (secuboid != null) {
-            secuboid.getLog().write("Create default conf for lands");
+            secuboid.getLog().debug("Create default conf for lands");
         }
         TreeMap<Type, GlobalLand> defaultConf = new TreeMap<Type, GlobalLand>();
 
@@ -184,7 +184,7 @@ public class WorldConfig {
                     for (String containerName : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
                         for (String perm : fc.getConfigurationSection(perms + "." + container + "." + containerName).getKeys(false)) {
                             if (secuboid != null) {
-                                secuboid.getLog().write("Container: " + container + ":" + containerName + ", " + perm);
+                                secuboid.getLog().debug("Container: " + container + ":" + containerName + ", " + perm);
                             }
 
                             // Remove _ if it is a Bukkit Permission
@@ -207,7 +207,7 @@ public class WorldConfig {
                 } else {
                     for (String perm : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
                         if (secuboid != null) {
-                            secuboid.getLog().write("Container: " + container + ", " + perm);
+                            secuboid.getLog().debug("Container: " + container + ", " + perm);
                         }
                         assert secuboid != null;
                         dl.getPermissionsFlags().addPermission(
@@ -225,7 +225,7 @@ public class WorldConfig {
         if (csFlags != null) {
             for (String flag : csFlags.getKeys(false)) {
                 if (secuboid != null) {
-                    secuboid.getLog().write("Flag: " + flag);
+                    secuboid.getLog().debug("Flag: " + flag);
                 }
                 assert secuboid != null;
                 FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());

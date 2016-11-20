@@ -67,7 +67,10 @@ public class LandsTest {
 
         // log
         Log log = mock(Log.class);
-        doNothing().when(log).write(anyString());
+        doNothing().when(log).info(anyString());
+        doNothing().when(log).warning(anyString());
+        doNothing().when(log).severe(anyString());
+        doNothing().when(log).debug(anyString());
         when(secuboid.getLog()).thenReturn(log);
 
         // Permissions Flags

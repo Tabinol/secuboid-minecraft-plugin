@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
@@ -125,9 +124,9 @@ public class CollisionsManagerThread extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().write("Secuboid collisions manager Thread wake up!");
+                    secuboid.getLog().debug("Secuboid collisions manager Thread wake up!");
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Collisions manager thread error: " + e.getLocalizedMessage());
                 }
             }
             notSaved.signal();
@@ -142,7 +141,7 @@ public class CollisionsManagerThread extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLogger().log(Level.SEVERE, "Problem with collisions manager Thread. Possible data loss!");
+            secuboid.getLog().severe("Problem with collisions manager Thread. Possible data loss!");
             return;
         }
         exitRequest = true;
@@ -151,7 +150,7 @@ public class CollisionsManagerThread extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            secuboid.getLog().severe("Collisions manager thread error: " + e.getLocalizedMessage());
         } finally {
             lock.unlock();
         }
@@ -174,7 +173,7 @@ public class CollisionsManagerThread extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().write("Secuboid collisions manager request (Thread wake up...)");
+            secuboid.getLog().debug("Secuboid collisions manager request (Thread wake up...)");
         } finally {
             lock.unlock();
         }

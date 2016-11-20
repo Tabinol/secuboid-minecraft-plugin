@@ -42,9 +42,9 @@ public class SecuboidCommandException extends Exception {
 
         super(logMsg);
         if (sender != null) {
-            secuboid.getLog().write("Player: " + sender.getName() + ", Lang Msg: " + langMsg + ", " + logMsg);
+            secuboid.getLog().debug("Player: " + sender.getName() + ", Lang Msg: " + langMsg + ", " + logMsg);
         } else {
-            secuboid.getLog().write(logMsg);
+            secuboid.getLog().debug(logMsg);
         }
         if (sender != null) {
             sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage(langMsg, param));

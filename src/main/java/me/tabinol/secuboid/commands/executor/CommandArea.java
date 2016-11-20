@@ -155,7 +155,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
             land.addArea(newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-            secuboid.getLog().write(playerName + " have create an area named " + land.getName() + ".");
+            secuboid.getLog().debug(playerName + " have create an area named " + land.getName() + ".");
             new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         } else if (fonction.equalsIgnoreCase("remove")) {
@@ -174,7 +174,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
             land.replaceArea(removeId, newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-            secuboid.getLog().write(playerName + " have create an area named " + land.getName() + ".");
+            secuboid.getLog().debug(playerName + " have create an area named " + land.getName() + ".");
             new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         }

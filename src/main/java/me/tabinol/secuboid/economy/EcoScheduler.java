@@ -61,7 +61,7 @@ public class EcoScheduler extends BukkitRunnable {
                                 land.getRentPrice(), land.getRentRenew(),
                                 land.getRentAutoRenew(), null);
                     } catch (SignException e) {
-                        e.printStackTrace();
+                        secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                 } else {
 

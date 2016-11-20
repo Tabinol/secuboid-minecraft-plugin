@@ -85,13 +85,13 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getSaleSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.setForSale(false, 0, null);
                 land.setOwner(playerConf.getPlayerContainer());
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
                         land.getName()));
-                secuboid.getLog().write("The land " + land.getName() + " is purchased by : " + player.getName());
+                secuboid.getLog().debug("The land " + land.getName() + " is purchased by : " + player.getName());
             } else // Rent and unrent
                 if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
                         || playerConf.isAdminMode())) {
@@ -103,11 +103,11 @@ public class CommandEcosign extends CommandExec {
                                 land.getRentAutoRenew(), null);
                     } catch (SignException e) {
                         // Real Error
-                        e.printStackTrace();
+                        secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND",
                             land.getName()));
-                    secuboid.getLog().write("The land " + land.getName() + " is unrented by : " + player.getName());
+                    secuboid.getLog().debug("The land " + land.getName() + " is unrented by : " + player.getName());
 
                 } else if (!land.isRented()) {
 
@@ -131,11 +131,11 @@ public class CommandEcosign extends CommandExec {
                                 land.getRentRenew(), land.getRentAutoRenew(), player.getName());
                     } catch (SignException e) {
                         // Real Error
-                        e.printStackTrace();
+                        secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
                             land.getName()));
-                    secuboid.getLog().write("The land " + land.getName() + " is rented by : " + player.getName());
+                    secuboid.getLog().debug("The land " + land.getName() + " is rented by : " + player.getName());
                 }
         } else if (land.getOwner().hasAccess(player) || playerConf.isAdminMode()) {
 
@@ -147,12 +147,12 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getSaleSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.setForSale(false, 0, null);
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE",
                         land.getName()));
-                secuboid.getLog().write("The land " + land.getName() + " is no longer for sale by : " + player.getName());
+                secuboid.getLog().debug("The land " + land.getName() + " is no longer for sale by : " + player.getName());
             } else {
 
                 // Destroy rent sign
@@ -160,13 +160,13 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getRentSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.unSetRented();
                 land.unSetForRent();
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORRENT",
                         land.getName()));
-                secuboid.getLog().write("The land " + land.getName() + " is no longer for rent by : " + player.getName());
+                secuboid.getLog().debug("The land " + land.getName() + " is no longer for rent by : " + player.getName());
             }
         }
     }

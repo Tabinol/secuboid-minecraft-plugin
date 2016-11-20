@@ -107,7 +107,7 @@ public class EcoSign {
             throw new SignException();
         }
 
-        secuboid.getLog().write("SignToCreate: PlayerYaw: " + player.getLocation().getYaw()
+        secuboid.getLog().debug("SignToCreate: PlayerYaw: " + player.getLocation().getYaw()
                 + ", Location: " + location.toString() + ", Facing: " + facing.name()
                 + ", isWallSign: " + isWallSign);
     }

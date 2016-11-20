@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.logging.Level;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.utilities.SecuboidRunnable;
 import org.bukkit.ChatColor;
@@ -32,7 +33,7 @@ public class ApproveNotif extends SecuboidRunnable {
     /**
      * The Constant PERM_APPROVE.
      */
-    public static final String PERM_APPROVE = "secuboid.collisionapprove";
+    private static final String PERM_APPROVE = "secuboid.collisionapprove";
 
     /**
      * Instantiates a new approve notif.
@@ -40,8 +41,7 @@ public class ApproveNotif extends SecuboidRunnable {
      * @param secuboid secuboid instance
      */
     public ApproveNotif(Secuboid secuboid) {
-
-	super(secuboid);
+        super(secuboid);
     }
 
     /**
@@ -49,42 +49,35 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void runApproveNotifLater() {
 
-	long notifyTime = secuboid.getConf().getApproveNotifyTime();
+        long notifyTime = secuboid.getConf().getApproveNotifyTime();
 
-	// Start only if notification is activated in configuration
-	if (notifyTime != 0) {
-	    this.runLater(notifyTime, true);
-	}
+        // Start only if notification is activated in configuration
+        if (notifyTime != 0) {
+            this.runLater(notifyTime, true);
+        }
 
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    /**
-     *
-     */
     @Override
     public void run() {
 
-	int lstCount;
+        int lstCount;
 
-	if ((lstCount = secuboid.getLands().getApproveList().getApproveList().size()) != 0) {
+        if ((lstCount = secuboid.getLands().getApproveList().getApproveList().size()) != 0) {
 
-	    // If there is some notification to done
-	    notifyListApprove(lstCount);
-	}
+            // If there is some notification to done
+            notifyListApprove(lstCount);
+        }
     }
 
     /**
      * Notify for approve.
      *
-     * @param landName the land name
+     * @param landName   the land name
      * @param playerName the player name
      */
-    public void notifyForApprove(String landName, String playerName) {
-
-	notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+    void notifyForApprove(String landName, String playerName) {
+        notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
     }
 
     /**
@@ -93,24 +86,20 @@ public class ApproveNotif extends SecuboidRunnable {
      * @param lstCount the lst count
      */
     private void notifyListApprove(int lstCount) {
-
-	notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
+        notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
     }
 
-    // Notify with a message
     /**
-     * Notify player.
+     * Notify the player with a message.
      *
      * @param message the message
      */
     private void notifyPlayer(String message) {
-
-	for (Player players : secuboid.getServer().getOnlinePlayers()) {
-	    if (players.hasPermission(PERM_APPROVE)) {
-		players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
-	    }
-	}
-
-	secuboid.getLogger().log(Level.INFO, "[Secuboid] {0}", message);
+        for (Player players : secuboid.getServer().getOnlinePlayers()) {
+            if (players.hasPermission(PERM_APPROVE)) {
+                players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
+            }
+        }
+        secuboid.getLogger().log(Level.INFO, "[Secuboid] {0}", message);
     }
 }

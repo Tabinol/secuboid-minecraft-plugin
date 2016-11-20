@@ -25,7 +25,7 @@ import org.bukkit.entity.Player;
  * The Interface Vanish.
  */
 public interface Vanish {
-    
+
     /**
      * Checks if is vanished.
      *
@@ -33,5 +33,5 @@ public interface Vanish {
      * @return true, if is vanished
      */
     public boolean isVanished(Player player);
-    
+
 }

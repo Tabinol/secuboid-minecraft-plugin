@@ -18,40 +18,35 @@
 package me.tabinol.secuboid.playerscache;
 
 import java.util.concurrent.Callable;
+
 import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
 /**
  * The Class ReturnPlayerToCommand.
  */
-public class ReturnPlayerToCommand implements Callable<Void> {
+class ReturnPlayerToCommand implements Callable<Void> {
 
-    /** The command exec. */
+    /**
+     * The command exec.
+     */
     private final CommandPlayerThreadExec commandExec;
 
-    /** The player cache entry. */
+    /**
+     * The player cache entry.
+     */
     private final PlayerCacheEntry[] playerCacheEntry;
 
     /**
      * Instantiates a new return to command.
      *
-     * @param commandExec the command exec
+     * @param commandExec      the command exec
      * @param playerCacheEntry the player cache entry
      */
-    public ReturnPlayerToCommand(CommandPlayerThreadExec commandExec, PlayerCacheEntry[] playerCacheEntry) {
-
+    ReturnPlayerToCommand(CommandPlayerThreadExec commandExec, PlayerCacheEntry[] playerCacheEntry) {
         this.commandExec = commandExec;
         this.playerCacheEntry = playerCacheEntry;
     }
-
-    /* (non-Javadoc)
-     * @see java.util.concurrent.Callable#call()
-     */
-
-    /**
-     *
-     * @return
-     */
 
     @Override
     public Void call() {

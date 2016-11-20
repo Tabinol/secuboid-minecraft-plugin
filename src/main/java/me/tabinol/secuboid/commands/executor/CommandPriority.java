@@ -23,7 +23,7 @@ import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -64,7 +64,7 @@ public class CommandPriority extends CommandExec {
         } catch (NumberFormatException ex) {
             throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
         }
-        if (!Calculate.isInInterval(newPrio, RealLand.MINIM_PRIORITY, RealLand.MAXIM_PRIORITY)) {
+        if (!LocalMath.isInInterval(newPrio, RealLand.MINIM_PRIORITY, RealLand.MAXIM_PRIORITY)) {
             throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
         }
         land.setPriority(newPrio);

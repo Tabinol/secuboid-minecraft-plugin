@@ -27,9 +27,6 @@ import me.tabinol.secuboid.lands.collisions.Collisions;
  */
 public class SecuboidLandException extends ApiSecuboidLandException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -4561559858019587492L;
 
     /**
@@ -37,22 +34,22 @@ public class SecuboidLandException extends ApiSecuboidLandException {
      *
      * @param secuboid the secuboid instance
      * @param landName the land name
-     * @param area the area
-     * @param action the action
-     * @param error the error
+     * @param area     the area
+     * @param action   the action
+     * @param error    the error
      */
     public SecuboidLandException(Secuboid secuboid, String landName, Area area, Collisions.LandAction action, Collisions.LandError error) {
 
-	super("Secuboid Land Exception");
+        super("Secuboid Land Exception");
 
-	StringBuilder bf = new StringBuilder();
+        StringBuilder bf = new StringBuilder();
 
-	bf.append("Error: Land: ").append(landName);
-	if (area != null) {
-	    bf.append(", area: ").append(area.getPrint());
-	}
-	bf.append(", Action: ").append(action.toString()).append(", Error: ").append(error.toString());
+        bf.append("Error: Land: ").append(landName);
+        if (area != null) {
+            bf.append(", area: ").append(area.getPrint());
+        }
+        bf.append(", Action: ").append(action.toString()).append(", Error: ").append(error.toString());
 
-	secuboid.getLog().write(bf.toString());
+        secuboid.getLog().write(bf.toString());
     }
 }

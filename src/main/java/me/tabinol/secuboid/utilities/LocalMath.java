@@ -19,9 +19,9 @@
 package me.tabinol.secuboid.utilities;
 
 /**
- * The Class Calculate.
+ * The Class LocalMath.
  */
-public class Calculate {
+public class LocalMath {
 
     /**
      * Greater int.
@@ -32,11 +32,11 @@ public class Calculate {
      */
     public static int greaterInt(int nb1, int nb2) {
 
-	if (nb1 > nb2) {
-	    return nb1;
-	} else {
-	    return nb2;
-	}
+        if (nb1 > nb2) {
+            return nb1;
+        } else {
+            return nb2;
+        }
     }
 
     /**
@@ -48,77 +48,23 @@ public class Calculate {
      */
     public static int lowerInt(int nb1, int nb2) {
 
-	if (nb1 < nb2) {
-	    return nb1;
-	} else {
-	    return nb2;
-	}
+        if (nb1 < nb2) {
+            return nb1;
+        } else {
+            return nb2;
+        }
     }
 
     /**
      * Checks if is in interval.
      *
      * @param nbSource the nb source
-     * @param nb1 the nb1
-     * @param nb2 the nb2
+     * @param nb1      the nb1
+     * @param nb2      the nb2
      * @return true, if is in interval
      */
     public static boolean isInInterval(int nbSource, int nb1, int nb2) {
 
-	return nbSource >= lowerInt(nb1, nb2) && nbSource <= greaterInt(nb1, nb2);
-    }
-
-    // -1 before, 0 inside, +1 after
-    /**
-     * Compare position.
-     *
-     * @param nbSource the nb source
-     * @param nb1 the nb1
-     * @param nb2 the nb2
-     * @return the int
-     */
-    public static int comparePosition(int nbSource, int nb1, int nb2) {
-
-	if (nbSource < nb1) {
-	    return -1;
-	}
-	if (nbSource > nb2) {
-	    return 1;
-	}
-	return 0;
-    }
-
-    /**
-     * Addition double.
-     *
-     * @param a the a
-     * @param b the b
-     * @return the double
-     */
-    public static Double AdditionDouble(Double a, Double b) {
-	Double t;
-	if (a < 0) {
-	    t = a - b;
-	} else {
-	    t = a + b;
-	}
-	return t;
-    }
-
-    /**
-     * Addition int.
-     *
-     * @param a the a
-     * @param b the b
-     * @return the int
-     */
-    public static int AdditionInt(int a, int b) {
-	int t;
-	if (a < 0) {
-	    t = a - b;
-	} else {
-	    t = a + b;
-	}
-	return t;
+        return nbSource >= lowerInt(nb1, nb2) && nbSource <= greaterInt(nb1, nb2);
     }
 }

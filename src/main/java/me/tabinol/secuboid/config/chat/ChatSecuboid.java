@@ -24,22 +24,15 @@ import org.bukkit.entity.Player;
  */
 public class ChatSecuboid implements Chat {
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.chat.Chat#isSpy(org.bukkit.entity.Player)
-     */
     @Override
     public boolean isSpy(Player player) {
 
         return player.hasPermission("secuboid.socialspy");
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.config.chat.Chat#isMuted(org.bukkit.entity.Player)
-     */
     @Override
     public boolean isMuted(Player player) {
 
         return false;
     }
-
 }

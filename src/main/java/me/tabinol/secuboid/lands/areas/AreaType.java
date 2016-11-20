@@ -22,17 +22,7 @@ package me.tabinol.secuboid.lands.areas;
  * Represents the type of area
  */
 public enum AreaType {
-
-    /**
-     * Cuboid type
-     */
     CUBOID,
-    /**
-     * Cylinder type
-     */
     CYLINDER,
-    /**
-     * Road type
-     */
     ROAD
 }

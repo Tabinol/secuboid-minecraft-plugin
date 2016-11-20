@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.utilities;
 
 import java.util.HashMap;
+
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -46,18 +47,17 @@ public class ExpirableHashMap<K, V> extends HashMap<K, V> {
      * Instantiates a new expirable tree map.
      *
      * @param secuboid secuboid instance
-     * @param delay the delay (in ticks)
+     * @param delay    the delay (in ticks)
      */
     public ExpirableHashMap(Secuboid secuboid, long delay) {
-
-	super();
-	this.secuboid = secuboid;
-	this.delay = delay;
+        super();
+        this.secuboid = secuboid;
+        this.delay = delay;
     }
 
     @Override
     public Object clone() {
-	return super.clone(); //To change body of generated methods, choose Tools | Templates.
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -65,43 +65,30 @@ public class ExpirableHashMap<K, V> extends HashMap<K, V> {
      */
     private class BestBefored extends BukkitRunnable {
 
-	/**
-	 * The key.
-	 */
-	K key;
+        /**
+         * The key.
+         */
+        K key;
 
-	/**
-	 * Instantiates a new best befored.
-	 *
-	 * @param key the key
-	 */
-	private BestBefored(K key) {
+        /**
+         * Instantiates a new best befored.
+         *
+         * @param key the key
+         */
+        private BestBefored(K key) {
 
-	    this.key = key;
-	}
+            this.key = key;
+        }
 
-	/* (non-Javadoc)
-         * @see java.lang.Runnable#run()
-	 */
-	@Override
-	public void run() {
-	    remove(key);
-	}
+        @Override
+        public void run() {
+            remove(key);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see java.util.TreeMap#put(java.lang.Object, java.lang.Object)
-     */
-    /**
-     *
-     * @param key
-     * @param value
-     * @return
-     */
     @Override
     public V put(K key, V value) {
-
-	new BestBefored(key).runTaskLater(secuboid, delay);
-	return super.put(key, value);
+        new BestBefored(key).runTaskLater(secuboid, delay);
+        return super.put(key, value);
     }
 }

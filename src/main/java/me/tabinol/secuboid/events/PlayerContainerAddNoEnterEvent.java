@@ -36,31 +36,22 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
     /**
      * The player container.
      */
-    PlayerContainer playerContainer;
+    private PlayerContainer playerContainer;
 
     /**
      * Instantiates a new player container add no enter events.
      *
-     * @param land the land
+     * @param land            the land
      * @param playerContainer the player container
      */
     public PlayerContainerAddNoEnterEvent(final RealLand land, final PlayerContainer playerContainer) {
-
-	super(land);
-	this.playerContainer = playerContainer;
+        super(land);
+        this.playerContainer = playerContainer;
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboidapi.events.LandEvent#getHandlers()
-     */
-    /**
-     *
-     * @return
-     */
     @Override
     public HandlerList getHandlers() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -69,8 +60,7 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -79,7 +69,6 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      * @return the player container
      */
     public PlayerContainer getPlayerContainer() {
-
-	return playerContainer;
+        return playerContainer;
     }
 }

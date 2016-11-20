@@ -43,30 +43,12 @@ public class PermissionsFlagsType implements Comparable<PermissionsFlagsType> {
      * @param name the name
      */
     PermissionsFlagsType(String name) {
-
-	this.name = name;
+        this.name = name;
     }
 
-    /**
-     *
-     * @param t
-     * @return
-     */
     @Override
     public int compareTo(PermissionsFlagsType t) {
-
-	return name.compareTo(t.name);
-    }
-
-    /**
-     * Equals.
-     *
-     * @param t the t
-     * @return true, if successful
-     */
-    public boolean equals(PermissionsFlagsType t) {
-
-	return name.equals(t.name);
+        return name.compareTo(t.name);
     }
 
     /**
@@ -75,18 +57,12 @@ public class PermissionsFlagsType implements Comparable<PermissionsFlagsType> {
      * @return the name
      */
     public String getName() {
-
-	return name;
+        return name;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public String toString() {
-
-	return name;
+        return name;
     }
 
     /**
@@ -95,12 +71,11 @@ public class PermissionsFlagsType implements Comparable<PermissionsFlagsType> {
      * @return the prints the
      */
     public String getPrint() {
-
-	if (isRegistered) {
-	    return ChatColor.YELLOW + name;
-	} else {
-	    return ChatColor.DARK_GRAY + name;
-	}
+        if (isRegistered) {
+            return ChatColor.YELLOW + name;
+        } else {
+            return ChatColor.DARK_GRAY + name;
+        }
     }
 
     /**
@@ -109,15 +84,29 @@ public class PermissionsFlagsType implements Comparable<PermissionsFlagsType> {
      * @return true, if is registered
      */
     public boolean isRegistered() {
-
-	return isRegistered;
+        return isRegistered;
     }
 
     /**
      * Sets the registered.
      */
     void setRegistered() {
+        isRegistered = true;
+    }
 
-	isRegistered = true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PermissionsFlagsType that = (PermissionsFlagsType) o;
+
+        return name.equals(that.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 }

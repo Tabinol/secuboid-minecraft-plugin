@@ -18,41 +18,21 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-/**
- *
- * @author michel
- */
 public class Profile {
 
     private final String id;
     private final String name;
 
-    /**
-     *
-     * @param id
-     * @param name
-     */
-    public Profile(String id, String name) {
-
-	this.id = id;
-	this.name = name;
+    Profile(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getId() {
-
-	return id;
+        return id;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getName() {
-
-	return name;
+        return name;
     }
 }

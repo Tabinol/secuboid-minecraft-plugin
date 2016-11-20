@@ -39,42 +39,42 @@ public class PlayerMoney {
      * @param economy the secuboid economy instance
      */
     public PlayerMoney(Economy economy) {
-	this.economy = economy;
+        this.economy = economy;
     }
 
     /**
      * Gets the player balance.
      *
      * @param offlinePlayer the offline player
-     * @param worldName the world name
+     * @param worldName     the world name
      * @return the player balance
      */
     public Double getPlayerBalance(OfflinePlayer offlinePlayer, String worldName) {
-	return economy.getBalance(offlinePlayer, worldName);
+        return economy.getBalance(offlinePlayer, worldName);
     }
 
     /**
      * Give to player.
      *
      * @param offlinePlayer the offline player
-     * @param worldName the world name
-     * @param amount the amount
+     * @param worldName     the world name
+     * @param amount        the amount
      * @return true, if successful
      */
     public boolean giveToPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
-	return economy.depositPlayer(offlinePlayer, worldName, amount).transactionSuccess();
+        return economy.depositPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
 
     /**
      * Gets the from player.
      *
      * @param offlinePlayer the offline player
-     * @param worldName the world name
-     * @param amount the amount
+     * @param worldName     the world name
+     * @param amount        the amount
      * @return the from player
      */
     public boolean getFromPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
-	return economy.withdrawPlayer(offlinePlayer, worldName, amount).transactionSuccess();
+        return economy.withdrawPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
 
     /**
@@ -84,6 +84,6 @@ public class PlayerMoney {
      * @return the string
      */
     public String toFormat(Double amount) {
-	return economy.format(amount);
+        return economy.format(amount);
     }
 }

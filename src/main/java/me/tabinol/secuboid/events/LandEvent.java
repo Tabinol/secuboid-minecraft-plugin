@@ -50,19 +50,18 @@ public class LandEvent extends Event {
      */
     public LandEvent(Land dummyLand) {
 
-	this.dummyLand = dummyLand;
+        this.dummyLand = dummyLand;
 
-	if (dummyLand.isRealLand()) {
-	    land = (RealLand) dummyLand;
-	} else {
-	    land = null;
-	}
+        if (dummyLand.isRealLand()) {
+            land = (RealLand) dummyLand;
+        } else {
+            land = null;
+        }
     }
 
     @Override
     public HandlerList getHandlers() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -71,8 +70,7 @@ public class LandEvent extends Event {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -81,8 +79,7 @@ public class LandEvent extends Event {
      * @return the land or null if the events is outside a land
      */
     public RealLand getLand() {
-
-	return land;
+        return land;
     }
 
     /**
@@ -91,7 +88,6 @@ public class LandEvent extends Event {
      * @return the land or a "Dummy Land Word" if the events is outside a land
      */
     public Land getLandOrOutside() {
-
-	return dummyLand;
+        return dummyLand;
     }
 }

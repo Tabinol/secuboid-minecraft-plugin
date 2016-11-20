@@ -28,39 +28,33 @@ public class Permission {
     /**
      * The perm type.
      */
-    PermissionType permType;
+    private PermissionType permType;
 
     /**
      * The value.
      */
-    boolean value;
+    private boolean value;
 
     /**
      * The Inheritable.
      */
-    boolean inheritable;
+    private boolean inheritable;
 
     /**
      * Instantiates a new permission.
      *
-     * @param permType the perm type
-     * @param value the value
+     * @param permType    the perm type
+     * @param value       the value
      * @param inheritable the inheritable
      */
     Permission(final PermissionType permType, final boolean value, final boolean inheritable) {
-
-	this.permType = permType;
-	this.value = value;
-	this.inheritable = inheritable;
+        this.permType = permType;
+        this.value = value;
+        this.inheritable = inheritable;
     }
 
-    /**
-     *
-     * @return
-     */
     public Permission copyOf() {
-
-	return new Permission(permType, value, inheritable);
+        return new Permission(permType, value, inheritable);
     }
 
     /**
@@ -69,8 +63,7 @@ public class Permission {
      * @return the perm type
      */
     public PermissionType getPermType() {
-
-	return permType;
+        return permType;
     }
 
     /**
@@ -79,8 +72,7 @@ public class Permission {
      * @return the value
      */
     public boolean getValue() {
-
-	return value;
+        return value;
     }
 
     /**
@@ -89,12 +81,11 @@ public class Permission {
      * @return the value print
      */
     public final String getValuePrint() {
-
-	if (value) {
-	    return "" + ChatColor.GREEN + value;
-	} else {
-	    return "" + ChatColor.RED + value;
-	}
+        if (value) {
+            return "" + ChatColor.GREEN + true;
+        } else {
+            return "" + ChatColor.RED + false;
+        }
     }
 
     /**
@@ -103,16 +94,10 @@ public class Permission {
      * @return true, if is inheritable
      */
     public boolean isInheritable() {
-
-	return inheritable;
+        return inheritable;
     }
 
-    /**
-     *
-     * @return
-     */
     public String toFileFormat() {
-
-	return permType.toString() + ":" + value + ":" + inheritable;
+        return permType.toString() + ":" + value + ":" + inheritable;
     }
 }

@@ -45,12 +45,8 @@ public class PlayerContainerPlayer implements PlayerContainer {
 
     @Override
     public boolean hasAccess(Player player) {
-	if (player != null) {
-	    return minecraftUUID.equals(player.getUniqueId());
-	} else {
-	    return false;
+		return player != null && minecraftUUID.equals(player.getUniqueId());
 	}
-    }
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {

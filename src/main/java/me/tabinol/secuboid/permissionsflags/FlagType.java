@@ -23,28 +23,28 @@ package me.tabinol.secuboid.permissionsflags;
  */
 public class FlagType extends PermissionsFlagsType {
 
-    /** The default value. */
+    /**
+     * The default value.
+     */
     private FlagValue defaultValue;
 
     /**
      * Instantiates a new flag type.
      *
-     * @param flagName the flag name
+     * @param flagName     the flag name
      * @param defaultValue the default value
      */
     FlagType(String flagName, Object defaultValue) {
-
         super(flagName);
         this.defaultValue = new FlagValue(defaultValue);
     }
-    
+
     /**
      * Sets the default value.
      *
      * @param defaultValue the new default value
      */
-    public void setDefaultValue(FlagValue defaultValue) {
-        
+    void setDefaultValue(FlagValue defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -54,7 +54,6 @@ public class FlagType extends PermissionsFlagsType {
      * @return the default value
      */
     public FlagValue getDefaultValue() {
-        
         return defaultValue;
     }
 }

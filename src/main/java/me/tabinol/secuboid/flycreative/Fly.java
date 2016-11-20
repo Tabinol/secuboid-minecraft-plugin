@@ -30,61 +30,47 @@ import org.bukkit.event.Event;
 
 /**
  * The fly class.
- *
- * @author michel
  */
 public class Fly {
 
-    /**
-     *
-     */
     public final static String FLY_IGNORE_PERM = "secuboid.flycreative.ignorefly";
+
     private final PermissionType permissionType;
 
     /**
-     * Instantiates a new fly instance.
+     * Instantiates a new fly instance and register the fly flag.
      *
      * @param secuboid secuboid instance.
      */
     public Fly(Secuboid secuboid) {
-
-	// Register flags
-	permissionType = secuboid.getPermissionsFlags().registerPermissionType("FLY", false);
+        permissionType = secuboid.getPermissionsFlags().registerPermissionType("FLY", false);
     }
 
     public void fly(Event event, Player player, Land land) {
 
-	if (!player.hasPermission(FLY_IGNORE_PERM)) {
-	    if (askFlyFlag(player, land)) {
-		if (!player.getAllowFlight()) {
-		    player.setAllowFlight(true);
+        if (!player.hasPermission(FLY_IGNORE_PERM)) {
+            if (askFlyFlag(player, land)) {
+                if (!player.getAllowFlight()) {
+                    player.setAllowFlight(true);
 
-		    // Bug fix : Prevent player fall
-		    Location loc = player.getLocation().clone();
-		    Block block = loc.subtract(0, 1, 0).getBlock();
-		    if (block.isLiquid() || block.getType() == Material.AIR) {
-			player.setFlying(true);
-		    }
-		}
-	    } else if (player.isFlying() && event instanceof PlayerLandChangeEvent
-		    && !((PlayerLandChangeEvent) event).isTp()) {
-		// Return the player in the last cuboid if he is flying.
-		((PlayerLandChangeEvent) event).setCancelled(true);
-	    } else {
-		player.setAllowFlight(false);
-	    }
-	}
-    }
-
-    public void removeFly(Player player) {
-
-	if (!player.hasPermission(FLY_IGNORE_PERM)) {
-	    player.setAllowFlight(false);
-	}
+                    // Bug fix : Prevent player fall
+                    Location loc = player.getLocation().clone();
+                    Block block = loc.subtract(0, 1, 0).getBlock();
+                    if (block.isLiquid() || block.getType() == Material.AIR) {
+                        player.setFlying(true);
+                    }
+                }
+            } else if (player.isFlying() && event instanceof PlayerLandChangeEvent
+                    && !((PlayerLandChangeEvent) event).isTp()) {
+                // Return the player in the last cuboid if he is flying.
+                ((PlayerLandChangeEvent) event).setCancelled(true);
+            } else {
+                player.setAllowFlight(false);
+            }
+        }
     }
 
     private boolean askFlyFlag(Player player, Land land) {
-
-	return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
+        return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
     }
 }

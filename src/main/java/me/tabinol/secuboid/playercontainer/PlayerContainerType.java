@@ -24,7 +24,6 @@ package me.tabinol.secuboid.playercontainer;
  */
 public enum PlayerContainerType {
 
-    // Order is important here The first is the permission checked first
     /**
      * The undefined (do not use).
      */
@@ -83,13 +82,13 @@ public enum PlayerContainerType {
     /**
      * Instantiates a new player container type.
      *
-     * @param pcName the pc name
+     * @param pcName       the pc name
      * @param hasParameter the has parameter
      */
-    private PlayerContainerType(final String pcName, final boolean hasParameter) {
+    PlayerContainerType(final String pcName, final boolean hasParameter) {
 
-	this.pcName = pcName;
-	this.hasParameter = hasParameter;
+        this.pcName = pcName;
+        this.hasParameter = hasParameter;
     }
 
     /**
@@ -98,8 +97,7 @@ public enum PlayerContainerType {
      * @return true, if successful
      */
     public boolean hasParameter() {
-
-	return hasParameter;
+        return hasParameter;
     }
 
     /**
@@ -108,8 +106,7 @@ public enum PlayerContainerType {
      * @return printable name
      */
     public String getPrint() {
-
-	return pcName;
+        return pcName;
     }
 
     /**
@@ -120,11 +117,11 @@ public enum PlayerContainerType {
      */
     public static PlayerContainerType getFromString(String pcName) {
 
-	for (PlayerContainerType pct : values()) {
-	    if (pct.toString().equalsIgnoreCase(pcName)) {
-		return pct;
-	    }
-	}
-	return null;
+        for (PlayerContainerType pct : values()) {
+            if (pct.toString().equalsIgnoreCase(pcName)) {
+                return pct;
+            }
+        }
+        return null;
     }
 }

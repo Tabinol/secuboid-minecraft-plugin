@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.config.players;
 
 // Entries for each player
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
@@ -100,48 +101,48 @@ public class PlayerConfEntry {
      * Instantiates a new player conf entry.
      *
      * @param secuboid secuboid instance
-     * @param sender the sender
+     * @param sender   the sender
      */
     PlayerConfEntry(Secuboid secuboid, CommandSender sender) {
 
-	this.secuboid = secuboid;
-	this.sender = sender;
-	if (sender instanceof Player) {
-	    player = (Player) sender;
-	    playerSelection = new PlayerSelection(secuboid, this);
-	    pcp = new PlayerContainerPlayer(secuboid, player.getUniqueId());
-	} else {
-	    player = null;
-	    playerSelection = null;
-	    pcp = null;
-	}
+        this.secuboid = secuboid;
+        this.sender = sender;
+        if (sender instanceof Player) {
+            player = (Player) sender;
+            playerSelection = new PlayerSelection(secuboid, this);
+            pcp = new PlayerContainerPlayer(secuboid, player.getUniqueId());
+        } else {
+            player = null;
+            playerSelection = null;
+            pcp = null;
+        }
     }
 
     /**
+     * Gets the player container for this player.
      *
-     * @return
+     * @return the player container
      */
     public PlayerContainerPlayer getPlayerContainer() {
-
-	return pcp;
+        return pcp;
     }
 
     /**
+     * Gets the command sender for this player.
      *
-     * @return
+     * @return the command sender
      */
     public CommandSender getSender() {
-
-	return sender;
+        return sender;
     }
 
     /**
+     * Gets the Bukkit player instance.
      *
-     * @return
+     * @return the player
      */
     public Player getPlayer() {
-
-	return player;
+        return player;
     }
 
     /**
@@ -150,23 +151,23 @@ public class PlayerConfEntry {
      * @return the selection
      */
     public PlayerSelection getSelection() {
-
-	return playerSelection;
+        return playerSelection;
     }
 
     /**
+     * Is the player admin mode?
      *
-     * @return
+     * @return true if the player is admin mode
      */
     public boolean isAdminMode() {
 
-	// Security for adminmode
-	if (adminMode == true && !sender.hasPermission("secuboid.adminmod")) {
-	    adminMode = false;
-	    return false;
-	}
+        // Security for adminmode
+        if (adminMode && !sender.hasPermission("secuboid.adminmod")) {
+            adminMode = false;
+            return false;
+        }
 
-	return adminMode;
+        return adminMode;
     }
 
     /**
@@ -175,8 +176,7 @@ public class PlayerConfEntry {
      * @param value the new admin mod
      */
     public void setAdminMode(boolean value) {
-
-	adminMode = value;
+        adminMode = value;
     }
 
     /**
@@ -185,8 +185,7 @@ public class PlayerConfEntry {
      * @return the confirm
      */
     public ConfirmEntry getConfirm() {
-
-	return confirm;
+        return confirm;
     }
 
     /**
@@ -195,8 +194,7 @@ public class PlayerConfEntry {
      * @param entry the new confirm
      */
     public void setConfirm(ConfirmEntry entry) {
-
-	confirm = entry;
+        confirm = entry;
     }
 
     /**
@@ -205,8 +203,7 @@ public class PlayerConfEntry {
      * @return the chat page
      */
     public ChatPage getChatPage() {
-
-	return chatPage;
+        return chatPage;
     }
 
     /**
@@ -215,17 +212,16 @@ public class PlayerConfEntry {
      * @param page the new chat page
      */
     public void setChatPage(ChatPage page) {
-
-	chatPage = page;
+        chatPage = page;
     }
 
     /**
+     * Gets the last move update time.
      *
-     * @return
+     * @return update time in long format
      */
     public long getLastMoveUpdate() {
-
-	return lastMoveUpdate;
+        return lastMoveUpdate;
     }
 
     /**
@@ -234,17 +230,16 @@ public class PlayerConfEntry {
      * @param lastMove the new last move update
      */
     public void setLastMoveUpdate(Long lastMove) {
-
-	lastMoveUpdate = lastMove;
+        lastMoveUpdate = lastMove;
     }
 
     /**
+     * Gets the last land.
      *
-     * @return
+     * @return the last land
      */
     public Land getLastLand() {
-
-	return lastLand;
+        return lastLand;
     }
 
     /**
@@ -253,27 +248,25 @@ public class PlayerConfEntry {
      * @param land the new last land
      */
     public void setLastLand(Land land) {
-
-	lastLand = land;
+        lastLand = land;
     }
 
     /**
+     * Gets the last player location.
      *
-     * @return
+     * @return the last location
      */
     public Location getLastLoc() {
-
-	return lastLoc;
+        return lastLoc;
     }
 
     /**
-     * Sets the last loc.
+     * Sets the last player location.
      *
-     * @param loc the new last loc
+     * @param loc the new last location
      */
     public void setLastLoc(Location loc) {
-
-	lastLoc = loc;
+        lastLoc = loc;
     }
 
     /**
@@ -282,8 +275,7 @@ public class PlayerConfEntry {
      * @return true, if successful
      */
     public boolean hasTpCancel() {
-
-	return tpCancel;
+        return tpCancel;
     }
 
     /**
@@ -292,8 +284,7 @@ public class PlayerConfEntry {
      * @param tpCancel the new tp cancel
      */
     public void setTpCancel(boolean tpCancel) {
-
-	this.tpCancel = tpCancel;
+        this.tpCancel = tpCancel;
     }
 
     /**
@@ -303,28 +294,28 @@ public class PlayerConfEntry {
      */
     public void setAutoCancelSelect(boolean value) {
 
-	Long timeTick = secuboid.getConf().getSelectAutoCancel();
+        Long timeTick = secuboid.getConf().getSelectAutoCancel();
 
-	if (timeTick == 0) {
-	    return;
-	}
+        if (timeTick == 0) {
+            return;
+        }
 
-	if (cancelSelect == null && value == true) {
-	    cancelSelect = new PlayerAutoCancelSelect(secuboid, this);
-	}
+        if (cancelSelect == null && value) {
+            cancelSelect = new PlayerAutoCancelSelect(secuboid, this);
+        }
 
-	if (cancelSelect == null) {
-	    return;
-	}
+        if (cancelSelect == null) {
+            return;
+        }
 
-	if (value == true) {
+        if (value) {
 
-	    // Schedule task
-	    cancelSelect.runLater(timeTick, false);
-	} else {
+            // Schedule task
+            cancelSelect.runLater(timeTick, false);
+        } else {
 
-	    // Stop!
-	    cancelSelect.stopNextRun();
-	}
+            // Stop!
+            cancelSelect.stopNextRun();
+        }
     }
 }

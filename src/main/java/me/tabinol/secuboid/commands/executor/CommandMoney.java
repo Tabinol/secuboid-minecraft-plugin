@@ -129,7 +129,7 @@ public class CommandMoney extends CommandExec {
         }
 
         // Land Deposit
-        land.substractMoney(amount);
+        land.subtractMoney(amount);
         playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
                 playerMoney.toFormat(land.getMoney()), land.getName()));

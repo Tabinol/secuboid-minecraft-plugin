@@ -22,15 +22,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-/**
- *
- * @author michel
- */
 public class HttpProfileRepository {
 
     // You're not allowed to request more than 100 profiles per go.
@@ -39,81 +36,62 @@ public class HttpProfileRepository {
     private final String agent;
     private HttpClient client;
 
-    /**
-     *
-     * @param agent
-     */
     public HttpProfileRepository(String agent) {
-
-	this(agent, HttpClient.getInstance());
+        this(agent, HttpClient.getInstance());
     }
 
-    /**
-     *
-     * @param agent
-     * @param client
-     */
-    public HttpProfileRepository(String agent, HttpClient client) {
-
-	this.agent = agent;
-	this.client = client;
+    private HttpProfileRepository(String agent, HttpClient client) {
+        this.agent = agent;
+        this.client = client;
     }
 
-    /**
-     *
-     * @param names
-     * @return
-     */
     public Profile[] findProfilesByNames(String... names) {
 
-	List<Profile> profiles = new ArrayList<Profile>();
-	try {
+        List<Profile> profiles = new ArrayList<Profile>();
+        try {
 
-	    List<HttpHeader> headers = new ArrayList<HttpHeader>();
-	    headers.add(new HttpHeader("Content-Type", "application/json"));
+            List<HttpHeader> headers = new ArrayList<HttpHeader>();
+            headers.add(new HttpHeader("Content-Type", "application/json"));
 
-	    int namesCount = names.length;
-	    int start = 0;
-	    int i = 0;
-	    do {
-		int end = PROFILES_PER_REQUEST * (i + 1);
-		if (end > namesCount) {
-		    end = namesCount;
-		}
-		List<String> namesBatch = new ArrayList<String>();
-		for (int it = start; it < end; it++) {
-		    namesBatch.add(names[it]);
-		}
-		String body = JSONArray.toJSONString(namesBatch);
-		profiles.addAll(post(getProfilesUrl(), body, headers));
+            int namesCount = names.length;
+            int start = 0;
+            int i = 0;
+            do {
+                int end = PROFILES_PER_REQUEST * (i + 1);
+                if (end > namesCount) {
+                    end = namesCount;
+                }
+                List<String> namesBatch = new ArrayList<String>();
+                namesBatch.addAll(Arrays.asList(names).subList(start, end));
+                String body = JSONArray.toJSONString(namesBatch);
+                profiles.addAll(post(getProfilesUrl(), body, headers));
 
-		start = end;
-		i++;
-	    } while (start < namesCount);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} catch (ParseException e) {
-	    e.printStackTrace();
-	}
+                start = end;
+                i++;
+            } while (start < namesCount);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-	return profiles.toArray(new Profile[profiles.size()]);
+        return profiles.toArray(new Profile[profiles.size()]);
     }
 
     private URL getProfilesUrl() throws MalformedURLException {
-
-	// To lookup Minecraft profiles, agent should be "minecraft"
-	return new URL("https://api.mojang.com/profiles/" + agent);
+        // To lookup Minecraft profiles, agent should be "minecraft"
+        return new URL("https://api.mojang.com/profiles/" + agent);
     }
 
     private Collection<Profile> post(URL url, String body, List<HttpHeader> headers) throws IOException, ParseException {
 
-	String response = client.post(url, body, headers);
-	JSONParser parser = new JSONParser();
-	JSONArray array = (JSONArray) parser.parse(response);
-	List<Profile> profiles = new ArrayList<Profile>();
-	for (Object object : array) {
-	    profiles.add(new Profile(((JSONObject) object).get("id").toString(), ((JSONObject) object).get("name").toString()));
-	}
-	return profiles;
+        String response = client.post(url, body, headers);
+        JSONParser parser = new JSONParser();
+        JSONArray array = (JSONArray) parser.parse(response);
+        List<Profile> profiles = new ArrayList<Profile>();
+        for (Object object : array) {
+            profiles.add(new Profile(((JSONObject) object).get("id").toString(), ((JSONObject) object).get("name").toString()));
+        }
+        return profiles;
     }
 }

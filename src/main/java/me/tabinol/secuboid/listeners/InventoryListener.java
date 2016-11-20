@@ -95,7 +95,7 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
-    public void removePlayer(Player player) {
+    private void removePlayer(Player player) {
 
         inventoryStorage.switchInventory(player,
                 getDummyLand(player.getLocation()), player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.QUIT);

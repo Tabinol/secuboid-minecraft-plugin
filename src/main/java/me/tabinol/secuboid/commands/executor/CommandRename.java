@@ -82,11 +82,11 @@ public class CommandRename extends CommandCollisionsThreadExec {
         try {
             secuboid.getLands().renameLand(oldName, newName);
         } catch (SecuboidLandException ex) {
-            Logger.getLogger(CommandRename.class.getName()).log(Level.SEVERE, "On land rename", ex);
+            secuboid.getLog().severe("On land rename: " + ex.getLocalizedMessage());
             throw new SecuboidCommandException(secuboid, "On land rename", player, "GENERAL.ERROR");
         }
         player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, newName));
-        secuboid.getLog().write(playerName + " has renamed " + oldName + " to " + newName);
+        secuboid.getLog().debug(playerName + " has renamed " + oldName + " to " + newName);
 
         // Cancel the selection
         new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();

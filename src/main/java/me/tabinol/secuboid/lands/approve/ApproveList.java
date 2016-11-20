@@ -24,8 +24,6 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
@@ -162,11 +160,11 @@ public class ApproveList {
      */
     public Approve getApprove(String landName) {
 
-        secuboid.getLog().write("Get approve for: " + landName);
+        secuboid.getLog().debug("Get approve for: " + landName);
         ConfigurationSection section = approveConfig.getConfigurationSection(landName);
 
         if (section == null) {
-            secuboid.getLog().write("Error Section null");
+            secuboid.getLog().debug("Error Section null");
             return null;
         }
 
@@ -187,7 +185,7 @@ public class ApproveList {
 
             // If the parent does not exist
             if (parent == null) {
-                secuboid.getLog().write("Error, parent not found");
+                secuboid.getLog().debug("Error, parent not found");
                 return null;
             }
         }
@@ -227,7 +225,7 @@ public class ApproveList {
      */
     private void removeApprove(String landName) {
 
-        secuboid.getLog().write("Remove Approve from list: " + landName);
+        secuboid.getLog().debug("Remove Approve from list: " + landName);
 
         approveConfig.set(landName, null);
         landNames.remove(landName);
@@ -239,17 +237,13 @@ public class ApproveList {
      */
     public void removeAll() {
 
-        secuboid.getLog().write("Remove all Approves from list.");
+        secuboid.getLog().debug("Remove all Approves from list.");
 
         // Delete file
-        try {
-            if (approveFile.exists()) {
-                if (!approveFile.delete()) {
-                    throw new IOException("Impossible to delete the file " + approveFile.getPath() + ".");
-                }
+        if (approveFile.exists()) {
+            if (!approveFile.delete()) {
+                secuboid.getLog().severe("Impossible to delete the file " + approveFile.getPath() + ".");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         // Delete list
@@ -265,7 +259,7 @@ public class ApproveList {
      */
     private void loadFile() {
 
-        secuboid.getLog().write("Loading Approve list file");
+        secuboid.getLog().debug("Loading Approve list file");
 
         if (!approveFile.exists()) {
             try {
@@ -273,15 +267,15 @@ public class ApproveList {
                     throw new IOException("Impossible to create the file " + approveFile.getPath() + ".");
                 }
             } catch (IOException ex) {
-                Logger.getLogger(ApproveList.class.getName()).log(Level.SEVERE, "Error on approve file creation", ex);
+                secuboid.getLog().severe("Error on approve file creation: " + ex.getLocalizedMessage());
             }
         }
         try {
             approveConfig.load(approveFile);
         } catch (IOException ex) {
-            Logger.getLogger(ApproveList.class.getName()).log(Level.SEVERE, "Error on approve file load", ex);
+            secuboid.getLog().severe("Error on approve file load: " + ex.getLocalizedMessage());
         } catch (InvalidConfigurationException ex) {
-            Logger.getLogger(ApproveList.class.getName()).log(Level.SEVERE, "Error on approve file load", ex);
+            secuboid.getLog().severe("Error on approve file load" + ex.getLocalizedMessage());
         }
 
         // add land names to list
@@ -295,12 +289,12 @@ public class ApproveList {
      */
     private void saveFile() {
 
-        secuboid.getLog().write("Saving Approve list file");
+        secuboid.getLog().debug("Saving Approve list file");
 
         try {
             approveConfig.save(approveFile);
         } catch (IOException ex) {
-            Logger.getLogger(ApproveList.class.getName()).log(Level.SEVERE, "Error on approve file save", ex);
+            secuboid.getLog().severe("Error on approve file save: " + ex.getLocalizedMessage());
         }
     }
 }

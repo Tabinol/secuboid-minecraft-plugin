@@ -41,10 +41,9 @@ public class FileLoadException extends Exception {
     public FileLoadException(Secuboid secuboid, String FileName, String Line, Integer LineNum, String message) {
 
         super("File Load Exception in:" + FileName);
-        secuboid.getLog().write("Error: file: " + FileName + ", Line: " + Line + ", Line Nb: " + LineNum + ", msg: " + message);
-        secuboid.getLogger().log(Level.SEVERE, "Error! There is an error in file: {0}", FileName);
-        secuboid.getLogger().log(Level.SEVERE, "Line: {0}", LineNum);
-        secuboid.getLogger().log(Level.SEVERE, Line);
-        secuboid.getLogger().log(Level.SEVERE, "Error Message: {0}", message);
+        secuboid.getLog().severe("There is an error in file: " + FileName);
+        secuboid.getLog().severe("Line: " + LineNum);
+        secuboid.getLog().severe(Line);
+        secuboid.getLog().severe("Error Message: " + message);
     }
 }

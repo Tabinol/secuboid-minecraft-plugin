@@ -77,7 +77,7 @@ public class CommandFlag extends CommandExec {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
                     + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
                     landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
-            secuboid.getLog().write("Flag set: " + landFlag.getFlagType().toString() + ", value: "
+            secuboid.getLog().debug("Flag set: " + landFlag.getFlagType().toString() + ", value: "
                     + landFlag.getValue().getValue().toString());
 
         } else if (curArg.equalsIgnoreCase("unset")) {
@@ -87,7 +87,7 @@ public class CommandFlag extends CommandExec {
                 throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
-            secuboid.getLog().write("Flag unset: " + flagType.toString());
+            secuboid.getLog().debug("Flag unset: " + flagType.toString());
 
         } else if (curArg.equalsIgnoreCase("list")) {
 

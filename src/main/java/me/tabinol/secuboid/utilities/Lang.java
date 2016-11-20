@@ -21,8 +21,6 @@ package me.tabinol.secuboid.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
@@ -90,15 +88,15 @@ public class Lang {
      * Copyt the language file.
      */
     private void copyLang() {
-        try {
-            if (!langFile.exists()) {
-                if (!langFile.getParentFile().mkdirs()) {
-                    throw new IOException("unable to make the directory " + langFile.getParentFile().getPath() + ".");
-                }
-                FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
+        if (!langFile.exists()) {
+            if (!langFile.getParentFile().mkdirs()) {
+                secuboid.getLog().severe("Unable to make the directory " + langFile.getParentFile().getPath() + ".");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
+            } catch (IOException e) {
+                secuboid.getLog().severe("Unable to copy language file from jar.");
+            }
         }
     }
 
@@ -109,9 +107,9 @@ public class Lang {
         try {
             langconfig.load(langFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            secuboid.getLog().severe("Error on language load: " + e.getLocalizedMessage());
         } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
+            secuboid.getLog().severe("Error on language load: " + e.getLocalizedMessage());
         }
     }
 
@@ -127,11 +125,11 @@ public class Lang {
         // We must rename the file and activate the new file
         if (actualVersion != fileVersion) {
             if (!langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion))) {
-                Logger.getLogger("Secuboid").log(Level.SEVERE, "Unable to rename the old language file.");
+                secuboid.getLog().severe("Unable to rename the old language file.");
             }
             reloadConfig();
-            secuboid.getLogger().log(Level.INFO, "There is a new language file. Your old language file was renamed \"{0}.yml.v{1}\".",
-                    new Object[]{lang, fileVersion});
+            secuboid.getLog().info("There is a new language file. Your old language file was renamed \""
+                    + lang + ".yml.v" + fileVersion + "\".");
         }
     }
 

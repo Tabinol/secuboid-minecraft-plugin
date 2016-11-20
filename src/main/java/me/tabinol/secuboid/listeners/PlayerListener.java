@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.listeners;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
@@ -236,6 +233,7 @@ public class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @SuppressWarnings("deprecation")
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         Land land;
@@ -245,7 +243,7 @@ public class PlayerListener extends CommonListener implements Listener {
         PlayerConfEntry entry;
         Location loc = event.getClickedBlock().getLocation();
 
-        secuboid.getLog().write(
+        secuboid.getLog().debug(
                 "PlayerInteract player name: " + event.getPlayer().getName()
                         + ", Action: " + event.getAction()
                         + ", Material: " + ml.name());
@@ -257,8 +255,7 @@ public class PlayerListener extends CommonListener implements Listener {
                 Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
             } catch (SecuboidCommandException ex) {
-                Logger.getLogger(PlayerListener.class.getName()).log(
-                        Level.SEVERE, "Error when trying to get area", ex);
+                secuboid.getLog().severe("Error when trying to get area: " + ex.getLocalizedMessage());
             }
             event.setCancelled(true);
 
@@ -300,7 +297,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
             if (trueLand != null) {
 
-                secuboid.getLog().write("EcoSignClick: ClickLoc: " + loc + ", SignLoc" + trueLand.getSaleSignLoc());
+                secuboid.getLog().debug("EcoSignClick: ClickLoc: " + loc + ", SignLoc" + trueLand.getSaleSignLoc());
 
                 try {
                     if (trueLand.getSaleSignLoc() != null
@@ -405,11 +402,12 @@ public class PlayerListener extends CommonListener implements Listener {
         Land land;
         EntityType et = event.getRightClicked().getType();
         Player player = event.getPlayer();
+        @SuppressWarnings("deprecation")
         Material mat = player.getItemInHand().getType();
         PlayerConfEntry entry;
         Location loc = event.getRightClicked().getLocation();
 
-        secuboid.getLog().write(
+        secuboid.getLog().debug(
                 "PlayerInteractAtEntity player name: " + event.getPlayer().getName()
                         + ", Entity: " + et.name());
 

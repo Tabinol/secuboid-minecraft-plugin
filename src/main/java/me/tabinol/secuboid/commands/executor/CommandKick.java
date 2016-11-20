@@ -78,6 +78,6 @@ public class CommandKick extends CommandExec {
         playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
         playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
-        secuboid.getLog().write("Player " + playerKick + " kicked from " + land.getName() + ".");
+        secuboid.getLog().debug("Player " + playerKick + " kicked from " + land.getName() + ".");
     }
 }

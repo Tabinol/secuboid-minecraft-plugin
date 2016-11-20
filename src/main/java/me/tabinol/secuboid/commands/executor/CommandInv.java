@@ -119,6 +119,7 @@ public class CommandInv extends CommandExec {
         }
 
         // Check for player
+        @SuppressWarnings("deprecation")
         Player player = Bukkit.getPlayer(playerName);
 
         if (player == null) {

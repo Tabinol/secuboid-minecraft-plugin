@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.InventorySpec;
@@ -113,8 +112,7 @@ public final class InventoryConfig {
 
         // If the flag is set with wrong inventory
         if (invSpec == null) {
-            secuboid.getLogger().log(Level.WARNING, "Inventory name \"{0}" + "\" is not found " + "in {1}/plugin.yml!",
-                    new Object[]{invFlagValue.getValueString(), secuboid.getName()});
+            secuboid.getLog().warning("Inventory name \"" + invFlagValue.getValueString() + "\" is not found " + "in " + secuboid.getName() + "/plugin.yml!");
             return invList.get(GLOBAL);
         }
 

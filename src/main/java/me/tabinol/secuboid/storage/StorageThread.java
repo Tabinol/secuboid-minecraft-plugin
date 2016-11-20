@@ -25,7 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.RealLand;
@@ -155,9 +154,9 @@ public class StorageThread extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().write("Storage Thread wake up!");
+                    secuboid.getLog().debug("Storage Thread wake up!");
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    secuboid.getLog().severe("Storage thread error: " + e.getLocalizedMessage());
                 }
             }
             notSaved.signal();
@@ -172,7 +171,7 @@ public class StorageThread extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLogger().log(Level.SEVERE, "Problem with save Thread. Possible data loss!");
+            secuboid.getLog().severe("Problem with save Thread. Possible data loss!");
             return;
         }
         exitRequest = true;
@@ -181,7 +180,7 @@ public class StorageThread extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            secuboid.getLog().severe("Storage thread error: " + e.getLocalizedMessage());
         } finally {
             lock.unlock();
         }
@@ -213,7 +212,7 @@ public class StorageThread extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().write("Storage request (Thread wake up...)");
+            secuboid.getLog().debug("Storage request (Thread wake up...)");
         } finally {
             lock.unlock();
         }

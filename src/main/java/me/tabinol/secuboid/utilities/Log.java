@@ -18,94 +18,61 @@
  */
 package me.tabinol.secuboid.utilities;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.bukkit.Bukkit;
 
-import me.tabinol.secuboid.Secuboid;
+import java.util.logging.Level;
 
 /**
- * The Class Log.
+ * Log information for Secuboid.
  */
 public class Log {
 
-    private final Secuboid secuboid;
+    private final boolean isDebug;
 
     /**
-     * The Folder.
-     */
-    private final File Folder;
-
-    /**
-     * The debug.
-     */
-    private boolean debug = false;
-
-    /**
-     * Instantiates a new log.
+     * Creates log instance.
      *
-     * @param secuboid secuboid instance
+     * @param isDebug is debugging is enable
      */
-    public Log(Secuboid secuboid) {
-
-        this.secuboid = secuboid;
-        this.debug = secuboid.getConf().isDebug();
-        this.Folder = secuboid.getDataFolder();
+    public Log(boolean isDebug) {
+        this.isDebug = isDebug;
     }
 
     /**
-     * Write.
+     * Logs info message.
      *
-     * @param text the text
+     * @param msg the message
      */
-    public void write(String text) {
+    public void info(String msg) {
+        Bukkit.getLogger().log(Level.INFO, msg);
+    }
 
-        if (debug) {
-            File filename = new File(Folder, "log_" + Dates.date() + ".log");
-            BufferedWriter bufWriter = null;
-            FileWriter fileWriter = null;
+    /**
+     * Logs warning message.
+     *
+     * @param msg the message
+     */
+    public void warning(String msg) {
+        Bukkit.getLogger().log(Level.WARNING, msg);
+    }
 
-            if (!filename.exists()) {
-                try {
-                    filename.createNewFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+    /**
+     * Logs severe message.
+     *
+     * @param msg the message
+     */
+    public void severe(String msg) {
+        Bukkit.getLogger().log(Level.SEVERE, msg);
+    }
 
-            try {
-                fileWriter = new FileWriter(filename, true);
-                bufWriter = new BufferedWriter(fileWriter);
-                bufWriter.newLine();
-                bufWriter.write("[Secuboid][v." + secuboid.getDescription().getVersion()
-                        + "][" + Dates.time() + "]" + text);
-                bufWriter.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    if (bufWriter != null) {
-                        bufWriter.close();
-                    }
-                    if (fileWriter != null) {
-                        fileWriter.close();
-                    }
-                } catch (IOException ex) {
-                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+    /**
+     * Logs debugging message.
+     *
+     * @param msg the message
+     */
+    public void debug(String msg) {
+        if (isDebug) {
+            Bukkit.getLogger().log(Level.INFO, "[DEBUG] " + msg);
         }
-    }
-
-    /**
-     * Sets the debug.
-     *
-     * @param newdebug the new debug
-     */
-    public void setDebug(boolean newdebug) {
-        this.debug = newdebug;
     }
 }

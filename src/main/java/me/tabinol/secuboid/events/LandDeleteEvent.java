@@ -35,7 +35,7 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
     /**
      * The events is cancelled.
      */
-    protected boolean cancelled = false;
+    private boolean cancelled = false;
 
     /**
      * Instantiates a new land delete events.
@@ -43,18 +43,12 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
      * @param deletedLand the deleted land
      */
     public LandDeleteEvent(final RealLand deletedLand) {
-
-	super(deletedLand);
+        super(deletedLand);
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public HandlerList getHandlers() {
-
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -63,27 +57,16 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-
-	return handlers;
+        return handlers;
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public boolean isCancelled() {
-
-	return cancelled;
+        return cancelled;
     }
 
-    /**
-     *
-     * @param bln
-     */
     @Override
     public void setCancelled(boolean bln) {
-
-	cancelled = bln;
+        cancelled = bln;
     }
 }

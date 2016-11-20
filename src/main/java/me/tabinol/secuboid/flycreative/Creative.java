@@ -39,8 +39,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 
 /**
  * The creative class.
- *
- * @author michel
  */
 public class Creative {
 
@@ -62,107 +60,106 @@ public class Creative {
      */
     public Creative(Secuboid secuboid) {
 
-	this.secuboid = secuboid;
-	conf = secuboid.getConf();
+        this.secuboid = secuboid;
+        conf = secuboid.getConf();
 
-	// Register flags
-	permissionType = secuboid.getPermissionsFlags().registerPermissionType("CREATIVE", false);
+        // Register flags
+        permissionType = secuboid.getPermissionsFlags().registerPermissionType("CREATIVE", false);
 
-	flyCreativeListener = secuboid.getFlyCreativeListener();
+        flyCreativeListener = secuboid.getFlyCreativeListener();
     }
 
     public boolean creative(Event event, Player player, Land land) {
 
-	if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-	    if (askCreativeFlag(player, land)) {
-		if (player.getGameMode() != GameMode.CREATIVE) {
-		    flyCreativeListener.addIgnoredGMPlayers(player);
-		    player.setGameMode(GameMode.CREATIVE);
-		}
-	    } else if (player.getGameMode() == GameMode.CREATIVE) {
-		if (player.isFlying() && event instanceof PlayerLandChangeEvent
-			&& !((PlayerLandChangeEvent) event).isTp()) {
-		    // Return the player in the last cuboid if he is flying.
-		    ((PlayerLandChangeEvent) event).setCancelled(true);
-		} else {
-		    flyCreativeListener.addIgnoredGMPlayers(player);
-		    player.setGameMode(GameMode.SURVIVAL);
-		}
-	    }
-	}
+        if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
+            if (askCreativeFlag(player, land)) {
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    flyCreativeListener.addIgnoredGMPlayers(player);
+                    player.setGameMode(GameMode.CREATIVE);
+                }
+            } else if (player.getGameMode() == GameMode.CREATIVE) {
+                if (player.isFlying() && event instanceof PlayerLandChangeEvent
+                        && !((PlayerLandChangeEvent) event).isTp()) {
+                    // Return the player in the last cuboid if he is flying.
+                    ((PlayerLandChangeEvent) event).setCancelled(true);
+                } else {
+                    flyCreativeListener.addIgnoredGMPlayers(player);
+                    player.setGameMode(GameMode.SURVIVAL);
+                }
+            }
+        }
 
-	return player.getGameMode() == GameMode.CREATIVE;
+        return player.getGameMode() == GameMode.CREATIVE;
     }
 
     public void setGM(Player player, GameMode gm) {
 
-	if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-	    flyCreativeListener.addIgnoredGMPlayers(player);
-	    player.setGameMode(gm);
-	}
+        if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
+            flyCreativeListener.addIgnoredGMPlayers(player);
+            player.setGameMode(gm);
+        }
     }
 
-    public boolean dropItem(PlayerDropItemEvent event, Player player) {
-
-	return conf.isCreativeNoDrop()
-		&& !player.hasPermission(OVERRIDE_NODROP_PERM);
+    public boolean dropItem(Player player) {
+        return conf.isCreativeNoDrop()
+                && !player.hasPermission(OVERRIDE_NODROP_PERM);
     }
 
     public void invOpen(InventoryOpenEvent event, HumanEntity player) {
 
-	if (conf.isCreativeNoOpenChest()
-		&& !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
+        if (conf.isCreativeNoOpenChest()
+                && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
 
-	    InventoryType it = event.getView().getType();
+            InventoryType it = event.getView().getType();
 
-	    if (it == InventoryType.CHEST || it == InventoryType.DISPENSER
-		    || it == InventoryType.DROPPER || it == InventoryType.ENDER_CHEST
-		    || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
+            if (it == InventoryType.CHEST || it == InventoryType.DISPENSER
+                    || it == InventoryType.DROPPER || it == InventoryType.ENDER_CHEST
+                    || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
 
-		event.setCancelled(true);
-	    }
-	}
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**
      * The player is building.
      *
-     * @param event the event
+     * @param event  the event
      * @param player the player
      * @return «true» if the events must be cancelled
      */
     public boolean build(Event event, Player player) {
 
-	Location blockLoc;
+        Location blockLoc;
 
-	if (conf.isCreativeNoBuildOutside()
-		&& !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
+        if (conf.isCreativeNoBuildOutside()
+                && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
 
-	    if (event instanceof BlockBreakEvent) {
-		blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
-	    } else {
-		blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
-	    }
-	    if (!askCreativeFlag(player, secuboid.getLands().getLand(blockLoc))) {
+            if (event instanceof BlockBreakEvent) {
+                blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
+            } else {
+                blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
+            }
+            if (!askCreativeFlag(player, secuboid.getLands().getLand(blockLoc))) {
 
-		return true;
-	    }
-	}
-	return false;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void checkBannedItems(InventoryCloseEvent event, HumanEntity player) {
 
-	if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
+        if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
 
-	    for (Material mat : conf.getCreativeBannedItems()) {
-		event.getPlayer().getInventory().remove(mat);
-	    }
-	}
+            for (Material mat : conf.getCreativeBannedItems()) {
+                event.getPlayer().getInventory().remove(mat);
+            }
+        }
     }
 
     private boolean askCreativeFlag(Player player, Land land) {
 
-	return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
+        return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
     }
 }

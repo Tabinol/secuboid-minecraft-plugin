@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import org.bukkit.configuration.ConfigurationSection;
@@ -65,133 +67,127 @@ public class Lang {
      * @param secuboid secuboid instance
      */
     public Lang(Secuboid secuboid) {
-	this.secuboid = secuboid;
-	actualVersion = secuboid.getMavenAppProperties().getPropertyInt("langVersion");
-	this.langconfig = new YamlConfiguration();
-	reloadConfig();
-	checkVersion();
+        this.secuboid = secuboid;
+        actualVersion = secuboid.getMavenAppProperties().getPropertyInt("langVersion");
+        this.langconfig = new YamlConfiguration();
+        reloadConfig();
+        checkVersion();
     }
 
     /**
      * Reload config.
      */
     public final void reloadConfig() {
-	this.lang = secuboid.getConf().getLang();
-	this.langFile = new File(secuboid.getDataFolder() + "/lang/", lang + ".yml");
-	if (secuboid.getConf().getLang() != null) {
-	    copyLang();
-	    loadYamls();
-	}
+        this.lang = secuboid.getConf().getLang();
+        this.langFile = new File(secuboid.getDataFolder() + "/lang/", lang + ".yml");
+        if (secuboid.getConf().getLang() != null) {
+            copyLang();
+            loadYamls();
+        }
     }
 
     /**
      * Copyt the language file.
      */
     private void copyLang() {
-	try {
-	    if (!langFile.exists()) {
-		langFile.getParentFile().mkdirs();
-		FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
-	    }
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
+        try {
+            if (!langFile.exists()) {
+                if (!langFile.getParentFile().mkdirs()) {
+                    throw new IOException("unable to make the directory " + langFile.getParentFile().getPath() + ".");
+                }
+                FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Load yamls.
      */
     private void loadYamls() {
-	try {
-	    langconfig.load(langFile);
-	} catch (IOException e) {
-	    e.printStackTrace();
-	} catch (InvalidConfigurationException e) {
-	    e.printStackTrace();
-	}
+        try {
+            langconfig.load(langFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 
     // Check if it is the next version, if not, the file will be renamed
+
     /**
      * Check version.
      */
-    public final void checkVersion() {
+    private void checkVersion() {
 
-	int fileVersion = langconfig.getInt("VERSION");
+        int fileVersion = langconfig.getInt("VERSION");
 
-	// We must rename the file and activate the new file
-	if (actualVersion != fileVersion) {
-	    langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion));
-	    reloadConfig();
-	    secuboid.getLogger().log(Level.INFO, "There is a new language file. Your old language file was renamed \"{0}.yml.v{1}\".",
-		    new Object[]{lang, fileVersion});
-	}
+        // We must rename the file and activate the new file
+        if (actualVersion != fileVersion) {
+            if (!langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion))) {
+                Logger.getLogger("Secuboid").log(Level.SEVERE, "Unable to rename the old language file.");
+            }
+            reloadConfig();
+            secuboid.getLogger().log(Level.INFO, "There is a new language file. Your old language file was renamed \"{0}.yml.v{1}\".",
+                    new Object[]{lang, fileVersion});
+        }
     }
 
     /**
      * Gets the message.
      *
-     * @param path the path
+     * @param path  the path
      * @param param the param
      * @return the message
      */
     public String getMessage(String path, String... param) {
 
-	String message = langconfig.getString(path);
+        String message = langconfig.getString(path);
 
-	if (message == null) {
-	    return "MESSAGE NOT FOUND FOR PATH: " + path;
-	}
-	if (param.length >= 1) {
-	    int occurence = getOccurence(message, '%');
-	    if (occurence == param.length) {
-		for (int i = 0; i < occurence; i++) {
-		    message = replace(message, "%", param[i]);
-		    // System.out.print(message);
-		}
-	    } else {
-		return "Error! variable missing for Entries.";
-	    }
-	}
+        if (message == null) {
+            return "MESSAGE NOT FOUND FOR PATH: " + path;
+        }
+        if (param.length >= 1) {
+            int occurence = getOccurence(message, '%');
+            if (occurence == param.length) {
+                for (int i = 0; i < occurence; i++) {
+                    message = replace(message, "%", param[i]);
+                    // System.out.print(message);
+                }
+            } else {
+                return "Error! variable missing for Entries.";
+            }
+        }
 
-	return message;
-    }
-
-    /**
-     * Checks if is message exist.
-     *
-     * @param path the path
-     * @return true, if is message exist
-     */
-    public boolean isMessageExist(String path) {
-
-	return langconfig.getString(path) != null;
+        return message;
     }
 
     /**
      * Replace.
      *
      * @param s_original the s_original
-     * @param s_cherche the s_cherche
-     * @param s_nouveau the s_nouveau
+     * @param s_cherche  the s_cherche
+     * @param s_nouveau  the s_nouveau
      * @return the string
      */
     public String replace(String s_original, String s_cherche, String s_nouveau) {
-	if ((s_original == null) || (s_original.isEmpty())) {
-	    return "";
-	}
-	if ((s_nouveau == null) || (s_nouveau.isEmpty()) || (s_cherche == null) || (s_cherche.isEmpty())) {
-	    return s_original;
-	}
+        if ((s_original == null) || (s_original.isEmpty())) {
+            return "";
+        }
+        if ((s_nouveau == null) || (s_nouveau.isEmpty()) || (s_cherche == null) || (s_cherche.isEmpty())) {
+            return s_original;
+        }
 
-	StringBuffer s_final;
-	int index = s_original.indexOf(s_cherche);
+        StringBuffer s_final;
+        int index = s_original.indexOf(s_cherche);
 
-	s_final = new StringBuffer(s_original.substring(0, index));
-	s_final.append(s_nouveau);
-	s_final.append(s_original.substring(index + s_cherche.length()));
+        s_final = new StringBuffer(s_original.substring(0, index));
+        s_final.append(s_nouveau);
+        s_final.append(s_original.substring(index + s_cherche.length()));
 
-	return s_final.toString();
+        return s_final.toString();
     }
 
     /**
@@ -202,13 +198,13 @@ public class Lang {
      * @return the occurence
      */
     private int getOccurence(String s, char r) {
-	int counter = 0;
-	for (int i = 0; i < s.length(); i++) {
-	    if (s.charAt(i) == r) {
-		counter++;
-	    }
-	}
-	return counter;
+        int counter = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == r) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     /**
@@ -220,20 +216,20 @@ public class Lang {
      */
     public String getHelp(String mainCommand, String commandName) {
 
-	ConfigurationSection helpSec = langconfig.getConfigurationSection("HELP." + mainCommand + "." + commandName);
+        ConfigurationSection helpSec = langconfig.getConfigurationSection("HELP." + mainCommand + "." + commandName);
 
-	// No help for this command?
-	if (helpSec == null) {
-	    return null;
-	}
+        // No help for this command?
+        if (helpSec == null) {
+            return null;
+        }
 
-	Map<String, Object> valueList = helpSec.getValues(false);
-	StringBuilder sb = new StringBuilder();
+        Map<String, Object> valueList = helpSec.getValues(false);
+        StringBuilder sb = new StringBuilder();
 
-	for (int t = 1; t <= valueList.size(); t++) {
-	    sb.append((String) valueList.get(t + "")).append(Config.NEWLINE);
-	}
+        for (int t = 1; t <= valueList.size(); t++) {
+            sb.append((String) valueList.get(t + "")).append(Config.NEWLINE);
+        }
 
-	return sb.toString();
+        return sb.toString();
     }
 }

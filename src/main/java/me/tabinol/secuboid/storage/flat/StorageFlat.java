@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
@@ -55,7 +56,7 @@ public class StorageFlat implements Storage {
     /**
      * The Constant EXT_CONF.
      */
-    public static final String EXT_CONF = ".conf";
+    private static final String EXT_CONF = ".conf";
 
     private final Secuboid secuboid;
 
@@ -80,25 +81,22 @@ public class StorageFlat implements Storage {
      * @param secuboid secuboid instance
      */
     public StorageFlat(Secuboid secuboid) {
-	this.secuboid = secuboid;
-	landVersion = secuboid.getMavenAppProperties().getPropertyInt("landVersion");
-	createDirFiles();
+        this.secuboid = secuboid;
+        landVersion = secuboid.getMavenAppProperties().getPropertyInt("landVersion");
+        createDirFiles();
     }
 
     @Override
     public void loadAll() {
-
-	loadLands();
+        loadLands();
     }
 
     /**
      * Creates the dir files.
      */
     private void createDirFiles() {
-
-	landsDir = secuboid.getDataFolder() + "/" + "lands" + "/";
-
-	createDir(landsDir);
+        landsDir = secuboid.getDataFolder() + "/" + "lands" + "/";
+        createDir(landsDir);
     }
 
     /**
@@ -108,11 +106,17 @@ public class StorageFlat implements Storage {
      */
     private void createDir(String dir) {
 
-	File file = new File(dir);
+        File file = new File(dir);
 
-	if (!file.exists()) {
-	    file.mkdir();
-	}
+        try {
+            if (!file.exists()) {
+                if (!file.mkdir()) {
+                    throw new IOException("Unable to create directory " + file.getPath() + ".");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -122,54 +126,52 @@ public class StorageFlat implements Storage {
      * @return the land file
      */
     private File getLandFile(RealLand land) {
-
-	return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
+        return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
     }
 
     /**
      * Gets the land file.
      *
      * @param landUUID the land uuid
-     * @param landGenealogy the land genealogy
      * @return the land file
      */
-    private File getLandFile(UUID landUUID, int landGenealogy) {
-
-	return new File(landsDir + "/" + landUUID + EXT_CONF);
+    private File getLandFile(UUID landUUID) {
+        return new File(landsDir + "/" + landUUID + EXT_CONF);
     }
 
     @Override
     public void loadLands() {
 
-	File[] files = new File(landsDir).listFiles();
-	int loadedlands = 0;
-	orphans = new HashMap<RealLand, UUID>();
+        File[] files = new File(landsDir).listFiles();
+        int loadedlands = 0;
+        orphans = new HashMap<RealLand, UUID>();
 
-	if (files.length == 0) {
-	    secuboid.getLog().write(loadedlands + " land(s) loaded.");
-	    return;
-	}
+        assert files != null;
+        if (files.length == 0) {
+            secuboid.getLog().write(loadedlands + " land(s) loaded.");
+            return;
+        }
 
-	// Pass 1: load lands
-	for (File file : files) {
-	    if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
-		loadLand(file);
-		loadedlands++;
-	    }
-	}
+        // Pass 1: load lands
+        for (File file : files) {
+            if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
+                loadLand(file);
+                loadedlands++;
+            }
+        }
 
-	// Pass 2: find parents
-	for (Map.Entry<RealLand, UUID> entry : orphans.entrySet()) {
-	    RealLand land = entry.getKey();
-	    RealLand parent = secuboid.getLands().getLand(entry.getValue());
-	    if (parent != null) {
-		land.setParent(parent);
-	    } else {
-		Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: The parent is not found for land: {0}", land);
-	    }
-	}
+        // Pass 2: find parents
+        for (Map.Entry<RealLand, UUID> entry : orphans.entrySet()) {
+            RealLand land = entry.getKey();
+            RealLand parent = secuboid.getLands().getLand(entry.getValue());
+            if (parent != null) {
+                land.setParent(parent);
+            } else {
+                Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: The parent is not found for land: {0}", land);
+            }
+        }
 
-	secuboid.getLog().write(loadedlands + " land(s) loaded.");
+        secuboid.getLog().write(loadedlands + " land(s) loaded.");
     }
 
     /**
@@ -179,238 +181,238 @@ public class StorageFlat implements Storage {
      */
     private void loadLand(File file) {
 
-	NewInstance newInstance = secuboid.getNewInstance();
-	int version;
-	ConfLoaderFlat cf = null;
-	UUID uuid;
-	String landName;
-	String type = null;
-	RealLand land = null;
-	Map<Integer, Area> areas = new TreeMap<Integer, Area>();
-	boolean isLandCreated = false;
-	PlayerContainer owner;
-	String parentUUID;
-	Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
-	Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
-	Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
-		= new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-	Set<Flag> flags = new HashSet<Flag>();
-	short priority;
-	double money;
-	Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
+        NewInstance newInstance = secuboid.getNewInstance();
+        int version;
+        ConfLoaderFlat cf = null;
+        UUID uuid;
+        String landName;
+        String type = null;
+        RealLand land = null;
+        Map<Integer, Area> areas = new TreeMap<Integer, Area>();
+        boolean isLandCreated = false;
+        PlayerContainer owner;
+        String parentUUID;
+        Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
+        Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
+        Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
+                = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
+        Set<Flag> flags = new HashSet<Flag>();
+        short priority;
+        double money;
+        Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
 
-	// For economy
-	boolean forSale = false;
-	Location forSaleSignLoc = null;
-	double salePrice = 0;
-	boolean forRent = false;
-	Location forRentSignLoc = null;
-	double rentPrice = 0;
-	int rentRenew = 0;
-	boolean rentAutoRenew = false;
-	boolean rented = false;
-	PlayerContainerPlayer tenant = null;
-	Timestamp lastPayment = null;
+        // For economy
+        boolean forSale = false;
+        Location forSaleSignLoc = null;
+        double salePrice = 0;
+        boolean forRent = false;
+        Location forRentSignLoc = null;
+        double rentPrice = 0;
+        int rentRenew = 0;
+        boolean rentAutoRenew = false;
+        boolean rented = false;
+        PlayerContainerPlayer tenant = null;
+        Timestamp lastPayment = null;
 
-	secuboid.getLog().write("Open file : " + file.getName());
+        secuboid.getLog().write("Open file : " + file.getName());
 
-	try {
-	    cf = new ConfLoaderFlat(secuboid, file);
-	    String str;
-	    version = cf.getVersion();
-	    uuid = cf.getUUID();
-	    landName = cf.getName();
-	    if (version >= 5) {
-		cf.readParam();
-		type = cf.getValueString();
-	    }
-	    cf.readParam();
-	    String ownerS = cf.getValueString();
+        try {
+            cf = new ConfLoaderFlat(secuboid, file);
+            String str;
+            version = cf.getVersion();
+            uuid = cf.getUUID();
+            landName = cf.getName();
+            if (version >= 5) {
+                cf.readParam();
+                type = cf.getValueString();
+            }
+            cf.readParam();
+            String ownerS = cf.getValueString();
 
-	    // create owner (PlayerContainer)
-	    owner = newInstance.getPlayerContainerFromFileFormat(ownerS);
-	    if (owner == null) {
-		throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
-	    }
+            // create owner (PlayerContainer)
+            owner = newInstance.getPlayerContainerFromFileFormat(ownerS);
+            if (owner == null) {
+                throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
+            }
 
-	    cf.readParam();
-	    parentUUID = cf.getValueString();
+            cf.readParam();
+            parentUUID = cf.getValueString();
 
-	    // Old Faction Territory value
-	    if (version < 6) {
-		cf.readParam();
-	    }
+            // Old Faction Territory value
+            if (version < 6) {
+                cf.readParam();
+            }
 
-	    cf.readParam();
+            cf.readParam();
 
-	    // Create areas
-	    while ((str = cf.getNextString()) != null) {
-		String[] multiStr = str.split(":", 2);
-		areas.put(Integer.parseInt(multiStr[0]), AreaUtil.getFromFileFormat(multiStr[1]));
-	    }
-	    if (areas.isEmpty()) {
-		throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
-	    }
+            // Create areas
+            while ((str = cf.getNextString()) != null) {
+                String[] multiStr = str.split(":", 2);
+                areas.put(Integer.parseInt(multiStr[0]), AreaUtil.getFromFileFormat(multiStr[1]));
+            }
+            if (areas.isEmpty()) {
+                throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
+            }
 
-	    cf.readParam();
+            cf.readParam();
 
-	    //Residents
-	    while ((str = cf.getNextString()) != null) {
-		residents.add(newInstance.getPlayerContainerFromFileFormat(str));
-	    }
-	    cf.readParam();
+            //Residents
+            while ((str = cf.getNextString()) != null) {
+                residents.add(newInstance.getPlayerContainerFromFileFormat(str));
+            }
+            cf.readParam();
 
-	    //Banneds
-	    while ((str = cf.getNextString()) != null) {
-		banneds.add(newInstance.getPlayerContainerFromFileFormat(str));
-	    }
-	    cf.readParam();
+            //Banneds
+            while ((str = cf.getNextString()) != null) {
+                banneds.add(newInstance.getPlayerContainerFromFileFormat(str));
+            }
+            cf.readParam();
 
-	    //Create permissions
-	    while ((str = cf.getNextString()) != null) {
-		String[] multiStr = str.split(":");
-		TreeMap<PermissionType, Permission> permPlayer;
-		PlayerContainer pc = newInstance.getPlayerContainerFromFileFormat(multiStr[0] + ":" + multiStr[1]);
-		PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
-		if (!permissions.containsKey(pc)) {
-		    permPlayer = new TreeMap<PermissionType, Permission>();
-		    permissions.put(pc, permPlayer);
-		} else {
-		    permPlayer = permissions.get(pc);
-		}
-		permPlayer.put(permType, secuboid.getPermissionsFlags().newPermission(permType,
-			Boolean.parseBoolean(multiStr[3]), Boolean.parseBoolean(multiStr[4])));
-	    }
-	    cf.readParam();
+            //Create permissions
+            while ((str = cf.getNextString()) != null) {
+                String[] multiStr = str.split(":");
+                TreeMap<PermissionType, Permission> permPlayer;
+                PlayerContainer pc = newInstance.getPlayerContainerFromFileFormat(multiStr[0] + ":" + multiStr[1]);
+                PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
+                if (!permissions.containsKey(pc)) {
+                    permPlayer = new TreeMap<PermissionType, Permission>();
+                    permissions.put(pc, permPlayer);
+                } else {
+                    permPlayer = permissions.get(pc);
+                }
+                permPlayer.put(permType, secuboid.getPermissionsFlags().newPermission(permType,
+                        Boolean.parseBoolean(multiStr[3]), Boolean.parseBoolean(multiStr[4])));
+            }
+            cf.readParam();
 
-	    //Create flags
-	    while ((str = cf.getNextString()) != null) {
-		flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
-	    }
-	    cf.readParam();
+            //Create flags
+            while ((str = cf.getNextString()) != null) {
+                flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
+            }
+            cf.readParam();
 
-	    //Set Priority
-	    priority = cf.getValueShort();
-	    cf.readParam();
+            //Set Priority
+            priority = cf.getValueShort();
+            cf.readParam();
 
-	    //Money
-	    money = cf.getValueDouble();
-	    cf.readParam();
+            //Money
+            money = cf.getValueDouble();
+            cf.readParam();
 
-	    //Players Notify
-	    while ((str = cf.getNextString()) != null) {
-		pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
-	    }
+            //Players Notify
+            while ((str = cf.getNextString()) != null) {
+                pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
+            }
 
-	    // Economy
-	    if (version >= 4) {
-		cf.readParam();
-		forSale = Boolean.parseBoolean(cf.getValueString());
-		if (forSale) {
-		    cf.readParam();
-		    forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
-		    cf.readParam();
-		    salePrice = cf.getValueDouble();
-		}
-		cf.readParam();
-		forRent = Boolean.parseBoolean(cf.getValueString());
-		if (forRent) {
-		    cf.readParam();
-		    forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
-		    cf.readParam();
-		    rentPrice = cf.getValueDouble();
-		    cf.readParam();
-		    rentRenew = cf.getValueInt();
-		    cf.readParam();
-		    rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
-		    cf.readParam();
-		    rented = Boolean.parseBoolean(cf.getValueString());
-		    if (rented) {
-			cf.readParam();
-			tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
-			cf.readParam();
-			lastPayment = Timestamp.valueOf(cf.getValueString());
-		    }
-		}
-	    }
+            // Economy
+            if (version >= 4) {
+                cf.readParam();
+                forSale = Boolean.parseBoolean(cf.getValueString());
+                if (forSale) {
+                    cf.readParam();
+                    forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                    cf.readParam();
+                    salePrice = cf.getValueDouble();
+                }
+                cf.readParam();
+                forRent = Boolean.parseBoolean(cf.getValueString());
+                if (forRent) {
+                    cf.readParam();
+                    forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                    cf.readParam();
+                    rentPrice = cf.getValueDouble();
+                    cf.readParam();
+                    rentRenew = cf.getValueInt();
+                    cf.readParam();
+                    rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
+                    cf.readParam();
+                    rented = Boolean.parseBoolean(cf.getValueString());
+                    if (rented) {
+                        cf.readParam();
+                        tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
+                        cf.readParam();
+                        lastPayment = Timestamp.valueOf(cf.getValueString());
+                    }
+                }
+            }
 
-	    cf.close();
+            cf.close();
 
-	    // Catch errors here
-	} catch (NullPointerException ex) {
-	    try {
-		throw new FileLoadException(secuboid, file.getName(),
-			cf != null ? cf.getLine() : "-NOT FOUND-",
-			cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
-	    } catch (FileLoadException ex2) {
-		// Catch load
-		return;
-	    }
-	} catch (FileLoadException ex) {
-	    // Catch load
-	    return;
-	}
+            // Catch errors here
+        } catch (NullPointerException ex) {
+            try {
+                throw new FileLoadException(secuboid, file.getName(),
+                        cf != null ? cf.getLine() : "-NOT FOUND-",
+                        cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
+            } catch (FileLoadException ex2) {
+                // Catch load
+                return;
+            }
+        } catch (FileLoadException ex) {
+            // Catch load
+            return;
+        }
 
-	// Create land
-	for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
-	    if (!isLandCreated) {
-		try {
-		    land = secuboid.getLands().createLand(landName, owner, entry.getValue(),
-			    null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
-		    orphans.put(land, UUID.fromString(parentUUID));
-		} catch (SecuboidLandException ex) {
-		    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
-		    return;
-		}
-		isLandCreated = true;
-	    } else {
-		if (land == null) {
-		    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
-		    return;
-		}
-		land.addArea(entry.getValue(), entry.getKey());
-	    }
-	}
+        // Create land
+        for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
+            if (!isLandCreated) {
+                try {
+                    land = secuboid.getLands().createLand(landName, owner, entry.getValue(),
+                            null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
+                    orphans.put(land, UUID.fromString(parentUUID));
+                } catch (SecuboidLandException ex) {
+                    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on loading land: " + landName, ex);
+                    return;
+                }
+                isLandCreated = true;
+            } else {
+                if (land == null) {
+                    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+                    return;
+                }
+                land.addArea(entry.getValue(), entry.getKey());
+            }
+        }
 
-	if (land == null) {
-	    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
-	    return;
-	}
+        if (land == null) {
+            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error: Land not created: {0}", landName);
+            return;
+        }
 
-	// Load land params form memory
-	for (PlayerContainer resident : residents) {
-	    land.addResident(resident);
-	}
-	for (PlayerContainer banned : banneds) {
-	    land.addResident(banned);
-	}
-	for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> entry : permissions.entrySet()) {
-	    for (Map.Entry<PermissionType, Permission> entryP : entry.getValue().entrySet()) {
-		land.getPermissionsFlags().addPermission(entry.getKey(), entryP.getValue());
-	    }
-	}
-	for (Flag flag : flags) {
-	    land.getPermissionsFlags().addFlag(flag);
-	}
-	land.setPriority(priority);
-	land.addMoney(money);
-	for (PlayerContainerPlayer pNotif : pNotifs) {
-	    land.addPlayerNotify(pNotif);
-	}
+        // Load land params form memory
+        for (PlayerContainer resident : residents) {
+            land.addResident(resident);
+        }
+        for (PlayerContainer banned : banneds) {
+            land.addResident(banned);
+        }
+        for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> entry : permissions.entrySet()) {
+            for (Map.Entry<PermissionType, Permission> entryP : entry.getValue().entrySet()) {
+                land.getPermissionsFlags().addPermission(entry.getKey(), entryP.getValue());
+            }
+        }
+        for (Flag flag : flags) {
+            land.getPermissionsFlags().addFlag(flag);
+        }
+        land.setPriority(priority);
+        land.addMoney(money);
+        for (PlayerContainerPlayer pNotif : pNotifs) {
+            land.addPlayerNotify(pNotif);
+        }
 
-	// Economy add
-	if (version >= 4) {
-	    if (forSale) {
-		land.setForSale(true, salePrice, forSaleSignLoc);
-	    }
-	    if (forRent) {
-		land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
-		if (rented) {
-		    land.setRented(tenant);
-		    land.setLastPaymentTime(lastPayment);
-		}
-	    }
-	}
+        // Economy add
+        if (version >= 4) {
+            if (forSale) {
+                land.setForSale(true, salePrice, forSaleSignLoc);
+            }
+            if (forRent) {
+                land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
+                if (rented) {
+                    land.setRented(tenant);
+                    land.setLastPaymentTime(lastPayment);
+                }
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -418,112 +420,111 @@ public class StorageFlat implements Storage {
      */
     @Override
     public void saveLand(RealLand land) {
-	try {
-	    ArrayList<String> strs;
+        try {
+            ArrayList<String> strs;
 
-	    if (secuboid.getStorageThread().isInLoad()) {
-		return;
-	    }
+            if (secuboid.getStorageThread().isInLoad()) {
+                return;
+            }
 
-	    secuboid.getLog().write("Saving land: " + land.getName());
-	    ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), landVersion);
-	    cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
-	    cb.writeParam("Owner", land.getOwner().toFileFormat());
+            secuboid.getLog().write("Saving land: " + land.getName());
+            ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), landVersion);
+            cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
+            cb.writeParam("Owner", land.getOwner().toFileFormat());
 
-	    //Parent
-	    if (land.getParent() == null) {
-		cb.writeParam("Parent", (String) null);
-	    } else {
-		cb.writeParam("Parent", land.getParent().getUUID().toString());
-	    }
+            //Parent
+            if (land.getParent() == null) {
+                cb.writeParam("Parent", (String) null);
+            } else {
+                cb.writeParam("Parent", land.getParent().getUUID().toString());
+            }
 
-	    //CuboidAreas
-	    strs = new ArrayList<String>();
-	    for (int index : land.getAreasKey()) {
-		strs.add(index + ":" + land.getArea(index).toFileFormat());
-	    }
-	    cb.writeParam("CuboidAreas", strs.toArray(new String[strs.size()]));
+            //CuboidAreas
+            strs = new ArrayList<String>();
+            for (int index : land.getAreasKey()) {
+                strs.add(index + ":" + land.getArea(index).toFileFormat());
+            }
+            cb.writeParam("CuboidAreas", strs.toArray(new String[strs.size()]));
 
-	    //Residents
-	    strs = new ArrayList<String>();
-	    for (PlayerContainer pc : land.getResidents()) {
-		strs.add(pc.toFileFormat());
-	    }
-	    cb.writeParam("Residents", strs.toArray(new String[strs.size()]));
+            //Residents
+            strs = new ArrayList<String>();
+            for (PlayerContainer pc : land.getResidents()) {
+                strs.add(pc.toFileFormat());
+            }
+            cb.writeParam("Residents", strs.toArray(new String[strs.size()]));
 
-	    //Banneds
-	    strs = new ArrayList<String>();
-	    for (PlayerContainer pc : land.getBanneds()) {
-		strs.add(pc.toFileFormat());
-	    }
-	    cb.writeParam("Banneds", strs.toArray(new String[strs.size()]));
+            //Banneds
+            strs = new ArrayList<String>();
+            for (PlayerContainer pc : land.getBanneds()) {
+                strs.add(pc.toFileFormat());
+            }
+            cb.writeParam("Banneds", strs.toArray(new String[strs.size()]));
 
-	    //Permissions
-	    strs = new ArrayList<String>();
-	    for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
-		for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
-		    strs.add(pc.toFileFormat() + ":" + perm.toFileFormat());
-		}
-	    }
-	    cb.writeParam("Permissions", strs.toArray(new String[strs.size()]));
+            //Permissions
+            strs = new ArrayList<String>();
+            for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
+                for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
+                    strs.add(pc.toFileFormat() + ":" + perm.toFileFormat());
+                }
+            }
+            cb.writeParam("Permissions", strs.toArray(new String[strs.size()]));
 
-	    //Flags
-	    strs = new ArrayList<String>();
-	    for (Flag flag : land.getPermissionsFlags().getFlags()) {
-		strs.add(flag.toFileFormat());
-	    }
-	    cb.writeParam("Flags", strs.toArray(new String[strs.size()]));
+            //Flags
+            strs = new ArrayList<String>();
+            for (Flag flag : land.getPermissionsFlags().getFlags()) {
+                strs.add(flag.toFileFormat());
+            }
+            cb.writeParam("Flags", strs.toArray(new String[strs.size()]));
 
-	    // Priority
-	    cb.writeParam("Priority", land.getPriority());
+            // Priority
+            cb.writeParam("Priority", land.getPriority());
 
-	    // Money
-	    cb.writeParam("Money", land.getMoney());
+            // Money
+            cb.writeParam("Money", land.getMoney());
 
-	    // PlayersNotify
-	    strs = new ArrayList<String>();
-	    for (PlayerContainerPlayer pc : land.getPlayersNotify()) {
-		strs.add(pc.toFileFormat());
-	    }
-	    cb.writeParam("PlayersNotify", strs.toArray(new String[strs.size()]));
+            // PlayersNotify
+            strs = new ArrayList<String>();
+            for (PlayerContainerPlayer pc : land.getPlayersNotify()) {
+                strs.add(pc.toFileFormat());
+            }
+            cb.writeParam("PlayersNotify", strs.toArray(new String[strs.size()]));
 
-	    // Economy
-	    cb.writeParam("ForSale", land.isForSale() + "");
-	    if (land.isForSale()) {
-		cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
-		cb.writeParam("SalePrice", land.getSalePrice());
-	    }
-	    if (land.isForRent()) {
-		cb.writeParam("ForRent", land.isForRent() + "");
-		cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
-		cb.writeParam("RentPrice", land.getRentPrice());
-		cb.writeParam("ForRenew", land.getRentRenew());
-		cb.writeParam("ForAutoRenew", land.getRentAutoRenew() + "");
-		cb.writeParam("Rented", land.isRented() + "");
-		if (land.isRented()) {
-		    cb.writeParam("Tenant", land.getTenant().toFileFormat());
-		    cb.writeParam("LastPayment", land.getLastPaymentTime().toString());
-		}
-	    }
+            // Economy
+            cb.writeParam("ForSale", land.isForSale() + "");
+            if (land.isForSale()) {
+                cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
+                cb.writeParam("SalePrice", land.getSalePrice());
+            }
+            if (land.isForRent()) {
+                cb.writeParam("ForRent", land.isForRent() + "");
+                cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
+                cb.writeParam("RentPrice", land.getRentPrice());
+                cb.writeParam("ForRenew", land.getRentRenew());
+                cb.writeParam("ForAutoRenew", land.getRentAutoRenew() + "");
+                cb.writeParam("Rented", land.isRented() + "");
+                if (land.isRented()) {
+                    cb.writeParam("Tenant", land.getTenant().toFileFormat());
+                    cb.writeParam("LastPayment", land.getLastPaymentTime().toString());
+                }
+            }
 
-	    cb.close();
-	} catch (IOException ex) {
-	    Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on saving land: " + land.getName(), ex);
-	}
+            cb.close();
+        } catch (IOException ex) {
+            Logger.getLogger(StorageFlat.class.getName()).log(Level.SEVERE, "Error on saving land: " + land.getName(), ex);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.Storage#removeLand(me.tabinol.secuboid.lands.Land)
-     */
     @Override
     public void removeLand(RealLand land) {
-
-	getLandFile(land).delete();
+        if (!getLandFile(land).delete()) {
+            Logger.getLogger("Secuboid").log(Level.SEVERE, "Enable to delete the land " + land.getName());
+        }
     }
 
     @Override
     public void removeLand(UUID landUUID, int landGenealogy) {
-
-	getLandFile(landUUID, landGenealogy).delete();
+        if (!getLandFile(landUUID).delete()) {
+            Logger.getLogger("Secuboid").log(Level.SEVERE, "Enable to delete the land " + landUUID);
+        }
     }
 }

@@ -156,7 +156,7 @@ public class FlyCreativeListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
         if (event.getPlayer().getGameMode() == GameMode.CREATIVE
-                && creative.dropItem(event, event.getPlayer())) {
+                && creative.dropItem(event.getPlayer())) {
             event.setCancelled(true);
         }
     }

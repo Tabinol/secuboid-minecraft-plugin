@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
@@ -195,53 +196,53 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * Instantiates a new real land. <br>
      * IMPORTANT: Please use createLand in Lands class to create a Land or it will not be accessible.
      *
-     * @param secuboid secuboid instance
-     * @param landName the land name
-     * @param uuid the uuid
-     * @param owner the owner
-     * @param area the area
+     * @param secuboid  secuboid instance
+     * @param landName  the land name
+     * @param uuid      the uuid
+     * @param owner     the owner
+     * @param area      the area
      * @param genealogy the genealogy
-     * @param parent the parent
-     * @param areaId the area id
-     * @param type the type
+     * @param parent    the parent
+     * @param areaId    the area id
+     * @param type      the type
      */
     public RealLand(Secuboid secuboid, String landName, UUID uuid, PlayerContainer owner,
-	    Area area, int genealogy, RealLand parent, int areaId, Type type) {
+                    Area area, int genealogy, RealLand parent, int areaId, Type type) {
 
-	this.secuboid = secuboid;
-	this.uuid = uuid;
-	name = landName.toLowerCase();
-	this.type = type;
-	if (parent != null) {
-	    this.parent = parent;
-	    parent.addChild(this);
-	}
-	this.owner = owner;
-	this.genealogy = genealogy;
-	landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
-	worldName = area.getWorldName();
-	addArea(area, areaId);
+        this.secuboid = secuboid;
+        this.uuid = uuid;
+        name = landName.toLowerCase();
+        this.type = type;
+        if (parent != null) {
+            this.parent = parent;
+            parent.addChild(this);
+        }
+        this.owner = owner;
+        this.genealogy = genealogy;
+        landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
+        worldName = area.getWorldName();
+        addArea(area, areaId);
     }
 
     @Override
     public boolean isRealLand() {
-	return true;
+        return true;
     }
 
     @Override
     public LandPermissionsFlags getPermissionsFlags() {
-	return landPermissionsFlags;
+        return landPermissionsFlags;
     }
 
     /**
      * Sets the land default values
      */
     public void setDefault() {
-	owner = new PlayerContainerNobody();
-	residents = new TreeSet<PlayerContainer>();
-	playerNotify = new TreeSet<PlayerContainerPlayer>();
-	landPermissionsFlags.setDefault();
-	doSave();
+        owner = new PlayerContainerNobody();
+        residents = new TreeSet<PlayerContainer>();
+        playerNotify = new TreeSet<PlayerContainerPlayer>();
+        landPermissionsFlags.setDefault();
+        doSave();
     }
 
     /**
@@ -251,53 +252,53 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addArea(Area area) {
 
-	int nextKey = 0;
+        int nextKey = 0;
 
-	if (areas.isEmpty()) {
-	    nextKey = 1;
-	} else {
-	    for (int key : areas.keySet()) {
+        if (areas.isEmpty()) {
+            nextKey = 1;
+        } else {
+            for (int key : areas.keySet()) {
 
-		if (nextKey < key) {
-		    nextKey = key;
-		}
-	    }
-	    nextKey++;
-	}
+                if (nextKey < key) {
+                    nextKey = key;
+                }
+            }
+            nextKey++;
+        }
 
-	addArea(area, nextKey);
+        addArea(area, nextKey);
     }
 
     /**
      * Adds the area.
      *
-     * @param area the area
+     * @param area  the area
      * @param price the price
      */
     public void addArea(Area area, double price) {
 
-	if (price > 0) {
-	    secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-	}
-	addArea(area);
+        if (price > 0) {
+            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        }
+        addArea(area);
     }
 
     /**
      * Adds the area.
      *
      * @param area the area
-     * @param key the key
+     * @param key  the key
      */
     public void addArea(Area area, int key) {
 
-	((Area) area).setLand(this);
-	areas.put(key, area);
-	secuboid.getLands().addAreaToList(area);
-	doSave();
+        ((Area) area).setLand(this);
+        areas.put(key, area);
+        secuboid.getLands().addAreaToList(area);
+        doSave();
 
-	// Start Event
-	secuboid.getServer().getPluginManager().callEvent(new LandModifyEvent(this,
-		LandModifyEvent.LandModifyReason.AREA_ADD, area));
+        // Start Event
+        secuboid.getServer().getPluginManager().callEvent(new LandModifyEvent(this,
+                LandModifyEvent.LandModifyReason.AREA_ADD, area));
     }
 
     /**
@@ -308,20 +309,20 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean removeArea(int key) {
 
-	Area area;
+        Area area;
 
-	if ((area = areas.remove(key)) != null) {
-	    secuboid.getLands().removeAreaFromList(area);
-	    doSave();
+        if ((area = areas.remove(key)) != null) {
+            secuboid.getLands().removeAreaFromList(area);
+            doSave();
 
-	    // Start Event
-	    secuboid.getServer().getPluginManager().callEvent(
-		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REMOVE, area));
+            // Start Event
+            secuboid.getServer().getPluginManager().callEvent(
+                    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REMOVE, area));
 
-	    return true;
-	}
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -332,58 +333,58 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean removeArea(Area area) {
 
-	Integer key = getAreaKey(area);
+        Integer key = getAreaKey(area);
 
-	if (key != null) {
-	    return removeArea(key);
-	}
+        if (key != null) {
+            return removeArea(key);
+        }
 
-	return false;
+        return false;
     }
 
     /**
      * Replace area.
      *
-     * @param key the key
+     * @param key     the key
      * @param newArea the new area
-     * @param price the price
+     * @param price   the price
      * @return true, if successful
      */
     public boolean replaceArea(int key, Area newArea, double price) {
 
-	if (price > 0) {
-	    secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-	}
+        if (price > 0) {
+            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        }
 
-	return replaceArea(key, newArea);
+        return replaceArea(key, newArea);
     }
 
     /**
      * Replace area.
      *
-     * @param key the key
+     * @param key     the key
      * @param newArea the new area
      * @return true, if successful
      */
     public boolean replaceArea(int key, Area newArea) {
 
-	Area area;
+        Area area;
 
-	if ((area = areas.remove(key)) != null) {
-	    secuboid.getLands().removeAreaFromList(area);
-	    ((Area) newArea).setLand(this);
-	    areas.put(key, newArea);
-	    secuboid.getLands().addAreaToList(newArea);
-	    doSave();
+        if ((area = areas.remove(key)) != null) {
+            secuboid.getLands().removeAreaFromList(area);
+            ((Area) newArea).setLand(this);
+            areas.put(key, newArea);
+            secuboid.getLands().addAreaToList(newArea);
+            doSave();
 
-	    // Start Event
-	    secuboid.getServer().getPluginManager().callEvent(
-		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REPLACE, area));
+            // Start Event
+            secuboid.getServer().getPluginManager().callEvent(
+                    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_REPLACE, area));
 
-	    return true;
-	}
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -394,7 +395,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Area getArea(int key) {
 
-	return areas.get(key);
+        return areas.get(key);
     }
 
     /**
@@ -405,13 +406,13 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Integer getAreaKey(Area area) {
 
-	for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
-	    if (entry.getValue() == area) {
-		return entry.getKey();
-	    }
-	}
+        for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
+            if (entry.getValue() == area) {
+                return entry.getKey();
+            }
+        }
 
-	return null;
+        return null;
     }
 
     /**
@@ -421,7 +422,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Set<Integer> getAreasKey() {
 
-	return areas.keySet();
+        return areas.keySet();
     }
 
     /**
@@ -431,7 +432,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Map<Integer, Area> getIdsAndAreas() {
 
-	return Collections.unmodifiableMap(areas);
+        return Collections.unmodifiableMap(areas);
     }
 
     /**
@@ -441,7 +442,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Collection<Area> getAreas() {
 
-	return areas.values();
+        return areas.values();
     }
 
     /**
@@ -451,7 +452,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public World getWorld() {
 
-	return Bukkit.getWorld(worldName);
+        return Bukkit.getWorld(worldName);
     }
 
     /**
@@ -462,36 +463,37 @@ public final class RealLand implements Land, Comparable<RealLand> {
     @Override
     public String getWorldName() {
 
-	return worldName;
+        return worldName;
     }
 
     /**
+     * Check if the location is inside the land.
      *
-     * @param loc
-     * @return
+     * @param loc the location
+     * @return true if inside the land
      */
     public boolean isLocationInside(Location loc) {
-
-	return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     /**
+     * Check if the location is inside the land.
      *
-     * @param world
-     * @param x
-     * @param y
-     * @param z
-     * @return
+     * @param world the string world
+     * @param x     the x
+     * @param y     the y
+     * @param z     the z
+     * @return true if inside the land
      */
     public boolean isLocationInside(String world, int x, int y, int z) {
 
-	for (Area area1 : areas.values()) {
-	    if (area1.isLocationInside(world, x, y, z)) {
-		return true;
-	    }
-	}
+        for (Area area1 : areas.values()) {
+            if (area1.isLocationInside(world, x, y, z)) {
+                return true;
+            }
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -500,8 +502,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the name
      */
     public String getName() {
-
-	return name;
+        return name;
     }
 
     /**
@@ -510,8 +511,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the uuid
      */
     public UUID getUUID() {
-
-	return uuid;
+        return uuid;
     }
 
     /**
@@ -521,12 +521,12 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     protected void setName(String newName) {
 
-	this.name = newName;
-	doSave();
+        this.name = newName;
+        doSave();
 
-	// Start Event
-	secuboid.getServer().getPluginManager().callEvent(
-		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RENAME, name));
+        // Start Event
+        secuboid.getServer().getPluginManager().callEvent(
+                new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RENAME, name));
     }
 
     /**
@@ -535,8 +535,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the owner
      */
     public PlayerContainer getOwner() {
-
-	return owner;
+        return owner;
     }
 
     /**
@@ -546,8 +545,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is owner
      */
     public boolean isOwner(Player player) {
-
-	return owner.hasAccess(player);
+        return owner.hasAccess(player);
     }
 
     /**
@@ -557,12 +555,12 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void setOwner(PlayerContainer owner) {
 
-	this.owner = owner;
-	doSave();
+        this.owner = owner;
+        doSave();
 
-	// Start Event
-	secuboid.getServer().getPluginManager().callEvent(
-		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.OWNER_CHANGE, owner));
+        // Start Event
+        secuboid.getServer().getPluginManager().callEvent(
+                new LandModifyEvent(this, LandModifyEvent.LandModifyReason.OWNER_CHANGE, owner));
     }
 
     /**
@@ -572,13 +570,13 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addResident(PlayerContainer resident) {
 
-	((PlayerContainer) resident).setLand(this);
-	residents.add(resident);
-	doSave();
+        resident.setLand(this);
+        residents.add(resident);
+        doSave();
 
-	// Start Event
-	secuboid.getServer().getPluginManager().callEvent(
-		new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_ADD, resident));
+        // Start Event
+        secuboid.getServer().getPluginManager().callEvent(
+                new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_ADD, resident));
     }
 
     /**
@@ -589,17 +587,17 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean removeResident(PlayerContainer resident) {
 
-	if (residents.remove(resident)) {
-	    doSave();
+        if (residents.remove(resident)) {
+            doSave();
 
-	    // Start Event
-	    secuboid.getServer().getPluginManager().callEvent(
-		    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_REMOVE, resident));
+            // Start Event
+            secuboid.getServer().getPluginManager().callEvent(
+                    new LandModifyEvent(this, LandModifyEvent.LandModifyReason.RESIDENT_REMOVE, resident));
 
-	    return true;
-	}
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -608,8 +606,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the residents
      */
     public final Set<PlayerContainer> getResidents() {
-
-	return Collections.unmodifiableSet(residents);
+        return Collections.unmodifiableSet(residents);
     }
 
     /**
@@ -620,12 +617,12 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean isResident(Player player) {
 
-	for (PlayerContainer resident : residents) {
-	    if (resident.hasAccess(player)) {
-		return true;
-	    }
-	}
-	return false;
+        for (PlayerContainer resident : residents) {
+            if (resident.hasAccess(player)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -635,13 +632,13 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addBanned(PlayerContainer banned) {
 
-	((PlayerContainer) banned).setLand(this);
-	banneds.add(banned);
-	doSave();
+        banned.setLand(this);
+        banneds.add(banned);
+        doSave();
 
-	// Start Event
-	secuboid.getServer().getPluginManager().callEvent(
-		new PlayerContainerLandBanEvent(this, banned));
+        // Start Event
+        secuboid.getServer().getPluginManager().callEvent(
+                new PlayerContainerLandBanEvent(this, banned));
     }
 
     /**
@@ -652,12 +649,12 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean removeBanned(PlayerContainer banned) {
 
-	if (banneds.remove(banned)) {
-	    doSave();
-	    return true;
-	}
+        if (banneds.remove(banned)) {
+            doSave();
+            return true;
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -667,7 +664,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public final Set<PlayerContainer> getBanneds() {
 
-	return Collections.unmodifiableSet(banneds);
+        return Collections.unmodifiableSet(banneds);
     }
 
     /**
@@ -679,27 +676,26 @@ public final class RealLand implements Land, Comparable<RealLand> {
     @Override
     public boolean isBanned(Player player) {
 
-	for (PlayerContainer banned : banneds) {
-	    if (banned.hasAccess(player)) {
-		return true;
-	    }
-	}
-	return false;
+        for (PlayerContainer banned : banneds) {
+            if (banned.hasAccess(player)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    // Note : a child get the parent priority
     /**
-     * Gets the priority.
+     * Gets the priority. A child get the parent priority.
      *
      * @return the priority
      */
     public short getPriority() {
 
-	if (parent != null) {
-	    return parent.getPriority();
-	}
+        if (parent != null) {
+            return parent.getPriority();
+        }
 
-	return priority;
+        return priority;
     }
 
     /**
@@ -709,7 +705,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public int getGenealogy() {
 
-	return genealogy;
+        return genealogy;
     }
 
     /**
@@ -719,8 +715,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void setPriority(short priority) {
 
-	this.priority = priority;
-	doSave();
+        this.priority = priority;
+        doSave();
     }
 
     /**
@@ -730,60 +726,59 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public RealLand getParent() {
 
-	return parent;
+        return parent;
     }
 
     /**
+     * Sets the land parent.
      *
-     * @param newParent
+     * @param newParent the land parent
      */
     public void setParent(RealLand newParent) {
 
-	// Remove files
-	removeChildFiles();
+        // Remove files
+        removeChildFiles();
 
-	// remove parent (if needed)
-	if (parent != null) {
-	    parent.removeChild(uuid);
-	    parent = null;
-	    genealogy = 0;
-	    secuboid.getLog().write("remove parent from land: " + name);
-	}
+        // remove parent (if needed)
+        if (parent != null) {
+            parent.removeChild(uuid);
+            parent = null;
+            genealogy = 0;
+            secuboid.getLog().write("remove parent from land: " + name);
+        }
 
-	// Add parent
-	if (newParent != null) {
-	    newParent.addChild(this);
-	    parent = newParent;
-	    priority = parent.getPriority();
-	    genealogy = parent.getGenealogy() + 1;
-	    secuboid.getLog().write("add parent " + parent.getName() + " to land: " + name);
-	}
+        // Add parent
+        if (newParent != null) {
+            newParent.addChild(this);
+            parent = newParent;
+            priority = parent.getPriority();
+            genealogy = parent.getGenealogy() + 1;
+            secuboid.getLog().write("add parent " + parent.getName() + " to land: " + name);
+        }
 
-	// Save
-	doSave();
+        // Save
+        doSave();
 
-	// Save children files
-	saveChildFiles();
+        // Save children files
+        saveChildFiles();
     }
 
     private void removeChildFiles() {
-
-	for (RealLand child : children.values()) {
-	    child.setAutoSave(false);
-	    secuboid.getStorageThread().removeLand(child);
-	    child.removeChildFiles();
-	}
+        for (RealLand child : children.values()) {
+            child.setAutoSave(false);
+            secuboid.getStorageThread().removeLand(child);
+            child.removeChildFiles();
+        }
     }
 
     private void saveChildFiles() {
-
-	for (RealLand child : children.values()) {
-	    child.setPriority(priority);
-	    child.genealogy = genealogy + 1;
-	    child.setAutoSave(true);
-	    child.forceSave();
-	    child.saveChildFiles();
-	}
+        for (RealLand child : children.values()) {
+            child.setPriority(priority);
+            child.genealogy = genealogy + 1;
+            child.setAutoSave(true);
+            child.forceSave();
+            child.saveChildFiles();
+        }
     }
 
     /**
@@ -794,13 +789,13 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public RealLand getAncestor(int gen) { // 1 parent, 2 grand-parent, 3 ...
 
-	RealLand ancestor = this;
+        RealLand ancestor = this;
 
-	for (int t = 0; t < gen; t++) {
-	    ancestor = ancestor.getParent();
-	}
+        for (int t = 0; t < gen; t++) {
+            ancestor = ancestor.getParent();
+        }
 
-	return ancestor;
+        return ancestor;
     }
 
     /**
@@ -811,17 +806,17 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean isDescendants(RealLand land) {
 
-	if (land == this) {
-	    return true;
-	}
+        if (land == this) {
+            return true;
+        }
 
-	for (RealLand landT : children.values()) {
-	    if (landT.isDescendants(land) == true) {
-		return true;
-	    }
-	}
+        for (RealLand landT : children.values()) {
+            if (landT.isDescendants(land)) {
+                return true;
+            }
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -830,9 +825,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param land the land
      */
     private void addChild(RealLand land) {
-
-	children.put(land.uuid, land);
-	doSave();
+        children.put(land.uuid, land);
+        doSave();
     }
 
     /**
@@ -840,10 +834,9 @@ public final class RealLand implements Land, Comparable<RealLand> {
      *
      * @param uuid the uuid
      */
-    protected void removeChild(UUID uuid) {
-
-	children.remove(uuid);
-	doSave();
+    void removeChild(UUID uuid) {
+        children.remove(uuid);
+        doSave();
     }
 
     /**
@@ -853,8 +846,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the child
      */
     public RealLand getChild(UUID uuid) {
-
-	return children.get(uuid);
+        return children.get(uuid);
     }
 
     /**
@@ -863,8 +855,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the children
      */
     public Collection<RealLand> getChildren() {
-
-	return children.values();
+        return children.values();
     }
 
     /**
@@ -872,24 +863,22 @@ public final class RealLand implements Land, Comparable<RealLand> {
      *
      * @param autoSave the new auto save
      */
-    public void setAutoSave(boolean autoSave) {
-
-	this.autoSave = autoSave;
+    private void setAutoSave(boolean autoSave) {
+        this.autoSave = autoSave;
     }
 
     /**
      * Force save.
      */
-    public void forceSave() {
-
-	secuboid.getStorageThread().saveLand(this);
+    private void forceSave() {
+        secuboid.getStorageThread().saveLand(this);
     }
 
-    protected void doSave() {
+    void doSave() {
 
-	if (autoSave) {
-	    forceSave();
-	}
+        if (autoSave) {
+            forceSave();
+        }
     }
 
     /**
@@ -898,20 +887,18 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param money the money
      */
     public void addMoney(double money) {
-
-	this.money += money;
-	doSave();
+        this.money += money;
+        doSave();
     }
 
     /**
-     * Substract money.
+     * Subtracts money.
      *
      * @param money the money
      */
-    public void substractMoney(double money) {
-
-	this.money -= money;
-	doSave();
+    public void subtractMoney(double money) {
+        this.money -= money;
+        doSave();
     }
 
     /**
@@ -920,8 +907,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the money
      */
     public double getMoney() {
-
-	return money;
+        return money;
     }
 
     /**
@@ -930,9 +916,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param player the player
      */
     public void addPlayerNotify(PlayerContainerPlayer player) {
-
-	playerNotify.add(player);
-	doSave();
+        playerNotify.add(player);
+        doSave();
     }
 
     /**
@@ -943,10 +928,10 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean removePlayerNotify(PlayerContainerPlayer player) {
 
-	boolean ret = playerNotify.remove(player);
-	doSave();
+        boolean ret = playerNotify.remove(player);
+        doSave();
 
-	return ret;
+        return ret;
     }
 
     /**
@@ -956,8 +941,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is player notify
      */
     public boolean isPlayerNotify(PlayerContainerPlayer player) {
-
-	return playerNotify.contains(player);
+        return playerNotify.contains(player);
     }
 
     /**
@@ -966,8 +950,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players notify
      */
     public Set<PlayerContainerPlayer> getPlayersNotify() {
-
-	return Collections.unmodifiableSet(playerNotify);
+        return Collections.unmodifiableSet(playerNotify);
     }
 
     /**
@@ -976,8 +959,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param player the player
      */
     public void addPlayerInLand(Player player) {
-
-	playersInLand.add(player);
+        playersInLand.add(player);
     }
 
     /**
@@ -987,45 +969,42 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean removePlayerInLand(Player player) {
-
-	return playersInLand.remove(player);
+        return playersInLand.remove(player);
     }
 
-    // No parent verify
     /**
-     * Checks if is player in land.
+     * Checks if is player in land. No parent verify.
      *
      * @param player the player
      * @return true, if is player in land
      */
     public boolean isPlayerInLand(Player player) {
-
-	return playersInLand.contains(player);
+        return playersInLand.contains(player);
     }
 
     /**
      * Checks if is playerin land no vanish.
      *
-     * @param player the player
+     * @param player     the player
      * @param fromPlayer the from player
      * @return true, if is playerin land no vanish
      */
     public boolean isPlayerinLandNoVanish(Player player, Player fromPlayer) {
 
-	if (playersInLand.contains(player)
-		&& (!secuboid.getPlayerConf().isVanished(player)
-		|| secuboid.getPlayerConf().get(fromPlayer).isAdminMode())) {
-	    return true;
-	}
+        if (playersInLand.contains(player)
+                && (!secuboid.getPlayerConf().isVanished(player)
+                || secuboid.getPlayerConf().get(fromPlayer).isAdminMode())) {
+            return true;
+        }
 
-	// Check Chidren
-	for (RealLand landChild : children.values()) {
-	    if (landChild.isPlayerinLandNoVanish(player, fromPlayer)) {
-		return true;
-	    }
-	}
+        // Check Chidren
+        for (RealLand landChild : children.values()) {
+            if (landChild.isPlayerinLandNoVanish(player, fromPlayer)) {
+                return true;
+            }
+        }
 
-	return false;
+        return false;
     }
 
     /**
@@ -1034,8 +1013,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players in land
      */
     public Set<Player> getPlayersInLand() {
-
-	return Collections.unmodifiableSet(playersInLand);
+        return Collections.unmodifiableSet(playersInLand);
     }
 
     /**
@@ -1045,15 +1023,15 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Set<Player> getPlayersInLandAndChildren() {
 
-	Set<Player> playLandChild = new HashSet<Player>();
+        Set<Player> playLandChild = new HashSet<Player>();
 
-	playLandChild.addAll(playersInLand);
+        playLandChild.addAll(playersInLand);
 
-	for (RealLand child : children.values()) {
-	    playLandChild.addAll(child.getPlayersInLandAndChildren());
-	}
+        for (RealLand child : children.values()) {
+            playLandChild.addAll(child.getPlayersInLandAndChildren());
+        }
 
-	return playLandChild;
+        return playLandChild;
     }
 
     /**
@@ -1064,18 +1042,18 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public Set<Player> getPlayersInLandNoVanish(Player fromPlayer) {
 
-	Set<Player> playerList = new HashSet<Player>();
+        Set<Player> playerList = new HashSet<Player>();
 
-	for (Player player : playersInLand) {
-	    if (!secuboid.getPlayerConf().isVanished(player) || secuboid.getPlayerConf().get(fromPlayer).isAdminMode()) {
-		playerList.add(player);
-	    }
-	}
-	for (RealLand landChild : children.values()) {
-	    playerList.addAll(landChild.getPlayersInLandNoVanish(fromPlayer));
-	}
+        for (Player player : playersInLand) {
+            if (!secuboid.getPlayerConf().isVanished(player) || secuboid.getPlayerConf().get(fromPlayer).isAdminMode()) {
+                playerList.add(player);
+            }
+        }
+        for (RealLand landChild : children.values()) {
+            playerList.addAll(landChild.getPlayersInLandNoVanish(fromPlayer));
+        }
 
-	return playerList;
+        return playerList;
     }
 
     /**
@@ -1084,8 +1062,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is for sale
      */
     public boolean isForSale() {
-
-	return forSale;
+        return forSale;
     }
 
     /**
@@ -1093,40 +1070,40 @@ public final class RealLand implements Land, Comparable<RealLand> {
      *
      * @param isForSale the is for sale
      * @param salePrice the sale price
-     * @param signLoc the sign location
+     * @param signLoc   the sign location
      */
     public void setForSale(boolean isForSale, double salePrice, Location signLoc) {
 
-	forSale = isForSale;
-	if (forSale) {
-	    this.salePrice = salePrice;
-	    this.forSaleSignLoc = signLoc;
-	    secuboid.getLands().addForSale(this);
-	} else {
-	    this.salePrice = 0;
-	    this.forSaleSignLoc = null;
-	    secuboid.getLands().removeForSale(this);
-	}
-	doSave();
+        forSale = isForSale;
+        if (forSale) {
+            this.salePrice = salePrice;
+            this.forSaleSignLoc = signLoc;
+            secuboid.getLands().addForSale(this);
+        } else {
+            this.salePrice = 0;
+            this.forSaleSignLoc = null;
+            secuboid.getLands().removeForSale(this);
+        }
+        doSave();
     }
 
     /**
+     * Gets the location of sale sign.
      *
-     * @return
+     * @return the location
      */
     public Location getSaleSignLoc() {
-
-	return forSaleSignLoc;
+        return forSaleSignLoc;
     }
 
     /**
+     * Sets the location of sale sign. Do not use if the sign is not here.
      *
-     * @param forSaleSignLoc
+     * @param forSaleSignLoc the sale sign location
      */
     public void setSaleSignLoc(Location forSaleSignLoc) {
-
-	this.forSaleSignLoc = forSaleSignLoc;
-	doSave();
+        this.forSaleSignLoc = forSaleSignLoc;
+        doSave();
     }
 
     /**
@@ -1135,8 +1112,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the sale price
      */
     public double getSalePrice() {
-
-	return salePrice;
+        return salePrice;
     }
 
     /**
@@ -1145,60 +1121,58 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is for rent
      */
     public boolean isForRent() {
-
-	return forRent;
+        return forRent;
     }
 
     /**
      * Sets the for rent.
      *
-     * @param rentPrice the rent price
-     * @param rentRenew the rent renew
+     * @param rentPrice     the rent price
+     * @param rentRenew     the rent renew
      * @param rentAutoRenew the rent auto renew
-     * @param signLoc the sign location
+     * @param signLoc       the sign location
      */
     public void setForRent(double rentPrice, int rentRenew, boolean rentAutoRenew, Location signLoc) {
 
-	forRent = true;
-	this.rentPrice = rentPrice;
-	this.rentRenew = rentRenew;
-	this.rentAutoRenew = rentAutoRenew;
-	this.forRentSignLoc = signLoc;
-	secuboid.getLands().addForRent(this);
-	doSave();
+        forRent = true;
+        this.rentPrice = rentPrice;
+        this.rentRenew = rentRenew;
+        this.rentAutoRenew = rentAutoRenew;
+        this.forRentSignLoc = signLoc;
+        secuboid.getLands().addForRent(this);
+        doSave();
     }
 
     /**
+     * Gets the location of rent sign.
      *
-     * @return
+     * @return the location
      */
     public Location getRentSignLoc() {
-
-	return forRentSignLoc;
+        return forRentSignLoc;
     }
 
     /**
+     * Sets the location of rent sign. Do not use if the sign is not here.
      *
-     * @param forRentSignLoc
+     * @param forRentSignLoc the rent sign location
      */
     public void setRentSignLoc(Location forRentSignLoc) {
-
-	this.forRentSignLoc = forRentSignLoc;
-	doSave();
+        this.forRentSignLoc = forRentSignLoc;
+        doSave();
     }
 
     /**
      * Un set for rent.
      */
     public void unSetForRent() {
-
-	forRent = false;
-	rentPrice = 0;
-	rentRenew = 0;
-	rentAutoRenew = false;
-	forRentSignLoc = null;
-	secuboid.getLands().removeForRent(this);
-	doSave();
+        forRent = false;
+        rentPrice = 0;
+        rentRenew = 0;
+        rentAutoRenew = false;
+        forRentSignLoc = null;
+        secuboid.getLands().removeForRent(this);
+        doSave();
     }
 
     /**
@@ -1207,8 +1181,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the rent price
      */
     public double getRentPrice() {
-
-	return rentPrice;
+        return rentPrice;
     }
 
     /**
@@ -1217,8 +1190,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the rent renew
      */
     public int getRentRenew() {
-
-	return rentRenew;
+        return rentRenew;
     }
 
     /**
@@ -1227,8 +1199,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the rent auto renew
      */
     public boolean getRentAutoRenew() {
-
-	return rentAutoRenew;
+        return rentAutoRenew;
     }
 
     /**
@@ -1238,7 +1209,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public boolean isRented() {
 
-	return rented;
+        return rented;
     }
 
     /**
@@ -1247,19 +1218,17 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param tenant the new rented
      */
     public void setRented(PlayerContainerPlayer tenant) {
-
-	rented = true;
-	this.tenant = tenant;
-	updateRentedPayment(); // doSave() done in this method
+        rented = true;
+        this.tenant = tenant;
+        updateRentedPayment(); // doSave() done in this method
     }
 
     /**
      * Update rented payment.
      */
     public void updateRentedPayment() {
-
-	lastPayment = new Timestamp(new Date().getTime());
-	doSave();
+        lastPayment = new Timestamp(new Date().getTime());
+        doSave();
     }
 
     /**
@@ -1267,10 +1236,10 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void unSetRented() {
 
-	rented = false;
-	tenant = null;
-	lastPayment = new Timestamp(0);
-	doSave();
+        rented = false;
+        tenant = null;
+        lastPayment = new Timestamp(0);
+        doSave();
     }
 
     /**
@@ -1279,8 +1248,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the tenant
      */
     public PlayerContainerPlayer getTenant() {
-
-	return tenant;
+        return tenant;
     }
 
     /**
@@ -1290,8 +1258,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is tenant
      */
     public boolean isTenant(Player player) {
-
-	return rented && tenant.hasAccess(player);
+        return rented && tenant.hasAccess(player);
     }
 
     /**
@@ -1300,9 +1267,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param lastPayment the new last payment time
      */
     public void setLastPaymentTime(Timestamp lastPayment) {
-
-	this.lastPayment = lastPayment;
-	doSave();
+        this.lastPayment = lastPayment;
+        doSave();
     }
 
     /**
@@ -1311,31 +1277,30 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the last payment time
      */
     public Timestamp getLastPaymentTime() {
-
-	return lastPayment;
+        return lastPayment;
     }
 
     /**
+     * Gets the land type.
      *
-     * @return
+     * @return the land type
      */
     public Type getType() {
-
-	return type;
+        return type;
     }
 
     /**
+     * Sets the land type.
      *
-     * @param arg0
+     * @param arg0 the land type
      */
     public void setType(Type arg0) {
-
-	type = arg0;
-	doSave();
+        type = arg0;
+        doSave();
     }
 
     @Override
     public int compareTo(RealLand t) {
-	return name.compareTo(t.name);
+        return name.compareTo(t.name);
     }
 }

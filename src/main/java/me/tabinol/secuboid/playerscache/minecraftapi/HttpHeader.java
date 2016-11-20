@@ -18,58 +18,29 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-/**
- *
- * @author michel
- */
-public class HttpHeader {
+class HttpHeader {
 
     private String name;
     private String value;
 
-    /**
-     *
-     * @param name
-     * @param value
-     */
-    public HttpHeader(String name, String value) {
-
+    HttpHeader(String name, String value) {
         this.name = name;
         this.value = value;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @param name
-     */
     public void setName(String name) {
-
         this.name = name;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getValue() {
-
         return value;
     }
 
-    /**
-     *
-     * @param value
-     */
     public void setValue(String value) {
-
         this.value = value;
     }
 }

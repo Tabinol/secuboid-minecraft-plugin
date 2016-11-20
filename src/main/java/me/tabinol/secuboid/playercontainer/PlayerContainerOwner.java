@@ -32,70 +32,70 @@ public class PlayerContainerOwner implements PlayerContainer {
     private RealLand land;
 
     public PlayerContainerOwner(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public boolean hasAccess(Player player) {
-	return hasAccess(player, land);
+        return hasAccess(player, land);
     }
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {
-	boolean value;
-	RealLand parent;
+        boolean value;
+        RealLand parent;
 
-	if (land == null) {
-	    return false;
-	}
+        if (land == null) {
+            return false;
+        }
 
-	value = land.getOwner().hasAccess(player);
+        value = land.getOwner().hasAccess(player);
 
-	if (!value && (parent = land.getParent()) != null
-		&& land.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean() == true) {
+        if (!value && (parent = land.getParent()) != null
+                && land.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
 
-	    return parent.getOwner().hasAccess(player);
-	}
+            return parent.getOwner().hasAccess(player);
+        }
 
-	return value;
+        return value;
     }
 
     @Override
     public RealLand getLand() {
-	return land;
+        return land;
     }
 
     @Override
     public void setLand(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public String getName() {
-	return "";
+        return "";
     }
 
     @Override
     public PlayerContainerType getContainerType() {
-	return PlayerContainerType.OWNER;
+        return PlayerContainerType.OWNER;
     }
 
     @Override
     public String getPrint() {
-	return PlayerContainerType.OWNER.getPrint();
+        return PlayerContainerType.OWNER.getPrint();
     }
 
     @Override
     public String toFileFormat() {
-	return PlayerContainerType.OWNER.getPrint() + ":";
+        return PlayerContainerType.OWNER.getPrint() + ":";
     }
 
     @Override
     public int compareTo(PlayerContainer t) {
-	int result = PlayerContainerType.OWNER.compareTo(t.getContainerType());
-	if (result == 0) {
-	    return result;
-	}
-	return land.compareTo(t.getLand());
+        int result = PlayerContainerType.OWNER.compareTo(t.getContainerType());
+        if (result == 0) {
+            return result;
+        }
+        return land.compareTo(t.getLand());
     }
 }

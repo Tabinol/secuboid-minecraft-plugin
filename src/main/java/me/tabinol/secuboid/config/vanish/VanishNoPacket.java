@@ -23,10 +23,10 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
+import java.util.List;
+
 /**
  * VanishNoPacket Function.
- *
- * @author michel
  */
 public class VanishNoPacket implements Vanish {
 
@@ -50,10 +50,7 @@ public class VanishNoPacket implements Vanish {
         }
 
         // return vanishNoPacket.getManager().isVanished(player);
-        for (MetadataValue value : player.getMetadata("vanished")) {
-            return value.asBoolean();
-        }
-
-        return false;
+        List<MetadataValue> metadataValues = player.getMetadata("vanished");
+        return metadataValues != null && metadataValues.get(0).asBoolean();
     }
 }

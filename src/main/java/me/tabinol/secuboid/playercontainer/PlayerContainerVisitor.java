@@ -41,13 +41,7 @@ public class PlayerContainerVisitor implements PlayerContainer {
 
     @Override
     public boolean hasAccess(Player player, RealLand land) {
-	if (land == null) {
-	    return false;
-	}
-
-	return !land.getOwner().hasAccess(player)
-		&& !land.isResident(player)
-		&& !land.isTenant(player);
+        return land != null && !land.getOwner().hasAccess(player) && !land.isResident(player) && !land.isTenant(player);
     }
 
     @Override

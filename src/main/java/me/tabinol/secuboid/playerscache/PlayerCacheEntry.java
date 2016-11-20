@@ -20,57 +20,48 @@ package me.tabinol.secuboid.playerscache;
 
 import java.util.UUID;
 
-
 /**
  * The Class PlayerCacheEntry.
  */
 public class PlayerCacheEntry {
 
-    /** The uuid. */
+    /**
+     * The uuid.
+     */
     private final UUID uuid;
-    
-    /** The case sensitive name. */
+
+    /**
+     * The case sensitive name.
+     */
     private String caseSensitiveName;
-    
+
     /**
      * Instantiates a new player cache entry.
      *
-     * @param uuid the uuid
+     * @param uuid              the uuid
      * @param caseSensitiveName the case sensitive name
      */
-    public PlayerCacheEntry(UUID uuid, String caseSensitiveName) {
-        
+    PlayerCacheEntry(UUID uuid, String caseSensitiveName) {
+
         this.uuid = uuid;
         this.caseSensitiveName = caseSensitiveName;
     }
-    
-    /**
-     * Sets the case sensitive name.
-     *
-     * @param caseSensitiveName the new case sensitive name
-     */
-    public void setCaseSensitiveName(String caseSensitiveName) {
-        
-        this.caseSensitiveName = caseSensitiveName;
-    }
-    
+
     /**
      * Gets the uuid.
      *
      * @return the uuid
      */
     public UUID getUUID() {
-        
         return uuid;
     }
-    
+
     /**
      * Gets the name.
      *
      * @return the name
      */
     public String getName() {
-        
         return caseSensitiveName;
     }
 }

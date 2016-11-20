@@ -19,8 +19,8 @@ public class GlobalLand implements Land {
     private final String worldName;
 
     public GlobalLand(Secuboid secuboid, String worldName) {
-	this.worldName = worldName;
-	landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
+        this.worldName = worldName;
+        landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
     }
 
     /**
@@ -30,21 +30,21 @@ public class GlobalLand implements Land {
      */
     @Override
     public String getWorldName() {
-	return worldName;
+        return worldName;
     }
 
     @Override
     public boolean isRealLand() {
-	return false;
+        return false;
     }
 
     @Override
     public LandPermissionsFlags getPermissionsFlags() {
-	return landPermissionsFlags;
+        return landPermissionsFlags;
     }
 
     @Override
     public boolean isBanned(Player player) {
-	return false;
+        return false;
     }
 }

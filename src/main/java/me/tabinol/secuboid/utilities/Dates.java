@@ -27,38 +27,35 @@ import java.util.*;
  * The Class Dates.
  */
 public class Dates {
-    
-    /** The locale. */
-    static Locale locale = Locale.getDefault();
-    
-    /** The actuelle. */
-    static Date actuelle = new Date();
-    
-    /** The date format. */
-    static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+    /**
+     * The actual.
+     */
+    private static Date actual = new Date();
+
+    /**
+     * The date format.
+     */
+    private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     /**
      * Date.
      *
      * @return the string
      */
-    public static String date()
-    {
-            String dat = dateFormat.format(actuelle);
-            return dat;
+    public static String date() {
+        return dateFormat.format(actual);
     }
-    
+
     /**
      * Time.
      *
      * @return the string
      */
-    public static String time()
-    {
-            Calendar cal = Calendar.getInstance();
-            cal.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            String dat = sdf.format(cal.getTime());
-            return dat;
+    public static String time() {
+        Calendar cal = Calendar.getInstance();
+        cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        return sdf.format(cal.getTime());
     }
 }

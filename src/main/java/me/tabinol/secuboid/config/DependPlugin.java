@@ -19,16 +19,19 @@
 package me.tabinol.secuboid.config;
 
 import java.util.logging.Level;
+
 import me.tabinol.secuboid.Secuboid;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+
 import static org.bukkit.Bukkit.getServer;
+
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
- * The Class DependPlugin.
+ * The Class for plugin dependencies.
  */
 public class DependPlugin {
 
@@ -71,14 +74,14 @@ public class DependPlugin {
      */
     public DependPlugin(Secuboid secuboid) {
 
-	this.secuboid = secuboid;
+        this.secuboid = secuboid;
 
-	worldEdit = getPlugin("WorldEdit");
-	essentials = getPlugin("Essentials");
-	vanishNoPacket = getPlugin("VanishNoPacket");
-	setupPermissions();
-	setupChat();
-	setupEconomy();
+        worldEdit = getPlugin("WorldEdit");
+        essentials = getPlugin("Essentials");
+        vanishNoPacket = getPlugin("VanishNoPacket");
+        setupPermissions();
+        setupChat();
+        setupEconomy();
     }
 
     /**
@@ -89,18 +92,18 @@ public class DependPlugin {
      */
     private Plugin getPlugin(String pluginName) {
 
-	Plugin plugin = secuboid.getServer().getPluginManager().getPlugin(pluginName);
+        Plugin plugin = secuboid.getServer().getPluginManager().getPlugin(pluginName);
 
-	if (plugin != null) {
-	    secuboid.getServer().getPluginManager().enablePlugin(plugin);
-	    secuboid.getLog().write(pluginName + " detected!");
-	    secuboid.getLogger().log(Level.INFO, "{0} detected!", pluginName);
-	} else {
-	    secuboid.getLog().write(pluginName + " NOT detected!");
-	    secuboid.getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
-	}
+        if (plugin != null) {
+            secuboid.getServer().getPluginManager().enablePlugin(plugin);
+            secuboid.getLog().write(pluginName + " detected!");
+            secuboid.getLogger().log(Level.INFO, "{0} detected!", pluginName);
+        } else {
+            secuboid.getLog().write(pluginName + " NOT detected!");
+            secuboid.getLogger().log(Level.INFO, "{0} IS NOT Detected!", pluginName);
+        }
 
-	return plugin;
+        return plugin;
     }
 
     /**
@@ -110,7 +113,7 @@ public class DependPlugin {
      */
     public Plugin getWorldEdit() {
 
-	return worldEdit;
+        return worldEdit;
     }
 
     /**
@@ -120,7 +123,7 @@ public class DependPlugin {
      */
     public Plugin getEssentials() {
 
-	return essentials;
+        return essentials;
     }
 
     /**
@@ -130,7 +133,7 @@ public class DependPlugin {
      */
     public Plugin getVanishNoPacket() {
 
-	return vanishNoPacket;
+        return vanishNoPacket;
     }
 
     /**
@@ -139,11 +142,11 @@ public class DependPlugin {
      * @return true, if successful
      */
     private boolean setupPermissions() {
-	RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-	if (permissionProvider != null) {
-	    permission = permissionProvider.getProvider();
-	}
-	return (permission != null);
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
     }
 
     /**
@@ -152,12 +155,12 @@ public class DependPlugin {
      * @return true, if successful
      */
     private boolean setupChat() {
-	RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-	if (chatProvider != null) {
-	    chat = chatProvider.getProvider();
-	}
+        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null) {
+            chat = chatProvider.getProvider();
+        }
 
-	return (chat != null);
+        return (chat != null);
     }
 
     /**
@@ -166,12 +169,12 @@ public class DependPlugin {
      * @return true, if successful
      */
     private boolean setupEconomy() {
-	RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-	if (economyProvider != null) {
-	    economy = economyProvider.getProvider();
-	}
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            economy = economyProvider.getProvider();
+        }
 
-	return (economy != null);
+        return (economy != null);
     }
 
     /**
@@ -181,7 +184,7 @@ public class DependPlugin {
      */
     public Permission getPermission() {
 
-	return permission;
+        return permission;
     }
 
     /**
@@ -191,7 +194,7 @@ public class DependPlugin {
      */
     public Economy getEconomy() {
 
-	return economy;
+        return economy;
     }
 
     /**
@@ -201,6 +204,6 @@ public class DependPlugin {
      */
     public Chat getChat() {
 
-	return chat;
+        return chat;
     }
 }

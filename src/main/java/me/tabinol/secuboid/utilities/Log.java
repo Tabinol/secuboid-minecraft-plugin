@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import me.tabinol.secuboid.Secuboid;
 
 /**
@@ -50,9 +51,9 @@ public class Log {
      */
     public Log(Secuboid secuboid) {
 
-	this.secuboid = secuboid;
-	this.debug = secuboid.getConf().isDebug();
-	this.Folder = secuboid.getDataFolder();
+        this.secuboid = secuboid;
+        this.debug = secuboid.getConf().isDebug();
+        this.Folder = secuboid.getDataFolder();
     }
 
     /**
@@ -62,41 +63,41 @@ public class Log {
      */
     public void write(String text) {
 
-	if (debug) {
-	    File filename = new File(Folder, "log_" + Dates.date() + ".log");
-	    BufferedWriter bufWriter = null;
-	    FileWriter fileWriter = null;
+        if (debug) {
+            File filename = new File(Folder, "log_" + Dates.date() + ".log");
+            BufferedWriter bufWriter = null;
+            FileWriter fileWriter = null;
 
-	    if (!filename.exists()) {
-		try {
-		    filename.createNewFile();
-		} catch (IOException ex) {
-		    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	    }
+            if (!filename.exists()) {
+                try {
+                    filename.createNewFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
-	    try {
-		fileWriter = new FileWriter(filename, true);
-		bufWriter = new BufferedWriter(fileWriter);
-		bufWriter.newLine();
-		bufWriter.write("[Secuboid][v." + secuboid.getDescription().getVersion()
-			+ "][" + Dates.time() + "]" + text);
-		bufWriter.close();
-	    } catch (IOException ex) {
-		Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-	    } finally {
-		try {
-		    if (bufWriter != null) {
-			bufWriter.close();
-		    }
-		    if (fileWriter != null) {
-			fileWriter.close();
-		    }
-		} catch (IOException ex) {
-		    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	    }
-	}
+            try {
+                fileWriter = new FileWriter(filename, true);
+                bufWriter = new BufferedWriter(fileWriter);
+                bufWriter.newLine();
+                bufWriter.write("[Secuboid][v." + secuboid.getDescription().getVersion()
+                        + "][" + Dates.time() + "]" + text);
+                bufWriter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    if (bufWriter != null) {
+                        bufWriter.close();
+                    }
+                    if (fileWriter != null) {
+                        fileWriter.close();
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
     /**
@@ -105,7 +106,6 @@ public class Log {
      * @param newdebug the new debug
      */
     public void setDebug(boolean newdebug) {
-
-	this.debug = newdebug;
+        this.debug = newdebug;
     }
 }

@@ -154,8 +154,7 @@ public enum FlagList {
      * @param baseValue the base value
      */
     FlagList(Object baseValue) {
-
-	this.baseValue = new FlagValue(baseValue);
+        this.baseValue = new FlagValue(baseValue);
     }
 
     /**
@@ -164,8 +163,7 @@ public enum FlagList {
      * @param flagType the new flag type
      */
     void setFlagType(FlagType flagType) {
-
-	this.flagType = flagType;
+        this.flagType = flagType;
     }
 
     /**
@@ -174,7 +172,6 @@ public enum FlagList {
      * @return the flag type
      */
     public FlagType getFlagType() {
-
-	return flagType;
+        return flagType;
     }
 }

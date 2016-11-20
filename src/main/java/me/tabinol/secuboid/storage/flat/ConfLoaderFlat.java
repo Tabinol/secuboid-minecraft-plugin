@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 
@@ -48,11 +49,6 @@ final class ConfLoaderFlat {
      * The name.
      */
     private String name;
-
-    /**
-     * The param.
-     */
-    private String param = null;
 
     /**
      * The value.
@@ -83,27 +79,28 @@ final class ConfLoaderFlat {
      * Instantiates a new conf loader.
      *
      * @param secuboid secuboid instance
-     * @param file the file
+     * @param file     the file
      * @throws FileLoadException the file load exception
      */
     ConfLoaderFlat(Secuboid secuboid, File file) throws FileLoadException {
 
-	this.secuboid = secuboid;
-	this.file = file;
-	FileReader fr = null;
-	try {
-	    fr = new FileReader(file);
-	} catch (FileNotFoundException ex) {
-	    // Impossible
-	}
-	br = new BufferedReader(fr);
-	readVersion();
-	if (version >= 2) {
-	    readUUID();
-	} else {
-	    uuid = null;
-	}
-	readName();
+        this.secuboid = secuboid;
+        this.file = file;
+        FileReader fr = null;
+        try {
+            fr = new FileReader(file);
+        } catch (FileNotFoundException ex) {
+            // Impossible
+        }
+        assert fr != null;
+        br = new BufferedReader(fr);
+        readVersion();
+        if (version >= 2) {
+            readUUID();
+        } else {
+            uuid = null;
+        }
+        readName();
     }
 
     /**
@@ -111,10 +108,10 @@ final class ConfLoaderFlat {
      *
      * @throws FileLoadException the file load exception
      */
-    void readVersion() throws FileLoadException {
+    private void readVersion() throws FileLoadException {
 
-	readParam();
-	version = getValueInt();
+        readParam();
+        version = getValueInt();
     }
 
     /**
@@ -124,12 +121,12 @@ final class ConfLoaderFlat {
      */
     private void readUUID() throws FileLoadException {
 
-	readParam();
-	try {
-	    uuid = UUID.fromString(getValueString());
-	} catch (IllegalArgumentException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read UUID.");
-	}
+        readParam();
+        try {
+            uuid = UUID.fromString(getValueString());
+        } catch (IllegalArgumentException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read UUID.");
+        }
     }
 
     /**
@@ -139,8 +136,8 @@ final class ConfLoaderFlat {
      */
     private void readName() throws FileLoadException {
 
-	readParam();
-	name = value;
+        readParam();
+        name = value;
 
     }
 
@@ -150,27 +147,27 @@ final class ConfLoaderFlat {
      * @return the string
      * @throws FileLoadException the file load exception
      */
-    String readln() throws FileLoadException {
+    private String readln() throws FileLoadException {
 
-	String lrt;
+        String lrt;
 
-	actLineNb++;
+        actLineNb++;
 
-	try {
-	    actLine = br.readLine();
-	} catch (IOException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the next line.");
-	}
+        try {
+            actLine = br.readLine();
+        } catch (IOException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the next line.");
+        }
 
-	if (actLine == null) {
-	    return null;
-	}
-	lrt = actLine.trim();
-	if (lrt.isEmpty() || lrt.equals("}")) {
-	    return null;
-	}
-	secuboid.getLog().write("Readline: " + lrt);
-	return lrt;
+        if (actLine == null) {
+            return null;
+        }
+        lrt = actLine.trim();
+        if (lrt.isEmpty() || lrt.equals("}")) {
+            return null;
+        }
+        secuboid.getLog().write("Readline: " + lrt);
+        return lrt;
     }
 
     /**
@@ -181,35 +178,23 @@ final class ConfLoaderFlat {
      */
     boolean readParam() throws FileLoadException {
 
-	String str = readln();
+        String str = readln();
 
-	if (str == null) {
-	    return false;
-	}
-	if (str.endsWith("\\{")) {
-	    param = str.replaceAll("\\{", "");
-	    value = null;
-	} else if (str.contains(":")) {
-	    String[] chn = str.split(":", 2);
-	    param = chn[0];
-	    if (chn[1].equals("-null-")) {
-		value = null;
-	    } else {
-		value = chn[1];
-	    }
-	}
+        if (str == null) {
+            return false;
+        }
+        if (str.endsWith("\\{")) {
+            value = null;
+        } else if (str.contains(":")) {
+            String[] chn = str.split(":", 2);
+            if (chn[1].equals("-null-")) {
+                value = null;
+            } else {
+                value = chn[1];
+            }
+        }
 
-	return true;
-    }
-
-    /**
-     * Gets the param name.
-     *
-     * @return the param name
-     */
-    String getParamName() {
-
-	return param;
+        return true;
     }
 
     /**
@@ -219,7 +204,7 @@ final class ConfLoaderFlat {
      */
     String getValueString() {
 
-	return value;
+        return value;
     }
 
     /**
@@ -230,11 +215,11 @@ final class ConfLoaderFlat {
      */
     int getValueInt() throws FileLoadException {
 
-	try {
-	    return Integer.parseInt(value);
-	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
-	}
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
+        }
     }
 
     /**
@@ -245,11 +230,11 @@ final class ConfLoaderFlat {
      */
     short getValueShort() throws FileLoadException {
 
-	try {
-	    return Short.parseShort(value);
-	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Short parameter.");
-	}
+        try {
+            return Short.parseShort(value);
+        } catch (NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Short parameter.");
+        }
     }
 
     /**
@@ -260,11 +245,11 @@ final class ConfLoaderFlat {
      */
     double getValueDouble() throws FileLoadException {
 
-	try {
-	    return Double.parseDouble(value);
-	} catch (NumberFormatException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Double parameter.");
-	}
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Double parameter.");
+        }
     }
 
     /**
@@ -274,8 +259,7 @@ final class ConfLoaderFlat {
      * @throws FileLoadException the file load exception
      */
     String getNextString() throws FileLoadException {
-
-	return readln();
+        return readln();
     }
 
     /**
@@ -284,8 +268,7 @@ final class ConfLoaderFlat {
      * @return the name
      */
     String getName() {
-
-	return name;
+        return name;
     }
 
     /**
@@ -294,8 +277,7 @@ final class ConfLoaderFlat {
      * @return the version
      */
     int getVersion() {
-
-	return version;
+        return version;
     }
 
     /**
@@ -305,39 +287,27 @@ final class ConfLoaderFlat {
      */
     UUID getUUID() {
 
-	return uuid;
+        return uuid;
     }
 
-    /**
-     * Gets the file name.
-     *
-     * @return the file name
-     */
-    String getFileName() {
-
-	return file.getName();
-    }
-
-    // Used for errors
     /**
      * Gets the line nb.
      *
      * @return the line nb
      */
     int getLineNb() {
-
-	return actLineNb;
+        return actLineNb;
     }
 
     // Used for errors
+
     /**
      * Gets the line.
      *
      * @return the line
      */
     String getLine() {
-
-	return actLine;
+        return actLine;
     }
 
     /**
@@ -346,10 +316,10 @@ final class ConfLoaderFlat {
      * @throws FileLoadException the file load exception
      */
     void close() throws FileLoadException {
-	try {
-	    br.close();
-	} catch (IOException ex) {
-	    throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Impossible to close the file.");
-	}
+        try {
+            br.close();
+        } catch (IOException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Impossible to close the file.");
+        }
     }
 }

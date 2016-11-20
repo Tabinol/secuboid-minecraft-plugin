@@ -299,9 +299,8 @@ public enum PermissionList {
      * @param baseValue the base value
      */
     PermissionList(boolean baseValue) {
-
-	this.baseValue = baseValue;
-	parent = null;
+        this.baseValue = baseValue;
+        parent = null;
     }
 
     /**
@@ -310,9 +309,8 @@ public enum PermissionList {
      * @param baseValue the base value
      */
     PermissionList(boolean baseValue, String parent) {
-
-	this.baseValue = baseValue;
-	this.parent = parent;
+        this.baseValue = baseValue;
+        this.parent = parent;
     }
 
     /**
@@ -321,8 +319,7 @@ public enum PermissionList {
      * @param PermissionType the new permission type
      */
     void setPermissionType(PermissionType PermissionType) {
-
-	this.PermissionType = PermissionType;
+        this.PermissionType = PermissionType;
     }
 
     /**
@@ -331,8 +328,7 @@ public enum PermissionList {
      * @return the permission type
      */
     public PermissionType getPermissionType() {
-
-	return PermissionType;
+        return PermissionType;
     }
 
     /**
@@ -341,7 +337,6 @@ public enum PermissionList {
      * @return the parent
      */
     public String getParent() {
-
-	return parent;
+        return parent;
     }
 }

@@ -21,6 +21,7 @@ package me.tabinol.secuboid.lands.approve;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.RealLand;
@@ -84,31 +85,31 @@ public class Approve {
     /**
      * Instantiates a new approve.
      *
-     * @param secuboid secuboid instance
-     * @param landName the land name
-     * @param type the type
-     * @param action the action
+     * @param secuboid      secuboid instance
+     * @param landName      the land name
+     * @param type          the type
+     * @param action        the action
      * @param removedAreaId the removed area id
-     * @param newArea the new area
-     * @param owner the owner
-     * @param parent the parent
-     * @param price the price
-     * @param dateTime the date time
+     * @param newArea       the new area
+     * @param owner         the owner
+     * @param parent        the parent
+     * @param price         the price
+     * @param dateTime      the date time
      */
     public Approve(Secuboid secuboid, String landName, Type type, LandAction action, int removedAreaId,
-	    Area newArea, PlayerContainer owner, RealLand parent, double price,
-	    Calendar dateTime) {
+                   Area newArea, PlayerContainer owner, RealLand parent, double price,
+                   Calendar dateTime) {
 
-	this.secuboid = secuboid;
-	this.action = action;
-	this.landName = landName.toLowerCase();
-	this.type = type;
-	this.removedAreaId = removedAreaId;
-	this.newArea = newArea;
-	this.owner = owner;
-	this.parent = parent;
-	this.price = price;
-	this.dateTime = dateTime;
+        this.secuboid = secuboid;
+        this.action = action;
+        this.landName = landName.toLowerCase();
+        this.type = type;
+        this.removedAreaId = removedAreaId;
+        this.newArea = newArea;
+        this.owner = owner;
+        this.parent = parent;
+        this.price = price;
+        this.dateTime = dateTime;
     }
 
     /**
@@ -117,8 +118,7 @@ public class Approve {
      * @return the action
      */
     public LandAction getAction() {
-
-	return action;
+        return action;
     }
 
     /**
@@ -127,8 +127,7 @@ public class Approve {
      * @return the land name
      */
     public String getLandName() {
-
-	return landName;
+        return landName;
     }
 
     /**
@@ -137,8 +136,7 @@ public class Approve {
      * @return the type
      */
     public Type getType() {
-
-	return type;
+        return type;
     }
 
     /**
@@ -147,8 +145,7 @@ public class Approve {
      * @return the removed area id
      */
     public int getRemovedAreaId() {
-
-	return removedAreaId;
+        return removedAreaId;
     }
 
     /**
@@ -157,8 +154,7 @@ public class Approve {
      * @return the new area
      */
     public Area getNewArea() {
-
-	return newArea;
+        return newArea;
     }
 
     /**
@@ -167,8 +163,7 @@ public class Approve {
      * @return the owner
      */
     public PlayerContainer getOwner() {
-
-	return owner;
+        return owner;
     }
 
     /**
@@ -177,8 +172,7 @@ public class Approve {
      * @return the parent
      */
     public RealLand getParent() {
-
-	return parent;
+        return parent;
     }
 
     /**
@@ -187,8 +181,7 @@ public class Approve {
      * @return the price
      */
     public double getPrice() {
-
-	return price;
+        return price;
     }
 
     /**
@@ -197,8 +190,7 @@ public class Approve {
      * @return the date time
      */
     public Calendar getDateTime() {
-
-	return dateTime;
+        return dateTime;
     }
 
     /**
@@ -206,37 +198,37 @@ public class Approve {
      */
     public void createAction() {
 
-	if (action != null) {
-	    switch (action) {
-		case AREA_ADD:
-		    secuboid.getLands().getLand(landName).addArea(newArea, price);
-		    break;
-		case AREA_REMOVE:
-		    secuboid.getLands().getLand(landName).removeArea(removedAreaId);
-		    break;
-		case AREA_MODIFY:
-		    secuboid.getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
-		    break;
-		case LAND_ADD:
-		    try {
-			secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
-		    } catch (SecuboidLandException ex) {
-			Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land create", ex);
-		    }
-		    break;
-		case LAND_REMOVE:
-		    try {
-			secuboid.getLands().removeLand(landName);
-		    } catch (SecuboidLandException ex) {
-			Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land remove", ex);
-		    }
-		    break;
-		case LAND_PARENT:
-		    secuboid.getLands().getLand(landName).setParent(parent);
-		    break;
-		default:
-		    break;
-	    }
-	}
+        if (action != null) {
+            switch (action) {
+                case AREA_ADD:
+                    secuboid.getLands().getLand(landName).addArea(newArea, price);
+                    break;
+                case AREA_REMOVE:
+                    secuboid.getLands().getLand(landName).removeArea(removedAreaId);
+                    break;
+                case AREA_MODIFY:
+                    secuboid.getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
+                    break;
+                case LAND_ADD:
+                    try {
+                        secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
+                    } catch (SecuboidLandException ex) {
+                        Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land create", ex);
+                    }
+                    break;
+                case LAND_REMOVE:
+                    try {
+                        secuboid.getLands().removeLand(landName);
+                    } catch (SecuboidLandException ex) {
+                        Logger.getLogger(Approve.class.getName()).log(Level.SEVERE, "On land remove", ex);
+                    }
+                    break;
+                case LAND_PARENT:
+                    secuboid.getLands().getLand(landName).setParent(parent);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

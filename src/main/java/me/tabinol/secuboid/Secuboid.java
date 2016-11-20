@@ -46,7 +46,7 @@ public class Secuboid extends JavaPlugin {
     /**
      * The Economy schedule interval.
      */
-    public static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
+    private static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
 
     /**
      * The maven app properties.

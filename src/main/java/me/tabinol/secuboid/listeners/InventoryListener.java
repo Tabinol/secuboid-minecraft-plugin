@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.inventories.InventorySpec;
@@ -209,7 +210,8 @@ public class InventoryListener extends CommonListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (inventoryStorage.getPlayerInvEntry(player).getActualInv().isDisabledCommand(event.getMessage().substring(1).split(" ")[0])) {
+        if (!player.hasPermission(InventoryConfig.PERM_IGNORE_DISABLED_COMMANDS)
+                && inventoryStorage.getPlayerInvEntry(player).getActualInv().isDisabledCommand(event.getMessage().substring(1).split(" ")[0])) {
             event.setCancelled(true);
         }
     }

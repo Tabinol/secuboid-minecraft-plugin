@@ -19,38 +19,16 @@
 package me.tabinol.secuboid.utilities;
 
 import java.util.ArrayList;
-import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-
 
 /**
  * The Class StringChanges. This is for static methods for String conversion
  * or modification.
  */
 public class StringChanges {
-
-    /**
-     * To lower. Convert a String list to lower case.
-     *
-     * @param list the String list
-     * @return the converted String list
-     */
-    public static List<String> toLower(List<String> list) {
-
-        if (list == null) {
-            return null;
-        }
-
-        ArrayList<String> listLower = new ArrayList<String>();
-
-        for (String str : list) {
-            listLower.add(str.toLowerCase());
-        }
-
-        return listLower;
-    }
 
     /**
      * To quote. Adds quote to a String
@@ -89,7 +67,7 @@ public class StringChanges {
     /**
      * Split a String and make caution with quotes.
      *
-     * @param str the string to split
+     * @param str   the string to split
      * @param split the split character
      * @return the multiple String split
      */
@@ -109,12 +87,12 @@ public class StringChanges {
             } else {
                 sb.append(split).append(strv);
             }
-            if(sb != null && isEndQuote(strv)) {
+            if (sb != null && isEndQuote(strv)) {
                 strl.add(sb.toString());
                 sb = null;
             }
         }
-        
+
         return strl.toArray(new String[strl.size()]);
     }
 
@@ -139,126 +117,24 @@ public class StringChanges {
 
         return str.endsWith("'") || str.endsWith("\"") || str.endsWith(";") /* Fix String list */;
     }
-    
+
     /**
      * Split the String and adds a empty at the end of the array.
      *
      * @param string the string
-     * @param split the split character
+     * @param split  the split character
      * @return the string[]
      */
     public static String[] splitAddVoid(String string, String split) {
-        
+
         String[] tlist = string.split(split);
         String[] result = new String[tlist.length + 1];
-	System.arraycopy(tlist, 0, result, 0, tlist.length);
+        System.arraycopy(tlist, 0, result, 0, tlist.length);
         result[tlist.length] = "";
-        
+
         return result;
     }
-    
-    /**
-     * To integer.
-     *
-     * @param n the string
-     * @return the int
-     */
-    public static int toInteger(String n){
-        try{
-           return Integer.parseInt(n);
-        }catch(NumberFormatException e){
-            return 0;
-        }
-    }
-    
-    /**
-     * Checks if is int.
-     *
-     * @param n the string
-     * @return true, if is int
-     */
-    public static boolean isInt(String n)
-    {
-        try{
-            Integer.parseInt(n);
-        }catch(NumberFormatException e){
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * To double.
-     *
-     * @param n the string
-     * @return the double
-     */
-    public static double toDouble(String n){
-        try{
-           return Double.parseDouble(n);
-        }catch(NumberFormatException e){
-            return 0;
-        }
-    }
-    
-    /**
-     * Checks if is double.
-     *
-     * @param n the string
-     * @return true, if is double
-     */
-    public static boolean isDouble(String n)
-    {
-        try{
-            Double.parseDouble(n);
-        }catch(NumberFormatException e){
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * To long.
-     *
-     * @param n the long
-     * @return the long
-     */
-    public static long toLong(String n){
-        try{
-           return Long.parseLong(n);
-        }catch(NumberFormatException e){
-            return 0;
-        }
-    }
-    
-    /**
-     * Checks if is long.
-     *
-     * @param n the long
-     * @return true, if is long
-     */
-    public static boolean isLong(String n)
-    {
-        try{
-            Long.parseLong(n);
-        }catch(NumberFormatException e){
-            return false;
-        }
-        return true;
-    }
-    
-    /**
-     * Convert the string. The first character will be upper case and the rest
-     * will be lower case.
-     *
-     * @param str the string
-     * @return the string converted
-     */
-    public static String FirstUpperThenLower(String str) {
-        
-        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-    }
-    
+
     /**
      * Location to string.
      *
@@ -266,11 +142,11 @@ public class StringChanges {
      * @return the string
      */
     public static String locationToString(Location location) {
-        
-        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() 
+
+        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ()
                 + ";" + location.getYaw() + ";" + location.getPitch();
     }
-    
+
     /**
      * String to location.
      *
@@ -278,32 +154,32 @@ public class StringChanges {
      * @return the location
      */
     public static Location stringToLocation(String locStr) {
-        
+
         String[] strs = locStr.split("\\;");
-        
+
         // Wrong parameter
-        if(strs.length != 6) {
+        if (strs.length != 6) {
             return null;
         }
-        
+
         World world = Bukkit.getWorld(strs[0]);
-        
-        if(world == null) {
+
+        if (world == null) {
             return null;
         }
-        
+
         // Get the location
         Location location;
-        
+
         try {
             location = new Location(world, Double.parseDouble(strs[1]), Double.parseDouble(strs[2]),
                     Double.parseDouble(strs[3]), Float.parseFloat(strs[4]), Float.parseFloat(strs[5]));
-        } catch(NumberFormatException ex) {
-            
+        } catch (NumberFormatException ex) {
+
             // if location is wrong, set null
             location = null;
         }
-        
+
         return location;
     }
 }

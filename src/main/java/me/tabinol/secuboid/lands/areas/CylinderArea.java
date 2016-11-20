@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.lands.areas;
 
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.utilities.Calculate;
+import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -253,7 +253,7 @@ public final class CylinderArea implements Area {
     public boolean isLocationInside(String worldName, int x, int y, int z) {
 
         return worldName.equals(worldName)
-                && Calculate.isInInterval(y, getY1(), getY2())
+                && LocalMath.isInInterval(y, getY1(), getY2())
                 && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }
 

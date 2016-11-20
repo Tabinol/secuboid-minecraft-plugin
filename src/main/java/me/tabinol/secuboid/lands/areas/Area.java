@@ -136,12 +136,12 @@ public interface Area extends Comparable<Area> {
      * Gets if the locatation is inside the area.
      *
      * @param worldName the world name
-     * @param x the x
-     * @param y the y
-     * @param z the z
+     * @param x         the x
+     * @param y         the y
+     * @param z         the z
      * @return if true or false
      */
-    public abstract boolean isLocationInside(String worldName, int x, int y, int z);
+    boolean isLocationInside(String worldName, int x, int y, int z);
 
     /**
      * Gets if the locatation is inside the area.
@@ -149,12 +149,12 @@ public interface Area extends Comparable<Area> {
      * @param loc the location
      * @return if true or false
      */
-    public boolean isLocationInside(Location loc);
+    boolean isLocationInside(Location loc);
 
     /**
      * Gets an exact copy of this area.
      *
      * @return an area copy
      */
-    public Area copyOf();
+    Area copyOf();
 }

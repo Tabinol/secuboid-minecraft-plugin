@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
+import java.util.Arrays;
+
 /**
  * Represents a matrix in a chunk.
  */
@@ -30,6 +32,15 @@ public class ChunkMatrix {
      */
     public ChunkMatrix() {
         matrix = new short[16];
+    }
+
+    /**
+     * Creates an empty matrix. Only for copyOf() and from save files.
+     *
+     * @param matrix the matrix
+     */
+    ChunkMatrix(short[] matrix) {
+        this.matrix = matrix;
     }
 
     /**
@@ -90,5 +101,17 @@ public class ChunkMatrix {
             }
         }
         return nbPoints;
+    }
+
+    public String toFileFormat() {
+        StringBuilder sb = new StringBuilder();
+        for (short slice : matrix) {
+            sb.append(Integer.toHexString(slice & 0xffff));
+        }
+        return sb.toString();
+    }
+
+    public ChunkMatrix copyOf() {
+        return new ChunkMatrix(Arrays.copyOf(matrix, matrix.length));
     }
 }

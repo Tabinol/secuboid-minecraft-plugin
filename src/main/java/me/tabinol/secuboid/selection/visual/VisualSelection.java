@@ -23,15 +23,10 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 
 /**
- *
- * @author michel
+ * Represents a visual selection.
  */
 public interface VisualSelection {
 
-    /**
-     *
-     * @return
-     */
     Area getArea();
 
     /**
@@ -44,10 +39,10 @@ public interface VisualSelection {
      */
     void makeVisualSelection();
 
-    // Called from AreaSelection then player listenner
     /**
+     * Called from AreaSelection then player listener.
      *
-     * @param moveType
+     * @param moveType the type of move
      */
     void playerMove(AreaSelection.MoveType moveType);
 
@@ -59,13 +54,14 @@ public interface VisualSelection {
     boolean hasCollision();
 
     /**
-     *
+     * Removes the selection.
      */
     public void removeSelection();
 
     /**
+     * Gets if the parent is detected.
      *
-     * @return
+     * @return the detected parent
      */
     RealLand getParentDetected();
 }

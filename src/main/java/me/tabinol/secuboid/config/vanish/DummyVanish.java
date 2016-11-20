@@ -18,26 +18,24 @@
  */
 package me.tabinol.secuboid.config.vanish;
 
-import me.tabinol.secuboid.BKVersion;
 import me.tabinol.secuboid.Secuboid;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
  * Only return false if there is no Vanish plugin.
- *
- * @author michel
  */
 public class DummyVanish implements Vanish {
 
     private final Secuboid secuboid;
 
     public DummyVanish(Secuboid secuboid) {
-	this.secuboid = secuboid;
+        this.secuboid = secuboid;
     }
 
     @Override
     public boolean isVanished(Player player) {
-	return secuboid.getConf().isSpectatorIsVanish()
-		&& BKVersion.isSpectatorMode(player);
+        return secuboid.getConf().isSpectatorIsVanish()
+                && player.getGameMode() == GameMode.SPECTATOR;
     }
 }

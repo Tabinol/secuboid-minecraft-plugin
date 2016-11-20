@@ -22,10 +22,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.lands.areas.Area;
-import me.tabinol.secuboid.lands.areas.AreaType;
-import me.tabinol.secuboid.lands.areas.CuboidArea;
-import me.tabinol.secuboid.lands.areas.CylinderArea;
+import me.tabinol.secuboid.lands.areas.*;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.FlagValue;
@@ -44,6 +41,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerVisitor;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
 import me.tabinol.secuboid.selection.visual.VisualSelectionCuboid;
 import me.tabinol.secuboid.selection.visual.VisualSelectionCylinder;
+import me.tabinol.secuboid.selection.visual.VisualSelectionRoad;
 import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.entity.Player;
 
@@ -192,6 +190,8 @@ public class NewInstance {
                 return new VisualSelectionCuboid(secuboid, null, isFromLand, player);
             case CYLINDER:
                 return new VisualSelectionCylinder(secuboid, null, isFromLand, player);
+            case ROAD:
+                return new VisualSelectionRoad(secuboid, null, isFromLand, player);
             default:
                 return null;
         }
@@ -212,6 +212,8 @@ public class NewInstance {
                 return new VisualSelectionCuboid(secuboid, (CuboidArea) area, isFromLand, player);
             case CYLINDER:
                 return new VisualSelectionCylinder(secuboid, (CylinderArea) area, isFromLand, player);
+            case ROAD:
+                return new VisualSelectionRoad(secuboid, (RoadArea) area, isFromLand, player);
             default:
                 return null;
         }

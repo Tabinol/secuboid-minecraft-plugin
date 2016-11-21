@@ -44,10 +44,13 @@ HELP:
       34: "(*) Si un terrain n'est pas sélectionné, le nom du celui-ci peut être le dernier argument."
     SELECT:
       1: "/secuboid select <here/nom du terrain> : Sélectionner un terrain pour une modification."
-      2: "/secuboid select : Démarrer la sélection visuelle."
-      3: "/secuboid select done : Conclure une sélection visuelle."
-      4: "/secuboid select worldedit : Prendre une sélection WorldEdit."
-      5: "/secuboid select info : Informations à propos de la sélection."
+      2: "/secuboid select : Démarrer la sélection visuelle (cuboid)."
+      3: "/secuboid select cub[oid] : Démarrer la sélection visuelle d'un cuboid."
+      4: "/secuboid select cyl[inder] : Démarrer la sélection visuelle d'un cylindre."
+      5: "/secuboid select roa[d] : Démarrer la sélection visuelle d'un chemin."
+      6: "/secuboid select done : Conclure une sélection visuelle."
+      7: "/secuboid select worldedit : Prendre une sélection WorldEdit."
+      8: "/secuboid select info : Informations à propos de la sélection."
     INFO:
       1: "/secuboid info [terrain] : Affiche les informations générales du terrain."
     ADMINMODE:

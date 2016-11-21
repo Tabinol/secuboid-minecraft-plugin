@@ -5,7 +5,7 @@ import java.util.Set;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.utilities.ColoredConsole;
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ public class ChatListener extends CommonListener implements Listener {
     /**
      * The player conf.
      */
-    private final PlayerStaticConfig playerConf;
+    private final PlayerConfig playerConf;
 
     /**
      * Instantiates a new chat listener.

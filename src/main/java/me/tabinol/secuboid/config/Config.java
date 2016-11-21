@@ -381,6 +381,20 @@ public class Config {
     }
 
     /**
+     * The maximum radius.
+     */
+    private int maxRadius;
+
+    /**
+     * Gets the maximum radius.
+     *
+     * @return the maximum radius
+     */
+    public int getMaxRadius() {
+        return maxRadius;
+    }
+
+    /**
      * The override explosions.
      */
     private boolean overrideExplosions;
@@ -543,6 +557,7 @@ public class Config {
         defaultRadius = config.getInt("Lands.DefaultRadius", 10);
         maxBottom = config.getInt("Lands.MaxBottom", 0);
         maxTop = config.getInt("Lands.MaxTop", 255);
+        maxRadius = config.getInt("Lands.MaxRadius", 10);
 
         // Default non selected materials
         config.addDefault("Lands.DefaultNonSelectedMaterials", new String[]{"DIAMOND", "GOLD_INGOT"});

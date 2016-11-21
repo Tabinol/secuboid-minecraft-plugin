@@ -22,7 +22,7 @@ import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.DependPlugin;
 import me.tabinol.secuboid.config.InventoryConfig;
-import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
@@ -76,7 +76,7 @@ public class Secuboid extends JavaPlugin {
     /**
      * The player conf.
      */
-    private PlayerStaticConfig playerConf;
+    private PlayerConfig playerConf;
 
     /**
      * The Command listener.
@@ -163,7 +163,7 @@ public class Secuboid extends JavaPlugin {
         } else {
             playerMoney = null;
         }
-        playerConf = new PlayerStaticConfig(this);
+        playerConf = new PlayerConfig(this);
         playerConf.addAll();
         language = new Lang(this);
         storageThread = new StorageThread(this);
@@ -303,11 +303,11 @@ public class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Gets player static config.
+     * Gets player static configurations.
      *
-     * @return the player static config
+     * @return the player configurations
      */
-    public PlayerStaticConfig getPlayerConf() {
+    public PlayerConfig getPlayerConf() {
         return playerConf;
     }
 

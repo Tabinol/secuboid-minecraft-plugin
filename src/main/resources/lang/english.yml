@@ -44,10 +44,13 @@ HELP:
       34: "(*) If the land is not selected, the name can be the last parameter."
     SELECT:
       1: "/secuboid select <here/land name> : Select a land for modification."
-      2: "/secuboid select : Start the visual selection."
-      3: "/secuboid select done : Set a visual selection done."
-      4: "/secuboid select worldedit : Select the WorldEdit selection."
-      5: "/secuboid select info : Informations about the selection."
+      2: "/secuboid select : Start the visual selection (cuboid)."
+      3: "/secuboid select cub[oid] : Start the visual selection for a cuboid."
+      4: "/secuboid select cyl[inder] : Start the visual selection for a cylinder."
+      5: "/secuboid select roa[d] : Start the visual selection for a road."
+      6: "/secuboid select done : Set a visual selection done."
+      7: "/secuboid select worldedit : Select the WorldEdit selection."
+      8: "/secuboid select info : Informations about the selection."
     INFO:
       1: "/secuboid INFO [land] : Show global informations of the curent land."
     ADMINMODE:

@@ -21,7 +21,7 @@ package me.tabinol.secuboid.listeners;
 import java.util.ArrayList;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
@@ -58,7 +58,7 @@ public class LandListener extends CommonListener implements Listener {
     /**
      * The player conf.
      */
-    private final PlayerStaticConfig playerConf;
+    private final PlayerConfig playerConf;
 
     /**
      * The Class LandHeal.

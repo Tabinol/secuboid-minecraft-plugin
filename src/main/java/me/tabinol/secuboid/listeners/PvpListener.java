@@ -22,7 +22,7 @@ import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
@@ -56,7 +56,7 @@ public class PvpListener extends CommonListener implements Listener {
     /**
      * The player conf.
      */
-    private final PlayerStaticConfig playerConf;
+    private final PlayerConfig playerConf;
 
     /**
      * The player fire location.

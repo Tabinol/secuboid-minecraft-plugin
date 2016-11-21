@@ -28,7 +28,10 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.PlayersUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+
+import java.util.EnumSet;
 
 /**
  * The visual selection cuboid class. Parent is not detected.
@@ -109,82 +112,143 @@ public class VisualSelectionRoad implements VisualSelection {
         boolean canCreate = outsideArea.getPermissionsFlags()
                 .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
-        //MakeSquare
+        // Makes borders X
+        boolean isZ = false;
         for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
-                if (posX == area.getX1() || posX == area.getX2()
-                        || posZ == area.getZ1() || posZ == area.getZ2()) {
-
-                    Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
-
-                    if (!isFromLand) {
-
-                        // Active Selection
-                        Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
-                        if (outsideArea == testCuboidarea
-                                && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
-                        } else {
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
-                            isCollision = true;
-                        }
-                    } else // Passive Selection (created area)
-                        if ((posX == area.getX1() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX1() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX2() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX2() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX1() + 1 && posZ == area.getZ1())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ1())
-                                || (posX == area.getX1() + 1 && posZ == area.getZ2())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ2())) {
-
-                            // Subcorner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
-
-                        } else if ((posX == area.getX1() && posZ == area.getZ1())
-                                || (posX == area.getX2() && posZ == area.getZ1())
-                                || (posX == area.getX1() && posZ == area.getZ2())
-                                || (posX == area.getX2() && posZ == area.getZ2())) {
-
-                            // Exact corner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-                        }
-
-                } else {
-                    // Square center, skip!
-                    posZ = area.getZ2() - 1;
+            boolean isLastActive = false;
+            if (!isFromLand || posX % 5 == 0) {
+                for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+                    isLastActive = makeBorders(isZ, posX, posZ, isLastActive, outsideArea, canCreate);
                 }
+            }
+        }
+
+        // Makes borders Z
+        isZ = true;
+        for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+            boolean isLastActive = false;
+            if (!isFromLand || posZ % 5 == 0) {
+                for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
+                    isLastActive = makeBorders(isZ, posX, posZ, isLastActive, outsideArea, canCreate);
+                }
+            }
+        }
+    }
+
+    private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive, GlobalLand outsideArea, boolean canCreate) {
+
+        Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+        boolean isLocationInside = area.isLocationInside(newloc);
+        if (isLastActive) {
+            if (!isLocationInside) {
+                Location lastLoc;
+                if (isZ) {
+                    lastLoc = newloc.add(1, 0, 0);
+                } else {
+                    lastLoc = newloc.add(0, 0, 1);
+                }
+
+                // Not active selection
+                setChangedBlocks(outsideArea, canCreate, lastLoc);
+                return false;
+            }
+        } else {
+            if (isLocationInside) {
+
+                // Active Selection
+                setChangedBlocks(outsideArea, canCreate, newloc);
+                return true;
+            }
+        }
+        return isLastActive;
+    }
+
+    private void setChangedBlocks(GlobalLand outsideArea, boolean canCreate, Location newloc) {
+
+        Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
+        if(isFromLand) {
+            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
+        } else {
+            if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
+                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+            } else {
+                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
+                isCollision = true;
             }
         }
     }
 
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
-
         switch (moveType) {
             case ACTIVE:
 
                 removeSelection();
                 Location playerLoc = player.getLocation();
+                boolean active;
+                int posX = playerLoc.getBlockX();
+                int posZ = playerLoc.getBlockZ();
+                int radius = secuboid.getConf().getDefaultRadius();
 
-                // Check where the player is outside the land
-               //if (playerLoc.getBlockX() - 1 < area.getX1()) {
-               //     area.setX1(playerLoc.getBlockX() - 1);
-                //}
-                //if (playerLoc.getBlockX() + 1 > area.getX2()) {
-                //    area.setX2(playerLoc.getBlockX() + 1);
-                //}
-                //if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
-                //    area.setZ1(playerLoc.getBlockZ() - 1);
-                //}
-                //if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
-                //    area.setZ2(playerLoc.getBlockZ() + 1);
-                //}
+                // Detect selection
+                for(int x = posX; x >= posX - radius; posX --) {
+                    active = true;
+                    for(int z = posZ; z >= posZ - radius; posZ --) {
+                        active = checkForPoint(active, x, z);
+                    }
+                    active = true;
+                    for(int z = posZ; z <= posZ + radius; posZ ++) {
+                        active = checkForPoint(active, x, z);
+                    }
+                }
+                for(int x = posX; x <= posX + radius; posX ++) {
+                    active = true;
+                    for(int z = posZ; z >= posZ - radius; posZ --) {
+                        active = checkForPoint(active, x, z);
+                    }
+                    active = true;
+                    for(int z = posZ; z <= posZ + radius; posZ ++) {
+                        active = checkForPoint(active, x, z);
+                    }
+                }
+                for(int z = posZ; z >= posZ - radius; posZ --) {
+                    active = true;
+                    for(int x = posZ; x >= posX - radius; posX --) {
+                        active = checkForPoint(active, x, z);
+                    }
+                    active = true;
+                    for(int x = posX; z <= posX + radius; posX ++) {
+                        active = checkForPoint(active, x, z);
+                    }
+                }
+                for(int z = posZ; z <= posZ + radius; posZ ++) {
+                    active = true;
+                    for(int x = posZ; x >= posX - radius; posX --) {
+                        active = checkForPoint(active, x, z);
+                    }
+                    active = true;
+                    for(int x = posX; z <= posX + radius; posX ++) {
+                        active = checkForPoint(active, x, z);
+                    }
+                }
 
                 makeVisualSelection();
                 break;
 
             default:
         }
+    }
+
+    private boolean checkForPoint(boolean active, int x, int z) {
+
+        EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
+        Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
+
+        if(!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
+            return false;
+        }
+        area.add(x, z);
+
+        return true;
     }
 }

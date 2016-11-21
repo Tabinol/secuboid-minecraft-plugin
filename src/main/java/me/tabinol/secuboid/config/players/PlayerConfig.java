@@ -35,9 +35,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * The Class PlayerStaticConfig. Contains lists for player (selection, ect, ...).
+ * The Class PlayerConfig. Contains lists for player (selection, ect, ...).
  */
-public class PlayerStaticConfig {
+public class PlayerConfig {
 
     /**
      * The player conf list.
@@ -61,7 +61,7 @@ public class PlayerStaticConfig {
      *
      * @param secuboid secuboid instance
      */
-    public PlayerStaticConfig(Secuboid secuboid) {
+    public PlayerConfig(Secuboid secuboid) {
 
         this.secuboid = secuboid;
         playerConfList = new HashMap<CommandSender, PlayerConfEntry>();

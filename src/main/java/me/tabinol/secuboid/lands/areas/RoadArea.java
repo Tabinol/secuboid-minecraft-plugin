@@ -138,6 +138,25 @@ public final class RoadArea implements Area {
     }
 
     /**
+     * Adds point from location. Y is ignored. Do not use if the area is already in a land.
+     *
+     * @param location the location
+     */
+    public void add(Location location) {
+        add(location.getBlockX(), location.getBlockZ());
+    }
+
+    /**
+     * Adds point from x and z. Do not use if the area is already in a land.
+     *
+     * @param x the x
+     * @param z the z
+     */
+    public void add(int x, int z) {
+        regionMatrix.addPoint(x, z);
+    }
+
+    /**
      * Gets the volume.
      *
      * @return the volume (in block)

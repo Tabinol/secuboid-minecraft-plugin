@@ -60,6 +60,7 @@ Lands:
   DefaultRadius: 10                  # Default selection radius for roads
   MaxBottom: 0                       # Maximum selection high
   MaxTop: 255
+  MaxRadius: 10                      # Maximum selection radius for roads
   # Not selected blocks in road selection
   DefaultNonSelectedMaterials:
     - BEDROCK

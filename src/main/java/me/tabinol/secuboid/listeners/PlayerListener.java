@@ -27,7 +27,7 @@ import me.tabinol.secuboid.commands.executor.CommandInfo;
 import me.tabinol.secuboid.commands.executor.CommandSelect;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.config.players.PlayerStaticConfig;
+import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
@@ -86,7 +86,7 @@ public class PlayerListener extends CommonListener implements Listener {
     /**
      * The player conf.
      */
-    private final PlayerStaticConfig playerConf;
+    private final PlayerConfig playerConf;
 
     /**
      * The Constant DEFAULT_TIME_LAPS.

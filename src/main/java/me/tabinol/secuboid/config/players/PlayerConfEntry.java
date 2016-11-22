@@ -83,7 +83,7 @@ public class PlayerConfEntry {
     private Location lastLoc = null;
 
     /**
-     * If the player has a teleportation cacelled
+     * If the player has a teleportation cancelled
      */
     private boolean tpCancel = false;
 
@@ -96,6 +96,21 @@ public class PlayerConfEntry {
      * PlayerContainerPlayer for this player
      */
     private final PlayerContainerPlayer pcp;
+
+    /**
+     * Top selection. Positive is absolute, negative is from player feet.
+     */
+    private int selectionTop;
+
+    /**
+     * Bottom selection. Positive is absolute, negative is from player feet.
+     */
+    private int selectionBottom;
+
+    /**
+     * Radius selection.
+     */
+    private int selectionRadius;
 
     /**
      * Instantiates a new player conf entry.
@@ -116,6 +131,9 @@ public class PlayerConfEntry {
             playerSelection = null;
             pcp = null;
         }
+        selectionTop = secuboid.getConf().getDefaultTop();
+        selectionBottom = secuboid.getConf().getDefaultBottom();
+        selectionRadius = secuboid.getConf().getDefaultRadius();
     }
 
     /**
@@ -317,5 +335,59 @@ public class PlayerConfEntry {
             // Stop!
             cancelSelect.stopNextRun();
         }
+    }
+
+    /**
+     * Gets top selection. Positive is absolute, negative is from player feet.
+     *
+     * @return the top selection
+     */
+    public int getSelectionTop() {
+        return selectionTop;
+    }
+
+    /**
+     * Sets top selection. Positive is absolute, negative is from player feet.
+     *
+     * @param selectionTop the top selection
+     */
+    public void setSelectionTop(int selectionTop) {
+        this.selectionTop = selectionTop;
+    }
+
+    /**
+     * Gets bottom selection. Positive is absolute, negative is from player feet.
+     *
+     * @return the bottom selection
+     */
+    public int getSelectionBottom() {
+        return selectionBottom;
+    }
+
+    /**
+     * Sets bottom selection. Positive is absolute, negative is from player feet.
+     *
+     * @param selectionBottom the bottom selection
+     */
+    public void setSelectionBottom(int selectionBottom) {
+        this.selectionBottom = selectionBottom;
+    }
+
+    /**
+     * Gets radius selection.
+     *
+     * @return the radius selection
+     */
+    public int getSelectionRadius() {
+        return selectionRadius;
+    }
+
+    /**
+     * Sets radius selection.
+     *
+     * @param selectionRadius the radius selection
+     */
+    public void setSelectionRadius(int selectionRadius) {
+        this.selectionRadius = selectionRadius;
     }
 }

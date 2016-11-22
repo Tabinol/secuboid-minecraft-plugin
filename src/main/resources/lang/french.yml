@@ -18,6 +18,9 @@ HELP:
       8: "/secuboid list : Liste des terrains."
       9: "/secuboid tp : Téléporter vers un terrain."
       10: "/secuboid inv : Configuration de l'inventaire."
+      11: "/secuboid top : Choisir haut."
+      12: "/secuboid bottom : Choisir bas."
+      13: "/secuboid radius : Chsoisir rayon (pour les routes)."
       11: "-Commandes de terrains (un terrain doit être sélectionné)-"
       12: "/secuboid area : Étendues du terrain."
       13: "/secuboid ban : Bannissement sur un terrain."
@@ -72,6 +75,9 @@ HELP:
       1: "/secuboid ban list : Affiche les joueurs/contenants bannis."
       2: "/secuboid ban add <contenant joueur> : Banne un joueur/contenant"
       3: "/secuboid ban remove <contenant joueur> : Débanne un joueur/contenant."
+    BOTTOM:
+      1: "/secuboid bottom <nombre> : Sélection du bas absolu."
+      2: "/secuboid bottom <-nombre> : Sélection du bas depuis les pieds."
     CANCEL:
       1: "/secuboid cancel : Annule une sélection ou une action."
     CREATE:
@@ -112,6 +118,8 @@ HELP:
       3: "/secuboid flag unset unset <contenant joueur> <perm> : Enlève une permission."
     PRIORITY:
       1: "/secuboid priority <nombre> : Change la priorité du terrain."
+    RADIUS:
+      1: "/secuboid radius <nombre> : Sélection du rayon pour les routes."
     REMOVE:
       1: "/secuboid remove : Efface un terrain."
     RENAME:
@@ -128,6 +136,9 @@ HELP:
       2: "/secuboid sale recreate : Déplacer ou recréer un panneau perdu."
     SETSPAWN:
       1: "/secuboid setspawn : Créer un point de téléportation."
+    TOP:
+      1: "/secuboid top <nombre> : Sélection du haut absolu."
+      2: "/secuboid top <-nombre> : Sélection du haut depuis les pieds."
     TP:
       1: "/secuboid tp <terrain> : Se téléporter vers le terrain"
     TYPE:
@@ -378,6 +389,15 @@ COMMAND:
     ERRORDEATHNOTFOUND: "Le sauvegarde de la mort n'est pas trouvée ou le joueur est au mauvais endroit!"
     DEATHDONE: "L'inventaire est rechargé pour '%'!"
     SAVEDONE: "Les inventaires sont sauvegardés!"
+  TOP:
+    INVALID: "Nombre invalide : Positif est absolu, negatif est depuis les pieds."
+    DONE: "La nouvelle valeur pour le haut est '%'."
+  BOTTOM:
+    INVALID: "Nombre invalide : Positif est absolu, negatif est depuis les pieds."
+    DONE: "La nouvelle valeur pour le bas est '%'."
+  RADIUS:
+    INVALID: "Nombre invalide : Positif seulement."
+    DONE: "La nouvelle valeur pour le rayon est '%'."
 ACTION:
   BANNED: "Vous êtes banni du terrain % !"
   NOENTRY: "Vous ne pouvez pas entrez sur le terrain % !"

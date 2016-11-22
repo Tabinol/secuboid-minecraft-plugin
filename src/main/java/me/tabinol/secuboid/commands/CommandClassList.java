@@ -23,12 +23,13 @@ import me.tabinol.secuboid.commands.executor.*;
 /**
  * Each command classes must be added in this list. The goal is to remove Reflection library.
  */
-public enum CommandClassList {
+enum CommandClassList {
 
     ADMINMODE(CommandAdminmode.class),
     APPROVE(CommandApprove.class),
     AREA(CommandArea.class),
     BAN(CommandBan.class),
+    BOTTOM(CommandBottom.class),
     CANCEL(CommandCancel.class),
     CONFIRM(CommandConfirm.class),
     CREATE(CommandCreate.class),
@@ -46,6 +47,7 @@ public enum CommandClassList {
     PARENT(CommandParent.class),
     PERMISSION(CommandPermission.class),
     PRIORITY(CommandPriority.class),
+    RADIUS(CommandRadius.class),
     RELOAD(CommandReload.class),
     REMOVE(CommandRemove.class),
     RENAME(CommandRename.class),
@@ -54,19 +56,18 @@ public enum CommandClassList {
     SALE(CommandSale.class),
     SELECT(CommandSelect.class),
     SETSPAWN(CommandSetspawn.class),
+    TOP(CommandTop.class),
     TP(CommandTp.class),
     TYPE(CommandType.class),
     WHO(CommandWho.class);
 
     private final Class<?> commandClass;
 
-    private CommandClassList(Class<?> commandClass) {
-
+    CommandClassList(Class<?> commandClass) {
         this.commandClass = commandClass;
     }
 
     public Class<?> getCommandClass() {
-
         return commandClass;
     }
 }

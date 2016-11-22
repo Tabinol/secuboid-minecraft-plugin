@@ -18,30 +18,33 @@ HELP:
       8: "/secuboid list : Land list."
       9: "/secuboid tp : Teleport to a land."
       10: "/secuboid inv : Inventory configuration."
-      11: "-Land commands (a land must be selected)-"
-      12: "/secuboid area : Area of the land."
-      13: "/secuboid ban : Banned from the land."
-      14: "/secuboid cancel : Cancel an action."
-      15: "/secuboid create : Create a land."
-      16: "/secuboid expand : Expand the land."
-      17: "/secuboid flag : Flags of the land."
-      18: "/secuboid kick : (*) Kick a player from a land."
-      19: "/secuboid money : Argent du terrain."
-      20: "/secuboid notify : (*) Set/Unset land notification."
-      21: "/secuboid owner : Owner of the land."
-      22: "/secuboid page : View a command result page."
-      23: "/secuboid parent : Set the parent."
-      24: "/secuboid permission : Permissions of the land."
-      25: "/secuboid priority : Priority of the land."
-      26: "/secuboid remove : Delete a land."
-      27: "/secuboid rename : Rename a land."
-      28: "/secuboid rent : Set the land for rent."
-      29: "/secuboid resident : Resident of the land."
-      30: "/secuboid sale : Set the land for sale."
-      31: "/secuboid setspawn : Create a spawn location."
-      32: "/secuboid type : Set the type of the land."
-      33: "/secuboid who : (*) Show players on a land."
-      34: "(*) If the land is not selected, the name can be the last parameter."
+      11: "/secuboid top : Select top."
+      12: "/secuboid bottom : Select bottom."
+      13: "/secuboid radius : Select radius (for roads)."
+      14: "-Land commands (a land must be selected)-"
+      15: "/secuboid area : Area of the land."
+      16: "/secuboid ban : Banned from the land."
+      17: "/secuboid cancel : Cancel an action."
+      18: "/secuboid create : Create a land."
+      19: "/secuboid expand : Expand the land."
+      20: "/secuboid flag : Flags of the land."
+      21: "/secuboid kick : (*) Kick a player from a land."
+      22: "/secuboid money : Argent du terrain."
+      23: "/secuboid notify : (*) Set/Unset land notification."
+      24: "/secuboid owner : Owner of the land."
+      25: "/secuboid page : View a command result page."
+      26: "/secuboid parent : Set the parent."
+      27: "/secuboid permission : Permissions of the land."
+      28: "/secuboid priority : Priority of the land."
+      29: "/secuboid remove : Delete a land."
+      30: "/secuboid rename : Rename a land."
+      31: "/secuboid rent : Set the land for rent."
+      32: "/secuboid resident : Resident of the land."
+      33: "/secuboid sale : Set the land for sale."
+      34: "/secuboid setspawn : Create a spawn location."
+      35: "/secuboid type : Set the type of the land."
+      36: "/secuboid who : (*) Show players on a land."
+      37: "(*) If the land is not selected, the name can be the last parameter."
     SELECT:
       1: "/secuboid select <here/land name> : Select a land for modification."
       2: "/secuboid select : Start the visual selection (cuboid)."
@@ -72,6 +75,9 @@ HELP:
       1: "/secuboid ban list : List banned players/containers."
       2: "/secuboid ban add <player container> : Ban a player/container"
       3: "/secuboid ban remove <player container> : Remove a banned player/cont."
+    BOTTOM:
+      1: "/secuboid bottom <number> : Bottom selection absolute."
+      2: "/secuboid bottom <-number> : Bottom selection from feet."
     CANCEL:
       1: "/secuboid cancel : Cancel a selection or an action."
     CREATE:
@@ -112,6 +118,8 @@ HELP:
       3: "/secuboid permission unset unset <player container> <perm> : Remove a permission."
     PRIORITY:
       1: "/secuboid priority <number> : Change the land priority."
+    RADIUS:
+      1: "/secuboid radius <number> : Radius selection for roads."
     REMOVE:
       1: "/secuboid remove : Delete a land."
     RENAME:
@@ -128,6 +136,9 @@ HELP:
       2: "/secuboid sale recreate : Move or recreate a lost sign."
     SETSPAWN:
       1: "/secuboid setspawn : Create a spawn location."
+    TOP:
+      1: "/secuboid top <number> : Top selection absolute."
+      2: "/secuboid top <-number> : Top selection from feet."
     TP:
       1: "/secuboid tp <terrain> : Teleport you to the land."
     TYPE:
@@ -378,6 +389,15 @@ COMMAND:
     ERRORDEATHNOTFOUND: "This death save is not found or the player is at the wrong place!"
     DEATHDONE: "Reload inventory done for '%'!"
     SAVEDONE: "Inventories save done!"
+  TOP:
+    INVALID: "Invalid number: Positive is absolute, negative is from feet."
+    DONE: "The new value for top is '%'."
+  BOTTOM:
+    INVALID: "Invalid number: Positive is absolute, negative is from feet."
+    DONE: "The new value for bottom is '%'."
+  RADIUS:
+    INVALID: "Invalid number: Positive only."
+    DONE: "The new value for radius is '%'."
 ACTION:
   BANNED: "You are banned from the land %!"
   NOENTRY: "You can not enter in the land %!"

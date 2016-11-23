@@ -22,15 +22,13 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
  * Command top selection.
  */
-@InfoCommand(name = "top", forceParameter = true)
+@InfoCommand(name = "top")
 public class CommandTop extends CommandExec {
 
     /**
@@ -54,18 +52,24 @@ public class CommandTop extends CommandExec {
         String curArg = argList.getNext();
         int newValue;
 
-        try {
-            newValue = Integer.parseInt(curArg);
-            if (newValue == 0) {
-                throw new NumberFormatException("Invalid number");
-            }
-        } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException(secuboid, "top", player, "COMMAND.TOP.INVALID");
-        }
+        if (curArg == null) {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.TOP.INFO", playerConf.getSelectionTop() + ""));
+        } else {
 
-        playerConf.setSelectionTop(newValue);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
-                "COMMAND.TOP.DONE", newValue + ""));
-        secuboid.getLog().debug("Top for player " + playerName + " changed for " + newValue);
+            try {
+                newValue = Integer.parseInt(curArg);
+                if (newValue == 0) {
+                    throw new NumberFormatException("Invalid number");
+                }
+            } catch (NumberFormatException ex) {
+                throw new SecuboidCommandException(secuboid, "top", player, "COMMAND.TOP.INVALID");
+            }
+
+            playerConf.setSelectionTop(newValue);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.TOP.DONE", newValue + ""));
+            secuboid.getLog().debug("Top for player " + playerName + " changed for " + newValue);
+        }
     }
 }

@@ -28,7 +28,7 @@ import org.bukkit.command.CommandSender;
 /**
  * Command bottom selection.
  */
-@InfoCommand(name = "bottom", forceParameter = true)
+@InfoCommand(name = "bottom")
 public class CommandBottom extends CommandExec {
 
     /**
@@ -52,18 +52,21 @@ public class CommandBottom extends CommandExec {
         String curArg = argList.getNext();
         int newValue;
 
-        try {
-            newValue = Integer.parseInt(curArg);
-            if (newValue == 0) {
-                throw new NumberFormatException("Invalid number");
-            }
-        } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException(secuboid, "bottom", player, "COMMAND.BOTTOM.INVALID");
-        }
+        if (curArg == null) {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.BOTTOM.INFO", playerConf.getSelectionBottom() + ""));
+        } else {
 
-        playerConf.setSelectionBottom(newValue);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
-                "COMMAND.BOTTOM.DONE", newValue + ""));
-        secuboid.getLog().debug("Bottom for player " + playerName + " changed for " + newValue);
+            try {
+                newValue = Integer.parseInt(curArg);
+            } catch (NumberFormatException ex) {
+                throw new SecuboidCommandException(secuboid, "bottom", player, "COMMAND.BOTTOM.INVALID");
+            }
+
+            playerConf.setSelectionBottom(newValue);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.BOTTOM.DONE", newValue + ""));
+            secuboid.getLog().debug("Bottom for player " + playerName + " changed for " + newValue);
+        }
     }
 }

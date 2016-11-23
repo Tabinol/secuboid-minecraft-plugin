@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.config.players;
 
-// Entries for each player
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
@@ -31,7 +29,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * The Class PlayerConfEntry.
+ * The Class PlayerConfEntry. Entries for each players.
  */
 public class PlayerConfEntry {
 

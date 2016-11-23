@@ -370,7 +370,7 @@ public class Config {
      *
      * @return the maximum top
      */
-    public int getmaxTop() {
+    public int getMaxTop() {
         return maxTop;
     }
 

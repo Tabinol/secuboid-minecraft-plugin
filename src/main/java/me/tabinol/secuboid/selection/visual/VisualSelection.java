@@ -56,7 +56,7 @@ public interface VisualSelection {
     /**
      * Removes the selection.
      */
-    public void removeSelection();
+    void removeSelection();
 
     /**
      * Gets if the parent is detected.

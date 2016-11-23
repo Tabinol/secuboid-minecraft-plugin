@@ -22,6 +22,8 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
+import me.tabinol.secuboid.lands.areas.RegionMatrix;
+import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
@@ -55,6 +57,7 @@ public class LandsTest {
     private static final String WORLD = "world";
     private static final String TEST_CUBOID = "testcuboid";
     private static final String TEST_CYLINDER = "testcylinder";
+    private static final String TEST_ROAD = "road";
 
     private static Lands lands;
 
@@ -98,14 +101,9 @@ public class LandsTest {
         // Create lands for test
         lands.createLand(TEST_CUBOID, new PlayerContainerNobody(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
         lands.createLand(TEST_CYLINDER, new PlayerContainerNobody(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
-        /*
-        List<Point> points = new ArrayList<Point>();
-        points.add(new Point(150, 70, 150));
-        points.add(new Point(150, 70, 200));
-        points.add(new Point(200, 70, 250));
-        points.add(new Point(250, 70, 250));
-        lands.createLand(TEST_LINES, new PlayerContainerNobody(), new LinesArea(WORLD, 5, 5, 5, points));
-        */
+        RegionMatrix regionMatrix = new RegionMatrix();
+        regionMatrix.addPoint(200, 200);
+        lands.createLand(TEST_ROAD, new PlayerContainerNobody(), new RoadArea(WORLD, 0, 255, regionMatrix));
     }
 
     @Test
@@ -151,6 +149,22 @@ public class LandsTest {
 
         // Outside point check
         if (land.isLocationInside(WORLD, 120, 40, 100)) {
+            throw new Exception("Location error");
+        }
+    }
+
+    @Test
+    public void verifyRoad() throws Exception {
+
+        RealLand land = lands.getLand(TEST_ROAD);
+
+        // Inside point check
+        if (!land.isLocationInside(WORLD, 200, 30, 200)) {
+            throw new Exception("Location error");
+        }
+
+        // Just a little bit outside
+        if (land.isLocationInside(WORLD, 201, 30, 200)) {
             throw new Exception("Location error");
         }
     }

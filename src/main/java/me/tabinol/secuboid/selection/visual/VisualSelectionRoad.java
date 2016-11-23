@@ -39,6 +39,7 @@ import java.util.EnumSet;
 public class VisualSelectionRoad implements VisualSelection {
 
     private final Secuboid secuboid;
+    private final VisualCommon visualCommon;
 
     /**
      * The player.
@@ -61,6 +62,11 @@ public class VisualSelectionRoad implements VisualSelection {
 
     public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
+        if (area == null) {
+            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), player.getLocation());
+        } else {
+            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
+        }
         changedBlocks = new ChangedBlocks(player);
         this.isFromLand = isFromLand;
         this.player = player;
@@ -99,8 +105,7 @@ public class VisualSelectionRoad implements VisualSelection {
         isCollision = false;
 
         Location loc = player.getLocation();
-        area = new RoadArea(loc.getWorld().getName(), secuboid.getConf().getDefaultBottom(),
-                secuboid.getConf().getDefaultTop(), null);
+        area = new RoadArea(loc.getWorld().getName(), visualCommon.getY1(), visualCommon.getY2(), null);
 
         makeVisualSelection();
     }
@@ -113,23 +118,21 @@ public class VisualSelectionRoad implements VisualSelection {
                 .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
         // Makes borders X
-        boolean isZ = false;
         for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
             boolean isLastActive = false;
             if (!isFromLand || posX % 5 == 0) {
                 for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
-                    isLastActive = makeBorders(isZ, posX, posZ, isLastActive, outsideArea, canCreate);
+                    isLastActive = makeBorders(false, posX, posZ, isLastActive, outsideArea, canCreate);
                 }
             }
         }
 
         // Makes borders Z
-        isZ = true;
         for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
             boolean isLastActive = false;
             if (!isFromLand || posZ % 5 == 0) {
                 for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-                    isLastActive = makeBorders(isZ, posX, posZ, isLastActive, outsideArea, canCreate);
+                    isLastActive = makeBorders(true, posX, posZ, isLastActive, outsideArea, canCreate);
                 }
             }
         }
@@ -166,7 +169,7 @@ public class VisualSelectionRoad implements VisualSelection {
     private void setChangedBlocks(GlobalLand outsideArea, boolean canCreate, Location newloc) {
 
         Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
-        if(isFromLand) {
+        if (isFromLand) {
             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
         } else {
             if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
@@ -185,49 +188,52 @@ public class VisualSelectionRoad implements VisualSelection {
 
                 removeSelection();
                 Location playerLoc = player.getLocation();
+                visualCommon.setBottomTop(playerLoc);
                 boolean active;
                 int posX = playerLoc.getBlockX();
                 int posZ = playerLoc.getBlockZ();
                 int radius = secuboid.getConf().getDefaultRadius();
+                area.setY1(visualCommon.getY1());
+                area.setY2(visualCommon.getY2());
 
                 // Detect selection
-                for(int x = posX; x >= posX - radius; posX --) {
+                for (int x = posX; x >= posX - radius; x--) {
                     active = true;
-                    for(int z = posZ; z >= posZ - radius; posZ --) {
+                    for (int z = posZ; z >= posZ - radius; z--) {
                         active = checkForPoint(active, x, z);
                     }
                     active = true;
-                    for(int z = posZ; z <= posZ + radius; posZ ++) {
-                        active = checkForPoint(active, x, z);
-                    }
-                }
-                for(int x = posX; x <= posX + radius; posX ++) {
-                    active = true;
-                    for(int z = posZ; z >= posZ - radius; posZ --) {
-                        active = checkForPoint(active, x, z);
-                    }
-                    active = true;
-                    for(int z = posZ; z <= posZ + radius; posZ ++) {
+                    for (int z = posZ; z <= posZ + radius; z++) {
                         active = checkForPoint(active, x, z);
                     }
                 }
-                for(int z = posZ; z >= posZ - radius; posZ --) {
+                for (int x = posX; x <= posX + radius; x++) {
                     active = true;
-                    for(int x = posZ; x >= posX - radius; posX --) {
+                    for (int z = posZ; z >= posZ - radius; z--) {
                         active = checkForPoint(active, x, z);
                     }
                     active = true;
-                    for(int x = posX; z <= posX + radius; posX ++) {
+                    for (int z = posZ; z <= posZ + radius; z++) {
                         active = checkForPoint(active, x, z);
                     }
                 }
-                for(int z = posZ; z <= posZ + radius; posZ ++) {
+                for (int z = posZ; z >= posZ - radius; z--) {
                     active = true;
-                    for(int x = posZ; x >= posX - radius; posX --) {
+                    for (int x = posZ; x >= posX - radius; x--) {
                         active = checkForPoint(active, x, z);
                     }
                     active = true;
-                    for(int x = posX; z <= posX + radius; posX ++) {
+                    for (int x = posX; z <= posX + radius; x++) {
+                        active = checkForPoint(active, x, z);
+                    }
+                }
+                for (int z = posZ; z <= posZ + radius; z++) {
+                    active = true;
+                    for (int x = posZ; x >= posX - radius; x--) {
+                        active = checkForPoint(active, x, z);
+                    }
+                    active = true;
+                    for (int x = posX; z <= posX + radius; x++) {
                         active = checkForPoint(active, x, z);
                     }
                 }
@@ -244,7 +250,7 @@ public class VisualSelectionRoad implements VisualSelection {
         EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
         Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
 
-        if(!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
+        if (!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
             return false;
         }
         area.add(x, z);

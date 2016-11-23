@@ -392,12 +392,15 @@ COMMAND:
   TOP:
     INVALID: "Invalid number: Positive is absolute, negative is from feet."
     DONE: "The new value for top is '%'."
+    INFO: "Top selection value is '%'."
   BOTTOM:
     INVALID: "Invalid number: Positive is absolute, negative is from feet."
     DONE: "The new value for bottom is '%'."
+    INFO: "Bottom selection value is '%'."
   RADIUS:
     INVALID: "Invalid number: Positive only."
     DONE: "The new value for radius is '%'."
+    INFO: "Radius selection value is '%'."
 ACTION:
   BANNED: "You are banned from the land %!"
   NOENTRY: "You can not enter in the land %!"

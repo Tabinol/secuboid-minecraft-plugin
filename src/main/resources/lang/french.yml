@@ -392,12 +392,15 @@ COMMAND:
   TOP:
     INVALID: "Nombre invalide : Positif est absolu, negatif est depuis les pieds."
     DONE: "La nouvelle valeur pour le haut est '%'."
+    INFO: "Le valeur de la sélection du haut est '%'."
   BOTTOM:
     INVALID: "Nombre invalide : Positif est absolu, negatif est depuis les pieds."
     DONE: "La nouvelle valeur pour le bas est '%'."
+    INFO: "Le valeur de la sélection du bas est '%'."
   RADIUS:
     INVALID: "Nombre invalide : Positif seulement."
     DONE: "La nouvelle valeur pour le rayon est '%'."
+    INFO: "Le valeur de la sélection du rayon est '%'."
 ACTION:
   BANNED: "Vous êtes banni du terrain % !"
   NOENTRY: "Vous ne pouvez pas entrez sur le terrain % !"

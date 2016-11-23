@@ -35,6 +35,7 @@ import org.bukkit.entity.Player;
 public class VisualSelectionCuboid implements VisualSelection {
 
     private final Secuboid secuboid;
+    private final VisualCommon visualCommon;
 
     /**
      * The player.
@@ -62,6 +63,11 @@ public class VisualSelectionCuboid implements VisualSelection {
 
     public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
+        if(area == null) {
+            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), player.getLocation());
+        } else {
+            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
+        }
         changedBlocks = new ChangedBlocks(player);
         this.isFromLand = isFromLand;
         this.player = player;
@@ -107,8 +113,8 @@ public class VisualSelectionCuboid implements VisualSelection {
         int landXr = secuboid.getConf().getDefaultXSize() / 2;
         int landZr = secuboid.getConf().getDefaultZSize() / 2;
         area = new CuboidArea(loc.getWorld().getName(),
-                loc.getBlockX() - landXr, secuboid.getConf().getDefaultBottom(), loc.getBlockZ() - landZr,
-                loc.getBlockX() + landXr, secuboid.getConf().getDefaultTop(), loc.getBlockZ() + landZr);
+                loc.getBlockX() - landXr, visualCommon.getY1(), loc.getBlockZ() - landZr,
+                loc.getBlockX() + landXr, visualCommon.getY2(), loc.getBlockZ() + landZr);
 
         makeVisualSelection();
     }
@@ -200,6 +206,9 @@ public class VisualSelectionCuboid implements VisualSelection {
 
                 removeSelection();
                 Location playerLoc = player.getLocation();
+                visualCommon.setBottomTop(playerLoc);
+                area.setY1(visualCommon.getY1());
+                area.setY2(visualCommon.getY2());
 
                 // Check where the player is outside the land
                 if (playerLoc.getBlockX() - 1 < area.getX1()) {

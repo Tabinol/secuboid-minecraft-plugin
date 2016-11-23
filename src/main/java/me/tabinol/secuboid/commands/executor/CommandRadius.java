@@ -28,7 +28,7 @@ import org.bukkit.command.CommandSender;
 /**
  * Command radius selection.
  */
-@InfoCommand(name = "radius", forceParameter = true)
+@InfoCommand(name = "radius")
 public class CommandRadius extends CommandExec {
 
     /**
@@ -52,18 +52,24 @@ public class CommandRadius extends CommandExec {
         String curArg = argList.getNext();
         int newValue;
 
-        try {
-            newValue = Integer.parseInt(curArg);
-            if (newValue <= 0) {
-                throw new NumberFormatException("Invalid number");
-            }
-        } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException(secuboid, "radius", player, "COMMAND.RADIUS.INVALID");
-        }
+        if (curArg == null) {
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.RADIUS.INFO", playerConf.getSelectionRadius() + ""));
+        } else {
 
-        playerConf.setSelectionRadius(newValue);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
-                "COMMAND.RADIUS.DONE", newValue + ""));
-        secuboid.getLog().debug("Radius for player " + playerName + " changed for " + newValue);
+            try {
+                newValue = Integer.parseInt(curArg);
+                if (newValue <= 0) {
+                    throw new NumberFormatException("Invalid number");
+                }
+            } catch (NumberFormatException ex) {
+                throw new SecuboidCommandException(secuboid, "radius", player, "COMMAND.RADIUS.INVALID");
+            }
+
+            playerConf.setSelectionRadius(newValue);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                    "COMMAND.RADIUS.DONE", newValue + ""));
+            secuboid.getLog().debug("Radius for player " + playerName + " changed for " + newValue);
+        }
     }
 }

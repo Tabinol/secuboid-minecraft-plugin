@@ -71,7 +71,7 @@ public class ChunkMatrix {
      * @return boolean point value
      */
     public boolean getPoint(byte chunkX, byte chunkZ) {
-        return (matrix[chunkX] & (1 << chunkZ)) == 1;
+        return (matrix[chunkX] & (1 << chunkZ)) != 0;
     }
 
     /**

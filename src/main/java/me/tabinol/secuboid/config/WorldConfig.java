@@ -111,9 +111,7 @@ public class WorldConfig {
     private void createConfForWorld(String worldName, TreeMap<String, GlobalLand> landList, boolean copyFromGlobal) {
 
         String worldNameLower = worldName.toLowerCase();
-        if (secuboid != null) {
-            secuboid.getLog().debug("Create conf for World: " + worldNameLower);
-        }
+        secuboid.getLog().debug("Create conf for World: " + worldNameLower);
         GlobalLand dl = new GlobalLand(secuboid, worldName);
         if (copyFromGlobal) {
             landList.get(GLOBAL).getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
@@ -129,9 +127,8 @@ public class WorldConfig {
      */
     private Land getLandDefaultConf() {
 
-        if (secuboid != null) {
-            secuboid.getLog().debug("Create default conf for lands");
-        }
+        secuboid.getLog().debug("Create default conf for lands");
+
         return landModify(new GlobalLand(secuboid, GLOBAL), landDefault, "ContainerPermissions", "ContainerFlags");
     }
 
@@ -152,17 +149,16 @@ public class WorldConfig {
      */
     public TreeMap<Type, GlobalLand> getTypeDefaultConf() {
 
-        if (secuboid != null) {
-            secuboid.getLog().debug("Create default conf for lands");
-        }
+        secuboid.getLog().debug("Create default conf for lands");
         TreeMap<Type, GlobalLand> defaultConf = new TreeMap<Type, GlobalLand>();
 
-        assert secuboid != null;
         for (Type type : secuboid.getTypes().getTypes()) {
             ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
-            GlobalLand dl = new GlobalLand(secuboid, GLOBAL);
-            defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
-            defaultConf.put(type, landModify(dl, typeConf, "ContainerPermissions", "ContainerFlags"));
+            if (typeConf != null) {
+                GlobalLand dl = new GlobalLand(secuboid, GLOBAL);
+                defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
+                defaultConf.put(type, landModify(dl, typeConf, "ContainerPermissions", "ContainerFlags"));
+            }
         }
 
         return defaultConf;
@@ -224,10 +220,7 @@ public class WorldConfig {
         // add flags
         if (csFlags != null) {
             for (String flag : csFlags.getKeys(false)) {
-                if (secuboid != null) {
-                    secuboid.getLog().debug("Flag: " + flag);
-                }
-                assert secuboid != null;
+                secuboid.getLog().debug("Flag: " + flag);
                 FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
                 dl.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags().newFlag(ft,
                         secuboid.getNewInstance().getFlagValueFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),

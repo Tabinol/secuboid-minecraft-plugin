@@ -75,33 +75,33 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * Instantiates a new player land change events.
      *
      * @param lastDummyLand the last dummy land
-     * @param dummyLand the actual dummy land
-     * @param player the player
-     * @param fromLoc from location
-     * @param toLoc the to location
-     * @param isTp the is a player teleport
+     * @param dummyLand     the actual dummy land
+     * @param player        the player
+     * @param fromLoc       from location
+     * @param toLoc         the to location
+     * @param isTp          the is a player teleport
      */
     public PlayerLandChangeEvent(final Land lastDummyLand, final Land dummyLand, final Player player,
-	    final Location fromLoc, final Location toLoc, final boolean isTp) {
+                                 final Location fromLoc, final Location toLoc, final boolean isTp) {
 
-	super(dummyLand);
-	this.lastDummyLand = lastDummyLand;
+        super(dummyLand);
+        this.lastDummyLand = lastDummyLand;
 
-	if (lastDummyLand.isRealLand()) {
-	    lastLand = (RealLand) lastDummyLand;
-	} else {
-	    lastLand = null;
-	}
+        if (lastDummyLand != null && lastDummyLand.isRealLand()) {
+            lastLand = (RealLand) lastDummyLand;
+        } else {
+            lastLand = null;
+        }
 
-	this.player = player;
-	this.fromLoc = fromLoc;
-	this.toLoc = toLoc;
-	this.isTp = isTp;
+        this.player = player;
+        this.fromLoc = fromLoc;
+        this.toLoc = toLoc;
+        this.isTp = isTp;
     }
 
     @Override
     public HandlerList getHandlers() {
-	return handlers;
+        return handlers;
     }
 
     /**
@@ -110,17 +110,17 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the handler list
      */
     public static HandlerList getHandlerList() {
-	return handlers;
+        return handlers;
     }
 
     @Override
     public boolean isCancelled() {
-	return cancelled;
+        return cancelled;
     }
 
     @Override
     public void setCancelled(boolean bln) {
-	cancelled = bln;
+        cancelled = bln;
     }
 
     /**
@@ -129,7 +129,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the player
      */
     public Player getPlayer() {
-	return player;
+        return player;
     }
 
     /**
@@ -138,7 +138,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the last land
      */
     public RealLand getLastLand() {
-	return lastLand;
+        return lastLand;
     }
 
     /**
@@ -147,7 +147,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the last land or dummy land (World)
      */
     public Land getLastLandOrOutside() {
-	return lastDummyLand;
+        return lastDummyLand;
     }
 
     /**
@@ -156,7 +156,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return the from location
      */
     public Location getFromLoc() {
-	return fromLoc;
+        return fromLoc;
     }
 
     /**
@@ -166,7 +166,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      */
     public Location getToLoc() {
 
-	return toLoc;
+        return toLoc;
     }
 
     /**
@@ -175,6 +175,6 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @return true, if it is a player teleport
      */
     public boolean isTp() {
-	return isTp;
+        return isTp;
     }
 }

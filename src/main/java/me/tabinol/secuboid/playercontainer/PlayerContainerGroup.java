@@ -81,7 +81,7 @@ public class PlayerContainerGroup implements PlayerContainer {
     @Override
     public int compareTo(PlayerContainer t) {
         int result = PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
-        if (result == 0) {
+        if (result != 0) {
             return result;
         }
         return groupName.compareTo(t.getName());

@@ -58,7 +58,7 @@ public class PlayerContainerPlayerName implements PlayerContainer {
     @Override
     public int compareTo(PlayerContainer t) {
         int result = PlayerContainerType.PLAYERNAME.compareTo(t.getContainerType());
-        if (result == 0) {
+        if (result != 0) {
             return result;
         }
         return name.compareTo(t.getName());

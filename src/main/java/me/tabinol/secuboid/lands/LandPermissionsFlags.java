@@ -223,17 +223,16 @@ public class LandPermissionsFlags {
 
         Boolean permValue;
 
-        if ((permValue = getPermission(player, pt, onlyInherit)) != null) {
-            return permValue;
-        } else if (land.isRealLand()) {
+        if (land.isRealLand()) {
+            if ((permValue = getPermission(player, pt, onlyInherit)) != null) {
+                return permValue;
+            }
             if (realLand.getParent() != null) {
                 return realLand.getParent().getPermissionsFlags().checkPermissionAndInherit(player, pt, true);
-            } else {
-                return secuboid.getLands().getPermissionInWorld(realLand.getWorldName(), player, pt, true);
             }
         }
 
-        return null;
+        return secuboid.getLands().getPermissionInWorld(land.getWorldName(), player, pt, true);
     }
 
     /**
@@ -257,18 +256,16 @@ public class LandPermissionsFlags {
     private FlagValue getFlagAndInherit(FlagType ft, boolean onlyInherit) {
 
         FlagValue flagValue;
-
-        if ((flagValue = getFlag(ft, onlyInherit)) != null) {
-            return flagValue;
-        } else if (land.isRealLand()) {
+        if (land.isRealLand()) {
+            if ((flagValue = getFlag(ft, onlyInherit)) != null) {
+                return flagValue;
+            }
             if (realLand.getParent() != null) {
                 return realLand.getParent().getPermissionsFlags().getFlagAndInherit(ft, true);
-            } else {
-                return secuboid.getLands().getFlagInWorld(realLand.getWorldName(), ft, true);
             }
         }
 
-        return null;
+        return secuboid.getLands().getFlagInWorld(land.getWorldName(), ft, true);
     }
 
     /**
@@ -284,12 +281,12 @@ public class LandPermissionsFlags {
     }
 
     // Land parameter is only to paste to default parameters for a land
-    private Boolean getPermission(Player player, PermissionType pt, boolean onlyInherit, Land land) {
+    private Boolean getPermission(Player player, PermissionType pt, boolean onlyInherit, Land landTest) {
 
         for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
             boolean value;
-            if (land.isRealLand()) {
-                value = permissionEntry.getKey().hasAccess(player, (RealLand) land);
+            if (landTest != null && landTest.isRealLand()) {
+                value = permissionEntry.getKey().hasAccess(player, (RealLand) landTest);
             } else {
                 value = permissionEntry.getKey().hasAccess(player);
             }
@@ -312,7 +309,7 @@ public class LandPermissionsFlags {
         }
 
         // Check in default permissions
-        if (land.isRealLand()) {
+        if (landTest != null && landTest.isRealLand()) {
             return secuboid.getLands().getDefaultConf(realLand.getType()).getPermissionsFlags().getPermission(player, pt, false, land);
         }
 
@@ -408,7 +405,7 @@ public class LandPermissionsFlags {
         // Check in default flags
         if (!onlyInherit && land.isRealLand()) {
 
-            return (secuboid.getLands()).getDefaultConf(((RealLand) land).getType()).getPermissionsFlags().getFlag(ft, false);
+            return (secuboid.getLands()).getDefaultConf(realLand.getType()).getPermissionsFlags().getFlag(ft, false);
         }
 
         return null;

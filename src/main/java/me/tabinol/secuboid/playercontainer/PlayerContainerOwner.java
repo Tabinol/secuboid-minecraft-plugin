@@ -92,10 +92,6 @@ public class PlayerContainerOwner implements PlayerContainer {
 
     @Override
     public int compareTo(PlayerContainer t) {
-        int result = PlayerContainerType.OWNER.compareTo(t.getContainerType());
-        if (result == 0) {
-            return result;
-        }
-        return land.compareTo(t.getLand());
+        return PlayerContainerType.OWNER.compareTo(t.getContainerType());
     }
 }

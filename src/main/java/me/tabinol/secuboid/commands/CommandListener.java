@@ -53,7 +53,6 @@ public class CommandListener implements CommandExecutor {
 
         for (CommandClassList presentClass : CommandClassList.values()) {
             // Store commands information
-            System.out.println(presentClass);
             InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
             commands.put(infoCommand.name().toLowerCase(), presentClass.getCommandClass());
             for (String alias : infoCommand.aliases()) {

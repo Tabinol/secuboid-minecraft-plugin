@@ -78,7 +78,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     @Override
     public int compareTo(PlayerContainer t) {
         int result = PlayerContainerType.PERMISSION.compareTo(t.getContainerType());
-        if (result == 0) {
+        if (result != 0) {
             return result;
         }
         return perm.getName().compareTo(t.getName());

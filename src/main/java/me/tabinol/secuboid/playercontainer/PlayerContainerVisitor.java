@@ -31,12 +31,12 @@ public class PlayerContainerVisitor implements PlayerContainer {
     private RealLand land;
 
     public PlayerContainerVisitor(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public boolean hasAccess(Player player) {
-	return hasAccess(player, land);
+        return hasAccess(player, land);
     }
 
     @Override
@@ -46,40 +46,36 @@ public class PlayerContainerVisitor implements PlayerContainer {
 
     @Override
     public RealLand getLand() {
-	return land;
+        return land;
     }
 
     @Override
     public void setLand(RealLand land) {
-	this.land = land;
+        this.land = land;
     }
 
     @Override
     public String getName() {
-	return "";
+        return "";
     }
 
     @Override
     public PlayerContainerType getContainerType() {
-	return PlayerContainerType.VISITOR;
+        return PlayerContainerType.VISITOR;
     }
 
     @Override
     public String getPrint() {
-	return PlayerContainerType.VISITOR.getPrint();
+        return PlayerContainerType.VISITOR.getPrint();
     }
 
     @Override
     public String toFileFormat() {
-	return PlayerContainerType.VISITOR.getPrint() + ":";
+        return PlayerContainerType.VISITOR.getPrint() + ":";
     }
 
     @Override
     public int compareTo(PlayerContainer t) {
-	int result = PlayerContainerType.VISITOR.compareTo(t.getContainerType());
-	if (result == 0) {
-	    return result;
-	}
-	return land.compareTo(t.getLand());
+        return PlayerContainerType.VISITOR.compareTo(t.getContainerType());
     }
 }

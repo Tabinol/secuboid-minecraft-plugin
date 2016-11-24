@@ -169,7 +169,7 @@ public final class RoadArea implements Area {
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
         return worldName.equals(areaCommon.getWorldName())
-                && LocalMath.isInInterval(z, getZ1(), getZ2())
+                && LocalMath.isInInterval(y, getY1(), getY2())
                 && regionMatrix.getPoint(x, z);
     }
 

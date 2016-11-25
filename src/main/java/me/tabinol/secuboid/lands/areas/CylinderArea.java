@@ -118,6 +118,7 @@ public final class CylinderArea implements Area {
      */
     public void setX1(int x1) {
         areaCommon.setX1(x1);
+        updatePos();
     }
 
     /**
@@ -136,6 +137,7 @@ public final class CylinderArea implements Area {
      */
     public void setZ1(int z1) {
         areaCommon.setZ1(z1);
+        updatePos();
     }
 
     /**
@@ -145,6 +147,7 @@ public final class CylinderArea implements Area {
      */
     public void setX2(int x2) {
         areaCommon.setX2(x2);
+        updatePos();
     }
 
     /**
@@ -163,6 +166,7 @@ public final class CylinderArea implements Area {
      */
     public void setZ2(int z2) {
         areaCommon.setZ2(z2);
+        updatePos();
     }
 
     /**
@@ -191,7 +195,6 @@ public final class CylinderArea implements Area {
      * @return the origin H
      */
     public double getOriginH() {
-
         return originH;
     }
 
@@ -201,12 +204,10 @@ public final class CylinderArea implements Area {
      * @return the origin K
      */
     public double getOriginK() {
-
         return originK;
     }
 
     private void updatePos() {
-
         // Use "this", x2 must be greater of x1, etc.
         rX = (double) (getX2() - getX1() + 1) / 2;
         rZ = (double) (getZ2() - getZ1() + 1) / 2;
@@ -221,7 +222,6 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZPosFromX(int x) {
-
         return (int) ((rX * originK + rZ
                 * Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
     }
@@ -233,7 +233,6 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZNegFromX(int x) {
-
         return (int) -((-rX * originK + rZ
                 * Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
     }
@@ -245,13 +244,11 @@ public final class CylinderArea implements Area {
      */
     @Override
     public long getVolume() {
-
         return (long) (rX * (getY2() - getY1() + 1) * rZ * Math.PI);
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-
         return worldName.equals(worldName)
                 && LocalMath.isInInterval(y, getY1(), getY2())
                 && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;

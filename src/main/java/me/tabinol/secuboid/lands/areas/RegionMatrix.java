@@ -69,8 +69,8 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = (byte) ((x % 512) % 16);
-        byte posZ = (byte) ((z % 512) % 16);
+        byte posX = (byte) Math.abs((x % 512) % 16);
+        byte posZ = (byte) Math.abs((z % 512) % 16);
         matrix.addPoint(posX, posZ);
     }
 
@@ -98,8 +98,8 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = (byte) ((x % 512) % 16);
-        byte posZ = (byte) ((z % 512) % 16);
+        byte posX = (byte) Math.abs((x % 512) % 16);
+        byte posZ = (byte) Math.abs((z % 512) % 16);
         return matrix.getPoint(posX, posZ);
     }
 

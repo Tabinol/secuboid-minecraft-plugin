@@ -36,7 +36,7 @@ class ChangedBlocks {
     /**
      * Maximum visible distance in blocks.
      */
-    public static final int MAX_DISTANCE = 128;
+    public static final int MAX_DISTANCE = 512;
     public static final Material SEL_ACTIVE = Material.SPONGE;
     public static final Material SEL_COLLISION = Material.REDSTONE_BLOCK;
     public static final Material SEL_PASSIVE_CORNER = Material.BEACON;

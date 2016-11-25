@@ -91,7 +91,6 @@ public class CommandSale extends CommandExec {
             }
 
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
-            secuboid.getLog().debug("Sign recreated for land " + land.getName() + " by: " + playerName);
 
             return;
         }
@@ -118,6 +117,5 @@ public class CommandSale extends CommandExec {
         }
         land.setForSale(true, salePrice, ecoSign.getLocation());
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
-        secuboid.getLog().debug("The land " + land.getName() + " is set to for sale by: " + playerName);
     }
 }

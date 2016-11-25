@@ -155,7 +155,7 @@ public class Secuboid extends JavaPlugin {
             inventoryConf = new InventoryConfig(this);
         }
 
-        log = new Log(conf.isDebug());
+        log = new Log(getLogger());
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
@@ -201,8 +201,6 @@ public class Secuboid extends JavaPlugin {
             flyCreativeListener = new FlyCreativeListener(this);
             getServer().getPluginManager().registerEvents(flyCreativeListener, this);
         }
-
-        log.debug(getLanguage().getMessage("ENABLE"));
     }
 
     /**
@@ -221,7 +219,7 @@ public class Secuboid extends JavaPlugin {
         } else {
             playerMoney = null;
         }
-        log = new Log(conf.isDebug());
+        log = new Log(getLogger());
         language.reloadConfig();
         lands = new Lands(this);
         storageThread.stopNextRun();
@@ -233,14 +231,10 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
-        log.debug(getLanguage().getMessage("DISABLE"));
-
         // Save all inventories
         if (inventoryListener != null) {
             inventoryListener.removeAndSave();
         }
-
         collisionsManagerThread.stopNextRun();
         playersCache.stopNextRun();
         approveNotif.stopNextRun();

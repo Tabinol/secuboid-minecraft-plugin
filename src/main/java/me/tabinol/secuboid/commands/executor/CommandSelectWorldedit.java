@@ -89,7 +89,6 @@ class CommandSelectWorldedit {
             }
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
-            secuboid.getLog().debug(secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
 
             AreaSelection select;
             if (sel instanceof CuboidRegion) {

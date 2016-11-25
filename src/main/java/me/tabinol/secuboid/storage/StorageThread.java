@@ -154,9 +154,8 @@ public class StorageThread extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().debug("Storage Thread wake up!");
                 } catch (InterruptedException e) {
-                    secuboid.getLog().severe("Storage thread error: " + e.getLocalizedMessage());
+                    e.printStackTrace();
                 }
             }
             notSaved.signal();
@@ -180,7 +179,7 @@ public class StorageThread extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            secuboid.getLog().severe("Storage thread error: " + e.getLocalizedMessage());
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -212,7 +211,6 @@ public class StorageThread extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().debug("Storage request (Thread wake up...)");
         } finally {
             lock.unlock();
         }

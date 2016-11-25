@@ -299,8 +299,6 @@ public class LandPermissionsFlags {
                 }
 
                 if (perm != null) {
-                    secuboid.getLog().debug("Container: " + permissionEntry.getKey().toString() + ", "
-                            + "PermissionType: " + perm.getPermType() + ", Value: " + perm.getValue() + ", Inheritable: " + perm.isInheritable());
                     if (!onlyInherit || perm.isInheritable()) {
                         return perm.getValue();
                     }
@@ -392,22 +390,17 @@ public class LandPermissionsFlags {
      * @return the flag value
      */
     FlagValue getFlag(FlagType ft, boolean onlyInherit) {
-
         Flag flag = flags.get(ft);
         if (flag != null) {
-            secuboid.getLog().debug("Flag: " + flag.toString());
-
             if (!onlyInherit || flag.isInheritable()) {
                 return flag.getValue();
             }
         }
-
         // Check in default flags
         if (!onlyInherit && land.isRealLand()) {
 
             return (secuboid.getLands()).getDefaultConf(realLand.getType()).getPermissionsFlags().getFlag(ft, false);
         }
-
         return null;
     }
 }

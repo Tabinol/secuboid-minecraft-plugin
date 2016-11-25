@@ -120,7 +120,6 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                 if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove) {
 
                     sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
-                    secuboid.getLog().debug("land " + collisions.getLandName() + " has collision and needs approval.");
                     secuboid.getLands().getApproveList().addApprove(new Approve(secuboid, collisions.getLandName(), type, action, removeId, newArea,
                             owner, parent, collisions.getPrice(), Calendar.getInstance()));
                     new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();

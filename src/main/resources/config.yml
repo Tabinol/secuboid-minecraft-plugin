@@ -2,7 +2,6 @@
 # Secuboid config file                                           #
 ##################################################################
 General:                             # ----General Config----
-  Debug: false                       # Set to true to show debugging messages
   Lang: english                      # english, french for now (or your own)
   Storage: flat                      # Only flat is supported for now
 

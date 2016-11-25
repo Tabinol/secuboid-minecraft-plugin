@@ -160,11 +160,9 @@ public class ApproveList {
      */
     public Approve getApprove(String landName) {
 
-        secuboid.getLog().debug("Get approve for: " + landName);
         ConfigurationSection section = approveConfig.getConfigurationSection(landName);
 
         if (section == null) {
-            secuboid.getLog().debug("Error Section null");
             return null;
         }
 
@@ -185,7 +183,6 @@ public class ApproveList {
 
             // If the parent does not exist
             if (parent == null) {
-                secuboid.getLog().debug("Error, parent not found");
                 return null;
             }
         }
@@ -224,9 +221,6 @@ public class ApproveList {
      * @param landName the land name
      */
     private void removeApprove(String landName) {
-
-        secuboid.getLog().debug("Remove Approve from list: " + landName);
-
         approveConfig.set(landName, null);
         landNames.remove(landName);
         saveFile();
@@ -236,8 +230,6 @@ public class ApproveList {
      * Removes the all.
      */
     public void removeAll() {
-
-        secuboid.getLog().debug("Remove all Approves from list.");
 
         // Delete file
         if (approveFile.exists()) {
@@ -258,8 +250,6 @@ public class ApproveList {
      * Load file.
      */
     private void loadFile() {
-
-        secuboid.getLog().debug("Loading Approve list file");
 
         if (!approveFile.exists()) {
             try {
@@ -288,9 +278,6 @@ public class ApproveList {
      * Save file.
      */
     private void saveFile() {
-
-        secuboid.getLog().debug("Saving Approve list file");
-
         try {
             approveConfig.save(approveFile);
         } catch (IOException ex) {

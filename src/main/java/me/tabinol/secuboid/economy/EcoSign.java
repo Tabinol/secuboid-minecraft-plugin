@@ -106,10 +106,6 @@ public class EcoSign {
         if (!land.isLocationInside(this.location)) {
             throw new SignException();
         }
-
-        secuboid.getLog().debug("SignToCreate: PlayerYaw: " + player.getLocation().getYaw()
-                + ", Location: " + location.toString() + ", Facing: " + facing.name()
-                + ", isWallSign: " + isWallSign);
     }
 
     /**

@@ -110,27 +110,27 @@ public class CommandListener implements CommandExecutor {
 
             // Do the command
             InfoCommand ci = cv.getAnnotation(InfoCommand.class);
-            CommandExec ce = (CommandExec) cv.getConstructor(Secuboid.class, InfoCommand.class, CommandSender.class,
-                    ArgList.class, CommandListener.class).newInstance(secuboid, ci, sender, argList, this);
+            CommandExec ce = (CommandExec) cv.getConstructor(Secuboid.class, InfoCommand.class, CommandSender.class, ArgList.class)
+                    .newInstance(secuboid, ci, sender, argList);
             if (ce.isExecutable()) {
                 ce.commandExecute();
             }
 
             // a huge number of Exception to catch!
         } catch (IllegalAccessException ex) {
-            secuboid.getLog().severe(ex.getLocalizedMessage());
+            ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (InstantiationException ex) {
-            secuboid.getLog().severe(ex.getLocalizedMessage());
+            ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (NoSuchMethodException ex) {
-            secuboid.getLog().severe(ex.getLocalizedMessage());
+            ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (SecurityException ex) {
-            secuboid.getLog().severe(ex.getLocalizedMessage());
+            ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (IllegalArgumentException ex) {
-            secuboid.getLog().severe(ex.getLocalizedMessage());
+            ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
         } catch (InvocationTargetException ex) {
             // Catched by SecuboidCommandException

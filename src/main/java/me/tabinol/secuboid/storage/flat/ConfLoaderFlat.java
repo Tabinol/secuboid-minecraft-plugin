@@ -166,7 +166,6 @@ final class ConfLoaderFlat {
         if (lrt.isEmpty() || lrt.equals("}")) {
             return null;
         }
-        secuboid.getLog().debug("Readline: " + lrt);
         return lrt;
     }
 

@@ -744,7 +744,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
             parent.removeChild(uuid);
             parent = null;
             genealogy = 0;
-            secuboid.getLog().debug("remove parent from land: " + name);
         }
 
         // Add parent
@@ -753,7 +752,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
             parent = newParent;
             priority = parent.getPriority();
             genealogy = parent.getGenealogy() + 1;
-            secuboid.getLog().debug("add parent " + parent.getName() + " to land: " + name);
         }
 
         // Save

@@ -243,11 +243,6 @@ public class PlayerListener extends CommonListener implements Listener {
         PlayerConfEntry entry;
         Location loc = event.getClickedBlock().getLocation();
 
-        secuboid.getLog().debug(
-                "PlayerInteract player name: " + event.getPlayer().getName()
-                        + ", Action: " + event.getAction()
-                        + ", Material: " + ml.name());
-
         // For infoItem
         if (player.getItemInHand() != null && action == Action.LEFT_CLICK_BLOCK
                 && player.getItemInHand().getType() == conf.getInfoItem()) {
@@ -255,7 +250,7 @@ public class PlayerListener extends CommonListener implements Listener {
                 Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
             } catch (SecuboidCommandException ex) {
-                secuboid.getLog().severe("Error when trying to get area: " + ex.getLocalizedMessage());
+                ex.printStackTrace();
             }
             event.setCancelled(true);
 
@@ -296,9 +291,6 @@ public class PlayerListener extends CommonListener implements Listener {
             RealLand trueLand = secuboid.getLands().getLand(loc);
 
             if (trueLand != null) {
-
-                secuboid.getLog().debug("EcoSignClick: ClickLoc: " + loc + ", SignLoc" + trueLand.getSaleSignLoc());
-
                 try {
                     if (trueLand.getSaleSignLoc() != null
                             && trueLand.getSaleSignLoc().getBlock().equals(loc.getBlock())) {
@@ -406,10 +398,6 @@ public class PlayerListener extends CommonListener implements Listener {
         Material mat = player.getItemInHand().getType();
         PlayerConfEntry entry;
         Location loc = event.getRightClicked().getLocation();
-
-        secuboid.getLog().debug(
-                "PlayerInteractAtEntity player name: " + event.getPlayer().getName()
-                        + ", Entity: " + et.name());
 
         // Citizen bug, check if entry exist before
         if ((entry = playerConf.get(player)) != null

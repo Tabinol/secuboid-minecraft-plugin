@@ -53,7 +53,6 @@ public class CommandCancel extends CommandExec {
         if (playerConf.getConfirm() != null) {
             playerConf.setConfirm(null);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
-            secuboid.getLog().debug(player.getName() + " cancel for action");
 
         }
 
@@ -61,7 +60,6 @@ public class CommandCancel extends CommandExec {
 
             playerConf.getSelection().removeSelection(SelectionType.AREA);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
-            secuboid.getLog().debug(player.getName() + ": Select cancel");
 
         }
 

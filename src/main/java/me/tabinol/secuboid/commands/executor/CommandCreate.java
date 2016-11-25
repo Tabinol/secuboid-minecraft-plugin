@@ -139,16 +139,14 @@ public class CommandCreate extends CommandCollisionsThreadExec {
             RealLand cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
-            secuboid.getLog().debug(playerName + " has create a land named " + cLand.getName() + ".");
 
             // Cancel and select the land
-            new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
-            new CommandSelect(secuboid, infoCommand, player, new ArgList(secuboid, new String[]{cLand.getName()},
+            new CommandCancel(secuboid, null, sender, argList).commandExecute();
+            new CommandSelect(secuboid, null, player, new ArgList(secuboid, new String[]{cLand.getName()},
                     player)).commandExecute();
 
         } catch (SecuboidLandException ex) {
-            secuboid.getLog().severe("On land create: " + ex.getLocalizedMessage());
+            ex.printStackTrace();
         }
-
     }
 }

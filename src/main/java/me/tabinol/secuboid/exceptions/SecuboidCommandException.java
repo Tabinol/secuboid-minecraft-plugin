@@ -26,7 +26,6 @@ import org.bukkit.command.CommandSender;
  * The Class SecuboidCommandException.
  */
 public class SecuboidCommandException extends Exception {
-
     private static final long serialVersionUID = 5585486767311219615L;
 
     /**
@@ -39,13 +38,8 @@ public class SecuboidCommandException extends Exception {
      * @param param    the param
      */
     public SecuboidCommandException(Secuboid secuboid, String logMsg, CommandSender sender, String langMsg, String... param) {
-
         super(logMsg);
-        if (sender != null) {
-            secuboid.getLog().debug("Player: " + sender.getName() + ", Lang Msg: " + langMsg + ", " + logMsg);
-        } else {
-            secuboid.getLog().debug(logMsg);
-        }
+
         if (sender != null) {
             sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage(langMsg, param));
         }

@@ -175,9 +175,6 @@ public class PvpListener extends CommonListener implements Listener {
                                 && !isPvpValid(land)) {
 
                             // remove fire
-                            secuboid.getLog().debug("Anti-pvp from "
-                                    + entry.getPlayerContainer().getPlayer().getName()
-                                    + " to " + player.getName());
                             block.setType(Material.AIR);
                             player.setFireTicks(0);
                             event.setDamage(0);

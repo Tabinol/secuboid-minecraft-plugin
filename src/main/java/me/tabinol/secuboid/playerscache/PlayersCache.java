@@ -163,7 +163,6 @@ public final class PlayersCache extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().debug("Name request (Thread wake up...)");
         } finally {
             lock.unlock();
         }
@@ -208,7 +207,6 @@ public final class PlayersCache extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().debug("Name request (Thread wake up...)");
         } finally {
             lock.unlock();
         }
@@ -241,7 +239,6 @@ public final class PlayersCache extends Thread {
 
                     // Pass 2 check in Minecraft website
                     if (!names.isEmpty()) {
-                        secuboid.getLog().debug("HTTP profile request: " + names);
                         Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[names.size()]));
                         for (Profile profile : profiles) {
                             // Put in the correct position
@@ -249,7 +246,6 @@ public final class PlayersCache extends Thread {
 
                             while (compt != length) {
                                 if (entries[compt] == null) {
-                                    secuboid.getLog().debug("HTTP Found : " + profile.getName() + ", " + profile.getId());
                                     UUID uuid = stringToUUID(profile.getId());
                                     if (uuid != null) {
                                         entries[compt] = new PlayerCacheEntry(uuid,
@@ -275,9 +271,8 @@ public final class PlayersCache extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().debug("PlayersCache Thread wake up!");
                 } catch (InterruptedException e) {
-                    secuboid.getLog().severe("Players cache thread error: " + e.getLocalizedMessage());
+                    e.printStackTrace();
                 }
             }
             saveAll();
@@ -319,7 +314,7 @@ public final class PlayersCache extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            secuboid.getLog().severe("Players cache thread error: " + e.getLocalizedMessage());
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -361,7 +356,7 @@ public final class PlayersCache extends Thread {
             br.close();
 
         } catch (IOException ex) {
-            secuboid.getLog().severe("I can't load the players cache list: " + ex.getLocalizedMessage());
+            ex.printStackTrace();
         }
 
     }
@@ -394,7 +389,7 @@ public final class PlayersCache extends Thread {
             bw.close();
 
         } catch (IOException ex) {
-            secuboid.getLog().severe("I can't save the players cache list: " + ex.getLocalizedMessage());
+            ex.printStackTrace();
         }
     }
 

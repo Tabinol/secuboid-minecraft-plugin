@@ -69,7 +69,6 @@ public class CommandRadius extends CommandExec {
             playerConf.setSelectionRadius(newValue);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
                     "COMMAND.RADIUS.DONE", newValue + ""));
-            secuboid.getLog().debug("Radius for player " + playerName + " changed for " + newValue);
         }
     }
 }

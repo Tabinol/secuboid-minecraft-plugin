@@ -123,18 +123,18 @@ public abstract class CommandExec {
             land = playerConf.getSelection().getLand();
         }
 
-        if (player
-                == null && !infoCommand.allowConsole()) {
+        if (infoCommand != null) {
+            if (player == null && !infoCommand.allowConsole()) {
 
-            // Send a message if this command is player only
-            throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
-        }
+                // Send a message if this command is player only
+                throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
+            }
 
-        // Show help if there is no more parameter and the command needs one
-        if (infoCommand.forceParameter()
-                && argList != null && argList.isLast()) {
-            new CommandHelp(secuboid, infoCommand, sender, argList).commandExecute();
-            isExecutable = false;
+            // Show help if there is no more parameter and the command needs one
+            if (infoCommand.forceParameter() && argList != null && argList.isLast()) {
+                new CommandHelp(secuboid, infoCommand, sender, argList).commandExecute();
+                isExecutable = false;
+            }
         }
     }
 

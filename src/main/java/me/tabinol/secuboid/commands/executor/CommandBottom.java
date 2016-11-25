@@ -66,7 +66,6 @@ public class CommandBottom extends CommandExec {
             playerConf.setSelectionBottom(newValue);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
                     "COMMAND.BOTTOM.DONE", newValue + ""));
-            secuboid.getLog().debug("Bottom for player " + playerName + " changed for " + newValue);
         }
     }
 }

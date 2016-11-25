@@ -21,21 +21,22 @@ package me.tabinol.secuboid.utilities;
 import org.bukkit.Bukkit;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Log information for Secuboid.
  */
 public class Log {
 
-    private final boolean isDebug;
+    private final Logger logger;
 
     /**
      * Creates log instance.
      *
-     * @param isDebug is debugging is enable
+     * @param logger  the java (bukkit) logger
      */
-    public Log(boolean isDebug) {
-        this.isDebug = isDebug;
+    public Log(Logger logger) {
+        this.logger = logger;
     }
 
     /**
@@ -44,7 +45,7 @@ public class Log {
      * @param msg the message
      */
     public void info(String msg) {
-        Bukkit.getLogger().log(Level.INFO, msg);
+        logger.info(msg);
     }
 
     /**
@@ -53,7 +54,7 @@ public class Log {
      * @param msg the message
      */
     public void warning(String msg) {
-        Bukkit.getLogger().log(Level.WARNING, msg);
+        logger.warning(msg);
     }
 
     /**
@@ -62,17 +63,6 @@ public class Log {
      * @param msg the message
      */
     public void severe(String msg) {
-        Bukkit.getLogger().log(Level.SEVERE, msg);
-    }
-
-    /**
-     * Logs debugging message.
-     *
-     * @param msg the message
-     */
-    public void debug(String msg) {
-        if (isDebug) {
-            Bukkit.getLogger().log(Level.INFO, "[DEBUG] " + msg);
-        }
+        logger.severe(msg);
     }
 }

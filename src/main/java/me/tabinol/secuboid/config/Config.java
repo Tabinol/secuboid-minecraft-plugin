@@ -76,20 +76,6 @@ public class Config {
      */
 
     /**
-     * The debug.
-     */
-    private boolean debug;
-
-    /**
-     * Checks if is debug.
-     *
-     * @return true, if is debug
-     */
-    public boolean isDebug() {
-        return debug;
-    }
-
-    /**
      * The lang.
      */
     private String lang;
@@ -518,7 +504,6 @@ public class Config {
      */
     private void getConfig() {
 
-        debug = config.getBoolean("General.Debug", false);
         config.addDefault("General.worlds", new String[]{"world", "world_nether", "world_the_end"});
         lang = config.getString("General.Lang", "english");
         useEconomy = config.getBoolean("General.UseEconomy", false);

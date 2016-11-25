@@ -283,9 +283,6 @@ public class Lands {
         land = new RealLand(secuboid, landNameLower, landUUID, owner, area, genealogy, parent, areaId, type);
 
         addLandToList(land);
-        if (secuboid != null) {
-            secuboid.getLog().debug("add land: " + landNameLower);
-        }
 
         return land;
     }
@@ -336,7 +333,6 @@ public class Lands {
             land.getParent().removeChild(land.getUUID());
         }
         secuboid.getStorageThread().removeLand(land);
-        secuboid.getLog().debug("remove land: " + land);
 
         return true;
     }
@@ -658,7 +654,6 @@ public class Lands {
                 ForwardSearch = false;
             }
         }
-        secuboid.getLog().debug("Search Index dir: " + SearchIndex + ", Forward Search: " + ForwardSearch);
 
         // Now check for area in location
         ais = areaList[SearchIndex].areaMap.get(worldName);
@@ -675,12 +670,9 @@ public class Lands {
         while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, SearchIndex)) {
 
             if (ai.getArea().isLocationInside(loc)) {
-                secuboid.getLog().debug("add this area in list for cuboid: " + ai.getArea().getLand().getName());
                 areas.add(ai.getArea());
             }
         }
-        secuboid.getLog().debug("Number of Areas found for location : " + areas.size());
-
         return areas;
     }
 
@@ -710,14 +702,8 @@ public class Lands {
 
         Collection<Area> areas = getAreas(resLoc);
 
-        secuboid.getLog().debug("Area check in" + resLoc.toString());
-
         // Compare priorities of parents (or main)
         for (Area area : areas) {
-
-            secuboid.getLog().debug("Check for: " + area.getLand().getName()
-                    + ", area: " + area.toFileFormat());
-
             curPrio = area.getLand().getPriority();
             curGen = area.getLand().getGenealogy();
 
@@ -726,8 +712,6 @@ public class Lands {
                 actualArea = area;
                 actualPrio = curPrio;
                 actualGen = area.getLand().getGenealogy();
-
-                secuboid.getLog().debug("Found, update:  actualPrio: " + actualPrio + ", actualGen: " + actualGen);
             }
         }
 
@@ -770,7 +754,6 @@ public class Lands {
                 areaList[t].areaMap.put(area.getWorldName(), new TreeSet<AreaIndex>());
             }
         }
-        secuboid.getLog().debug("Add area for " + area.getLand().getName());
         areaList[INDEX_X1].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getX1(), area));
         areaList[INDEX_Z1].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getZ1(), area));
         areaList[INDEX_X2].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getX2(), area));

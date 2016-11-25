@@ -211,14 +211,14 @@ public class Approve {
                     try {
                         secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
                     } catch (SecuboidLandException ex) {
-                        secuboid.getLog().severe("On land create:" + ex.getLocalizedMessage());
+                        ex.printStackTrace();
                     }
                     break;
                 case LAND_REMOVE:
                     try {
                         secuboid.getLands().removeLand(landName);
                     } catch (SecuboidLandException ex) {
-                        secuboid.getLog().severe("On land remove:" + ex.getLocalizedMessage());
+                        ex.printStackTrace();
                     }
                     break;
                 case LAND_PARENT:

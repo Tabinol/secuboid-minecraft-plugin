@@ -124,9 +124,8 @@ public class CollisionsManagerThread extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                    secuboid.getLog().debug("Secuboid collisions manager Thread wake up!");
                 } catch (InterruptedException e) {
-                    secuboid.getLog().severe("Collisions manager thread error: " + e.getLocalizedMessage());
+                    e.printStackTrace();
                 }
             }
             notSaved.signal();
@@ -150,7 +149,7 @@ public class CollisionsManagerThread extends Thread {
         try {
             notSaved.await();
         } catch (InterruptedException e) {
-            secuboid.getLog().severe("Collisions manager thread error: " + e.getLocalizedMessage());
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -173,7 +172,6 @@ public class CollisionsManagerThread extends Thread {
         lock.lock();
         try {
             commandRequest.signal();
-            secuboid.getLog().debug("Secuboid collisions manager request (Thread wake up...)");
         } finally {
             lock.unlock();
         }

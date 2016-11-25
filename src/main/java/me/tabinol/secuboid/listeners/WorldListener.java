@@ -170,11 +170,9 @@ public class WorldListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onHangingBreak(HangingBreakEvent event) {
-
         if (conf.isOverrideExplosions()) {
             // Check for painting
             if (event.getCause() == RemoveCause.EXPLOSION) {
-                secuboid.getLog().debug("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
                 event.setCancelled(true);
             }
         }
@@ -198,8 +196,6 @@ public class WorldListener extends CommonListener implements Listener {
         boolean cancelEvent = false;
         Iterator<Block> itBlock = blocks.iterator();
         Block block;
-
-        secuboid.getLog().debug("Explosion : " + ", Yield: " + yield + ", power: " + power);
 
         // Check if 1 block or more is in a protected place
         while (itBlock.hasNext() && !cancelEvent) {
@@ -347,7 +343,6 @@ public class WorldListener extends CommonListener implements Listener {
                 && (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION
                 || event.getCause() == DamageCause.PROJECTILE)) {
             // Check for ItemFrame
-            secuboid.getLog().debug("Cancel HangingBreak : " + event.getEntity() + ", Cause: " + event.getCause());
             event.setCancelled(true);
         }
     }

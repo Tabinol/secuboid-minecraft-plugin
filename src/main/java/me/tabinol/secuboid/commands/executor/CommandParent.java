@@ -88,10 +88,8 @@ public class CommandParent extends CommandCollisionsThreadExec {
         land.setParent(parent);
         if (parent == null) {
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
-            secuboid.getLog().debug(playerName + " has set land " + land.getName() + " to no parent ");
         } else {
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
-            secuboid.getLog().debug(playerName + " has set land " + land.getName() + " to parent " + parent.getName());
         }
     }
 }

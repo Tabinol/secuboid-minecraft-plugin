@@ -192,7 +192,11 @@ public class VisualSelectionRoad implements VisualSelection {
                 boolean active;
                 int posX = playerLoc.getBlockX();
                 int posZ = playerLoc.getBlockZ();
-                int radius = secuboid.getConf().getDefaultRadius();
+                int radius = secuboid.getPlayerConf().get(player).getSelectionRadius();
+                int maxRadius = secuboid.getConf().getMaxRadius();
+                if (radius > maxRadius) {
+                    radius = maxRadius;
+                }
                 area.setY1(visualCommon.getY1());
                 area.setY2(visualCommon.getY2());
 

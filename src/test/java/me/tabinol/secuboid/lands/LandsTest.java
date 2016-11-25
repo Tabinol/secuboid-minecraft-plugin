@@ -73,7 +73,6 @@ public class LandsTest {
         doNothing().when(log).info(anyString());
         doNothing().when(log).warning(anyString());
         doNothing().when(log).severe(anyString());
-        doNothing().when(log).debug(anyString());
         when(secuboid.getLog()).thenReturn(log);
 
         // Permissions Flags

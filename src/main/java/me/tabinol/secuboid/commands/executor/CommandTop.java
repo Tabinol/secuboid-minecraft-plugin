@@ -69,7 +69,6 @@ public class CommandTop extends CommandExec {
             playerConf.setSelectionTop(newValue);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
                     "COMMAND.TOP.DONE", newValue + ""));
-            secuboid.getLog().debug("Top for player " + playerName + " changed for " + newValue);
         }
     }
 }

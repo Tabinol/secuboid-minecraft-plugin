@@ -142,7 +142,6 @@ public class StorageFlat implements Storage {
 
         assert files != null;
         if (files.length == 0) {
-            secuboid.getLog().debug(loadedlands + " land(s) loaded.");
             return;
         }
 
@@ -164,8 +163,6 @@ public class StorageFlat implements Storage {
                 secuboid.getLog().severe("Error: The parent is not found for land: " + land);
             }
         }
-
-        secuboid.getLog().debug(loadedlands + " land(s) loaded.");
     }
 
     /**
@@ -207,8 +204,6 @@ public class StorageFlat implements Storage {
         boolean rented = false;
         PlayerContainerPlayer tenant = null;
         Timestamp lastPayment = null;
-
-        secuboid.getLog().debug("Open file : " + file.getName());
 
         try {
             cf = new ConfLoaderFlat(secuboid, file);
@@ -353,7 +348,9 @@ public class StorageFlat implements Storage {
                 try {
                     land = secuboid.getLands().createLand(landName, owner, entry.getValue(),
                             null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
-                    orphans.put(land, UUID.fromString(parentUUID));
+                    if (parentUUID != null) {
+                        orphans.put(land, UUID.fromString(parentUUID));
+                    }
                 } catch (SecuboidLandException ex) {
                     secuboid.getLog().severe("Error on loading land " + landName + ":" + ex.getLocalizedMessage());
                     return;
@@ -421,7 +418,6 @@ public class StorageFlat implements Storage {
                 return;
             }
 
-            secuboid.getLog().debug("Saving land: " + land.getName());
             ConfBuilderFlat cb = new ConfBuilderFlat(land.getName(), land.getUUID(), getLandFile(land), landVersion);
             cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
             cb.writeParam("Owner", land.getOwner().toFileFormat());

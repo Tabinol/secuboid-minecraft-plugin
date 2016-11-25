@@ -182,7 +182,6 @@ public class CommandPermission extends CommandPlayerThreadExec {
             land.getPermissionsFlags().addPermission(pc, perm);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
                     pc.getPrint() + ChatColor.YELLOW, land.getName()));
-            secuboid.getLog().debug("Permission set: " + perm.getPermType().toString() + ", value: " + perm.getValue());
 
         } else if (fonction.equalsIgnoreCase("unset")) {
 
@@ -191,7 +190,6 @@ public class CommandPermission extends CommandPlayerThreadExec {
                 throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.REMOVEISDONE", pt.toString()));
-            secuboid.getLog().debug("Permission unset: " + pt.toString());
         }
     }
 }

@@ -49,7 +49,5 @@ public class SecuboidLandException extends ApiSecuboidLandException {
             bf.append(", area: ").append(area.getPrint());
         }
         bf.append(", Action: ").append(action.toString()).append(", Error: ").append(error.toString());
-
-        secuboid.getLog().debug(bf.toString());
     }
 }

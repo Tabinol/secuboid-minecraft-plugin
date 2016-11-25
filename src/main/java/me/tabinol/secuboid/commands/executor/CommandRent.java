@@ -92,7 +92,6 @@ public class CommandRent extends CommandExec {
             }
 
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
-            secuboid.getLog().debug("Sign recreated for land " + land.getName() + " by: " + playerName);
 
             return;
         }
@@ -138,6 +137,5 @@ public class CommandRent extends CommandExec {
         }
         land.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
-        secuboid.getLog().debug("The land " + land.getName() + " is set to for rent by: " + playerName);
     }
 }

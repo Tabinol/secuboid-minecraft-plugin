@@ -66,11 +66,10 @@ public class CommandConfirm extends CommandExec {
                         try {
                             secuboid.getLands().removeLand(confirmEntry.land);
                         } catch (SecuboidLandException ex) {
-                            secuboid.getLog().severe("On land remove: " + ex.getMessage());
+                            ex.printStackTrace();
                             throw new SecuboidCommandException(secuboid, "On land remove", player, "GENERAL.ERROR");
                         }
                         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.REMOVE.DONE.LAND", confirmEntry.land.getName(), i + ""));
-                        secuboid.getLog().debug(playerName + " confirm for removing " + confirmEntry.land.getName());
                         break;
 
                     case REMOVE_AREA:
@@ -80,14 +79,12 @@ public class CommandConfirm extends CommandExec {
                         }
                         playerConf.getSelection().refreshLand();
                         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.REMOVE.DONE.AREA", confirmEntry.land.getName()));
-                        secuboid.getLog().debug("area " + confirmEntry.areaNb + " for land " + confirmEntry.land.getName() + " is removed by " + playerName);
                         break;
 
                     case LAND_DEFAULT:
                         // Set to default
                         confirmEntry.land.setDefault();
                         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SETDEFAULT.ISDONE", confirmEntry.land.getName()));
-                        secuboid.getLog().debug("The land " + confirmEntry.land.getName() + "is set to default configuration by " + playerName);
                         break;
 
                     default:

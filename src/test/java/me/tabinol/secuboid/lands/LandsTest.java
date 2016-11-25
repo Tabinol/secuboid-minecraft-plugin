@@ -102,6 +102,7 @@ public class LandsTest {
         lands.createLand(TEST_CYLINDER, new PlayerContainerNobody(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
         RegionMatrix regionMatrix = new RegionMatrix();
         regionMatrix.addPoint(200, 200);
+        regionMatrix.addPoint(-200, -200);
         lands.createLand(TEST_ROAD, new PlayerContainerNobody(), new RoadArea(WORLD, 0, 255, regionMatrix));
     }
 
@@ -159,6 +160,11 @@ public class LandsTest {
 
         // Inside point check
         if (!land.isLocationInside(WORLD, 200, 30, 200)) {
+            throw new Exception("Location error");
+        }
+
+        // Inside negative point check
+        if (!land.isLocationInside(WORLD, -200, 30, -200)) {
             throw new Exception("Location error");
         }
 

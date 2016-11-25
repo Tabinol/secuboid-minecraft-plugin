@@ -97,7 +97,7 @@ public class FlyCreativeListener implements Listener {
     /**
      * Bugfix when tp is from an other worlds
      *
-     * @param event
+     * @param event the player teleport event
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {

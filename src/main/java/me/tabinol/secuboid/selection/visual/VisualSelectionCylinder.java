@@ -59,9 +59,11 @@ public class VisualSelectionCylinder implements VisualSelection {
     public VisualSelectionCylinder(Secuboid secuboid, CylinderArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
         if (area == null) {
-            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), player.getLocation());
+            visualCommon = new VisualCommon(secuboid, this, player,
+                    secuboid.getPlayerConf().get(player), player.getLocation());
         } else {
-            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
+            visualCommon = new VisualCommon(secuboid, this, player,
+                    secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
         }
         changedBlocks = new ChangedBlocks(player);
         this.isFromLand = isFromLand;
@@ -185,34 +187,6 @@ public class VisualSelectionCylinder implements VisualSelection {
 
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
-
-        switch (moveType) {
-            case ACTIVE:
-
-                removeSelection();
-                Location playerLoc = player.getLocation();
-                visualCommon.setBottomTop(playerLoc);
-                area.setY1(visualCommon.getY1());
-                area.setY2(visualCommon.getY2());
-
-                // Check where the player is outside the land
-                if (playerLoc.getBlockX() - 1 < area.getX1()) {
-                    area.setX1(playerLoc.getBlockX() - 1);
-                }
-                if (playerLoc.getBlockX() + 1 > area.getX2()) {
-                    area.setX2(playerLoc.getBlockX() + 1);
-                }
-                if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
-                    area.setZ1(playerLoc.getBlockZ() - 1);
-                }
-                if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
-                    area.setZ2(playerLoc.getBlockZ() + 1);
-                }
-
-                makeVisualSelection();
-                break;
-
-            default:
-        }
+        visualCommon.playerMoveSquare(moveType, area);
     }
 }

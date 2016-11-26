@@ -116,6 +116,7 @@ public final class CylinderArea implements Area {
      *
      * @param x1 x1
      */
+    @Override
     public void setX1(int x1) {
         areaCommon.setX1(x1);
         updatePos();
@@ -126,6 +127,7 @@ public final class CylinderArea implements Area {
      *
      * @param y1 y1
      */
+    @Override
     public void setY1(int y1) {
         areaCommon.setY1(y1);
     }
@@ -135,6 +137,7 @@ public final class CylinderArea implements Area {
      *
      * @param z1 z1
      */
+    @Override
     public void setZ1(int z1) {
         areaCommon.setZ1(z1);
         updatePos();
@@ -145,6 +148,7 @@ public final class CylinderArea implements Area {
      *
      * @param x2 x2
      */
+    @Override
     public void setX2(int x2) {
         areaCommon.setX2(x2);
         updatePos();
@@ -155,6 +159,7 @@ public final class CylinderArea implements Area {
      *
      * @param y2 y2
      */
+    @Override
     public void setY2(int y2) {
         areaCommon.setY2(y2);
     }
@@ -164,6 +169,7 @@ public final class CylinderArea implements Area {
      *
      * @param z2 z2
      */
+    @Override
     public void setZ2(int z2) {
         areaCommon.setZ2(z2);
         updatePos();

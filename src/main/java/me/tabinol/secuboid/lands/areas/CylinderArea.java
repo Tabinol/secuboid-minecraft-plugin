@@ -211,8 +211,8 @@ public final class CylinderArea implements Area {
         // Use "this", x2 must be greater of x1, etc.
         rX = (double) (getX2() - getX1() + 1) / 2;
         rZ = (double) (getZ2() - getZ1() + 1) / 2;
-        originH = getX1() + (rX);
-        originK = getZ1() + (rZ);
+        originH = getX1() + (rX) - 1;
+        originK = getZ1() + (rZ) - 1;
     }
 
     /**
@@ -222,8 +222,7 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZPosFromX(int x) {
-        return (int) ((rX * originK + rZ
-                * Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
+        return (int) (originK + (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
     }
 
     /**
@@ -233,8 +232,27 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZNegFromX(int x) {
-        return (int) -((-rX * originK + rZ
-                * Math.sqrt(Math.pow(-x, 2) + 2 * originH * x - Math.pow(originH, 2) + Math.pow(rX, 2))) / rX);
+        return (int) (originK - (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
+    }
+
+    /**
+     * Gets the x positive position from z.
+     *
+     * @param z the z
+     * @return the position
+     */
+    public int getXPosFromZ(int z) {
+        return (int) (originH + (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
+    }
+
+    /**
+     * Gets the x negative position from z.
+     *
+     * @param z the z
+     * @return the position
+     */
+    public int getXNegFromZ(int z) {
+        return (int) (originH - (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
     /**
@@ -249,7 +267,7 @@ public final class CylinderArea implements Area {
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return worldName.equals(worldName)
+        return getWorldName().equals(worldName)
                 && LocalMath.isInInterval(y, getY1(), getY2())
                 && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }

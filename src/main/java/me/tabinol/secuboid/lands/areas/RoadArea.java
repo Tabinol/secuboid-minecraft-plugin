@@ -163,7 +163,7 @@ public final class RoadArea implements Area {
      */
     @Override
     public long getVolume() {
-        return regionMatrix.countPoints() * (getY2() - getY1());
+        return regionMatrix.countPoints() * (getY2() - getY1() + 1);
     }
 
     @Override

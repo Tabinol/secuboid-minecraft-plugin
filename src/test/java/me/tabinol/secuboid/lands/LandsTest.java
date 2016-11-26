@@ -138,12 +138,12 @@ public class LandsTest {
         }
 
         // Inside point check
-        if (!land.isLocationInside(WORLD, 65, 30, 100)) {
+        if (!land.isLocationInside(WORLD, 9, 30, 55)) {
             throw new Exception("Location error");
         }
 
         // Just a little bit outside
-        if (land.isLocationInside(WORLD, 65, 30, 101)) {
+        if (land.isLocationInside(WORLD, 64, 30, 102)) {
             throw new Exception("Location error");
         }
 
@@ -157,6 +157,11 @@ public class LandsTest {
     public void verifyRoad() throws Exception {
 
         RealLand land = lands.getLand(TEST_ROAD);
+
+        // Volume check
+        if (land.getArea(1).getVolume() != 256 * 2) {
+            throw new Exception("Volume error");
+        }
 
         // Inside point check
         if (!land.isLocationInside(WORLD, 200, 30, 200)) {

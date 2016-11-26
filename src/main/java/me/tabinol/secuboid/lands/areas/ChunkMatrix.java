@@ -97,7 +97,9 @@ public class ChunkMatrix {
         int nbPoints = 0;
         for (short slice : matrix) {
             for (int i = 0; i < 16; i++) {
-                nbPoints += (slice & (1 << i));
+                if ((slice & (1 << i)) > 0) {
+                    nbPoints++;
+                }
             }
         }
         return nbPoints;

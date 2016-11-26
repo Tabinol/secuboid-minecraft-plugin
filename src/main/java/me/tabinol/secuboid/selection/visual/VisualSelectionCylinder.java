@@ -58,7 +58,7 @@ public class VisualSelectionCylinder implements VisualSelection {
 
     public VisualSelectionCylinder(Secuboid secuboid, CylinderArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
-        if(area == null) {
+        if (area == null) {
             visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), player.getLocation());
         } else {
             visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
@@ -147,43 +147,36 @@ public class VisualSelectionCylinder implements VisualSelection {
 
         //Make Cylinder
         for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-            int zNeg = area.getZNegFromX(posX);
-            int zPos = area.getZPosFromX(posX);
-            int[] zPositions;
-            if (zNeg == zPos) {
-                zPositions = new int[]{zNeg};
-            } else {
-                zPositions = new int[]{zNeg, zPos};
-            }
-            for (int posZ : zPositions) {
+            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+                if (posZ == area.getZNegFromX(posX) || posZ == area.getZPosFromX(posX)
+                        || posX == area.getXNegFromZ(posZ) || posX == area.getXPosFromZ(posZ)) {
 
-                Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+                    Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 
-                if (!isFromLand) {
+                    if (!isFromLand) {
 
-                    // Active Selection
-                    Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
-                    if (parentDetected == testCuboidarea
-                            && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
-                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+                        // Active Selection
+                        Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
+                        if (parentDetected == testCuboidarea
+                                && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+                        } else {
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
+                            isCollision = true;
+                        }
                     } else {
-                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
-                        isCollision = true;
-                    }
-                } else // Passive Selection (created area)
-                {
-                    if (posX == area.getOriginH() - 1
-                            || posX == area.getOriginH() + 1
-                            || posZ == area.getOriginK() - 1
-                            || posZ == area.getOriginK() + 1) {
+                        // Passive Selection (created area)
+                        if (posX == (int) (area.getOriginH() - 1) || posX == (int) (area.getOriginH() + 1)
+                                || posZ == (int) (area.getOriginK() - 1) || posZ == (int) (area.getOriginK() + 1)) {
 
-                        // Subcorner
-                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
+                            // Subcorner
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
 
-                    } else {
+                        } else if (posX == (int) area.getOriginH() || posZ == (int) area.getOriginK()) {
 
-                        // Exact corner
-                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
+                            // Exact corner
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
+                        }
                     }
                 }
             }

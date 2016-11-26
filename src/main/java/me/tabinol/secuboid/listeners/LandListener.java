@@ -127,7 +127,7 @@ public class LandListener extends CommonListener implements Listener {
         Land land = playerConf.get(player).getLastLand();
 
         // Notify for quit
-        while (land.isRealLand()) {
+        while (land != null && land.isRealLand()) {
             notifyPlayers((RealLand) land, "ACTION.PLAYEREXIT", player);
             land = ((RealLand) land).getParent();
         }

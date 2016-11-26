@@ -48,12 +48,15 @@ HELP:
     SELECT:
       1: "/secuboid select <here/nom du terrain> : Sélectionner un terrain pour une modification."
       2: "/secuboid select : Démarrer la sélection visuelle (cuboid)."
-      3: "/secuboid select cub[oid] : Démarrer la sélection visuelle d'un cuboid."
+      3: "/secuboid select cub[oid] : Démarrer la sélection visuelle d'un cuboid (défaut)."
       4: "/secuboid select cyl[inder] : Démarrer la sélection visuelle d'un cylindre."
       5: "/secuboid select roa[d] : Démarrer la sélection visuelle d'un chemin."
-      6: "/secuboid select done : Conclure une sélection visuelle."
-      7: "/secuboid select worldedit : Prendre une sélection WorldEdit."
-      8: "/secuboid select info : Informations à propos de la sélection."
+      6: "/secuboid select exp[and] : Pour étendre la sélection (défault)."
+      7: "/secuboid select ret[ract] : Pour réduire la sélection."
+      8: "/secuboid select mov[e] : Pour déplacer la sélection."
+      9: "/secuboid select done : Conclure une sélection visuelle."
+      10: "/secuboid select worldedit : Prendre une sélection WorldEdit."
+      11: "/secuboid select info : Informations à propos de la sélection."
     INFO:
       1: "/secuboid info [terrain] : Affiche les informations générales du terrain."
     ADMINMODE:

@@ -97,23 +97,33 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                     new CommandSelectWorldedit(secuboid, player, playerConf).MakeSelect();
 
                 } else if(curArg.toLowerCase().startsWith("cub")) {
-                    doVisualActiveSelect(AreaType.CUBOID);
+                    doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
                 } else if(curArg.toLowerCase().startsWith("cyl")) {
-                    doVisualActiveSelect(AreaType.CYLINDER);
+                    doVisualActiveSelect(AreaType.CYLINDER, AreaSelection.MoveType.EXPAND);
                 } else if(curArg.toLowerCase().startsWith("roa")) {
-                    doVisualActiveSelect(AreaType.ROAD);
+                    doVisualActiveSelect(AreaType.ROAD, AreaSelection.MoveType.EXPAND);
+                } else if(curArg.toLowerCase().startsWith("exp")) {
+                    doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
+                } else if(curArg.toLowerCase().startsWith("ret")) {
+                    doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.RETRACT);
+                } else if(curArg.toLowerCase().startsWith("mov")) {
+                    doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.MOVE);
                 } else {
                     doSelectLand(curArg);
                 }
             } else {
-                doVisualActiveSelect(AreaType.CUBOID);
+                doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
             }
         } else if ((curArg = argList.getNext()) != null && curArg.equalsIgnoreCase("done")) {
             doSelectAreaDone();
-
+        } else if (curArg != null && curArg.toLowerCase().startsWith("exp")) {
+            changeVisualActiveSelect(AreaSelection.MoveType.EXPAND);
+        } else if (curArg != null && curArg.toLowerCase().startsWith("ret")) {
+            changeVisualActiveSelect(AreaSelection.MoveType.RETRACT);
+        } else if (curArg != null && curArg.toLowerCase().startsWith("mov")) {
+            changeVisualActiveSelect(AreaSelection.MoveType.MOVE);
         } else if (curArg != null && curArg.equalsIgnoreCase("info")) {
             doSelectAreaInfo();
-
         } else {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.ALREADY");
         }
@@ -165,12 +175,22 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         return landtest;
     }
 
-    private void doVisualActiveSelect(AreaType areaType) {
+    private void doVisualActiveSelect(AreaType areaType, AreaSelection.MoveType moveType) {
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
         player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
-        AreaSelection select = new AreaSelection(secuboid, player, null, false, areaType, AreaSelection.MoveType.ACTIVE);
+        AreaSelection select = new AreaSelection(secuboid, player, null, false, areaType, moveType);
         playerConf.getSelection().addSelection(select);
+        playerConf.setAutoCancelSelect(true);
+    }
+
+    private void changeVisualActiveSelect(AreaSelection.MoveType moveType) {
+
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
+        player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
+        AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
+        playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, select.getVisualSelection().getArea(),
+                false, null, moveType));
         playerConf.setAutoCancelSelect(true);
     }
 

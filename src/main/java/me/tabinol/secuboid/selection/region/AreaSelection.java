@@ -40,9 +40,17 @@ public class AreaSelection implements RegionSelection {
          */
         PASSIVE,
         /**
-         * Move with the player
+         * Expand (default)
          */
-        ACTIVE
+        EXPAND,
+        /**
+         * Retract
+         */
+        RETRACT,
+        /**
+         * Mode with player
+         */
+        MOVE
     }
 
     private final MoveType moveType;

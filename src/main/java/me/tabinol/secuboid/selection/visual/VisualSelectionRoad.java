@@ -63,9 +63,11 @@ public class VisualSelectionRoad implements VisualSelection {
     public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
         if (area == null) {
-            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), player.getLocation());
+            visualCommon = new VisualCommon(secuboid, this, player,
+                    secuboid.getPlayerConf().get(player), player.getLocation());
         } else {
-            visualCommon = new VisualCommon(secuboid, secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
+            visualCommon = new VisualCommon(secuboid, this, player,
+                    secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
         }
         changedBlocks = new ChangedBlocks(player);
         this.isFromLand = isFromLand;
@@ -184,80 +186,95 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
         switch (moveType) {
-            case ACTIVE:
+            case EXPAND:
+                moveWithPlayer(true);
+                break;
 
-                removeSelection();
-                Location playerLoc = player.getLocation();
-                visualCommon.setBottomTop(playerLoc);
-                boolean active;
-                int posX = playerLoc.getBlockX();
-                int posZ = playerLoc.getBlockZ();
-                int radius = secuboid.getPlayerConf().get(player).getSelectionRadius();
-                int maxRadius = secuboid.getConf().getMaxRadius();
-                if (radius > maxRadius) {
-                    radius = maxRadius;
-                }
-                area.setY1(visualCommon.getY1());
-                area.setY2(visualCommon.getY2());
-
-                // Detect selection
-                for (int x = posX; x >= posX - radius; x--) {
-                    active = true;
-                    for (int z = posZ; z >= posZ - radius; z--) {
-                        active = checkForPoint(active, x, z);
-                    }
-                    active = true;
-                    for (int z = posZ; z <= posZ + radius; z++) {
-                        active = checkForPoint(active, x, z);
-                    }
-                }
-                for (int x = posX; x <= posX + radius; x++) {
-                    active = true;
-                    for (int z = posZ; z >= posZ - radius; z--) {
-                        active = checkForPoint(active, x, z);
-                    }
-                    active = true;
-                    for (int z = posZ; z <= posZ + radius; z++) {
-                        active = checkForPoint(active, x, z);
-                    }
-                }
-                for (int z = posZ; z >= posZ - radius; z--) {
-                    active = true;
-                    for (int x = posZ; x >= posX - radius; x--) {
-                        active = checkForPoint(active, x, z);
-                    }
-                    active = true;
-                    for (int x = posX; z <= posX + radius; x++) {
-                        active = checkForPoint(active, x, z);
-                    }
-                }
-                for (int z = posZ; z <= posZ + radius; z++) {
-                    active = true;
-                    for (int x = posZ; x >= posX - radius; x--) {
-                        active = checkForPoint(active, x, z);
-                    }
-                    active = true;
-                    for (int x = posX; z <= posX + radius; x++) {
-                        active = checkForPoint(active, x, z);
-                    }
-                }
-
-                makeVisualSelection();
+            case RETRACT:
+                moveWithPlayer(false);
                 break;
 
             default:
         }
     }
 
-    private boolean checkForPoint(boolean active, int x, int z) {
+    private void moveWithPlayer(boolean isAdd) {
+
+        removeSelection();
+        Location playerLoc = player.getLocation();
+        visualCommon.setBottomTop(playerLoc);
+        boolean active;
+        int posX = playerLoc.getBlockX();
+        int posZ = playerLoc.getBlockZ();
+        int radius = secuboid.getPlayerConf().get(player).getSelectionRadius();
+        int maxRadius = secuboid.getConf().getMaxRadius();
+        if (radius > maxRadius) {
+            radius = maxRadius;
+        }
+        area.setY1(visualCommon.getY1());
+        area.setY2(visualCommon.getY2());
+
+        // Detect selection
+        for (int x = posX; x >= posX - radius; x--) {
+            active = true;
+            for (int z = posZ; z >= posZ - radius; z--) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+            active = true;
+            for (int z = posZ; z <= posZ + radius; z++) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+        }
+        for (int x = posX; x <= posX + radius; x++) {
+            active = true;
+            for (int z = posZ; z >= posZ - radius; z--) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+            active = true;
+            for (int z = posZ; z <= posZ + radius; z++) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+        }
+        for (int z = posZ; z >= posZ - radius; z--) {
+            active = true;
+            for (int x = posZ; x >= posX - radius; x--) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+            active = true;
+            for (int x = posX; z <= posX + radius; x++) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+        }
+        for (int z = posZ; z <= posZ + radius; z++) {
+            active = true;
+            for (int x = posZ; x >= posX - radius; x--) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+            active = true;
+            for (int x = posX; z <= posX + radius; x++) {
+                active = checkForPoint(isAdd, active, x, z);
+            }
+        }
+
+        makeVisualSelection();
+    }
+
+    private boolean checkForPoint(boolean isAdd, boolean active, int x, int z) {
 
         EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
         Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
 
-        if (!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
-            return false;
+        if (isAdd) {
+            // Add point
+            if (!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
+                return false;
+            }
+            area.add(x, z);
+        } else {
+
+            // Erase
+            area.remove(x, z);
         }
-        area.add(x, z);
 
         return true;
     }

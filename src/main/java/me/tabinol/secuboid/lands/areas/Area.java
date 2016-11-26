@@ -126,6 +126,54 @@ public interface Area extends Comparable<Area> {
     int getZ2();
 
     /**
+     * Sets the x1. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param x1 x1
+     */
+    void setX1(int x1);
+
+    /**
+     * Sets the x2. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param x2 x2
+     */
+    void setX2(int x2);
+
+    /**
+     * Sets the y1. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param y1 y1
+     */
+    void setY1(int y1);
+
+    /**
+     * Sets the y2. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param y2 y2
+     */
+    void setY2(int y2);
+
+    /**
+     * Sets the z1. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param z1 z1
+     */
+    void setZ1(int z1);
+
+    /**
+     * Sets the z2. Do not use if the area is already in a land. Normally, it us for internal use.
+     * For roads, it changes only the limit to start and stop looking the matrix.
+     *
+     * @param z2 z2
+     */
+    void setZ2(int z2);
+
+    /**
      * Gets the volume.
      *
      * @return the volume

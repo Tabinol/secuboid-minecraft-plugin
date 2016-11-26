@@ -51,7 +51,27 @@ public class RegionMatrix {
      * @param z the z position
      */
     public void addPoint(int x, int z) {
+        addRemovePoint(true, x, z);
+    }
 
+    /**
+     * Remove a point in chunk matrix.
+     *
+     * @param x the x position
+     * @param z the z position
+     */
+    void removePoint(int x, int z) {
+        addRemovePoint(false, x, z);
+    }
+
+    /**
+     * Adds or removes a point.
+     *
+     * @param isAdd true = adds, flase = removes
+     * @param x     the x
+     * @param z     the z
+     */
+    private void addRemovePoint(boolean isAdd, int x, int z) {
         // From region X
         int chunkX = x / 16;
         Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
@@ -71,7 +91,17 @@ public class RegionMatrix {
         // Add to matrix
         byte posX = (byte) Math.abs((x % 512) % 16);
         byte posZ = (byte) Math.abs((z % 512) % 16);
-        matrix.addPoint(posX, posZ);
+        if (isAdd) {
+            matrix.addPoint(posX, posZ);
+        } else {
+            matrix.removePoint(posX, posZ);
+            if (matrix.isEmpty()) {
+                pRegionZ.remove(chunkZ);
+                if (pRegionZ.isEmpty()) {
+                    points.remove(chunkX);
+                }
+            }
+        }
     }
 
     /**
@@ -81,7 +111,7 @@ public class RegionMatrix {
      * @param z the z position
      * @return boolean point value
      */
-    public boolean getPoint(int x, int z) {
+    boolean getPoint(int x, int z) {
 
         // From region X
         int chunkX = x / 16;
@@ -101,6 +131,15 @@ public class RegionMatrix {
         byte posX = (byte) Math.abs((x % 512) % 16);
         byte posZ = (byte) Math.abs((z % 512) % 16);
         return matrix.getPoint(posX, posZ);
+    }
+
+    /**
+     * Is the matrix empty?
+     *
+     * @return true or false
+     */
+    public boolean isEmpty() {
+        return points.isEmpty();
     }
 
     /**

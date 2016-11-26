@@ -119,11 +119,22 @@ public final class RoadArea implements Area {
         return areaCommon.getZ2();
     }
 
+    @Override
+    public void setX1(int x1) {
+        areaCommon.setX1(x1);
+    }
+
+    @Override
+    public void setX2(int x2) {
+        areaCommon.setX2(x2);
+    }
+
     /**
      * Sets the y1. Do not use if the area is already in a land.
      *
      * @param y1 y1
      */
+    @Override
     public void setY1(int y1) {
         areaCommon.setY1(y1);
     }
@@ -133,8 +144,19 @@ public final class RoadArea implements Area {
      *
      * @param y2 y2
      */
+    @Override
     public void setY2(int y2) {
         areaCommon.setY2(y2);
+    }
+
+    @Override
+    public void setZ1(int z1) {
+        areaCommon.setZ1(z1);
+    }
+
+    @Override
+    public void setZ2(int z2) {
+        areaCommon.setZ2(z2);
     }
 
     /**
@@ -154,6 +176,16 @@ public final class RoadArea implements Area {
      */
     public void add(int x, int z) {
         regionMatrix.addPoint(x, z);
+    }
+
+    /**
+     * Removes point from x and z. Do not use if the area is already in a land.
+     *
+     * @param x the x
+     * @param z the z
+     */
+    public void remove(int x, int z) {
+        regionMatrix.removePoint(x, z);
     }
 
     /**

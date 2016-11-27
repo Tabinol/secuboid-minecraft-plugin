@@ -215,10 +215,10 @@ public final class CylinderArea implements Area {
 
     private void updatePos() {
         // Use "this", x2 must be greater of x1, etc.
-        rX = (double) (getX2() - getX1() + 1) / 2;
-        rZ = (double) (getZ2() - getZ1() + 1) / 2;
-        originH = getX1() + (rX) - 1;
-        originK = getZ1() + (rZ) - 1;
+        rX = (double) (getX2() - getX1()) / 2;
+        rZ = (double) (getZ2() - getZ1()) / 2;
+        originH = getX1() + rX;
+        originK = getZ1() + rZ;
     }
 
     /**
@@ -228,7 +228,7 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZPosFromX(int x) {
-        return (int) (originK + (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
+        return (int) Math.round(originK + (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
     }
 
     /**
@@ -238,7 +238,7 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getZNegFromX(int x) {
-        return (int) (originK - (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
+        return (int) Math.round(originK - (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
     }
 
     /**
@@ -248,7 +248,7 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getXPosFromZ(int z) {
-        return (int) (originH + (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
+        return (int) Math.round(originH + (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
     /**
@@ -258,7 +258,7 @@ public final class CylinderArea implements Area {
      * @return the position
      */
     public int getXNegFromZ(int z) {
-        return (int) (originH - (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
+        return (int) Math.round(originH - (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
     /**
@@ -268,7 +268,7 @@ public final class CylinderArea implements Area {
      */
     @Override
     public long getVolume() {
-        return (long) (rX * (getY2() - getY1() + 1) * rZ * Math.PI);
+        return Math.round(rX * (getY2() - getY1() + 1) * rZ * Math.PI);
     }
 
     @Override

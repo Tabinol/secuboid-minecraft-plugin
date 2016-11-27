@@ -44,6 +44,10 @@ public class RegionMatrix {
         this.points = points;
     }
 
+    Map<Integer, Map<Integer, ChunkMatrix>> getPoints() {
+        return Collections.unmodifiableMap(points);
+    }
+
     /**
      * Adds a point in chunk matrix.
      *
@@ -89,8 +93,8 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = (byte) Math.abs((x % 512) % 16);
-        byte posZ = (byte) Math.abs((z % 512) % 16);
+        byte posX = (byte) Math.abs(x % 16);
+        byte posZ = (byte) Math.abs(z % 16);
         if (isAdd) {
             matrix.addPoint(posX, posZ);
         } else {

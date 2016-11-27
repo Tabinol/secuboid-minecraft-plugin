@@ -36,6 +36,7 @@ class VisualCommon {
     private final PlayerConfEntry entry;
     private int y1;
     private int y2;
+    private Location lastOutSideLoc = null; // for land retraction
 
     /**
      * Creates a visual selection common method for a new area.
@@ -124,6 +125,28 @@ class VisualCommon {
     }
 
     /**
+     * Gets the step X of visual selection to skip line (lag protect).
+     *
+     * @param area the area
+     * @return the step x
+     */
+    int getStepX(Area area) {
+        int result = ((area.getX2() - area.getX1()) / 32);
+        return result > 1 ? result : 1;
+    }
+
+    /**
+     * Gets the step Z of visual selection to skip line (lag protect).
+     *
+     * @param area the area
+     * @return the step x
+     */
+    int getStepZ(Area area) {
+        int result = ((area.getZ2() - area.getZ1()) / 32);
+        return result > 1 ? result : 1;
+    }
+
+    /**
      * Colled when the player move (except for road).
      *
      * @param moveType the move type
@@ -131,10 +154,10 @@ class VisualCommon {
      */
     void playerMoveSquare(AreaSelection.MoveType moveType, Area area) {
         Location playerLoc;
+        boolean isChanged = false;
 
         switch (moveType) {
             case MOVE:
-                visualSelection.removeSelection();
                 playerLoc = player.getLocation();
                 setBottomTop(playerLoc);
                 area.setY1(getY1());
@@ -142,30 +165,32 @@ class VisualCommon {
 
                 // Move with player
                 if (playerLoc.getBlockX() - 1 < area.getX1()) {
-                    int diffX = area.getX1() - playerLoc.getBlockX() - 1;
-                    area.setX1(area.getX1() + diffX);
-                    area.setX2(area.getX2() + diffX);
+                    int diffX = area.getX1() - playerLoc.getBlockX() + 1;
+                    area.setX1(area.getX1() - diffX);
+                    area.setX2(area.getX2() - diffX);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockX() + 1 > area.getX2()) {
-                    int diffX = area.getX1() - playerLoc.getBlockX() + 1;
-                    area.setX1(area.getX1() + diffX);
-                    area.setX2(area.getX2() + diffX);
+                    int diffX = area.getX2() - playerLoc.getBlockX() - 1;
+                    area.setX1(area.getX1() - diffX);
+                    area.setX2(area.getX2() - diffX);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
-                    int diffZ = area.getZ1() - playerLoc.getBlockX() - 1;
-                    area.setZ1(area.getZ1() + diffZ);
-                    area.setZ2(area.getZ2() + diffZ);
+                    int diffZ = area.getZ1() - playerLoc.getBlockZ() + 1;
+                    area.setZ1(area.getZ1() - diffZ);
+                    area.setZ2(area.getZ2() - diffZ);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
-                    int diffZ = area.getZ1() - playerLoc.getBlockX() + 1;
-                    area.setZ1(area.getZ1() + diffZ);
-                    area.setZ2(area.getZ2() + diffZ);
+                    int diffZ = area.getZ2() - playerLoc.getBlockZ() - 1;
+                    area.setZ1(area.getZ1() - diffZ);
+                    area.setZ2(area.getZ2() - diffZ);
+                    isChanged = true;
                 }
-                visualSelection.makeVisualSelection();
                 break;
 
             case EXPAND:
-                visualSelection.removeSelection();
                 playerLoc = player.getLocation();
                 setBottomTop(playerLoc);
                 area.setY1(getY1());
@@ -174,47 +199,65 @@ class VisualCommon {
                 // Check where the player is outside the land
                 if (playerLoc.getBlockX() - 1 < area.getX1()) {
                     area.setX1(playerLoc.getBlockX() - 1);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockX() + 1 > area.getX2()) {
                     area.setX2(playerLoc.getBlockX() + 1);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockZ() - 1 < area.getZ1()) {
                     area.setZ1(playerLoc.getBlockZ() - 1);
+                    isChanged = true;
                 }
                 if (playerLoc.getBlockZ() + 1 > area.getZ2()) {
                     area.setZ2(playerLoc.getBlockZ() + 1);
+                    isChanged = true;
                 }
-                visualSelection.makeVisualSelection();
                 break;
 
             case RETRACT:
-                visualSelection.removeSelection();
                 playerLoc = player.getLocation();
+                boolean isPlayerInside = area.isLocationInside(playerLoc);
+                if (!isPlayerInside) {
+                    lastOutSideLoc = playerLoc;
+                }
                 setBottomTop(playerLoc);
                 area.setY1(getY1());
                 area.setY2(getY2());
 
                 // Check where the player is inside the land
-                if (area.getX1() != area.getX2()) {
-                    if (playerLoc.getBlockX() + 1 > area.getX1()) {
+                if (isPlayerInside && lastOutSideLoc != null) {
+                    if (lastOutSideLoc.getBlockX() < area.getX1() && playerLoc.getBlockX() >= area.getX1()) {
                         area.setX1(playerLoc.getBlockX() + 1);
-                    }
-                    if (playerLoc.getBlockX() - 1 < area.getX2()) {
+                        isChanged = true;
+                    } else if (lastOutSideLoc.getBlockX() > area.getX2() && playerLoc.getBlockX() <= area.getX2()) {
                         area.setX2(playerLoc.getBlockX() - 1);
+                        isChanged = true;
                     }
-                }
-                if (area.getZ1() != area.getZ2()) {
-                    if (playerLoc.getBlockZ() + 1 > area.getZ1()) {
+                    if (lastOutSideLoc.getBlockZ() < area.getZ1() && playerLoc.getBlockZ() >= area.getZ1()) {
                         area.setZ1(playerLoc.getBlockZ() + 1);
-                    }
-                    if (playerLoc.getBlockZ() - 1 < area.getZ2()) {
+                        isChanged = true;
+                    } else if (lastOutSideLoc.getBlockZ() > area.getZ2() && playerLoc.getBlockZ() <= area.getZ2()) {
                         area.setZ2(playerLoc.getBlockZ() - 1);
+                        isChanged = true;
                     }
                 }
-                visualSelection.makeVisualSelection();
+                // Negative size, put to player location
+                if (area.getX1() > area.getX2()) {
+                    area.setX1(playerLoc.getBlockX());
+                    area.setX2(playerLoc.getBlockX());
+                }
+                if (area.getZ1() > area.getZ2()) {
+                    area.setZ1(playerLoc.getBlockZ());
+                    area.setZ2(playerLoc.getBlockZ());
+                }
                 break;
 
             default:
+        }
+        if(isChanged) {
+            visualSelection.removeSelection();
+            visualSelection.makeVisualSelection();
         }
     }
 }

@@ -23,6 +23,8 @@ import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.util.Map;
+
 /**
  * Represents a road area.
  */
@@ -56,7 +58,38 @@ public final class RoadArea implements Area {
             this.regionMatrix = new RegionMatrix();
         } else {
             this.regionMatrix = regionMatrix;
+            updateLimits();
         }
+    }
+
+    private void updateLimits() {
+        for(Map.Entry<Integer, Map<Integer, ChunkMatrix>> eRegionZ : regionMatrix.getPoints().entrySet()) {
+            int regX = eRegionZ.getKey();
+            for(Map.Entry<Integer, ChunkMatrix> pMatrix : eRegionZ.getValue().entrySet()) {
+                int regZ = pMatrix.getKey();
+                for(byte chunkX = 0; chunkX < 16; chunkX ++) {
+                    for(byte chunkZ = 0; chunkZ < 16; chunkZ ++) {
+                        if(pMatrix.getValue().getPoint(chunkX, chunkZ)) {
+                            int x = (regX * 16) + chunkX;
+                            int z = (regZ * 16) + chunkZ;
+                            if(areaCommon.getX1() > x) {
+                                areaCommon.setX1(x);
+                            }
+                            if(areaCommon.getX2() < x) {
+                                areaCommon.setX2(x);
+                            }
+                            if(areaCommon.getZ1() > z) {
+                                areaCommon.setZ1(x);
+                            }
+                            if(areaCommon.getZ2() < z) {
+                                areaCommon.setZ2(z);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -176,6 +209,31 @@ public final class RoadArea implements Area {
      */
     public void add(int x, int z) {
         regionMatrix.addPoint(x, z);
+
+        // Update x and z square
+        if (areaCommon.getX1() > x) {
+            areaCommon.setX1(x);
+        }
+        if (areaCommon.getX2() < x) {
+            areaCommon.setX2(x);
+        }
+        if (areaCommon.getZ1() > z) {
+            areaCommon.setZ1(z);
+        }
+        if (areaCommon.getZ2() < z) {
+            areaCommon.setZ2(z);
+        }
+    }
+
+    /**
+     * Gets de point value.
+     *
+     * @param x the x position
+     * @param z the z position
+     * @return boolean point value
+     */
+    public boolean getPoint(int x, int z) {
+        return regionMatrix.getPoint(x, z);
     }
 
     /**

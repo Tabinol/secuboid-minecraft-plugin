@@ -133,12 +133,12 @@ public class LandsTest {
         RealLand land = lands.getLand(TEST_CYLINDER);
 
         // Volume check
-        if (land.getArea(1).getVolume() != (long) (Math.PI * 56 * 46 * 247)) {
+        if (land.getArea(1).getVolume() != Math.round(Math.PI * 55.5 * 45.5 * 247)) {
             throw new Exception("Volume error");
         }
 
         // Inside point check
-        if (!land.isLocationInside(WORLD, 9, 30, 55)) {
+        if (!land.isLocationInside(WORLD, 10, 30, 55)) {
             throw new Exception("Location error");
         }
 

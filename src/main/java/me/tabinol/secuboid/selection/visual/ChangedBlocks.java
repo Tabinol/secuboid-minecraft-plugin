@@ -36,11 +36,10 @@ class ChangedBlocks {
     /**
      * Maximum visible distance in blocks.
      */
-    public static final int MAX_DISTANCE = 512;
+    public static final int MAX_DISTANCE = 128;
     public static final Material SEL_ACTIVE = Material.SPONGE;
     public static final Material SEL_COLLISION = Material.REDSTONE_BLOCK;
-    public static final Material SEL_PASSIVE_CORNER = Material.BEACON;
-    public static final Material SEL_PASSIVE_SUBCORNER = Material.IRON_BLOCK;
+    public static final Material SEL_PASSIVE = Material.IRON_BLOCK;
 
     private final Player player;
 
@@ -62,7 +61,7 @@ class ChangedBlocks {
 
     @SuppressWarnings("deprecation")
     void changeBlock(Location location, Material material) {
-        if (player.getLocation().distanceSquared(location) <= MAX_DISTANCE) {
+        if (!isDistanceMoreThan(player.getLocation(), location, MAX_DISTANCE)) {
             Block block = location.getBlock();
             blockList.put(location, block.getType());
             blockByteList.put(location, block.getData());
@@ -77,5 +76,18 @@ class ChangedBlocks {
         }
         blockList.clear();
         blockByteList.clear();
+    }
+
+    /**
+     * Gets if the distance between two locations is more than "distance". This method looks only X and Z axes and
+     * ignore angle.
+     *
+     * @param loc1     the first location
+     * @param loc2     the second location
+     * @param distance the distance
+     * @return the result (true if outside of the distance)
+     */
+    private boolean isDistanceMoreThan(Location loc1, Location loc2, int distance) {
+        return Math.abs(loc1.getBlockX() - loc2.getBlockX()) > distance || Math.abs(loc1.getBlockZ() - loc2.getBlockZ()) > distance;
     }
 }

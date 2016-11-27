@@ -152,15 +152,16 @@ public class VisualSelectionCuboid implements VisualSelection {
         boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
         //MakeSquare
-        for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+        int stepX = visualCommon.getStepX(area);
+        int stepZ = visualCommon.getStepZ(area);
+        for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
+            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
                 if (posX == area.getX1() || posX == area.getX2()
                         || posZ == area.getZ1() || posZ == area.getZ2()) {
 
                     Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 
                     if (!isFromLand) {
-
                         // Active Selection
                         Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
                         if (parentDetected == testCuboidarea
@@ -170,27 +171,10 @@ public class VisualSelectionCuboid implements VisualSelection {
                             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
                             isCollision = true;
                         }
-                    } else // Passive Selection (created area)
-                        if ((posX == area.getX1() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX1() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX2() && posZ == area.getZ1() + 1)
-                                || (posX == area.getX2() && posZ == area.getZ2() - 1)
-                                || (posX == area.getX1() + 1 && posZ == area.getZ1())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ1())
-                                || (posX == area.getX1() + 1 && posZ == area.getZ2())
-                                || (posX == area.getX2() - 1 && posZ == area.getZ2())) {
-
-                            // Subcorner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
-
-                        } else if ((posX == area.getX1() && posZ == area.getZ1())
-                                || (posX == area.getX2() && posZ == area.getZ1())
-                                || (posX == area.getX1() && posZ == area.getZ2())
-                                || (posX == area.getX2() && posZ == area.getZ2())) {
-
-                            // Exact corner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-                        }
+                    } else {
+                        // Passive Selection (created area)
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
+                    }
 
                 } else {
                     // Square center, skip!

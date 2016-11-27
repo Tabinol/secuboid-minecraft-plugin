@@ -148,7 +148,12 @@ public class StorageFlat implements Storage {
         // Pass 1: load lands
         for (File file : files) {
             if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
-                loadLand(file);
+                try {
+                    loadLand(file);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    secuboid.getLog().severe("Unable to load the land from file: " + file.getName());
+                }
                 loadedlands++;
             }
         }
@@ -163,6 +168,7 @@ public class StorageFlat implements Storage {
                 secuboid.getLog().severe("Error: The parent is not found for land: " + land);
             }
         }
+        secuboid.getLog().info(loadedlands + " land(s) loaded.");
     }
 
     /**

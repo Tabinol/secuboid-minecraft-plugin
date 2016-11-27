@@ -65,8 +65,8 @@ public class AreaUtil {
                 int regionZ = Integer.parseInt(multiStr[i + 1]);
                 String hex = multiStr[i + 2];
                 short[] matrix = new short[16];
-                for (int j = 0; j < hex.length(); j += 4) {
-                    matrix[j] = Short.parseShort(hex.substring(j, j + 4));
+                for (int j = 0; j < 16; j++) {
+                    matrix[j] = (short) (Integer.parseInt(hex.substring(j * 4, (j * 4) + 4), 16) & 0xffff);
                 }
                 ChunkMatrix chunkMatrix = new ChunkMatrix(matrix);
                 Map<Integer, ChunkMatrix> pointX = points.get(regionX);

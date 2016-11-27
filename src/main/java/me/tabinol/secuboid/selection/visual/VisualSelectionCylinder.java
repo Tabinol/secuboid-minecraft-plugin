@@ -148,8 +148,10 @@ public class VisualSelectionCylinder implements VisualSelection {
         boolean canCreate = parentDetected.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
 
         //Make Cylinder
-        for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+        int stepX = visualCommon.getStepX(area);
+        int stepZ = visualCommon.getStepZ(area);
+        for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
+            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
                 if (posZ == area.getZNegFromX(posX) || posZ == area.getZPosFromX(posX)
                         || posX == area.getXNegFromZ(posZ) || posX == area.getXPosFromZ(posZ)) {
 
@@ -168,17 +170,7 @@ public class VisualSelectionCylinder implements VisualSelection {
                         }
                     } else {
                         // Passive Selection (created area)
-                        if (posX == (int) (area.getOriginH() - 1) || posX == (int) (area.getOriginH() + 1)
-                                || posZ == (int) (area.getOriginK() - 1) || posZ == (int) (area.getOriginK() + 1)) {
-
-                            // Subcorner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
-
-                        } else if (posX == (int) area.getOriginH() || posZ == (int) area.getOriginK()) {
-
-                            // Exact corner
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_CORNER);
-                        }
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
                     }
                 }
             }

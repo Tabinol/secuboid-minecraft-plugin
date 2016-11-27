@@ -60,6 +60,11 @@ public class VisualSelectionRoad implements VisualSelection {
 
     private RoadArea area;
 
+    /**
+     * True if there is a change and we have to change visual selection;
+     */
+    private boolean isAreaChange = false;
+
     public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
         this.secuboid = secuboid;
         if (area == null) {
@@ -108,8 +113,7 @@ public class VisualSelectionRoad implements VisualSelection {
 
         Location loc = player.getLocation();
         area = new RoadArea(loc.getWorld().getName(), visualCommon.getY1(), visualCommon.getY2(), null);
-
-        makeVisualSelection();
+        moveWithPlayer(true);
     }
 
     @Override
@@ -118,24 +122,22 @@ public class VisualSelectionRoad implements VisualSelection {
         GlobalLand outsideArea = secuboid.getLands().getOutsideArea(area.getWorldName());
         boolean canCreate = outsideArea.getPermissionsFlags()
                 .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
+        int stepX = visualCommon.getStepX(area);
+        int stepZ = visualCommon.getStepZ(area);
 
         // Makes borders X
-        for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
+        for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
             boolean isLastActive = false;
-            if (!isFromLand || posX % 5 == 0) {
-                for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
-                    isLastActive = makeBorders(false, posX, posZ, isLastActive, outsideArea, canCreate);
-                }
+            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
+                isLastActive = makeBorders(false, posX, posZ, isLastActive, outsideArea, canCreate);
             }
         }
 
         // Makes borders Z
-        for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ++) {
+        for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
             boolean isLastActive = false;
-            if (!isFromLand || posZ % 5 == 0) {
-                for (int posX = area.getX1(); posX <= area.getX2(); posX++) {
-                    isLastActive = makeBorders(true, posX, posZ, isLastActive, outsideArea, canCreate);
-                }
+            for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
+                isLastActive = makeBorders(true, posX, posZ, isLastActive, outsideArea, canCreate);
             }
         }
     }
@@ -148,9 +150,9 @@ public class VisualSelectionRoad implements VisualSelection {
             if (!isLocationInside) {
                 Location lastLoc;
                 if (isZ) {
-                    lastLoc = newloc.add(1, 0, 0);
+                    lastLoc = newloc.subtract(1, 0, 0);
                 } else {
-                    lastLoc = newloc.add(0, 0, 1);
+                    lastLoc = newloc.subtract(0, 0, 1);
                 }
 
                 // Not active selection
@@ -172,7 +174,7 @@ public class VisualSelectionRoad implements VisualSelection {
 
         Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
         if (isFromLand) {
-            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE_SUBCORNER);
+            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
         } else {
             if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
                 changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
@@ -200,7 +202,7 @@ public class VisualSelectionRoad implements VisualSelection {
 
     private void moveWithPlayer(boolean isAdd) {
 
-        removeSelection();
+        isAreaChange = false;
         Location playerLoc = player.getLocation();
         visualCommon.setBottomTop(playerLoc);
         boolean active;
@@ -237,7 +239,7 @@ public class VisualSelectionRoad implements VisualSelection {
         }
         for (int z = posZ; z >= posZ - radius; z--) {
             active = true;
-            for (int x = posZ; x >= posX - radius; x--) {
+            for (int x = posX; x >= posX - radius; x--) {
                 active = checkForPoint(isAdd, active, x, z);
             }
             active = true;
@@ -247,7 +249,7 @@ public class VisualSelectionRoad implements VisualSelection {
         }
         for (int z = posZ; z <= posZ + radius; z++) {
             active = true;
-            for (int x = posZ; x >= posX - radius; x--) {
+            for (int x = posX; x >= posX - radius; x--) {
                 active = checkForPoint(isAdd, active, x, z);
             }
             active = true;
@@ -255,8 +257,10 @@ public class VisualSelectionRoad implements VisualSelection {
                 active = checkForPoint(isAdd, active, x, z);
             }
         }
-
-        makeVisualSelection();
+        if (isAreaChange) {
+            removeSelection();
+            makeVisualSelection();
+        }
     }
 
     private boolean checkForPoint(boolean isAdd, boolean active, int x, int z) {
@@ -269,7 +273,10 @@ public class VisualSelectionRoad implements VisualSelection {
             if (!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
                 return false;
             }
-            area.add(x, z);
+            if (!area.getPoint(x, z)) {
+                area.add(x, z);
+                isAreaChange = true;
+            }
         } else {
 
             // Erase

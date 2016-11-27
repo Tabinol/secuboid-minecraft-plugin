@@ -108,7 +108,8 @@ public class ChunkMatrix {
     public String toFileFormat() {
         StringBuilder sb = new StringBuilder();
         for (short slice : matrix) {
-            sb.append(Integer.toHexString(slice & 0xffff));
+            String hexString = Integer.toHexString(slice & 0xffff);
+            sb.append("0000".substring(hexString.length())).append(hexString);
         }
         return sb.toString();
     }

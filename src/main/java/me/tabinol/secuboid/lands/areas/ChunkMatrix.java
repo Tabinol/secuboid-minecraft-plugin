@@ -107,13 +107,9 @@ public class ChunkMatrix {
 
     public String toFileFormat() {
         StringBuilder sb = new StringBuilder();
-        boolean isFirst = true;
         for (short slice : matrix) {
-            if(!isFirst) {
-                sb.append(',');
-            }
-            sb.append(slice);
-            isFirst = false;
+            String hexString = Integer.toHexString(slice & 0xffff);
+            sb.append("0000".substring(hexString.length())).append(hexString);
         }
         return sb.toString();
     }

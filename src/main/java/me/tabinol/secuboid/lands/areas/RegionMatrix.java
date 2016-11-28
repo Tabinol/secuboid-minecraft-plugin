@@ -93,8 +93,8 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = (byte) Math.abs(x % 16);
-        byte posZ = (byte) Math.abs(z % 16);
+        byte posX = getChunkPos(x);
+        byte posZ = getChunkPos(z);
         if (isAdd) {
             matrix.addPoint(posX, posZ);
         } else {
@@ -132,9 +132,24 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = (byte) Math.abs((x % 512) % 16);
-        byte posZ = (byte) Math.abs((z % 512) % 16);
+        byte posX = getChunkPos(x);
+        byte posZ = getChunkPos(z);
         return matrix.getPoint(posX, posZ);
+    }
+
+    /**
+     * Gets the x or the z and return the correct position in the chunk
+     *
+     * @param value the value (x or z)
+     * @return the position (0-16)
+     */
+    private byte getChunkPos(int value) {
+        int modul = value % 16;
+        if (modul < 0) {
+            return (byte) (16 + modul);
+        } else {
+            return (byte) modul;
+        }
     }
 
     /**

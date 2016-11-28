@@ -50,7 +50,7 @@ public class ChunkMatrix {
      * @param chunkZ the chunk z position
      */
     public void addPoint(byte chunkX, byte chunkZ) {
-        matrix[chunkX] = (short) (matrix[chunkX] | (1 << chunkZ));
+        matrix[chunkX] |= (1 << chunkZ);
     }
 
     /**
@@ -60,7 +60,7 @@ public class ChunkMatrix {
      * @param chunkZ the chunk z position
      */
     public void removePoint(byte chunkX, byte chunkZ) {
-        matrix[chunkX] = (short) (matrix[chunkX] & ~(1 << chunkZ));
+        matrix[chunkX] &= ~(1 << chunkZ);
     }
 
     /**
@@ -107,9 +107,13 @@ public class ChunkMatrix {
 
     public String toFileFormat() {
         StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
         for (short slice : matrix) {
-            String hexString = Integer.toHexString(slice & 0xffff);
-            sb.append("0000".substring(hexString.length())).append(hexString);
+            if(!isFirst) {
+                sb.append(',');
+            }
+            sb.append(slice);
+            isFirst = false;
         }
         return sb.toString();
     }

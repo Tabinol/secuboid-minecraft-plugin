@@ -296,12 +296,12 @@ public class Collisions {
 
         // Loop for Land first
         if (land != null) {
-            int x1 = Integer.MIN_VALUE;
-            int y1 = Integer.MIN_VALUE;
-            int z1 = Integer.MIN_VALUE;
-            int x2 = Integer.MAX_VALUE;
-            int y2 = Integer.MAX_VALUE;
-            int z2 = Integer.MAX_VALUE;
+            int x1 = Integer.MAX_VALUE;
+            int y1 = Integer.MAX_VALUE;
+            int z1 = Integer.MAX_VALUE;
+            int x2 = Integer.MIN_VALUE;
+            int y2 = Integer.MIN_VALUE;
+            int z2 = Integer.MIN_VALUE;
             for (Area area : land.getAreas()) {
                 x1 = LocalMath.lowerInt(area.getX1(), x1);
                 y1 = LocalMath.lowerInt(area.getY1(), y1);

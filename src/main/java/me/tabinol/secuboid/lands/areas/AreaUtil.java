@@ -63,10 +63,10 @@ public class AreaUtil {
             for (int i = 4; i < multiStr.length; i += 3) {
                 int regionX = Integer.parseInt(multiStr[i]);
                 int regionZ = Integer.parseInt(multiStr[i + 1]);
-                String hex = multiStr[i + 2];
+                String[] multiStrMat = multiStr[i + 2].split(",");
                 short[] matrix = new short[16];
                 for (int j = 0; j < 16; j++) {
-                    matrix[j] = (short) (Integer.parseInt(hex.substring(j * 4, (j * 4) + 4), 16) & 0xffff);
+                    matrix[j] = Short.parseShort(multiStrMat[j]);
                 }
                 ChunkMatrix chunkMatrix = new ChunkMatrix(matrix);
                 Map<Integer, ChunkMatrix> pointX = points.get(regionX);

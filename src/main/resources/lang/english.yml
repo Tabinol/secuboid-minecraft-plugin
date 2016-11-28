@@ -46,7 +46,7 @@ HELP:
       36: "/secuboid who : (*) Show players on a land."
       37: "(*) If the land is not selected, the name can be the last parameter."
     SELECT:
-      1: "/secuboid select <here/land name> : Select a land for modification."
+      1: "/secuboid select <here/landName/land landName> : Select a land for modification."
       2: "/secuboid select : Start the visual selection (cuboid)."
       3: "/secuboid select cub[oid] : Start the visual selection for a cuboid (default)."
       4: "/secuboid select cyl[inder] : Start the visual selection for a cylinder."

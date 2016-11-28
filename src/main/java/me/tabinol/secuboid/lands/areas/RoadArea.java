@@ -63,25 +63,25 @@ public final class RoadArea implements Area {
     }
 
     private void updateLimits() {
-        for(Map.Entry<Integer, Map<Integer, ChunkMatrix>> eRegionZ : regionMatrix.getPoints().entrySet()) {
+        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> eRegionZ : regionMatrix.getPoints().entrySet()) {
             int regX = eRegionZ.getKey();
-            for(Map.Entry<Integer, ChunkMatrix> pMatrix : eRegionZ.getValue().entrySet()) {
+            for (Map.Entry<Integer, ChunkMatrix> pMatrix : eRegionZ.getValue().entrySet()) {
                 int regZ = pMatrix.getKey();
-                for(byte chunkX = 0; chunkX < 16; chunkX ++) {
-                    for(byte chunkZ = 0; chunkZ < 16; chunkZ ++) {
-                        if(pMatrix.getValue().getPoint(chunkX, chunkZ)) {
+                for (byte chunkX = 0; chunkX < 16; chunkX++) {
+                    for (byte chunkZ = 0; chunkZ < 16; chunkZ++) {
+                        if (pMatrix.getValue().getPoint(chunkX, chunkZ)) {
                             int x = (regX * 16) + chunkX;
                             int z = (regZ * 16) + chunkZ;
-                            if(areaCommon.getX1() > x) {
+                            if (areaCommon.getX1() > x) {
                                 areaCommon.setX1(x);
                             }
-                            if(areaCommon.getX2() < x) {
+                            if (areaCommon.getX2() < x) {
                                 areaCommon.setX2(x);
                             }
-                            if(areaCommon.getZ1() > z) {
-                                areaCommon.setZ1(x);
+                            if (areaCommon.getZ1() > z) {
+                                areaCommon.setZ1(z);
                             }
-                            if(areaCommon.getZ2() < z) {
+                            if (areaCommon.getZ2() < z) {
                                 areaCommon.setZ2(z);
                             }
                         }
@@ -89,7 +89,6 @@ public final class RoadArea implements Area {
                 }
             }
         }
-
     }
 
     /**

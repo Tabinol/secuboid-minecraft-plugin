@@ -96,18 +96,25 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                     }
                     new CommandSelectWorldedit(secuboid, player, playerConf).MakeSelect();
 
-                } else if(curArg.toLowerCase().startsWith("cub")) {
+                } else if(curArg.toLowerCase().matches("^cub(oid)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().startsWith("cyl")) {
+                } else if(curArg.toLowerCase().matches("^cyl(inder)?")) {
                     doVisualActiveSelect(AreaType.CYLINDER, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().startsWith("roa")) {
+                } else if(curArg.toLowerCase().matches("^roa(d)?")) {
                     doVisualActiveSelect(AreaType.ROAD, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().startsWith("exp")) {
+                } else if(curArg.toLowerCase().matches("^exp(and)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().startsWith("ret")) {
+                } else if(curArg.toLowerCase().matches("^ret(ract)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.RETRACT);
-                } else if(curArg.toLowerCase().startsWith("mov")) {
+                } else if(curArg.toLowerCase().matches("^mov(e)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.MOVE);
+                } else if(curArg.toLowerCase().matches("^lan(d)?")) {
+                    String curArg2 = argList.getNext();
+                    if(curArg2 != null ) {
+                        doSelectLand(curArg2);
+                    } else {
+                        doSelectLand(curArg);
+                    }
                 } else {
                     doSelectLand(curArg);
                 }
@@ -116,11 +123,11 @@ public class CommandSelect extends CommandCollisionsThreadExec {
             }
         } else if ((curArg = argList.getNext()) != null && curArg.equalsIgnoreCase("done")) {
             doSelectAreaDone();
-        } else if (curArg != null && curArg.toLowerCase().startsWith("exp")) {
+        } else if (curArg != null && curArg.toLowerCase().matches("^exp(and)?")) {
             changeVisualActiveSelect(AreaSelection.MoveType.EXPAND);
-        } else if (curArg != null && curArg.toLowerCase().startsWith("ret")) {
+        } else if (curArg != null && curArg.toLowerCase().matches("^ret(ract)?")) {
             changeVisualActiveSelect(AreaSelection.MoveType.RETRACT);
-        } else if (curArg != null && curArg.toLowerCase().startsWith("mov")) {
+        } else if (curArg != null && curArg.toLowerCase().matches("^mov(e)?")) {
             changeVisualActiveSelect(AreaSelection.MoveType.MOVE);
         } else if (curArg != null && curArg.equalsIgnoreCase("info")) {
             doSelectAreaInfo();

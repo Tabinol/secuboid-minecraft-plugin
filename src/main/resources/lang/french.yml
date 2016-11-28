@@ -46,7 +46,7 @@ HELP:
       33: "/secuboid who : (*) Lister les joueurs sur un terrain."
       34: "(*) Si un terrain n'est pas sélectionné, le nom du celui-ci peut être le dernier argument."
     SELECT:
-      1: "/secuboid select <here/nom du terrain> : Sélectionner un terrain pour une modification."
+      1: "/secuboid select <here/nomTerrain/land nomTerrain> : Sélectionner un terrain pour une modification."
       2: "/secuboid select : Démarrer la sélection visuelle (cuboid)."
       3: "/secuboid select cub[oid] : Démarrer la sélection visuelle d'un cuboid (défaut)."
       4: "/secuboid select cyl[inder] : Démarrer la sélection visuelle d'un cylindre."

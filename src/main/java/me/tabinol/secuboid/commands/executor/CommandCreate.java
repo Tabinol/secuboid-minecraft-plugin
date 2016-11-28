@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
@@ -142,7 +139,7 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 
             // Cancel and select the land
             new CommandCancel(secuboid, null, sender, argList).commandExecute();
-            new CommandSelect(secuboid, null, player, new ArgList(secuboid, new String[]{cLand.getName()},
+            new CommandSelect(secuboid, null, player, new ArgList(secuboid, new String[]{"land", cLand.getName()},
                     player)).commandExecute();
 
         } catch (SecuboidLandException ex) {

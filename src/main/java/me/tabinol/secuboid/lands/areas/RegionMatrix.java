@@ -77,7 +77,7 @@ public class RegionMatrix {
      */
     private void addRemovePoint(boolean isAdd, int x, int z) {
         // From region X
-        int chunkX = x / 16;
+        int chunkX = (int) Math.floor(x / 16);
         Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
         if (pRegionZ == null) {
             pRegionZ = new HashMap<Integer, ChunkMatrix>();
@@ -85,7 +85,7 @@ public class RegionMatrix {
         }
 
         // From region Z
-        int chunkZ = z / 16;
+        int chunkZ = (int) Math.floor(z / 16);
         ChunkMatrix matrix = pRegionZ.get(chunkZ);
         if (matrix == null) {
             matrix = new ChunkMatrix();
@@ -118,14 +118,14 @@ public class RegionMatrix {
     boolean getPoint(int x, int z) {
 
         // From region X
-        int chunkX = x / 16;
+        int chunkX = (int) Math.floor(x / 16);
         Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
         if (pRegionZ == null) {
             return false;
         }
 
         // From region Z
-        int chunkZ = z / 16;
+        int chunkZ = (int) Math.floor(z / 16);
         ChunkMatrix matrix = pRegionZ.get(chunkZ);
         if (matrix == null) {
             return false;

@@ -88,16 +88,20 @@ class VisualCommon {
         int playerTop = entry.getSelectionTop();
         int maxTop = secuboid.getConf().getMaxTop();
         int playerY = playerLocation.getBlockY();
-        if (playerBottom >= 0 && playerBottom < y1) {
-            y1 = playerBottom < maxBottom ? maxBottom : playerBottom;
+        if (playerBottom >= 0) {
+            if (playerBottom != y1) {
+                y1 = playerBottom < maxBottom ? maxBottom : playerBottom;
+            }
         } else {
             int newY1 = playerY + playerBottom;
             if (y1 < newY1) {
                 y1 = newY1 < maxBottom ? maxBottom : newY1;
             }
         }
-        if (playerTop >= 0 && playerTop > y2) {
-            y2 = playerTop > maxTop ? maxTop : playerTop;
+        if (playerTop >= 0) {
+            if (playerTop != y2) {
+                y2 = playerTop > maxTop ? maxTop : playerTop;
+            }
         } else {
             int newY2 = playerY - playerTop;
             if (y2 > newY2) {
@@ -255,7 +259,7 @@ class VisualCommon {
 
             default:
         }
-        if(isChanged) {
+        if (isChanged) {
             visualSelection.removeSelection();
             visualSelection.makeVisualSelection();
         }

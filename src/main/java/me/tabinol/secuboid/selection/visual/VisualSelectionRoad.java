@@ -156,6 +156,7 @@ public class VisualSelectionRoad implements VisualSelection {
                 }
 
                 // Not active selection
+                lastLoc.setY(PlayersUtil.getYNearPlayer(player, lastLoc.getBlockX(), lastLoc.getBlockZ()) - 1);
                 setChangedBlocks(outsideArea, canCreate, lastLoc);
                 return false;
             }
@@ -219,42 +220,42 @@ public class VisualSelectionRoad implements VisualSelection {
         // Detect selection
         for (int x = posX; x >= posX - radius; x--) {
             active = true;
-            for (int z = posZ; z >= posZ - radius; z--) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int z = posZ; active && z >= posZ - radius; z--) {
+                active = checkForPoint(isAdd, x, z);
             }
             active = true;
-            for (int z = posZ; z <= posZ + radius; z++) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int z = posZ; active && z <= posZ + radius; z++) {
+                active = checkForPoint(isAdd, x, z);
             }
         }
         for (int x = posX; x <= posX + radius; x++) {
             active = true;
-            for (int z = posZ; z >= posZ - radius; z--) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int z = posZ; active && z >= posZ - radius; z--) {
+                active = checkForPoint(isAdd, x, z);
             }
             active = true;
-            for (int z = posZ; z <= posZ + radius; z++) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int z = posZ; active && z <= posZ + radius; z++) {
+                active = checkForPoint(isAdd, x, z);
             }
         }
         for (int z = posZ; z >= posZ - radius; z--) {
             active = true;
-            for (int x = posX; x >= posX - radius; x--) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int x = posX; active && x >= posX - radius; x--) {
+                active = checkForPoint(isAdd, x, z);
             }
             active = true;
-            for (int x = posX; z <= posX + radius; x++) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int x = posX; active && z <= posX + radius; x++) {
+                active = checkForPoint(isAdd, x, z);
             }
         }
         for (int z = posZ; z <= posZ + radius; z++) {
             active = true;
-            for (int x = posX; x >= posX - radius; x--) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int x = posX; active && x >= posX - radius; x--) {
+                active = checkForPoint(isAdd, x, z);
             }
             active = true;
-            for (int x = posX; z <= posX + radius; x++) {
-                active = checkForPoint(isAdd, active, x, z);
+            for (int x = posX; active && z <= posX + radius; x++) {
+                active = checkForPoint(isAdd, x, z);
             }
         }
         if (isAreaChange) {
@@ -263,14 +264,14 @@ public class VisualSelectionRoad implements VisualSelection {
         }
     }
 
-    private boolean checkForPoint(boolean isAdd, boolean active, int x, int z) {
+    private boolean checkForPoint(boolean isAdd, int x, int z) {
 
         EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
         Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
 
         if (isAdd) {
             // Add point
-            if (!active || nonSelectedMaterials.contains(newloc.getBlock().getType())) {
+            if (nonSelectedMaterials.contains(newloc.getBlock().getType())) {
                 return false;
             }
             if (!area.getPoint(x, z)) {

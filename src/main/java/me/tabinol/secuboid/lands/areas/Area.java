@@ -181,7 +181,7 @@ public interface Area extends Comparable<Area> {
     long getVolume();
 
     /**
-     * Gets if the locatation is inside the area.
+     * Gets if the location is inside the area.
      *
      * @param worldName the world name
      * @param x         the x
@@ -192,12 +192,22 @@ public interface Area extends Comparable<Area> {
     boolean isLocationInside(String worldName, int x, int y, int z);
 
     /**
-     * Gets if the locatation is inside the area.
+     * Gets if the location is inside the area.
      *
      * @param loc the location
      * @return if true or false
      */
     boolean isLocationInside(Location loc);
+
+    /**
+     * Gets if the location is in the square limit of the land. This method ignore the world and the y values.
+     * Use isLocationInside methods if you want to check an exact location.
+     *
+     * @param x the x
+     * @param z the z
+     * @return if true or false
+     */
+    boolean isLocationInsideSquare(int x, int z);
 
     /**
      * Gets an exact copy of this area.

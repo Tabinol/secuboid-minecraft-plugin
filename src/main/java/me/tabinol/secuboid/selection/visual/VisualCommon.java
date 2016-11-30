@@ -221,7 +221,7 @@ class VisualCommon {
 
             case RETRACT:
                 playerLoc = player.getLocation();
-                boolean isPlayerInside = area.isLocationInside(playerLoc);
+                boolean isPlayerInside = area.isLocationInsideSquare(playerLoc.getBlockX(), playerLoc.getBlockZ());
                 if (!isPlayerInside) {
                     lastOutSideLoc = playerLoc;
                 }

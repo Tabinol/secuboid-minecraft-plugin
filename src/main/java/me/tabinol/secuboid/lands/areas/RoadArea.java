@@ -268,6 +268,11 @@ public final class RoadArea implements Area {
     }
 
     @Override
+    public boolean isLocationInsideSquare(int x, int z) {
+        return areaCommon.isLocationInsideSquare(x, z);
+    }
+
+    @Override
     public String toFileFormat() {
         return AreaType.ROAD + ":" + areaCommon.getWorldName() + ":" + getY1() + ":" + getY2() + regionMatrix.toFileFormat();
     }

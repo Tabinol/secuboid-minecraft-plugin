@@ -206,7 +206,6 @@ public class VisualSelectionRoad implements VisualSelection {
         isAreaChange = false;
         Location playerLoc = player.getLocation();
         visualCommon.setBottomTop(playerLoc);
-        boolean active;
         int posX = playerLoc.getBlockX();
         int posZ = playerLoc.getBlockZ();
         int radius = secuboid.getPlayerConf().get(player).getSelectionRadius();
@@ -219,48 +218,48 @@ public class VisualSelectionRoad implements VisualSelection {
 
         // Detect selection
         for (int x = posX; x >= posX - radius; x--) {
-            active = true;
-            for (int z = posZ; active && z >= posZ - radius; z--) {
-                active = checkForPoint(isAdd, x, z);
-            }
-            active = true;
-            for (int z = posZ; active && z <= posZ + radius; z++) {
-                active = checkForPoint(isAdd, x, z);
-            }
+            checkZPoints(x, posZ, radius, isAdd);
         }
         for (int x = posX; x <= posX + radius; x++) {
-            active = true;
-            for (int z = posZ; active && z >= posZ - radius; z--) {
-                active = checkForPoint(isAdd, x, z);
-            }
-            active = true;
-            for (int z = posZ; active && z <= posZ + radius; z++) {
-                active = checkForPoint(isAdd, x, z);
-            }
+            checkZPoints(x, posZ, radius, isAdd);
         }
         for (int z = posZ; z >= posZ - radius; z--) {
-            active = true;
-            for (int x = posX; active && x >= posX - radius; x--) {
-                active = checkForPoint(isAdd, x, z);
-            }
-            active = true;
-            for (int x = posX; active && z <= posX + radius; x++) {
-                active = checkForPoint(isAdd, x, z);
-            }
+            checkXPoints(z, posX, radius, isAdd);
         }
         for (int z = posZ; z <= posZ + radius; z++) {
-            active = true;
-            for (int x = posX; active && x >= posX - radius; x--) {
-                active = checkForPoint(isAdd, x, z);
-            }
-            active = true;
-            for (int x = posX; active && z <= posX + radius; x++) {
-                active = checkForPoint(isAdd, x, z);
-            }
+            checkXPoints(z, posX, radius, isAdd);
         }
         if (isAreaChange) {
             removeSelection();
             makeVisualSelection();
+        }
+    }
+
+    private void checkZPoints(int x, int posZ, int radius, boolean isAdd) {
+
+        boolean active;
+
+        active = true;
+        for (int z = posZ; active && z >= posZ - radius; z--) {
+            active = checkForPoint(isAdd, x, z);
+        }
+        active = true;
+        for (int z = posZ; active && z <= posZ + radius; z++) {
+            active = checkForPoint(isAdd, x, z);
+        }
+    }
+
+    private void checkXPoints(int z, int posX, int radius, boolean isAdd) {
+
+        boolean active;
+
+        active = true;
+        for (int x = posX; active && x >= posX - radius; x--) {
+            active = checkForPoint(isAdd, x, z);
+        }
+        active = true;
+        for (int x = posX; active && x <= posX + radius; x++) {
+            active = checkForPoint(isAdd, x, z);
         }
     }
 

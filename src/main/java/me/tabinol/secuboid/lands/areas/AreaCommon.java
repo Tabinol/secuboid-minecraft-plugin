@@ -231,6 +231,18 @@ final class AreaCommon {
     }
 
     /**
+     * Gets if the location is in the square limit of the land. This method ignore the world and the y values.
+     * Use isLocationInside methods if you want to check an exact location.
+     *
+     * @param x the x
+     * @param z the z
+     * @return if true or false
+     */
+    boolean isLocationInsideSquare(int x, int z) {
+        return LocalMath.isInInterval(x, getX1(), getX2()) && LocalMath.isInInterval(z, getZ1(), getZ2());
+    }
+
+    /**
      * Implements compareTo. This methode is not overrided because this class is not public
      *
      * @param t the area

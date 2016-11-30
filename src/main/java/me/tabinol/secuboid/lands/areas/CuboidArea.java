@@ -190,6 +190,11 @@ public final class CuboidArea implements Area {
     }
 
     @Override
+    public boolean isLocationInsideSquare(int x, int z) {
+        return areaCommon.isLocationInsideSquare(x, z);
+    }
+
+    @Override
     public String toFileFormat() {
         return AreaType.CUBOID + ":" + areaCommon.getWorldName()
                 + ":" + getX1() + ":" + getY1() + ":" + getZ1() + ":" + getX2() + ":" + getY2() + ":" + getZ2();

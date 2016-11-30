@@ -1,4 +1,4 @@
-# Ne pas changer la version si vous ne savez pas ce que vous faites!
+# Ne change pas la version si tu ne sais pas ce que tu fais!
 VERSION: ${langVersion}
 ENABLE: "Secuboid est actif."
 DISABLE: "Secuboid est désactivé."
@@ -96,7 +96,7 @@ HELP:
       3: "/secuboid flag unset <drapeau> : Enlève un drapeau."
     INV:
       1: "/secuboid inv loaddeath <joueur> [(1-9)] : Recharge l'inventaire avant la mort, 1 = dernière mort"
-      2: "/secuboid inv default <save/remove>: Sauvegarde (ou enlève) votre inventaire pour le défaut pour les joueurs"
+      2: "/secuboid inv default <save/remove>: Sauvegarde (ou enlève) ton inventaire pour le défaut pour les joueurs"
       3: "/secuboid inv forcesave : Sauvegarde la configuration et les inventaires"
     KICK:
       1: "/secuboid kick <joueur> [terrain] : Jeter un joueur hors du terrain."
@@ -154,8 +154,8 @@ HELP:
 SCOREBOARD:
   LANDINFO: "Liste des joueurs"
 GENERAL:
-  MISSINGPERMISSION: "Désolé, vous n'avez pas la permission."
-  MISSINGPERMISSIONHERE: "Désolé, vous n'avez pas la permission à cet endroit."
+  MISSINGPERMISSION: "Désolé, tu n'as pas la permission."
+  MISSINGPERMISSIONHERE: "Désolé, tu n'as pas la permission à cet endroit."
   ERROR: "Il y a une erreur, contactez un administrateur."
   MISSINGINFO: "Il manque des informations, vérifier la commande."
   FROMDEFAULTTYPE: "héritage du défaut type '%':"
@@ -166,7 +166,7 @@ GENERAL:
     FLAGSMODE: "Quittez le mode drapeau avant."
   JOIN:
     SELECTMODE: "Joindre le mode sélection avant."
-    SELECTAREA: "Vous devez avoir sélectionné votre étendue avant."
+    SELECTAREA: "Tu dois avoir sélectionné ton étendue avant."
 COLLISION:
   SHOW:
     COLLISION: "Collision avec '%', étendue id '%'."
@@ -175,19 +175,19 @@ COLLISION:
     HAS_CHILDREN: "Ce terrain est le parent de '%'."
     NAME_IN_USE: "Ce nom est déjà utilisé."
     IN_APPROVE_LIST: "Ce terrain est déjà dans la liste d'approbation."
-    NOT_ENOUGH_MONEY: "Vous n'avez pas assez d'argent."
+    NOT_ENOUGH_MONEY: "Tu n'as pas assez d'argent."
     MAX_AREA_FOR_LAND: "Plus que le nombre maximum d'étendues pour le terrain '%'."
     MAX_LAND_FOR_PLAYER: "Plus que le nombre maximum de terrain pour le joueur."
     MUST_HAVE_AT_LEAST_ONE_AREA: "Le terrain doit avoir au moins une étendue."
     LISTSTART: "-Action(s) à approuver-"
     LIST: "% Terrain: %, demandeur: %, action: %."
     LISTROWNULL: "Pas d'action à approuver."
-    PARAMNULL: "Vous devez préciser un nom de la liste."
+    PARAMNULL: "Tu dois préciser un nom de la liste."
     NOTIFYLAND: "Le terrain '%' est ajouté pour une approbation par %."
     NOTIFY: "% action(s) en attente d'approbation."
   GENERAL:
-    NEEDAPPROVE: "Votre action est en attente d'approbation. \"/Secuboid approve cancel %\" si vous voulez annuler."
-    CANNOTDONE: "Problème détecté! Votre action ne peut être complétée."
+    NEEDAPPROVE: "Ton action est en attente d'approbation. \"/Secuboid approve cancel %\" si tu veux annuler."
+    CANNOTDONE: "Problème détecté! Ton action ne peut être complétée."
     DONE: "Cette action est approuvée."
     REMOVE: "Cette action est enlevée de la liste."
     CLEAR: "La liste est maintenant détruite."
@@ -196,10 +196,10 @@ COMMAND:
     LANDNOTFOUND: "Ce terrain n'existe pas."
     NOSPAWN: "Ce terrain n'a pas de zone de téléportation."
     INVALID: "La zone de téléportation est invalide."
-    OUTSIDE: "Vous êtes à l'extérieur du terrain."
+    OUTSIDE: "Tu es à l'extérieur du terrain."
     CREATED: "La zone de téléportation est maintenant ici."
-  NOTEXIST: "Cette commande n'existe pas. Vous pouvez faire \"/% help\""
-  CONFIRM: "Pour confirmer votre choix, tapez \"/secuboid confirm\" ou pour annuler, tapez \"/secuboid cancel\"."
+  NOTEXIST: "Cette commande n'existe pas. Tu peux faire \"/% help\""
+  CONFIRM: "Pour confirmer ton choix, tapez \"/secuboid confirm\" ou pour annuler, tapez \"/secuboid cancel\"."
   NOCONFIRM: "Aucune action à confirmer."
   PAGE:
     ONEPAGE: "-Page (1/1)-"
@@ -216,21 +216,21 @@ COMMAND:
   AREA:
     LISTSTART: "-liste des étendues de '%'-"
   SELECT:
-    JOINMODE: "Vous êtes maintenant en mode sélection."
-    HINT: "Tapez % '/secuboid select done' % % pour confirmer votre choix."
-    ALREADY: "Vous êtes déjà en mode sélection."
+    JOINMODE: "Tu es maintenant en mode sélection."
+    HINT: "Tapez % '/secuboid select done' % % pour confirmer ton choix."
+    ALREADY: "Tu es déjà en mode sélection."
     NOLAND: "Ce terrain n'existe pas."
     LAND:
-      NOCOLLISION: "Votre sélection n'a pas de collision."
-      COLLISION: "Votre sélection a une collision avec un autre terrain."
-    CANCEL: "Vous avez annulé votre sélection."
-    CANTDONE: "Vous ne pouvez pas terminer (Done) une sélection qui est déjà un terrain."
-    CANTDONEWORLDEDIT: "Vous ne pouvez pas terminer (Done) une sélection WorldEdit. Vous pouvez créer un terrain."
-    SELECTEDLAND: "Vous avez sélectionné le terrain '%'"
-    SELECTEDAREA: "Vous avez sélectionné la zone '%'"
+      NOCOLLISION: "Ta sélection n'a pas de collision."
+      COLLISION: "Ta sélection a une collision avec un autre terrain."
+    CANCEL: "Tu as annulé ta sélection."
+    CANTDONE: "Tu ne peux pas terminer une sélection qui est déjà un terrain."
+    CANTDONEWORLDEDIT: "Tu ne peux pas terminer une sélection WorldEdit. Tu peux créer un terrain."
+    SELECTEDLAND: "Tu as sélectionné le terrain '%'"
+    SELECTEDAREA: "Tu as sélectionné la zone '%'"
     WORLDEDIT:
       NOTLOAD: " WorldEdit n'est pas chargé."
-      SELECTIONNED: " Vous avez sélectionné un terrain avec WorldEdit !"
+      SELECTIONNED: "Tu as sélectionné un terrain avec WorldEdit !"
       NOSELECTIONNED: " Pas de sélection WorldEdit ou pas de type cuboïd ou cylindre!"
       SELECTIONINCOMPLET: " La sélection WorldEdit est incomplète !"
     INFO:
@@ -238,22 +238,16 @@ COMMAND:
       INFO2: "Nombre de blocs: %"
       INFO3: "Prix pour la création d'un terrain: %"
       INFO4: "Prix pour l'ajout d'une étendue: %"
-  EXPAND:
-    JOINMODE: "Vous êtes en mode Expansion."
-    QUITMODE: "Vous n'êtes plus en mode Expansion."
-    ALREADY: "Vous êtes déjà en mode expansion."
-    HINT: "Tapez % '/secuboid expand done' % % pour confirmer votre choix."
-    COMPLETE: "Vous avez étendu votre terrain."
   CREATE:
-    LAND: "Vous avez créé votre terrain."
+    LAND: "Tu as créé ton terrain."
     AREA:
       LANDNOTSELECT: "Le terrain n'est pas sélectionné"
-      ISDONE: "Vous avez créé une étendue au terrain '%'"
+      ISDONE: "Tu as créé une étendue au terrain '%'"
     QUIT:
-      SELECTMODE: "Vous n'êtes plus en mode Sélection."
-      FLAGMODE: "Quittez le mode Drapeau avant."
-    COLLISION: "Vous avez une collision avez un autre terrain."
-    DONE: "Vous avez créé votre terrain."
+      SELECTMODE: "Tu n'es plus en mode Sélection."
+      FLAGMODE: "Quitte le mode Drapeau avant."
+    COLLISION: "Tu as une collision avez un autre terrain."
+    DONE: "Tu as créé ton terrain."
     ALREADYUSE: "Le nom de terrain est déjà utilisé."
     HINTUSE: "Ce nom ne peut pas être utilisé."
     PARENTNOTEXIST: "Le terrain parent n'existe pas."
@@ -261,15 +255,15 @@ COMMAND:
     HINTUSE: "Ce nom ne peut pas être utilisé."
     ISDONE: "Le terrain '%' est renommé '%'."
   FLAGS:
-    JOINMODE: "Vous êtes maintenant en mode Drapeau."
-    HINT: "Votre modification va être instantanément effective."
+    JOINMODE: "Tu es maintenant en mode Drapeau."
+    HINT: "Ta modification va être instantanément effective."
     LAND:
       INVALID: "Le terrain sélectionné est invalide."
     FLAGNULL: "Le drapeau n'existe pas."
-    ISDONE: "Vous avez mis '%' à '%'."
+    ISDONE: "Tu as mis '%' à '%'."
     LISTSTART: "-Drapeaux de '%'-"
     REMOVENOTEXIST: "Pas dans la liste des drapeaux."
-    REMOVEISDONE: "Vous avez enlevé '%' de la liste des drapeaux."
+    REMOVEISDONE: "Tu as enlevé '%' de la liste des drapeaux."
   CONTAINERTYPE:
     TYPENULL: "Entrez un type de contenant joueur ou un nom de joueur."
     NOTPERMITTED: "Ce contenant joueur n'est pas permis ici."
@@ -280,47 +274,47 @@ COMMAND:
     TYPENULL: "Entrez un type de permission."
     INVALID: "Ce type de permission est invalide."
   PERMISSION:
-    JOINMODE: "Vous êtes maintenant en mode Drapeau."
-    HINT: "Votre modification va être instantanément effective."
+    JOINMODE: "Tu es maintenant en mode Drapeau."
+    HINT: "Ta modification va être instantanément effective."
     LAND:
       INVALID: "Le terrain sélectionné est invalide."
     PERMISSIONNULL: "Cette permission n'existe pas."
     PLAYERCONTAINERTYPENULL: "Ce type n'existe pas."
-    ISDONE: "Vous avez ajusté la permission '%' à '%' pour '%'"
+    ISDONE: "Tu as ajusté la permission '%' à '%' pour '%'"
     LISTSTART: "-Permissions de '%'-"
-    NOENTERNOTINSPAWN: "Vous ne pouvez pas enlever la permission LAND_ENTER où le SPAWN est situé."
+    NOENTERNOTINSPAWN: "Tu ne peux pas enlever la permission LAND_ENTER où le SPAWN est situé."
     REMOVENOTEXIST: "Pas de permission dans la liste."
-    REMOVEISDONE: "Vous avez enlevé '%' de la liste des permissions."
+    REMOVEISDONE: "Tu as enlevé '%' de la liste des permissions."
   PERMISSIONVALUE:
-    VALUENULL: "Vous devez entrer une valeur pour cette permission."
+    VALUENULL: "Tu dois entrer une valeur pour cette permission."
   RESIDENT:
     LISTSTART: "-Résidents de '%'-"
     LISTROWNULL: "Pas de résident."
     ISDONE: "'%' est maintenant résident de '%'."
     REMOVENOTEXIST: "Pas dans la liste des résidents."
-    REMOVEISDONE: "Vous avez enlevé '%' de la liste des résidents de '%'."
+    REMOVEISDONE: "Tu as enlevé '%' de la liste des résidents de '%'."
   OWNER:
     ISDONE: "Le propriétaire est maintenant '%' pour le terrain '%'."
   SETDEFAULT:
     ISDONE: "Le terrain '%' a maintenant la configuration par défaut."
   BANNED:
-    ISDONE: "Vous avez banni '%' de '%'."
+    ISDONE: "Tu as banni '%' de '%'."
     LISTSTART: "-Bannis de '%'-"
     LISTROWNULL: "Pas de banni."
-    NOTINSPAWN: "Vous ne pouvez pas bannir à l'endroit ou le SPAWN du monde se trouve."
+    NOTINSPAWN: "Tu ne peux pas bannir à l'endroit ou le SPAWN du monde se trouve."
     REMOVENOTEXIST: "Pas dans la liste des bannis."
-    REMOVEISDONE: "Vous avez enlevé '%' de la liste des bannis dans '%'."
+    REMOVEISDONE: "Tu as enlevé '%' de la liste des bannis dans '%'."
   REMOVE:
     AREA:
-      EMPTY: "Vous devez préciser un numéro d'étendue."
+      EMPTY: "Tu dois préciser un numéro d'étendue."
       INVALID: "Le numéro d'étendue est invalide."
     DONE: 
-      LAND: "Vous avez enlevé le terrain % (% étendues)."
-      AREA: "Vous avez enlevé une étendue du terrain % ."
+      LAND: "Tu as enlevé le terrain % (% étendues)."
+      AREA: "Tu as enlevé une étendue du terrain % ."
   PRIORITY:
-    NOTCHILD: "Vous ne pouvez pas changer la priorité sur un terrain enfant."
+    NOTCHILD: "Tu ne peux pas changer la priorité sur un terrain enfant."
     INVALID: "La priorité doit être un nombre de % à %."
-    DONE: "Vous avez ajusté la priorité de '%' à %."
+    DONE: "Tu as ajusté la priorité de '%' à %."
   INFO:
     LAND:
       LISTSTART: "-Information sur le terrain '%'-"
@@ -332,18 +326,18 @@ COMMAND:
       PARENT: ", Parent: % "
       OWNER: "Propriétaire: %"
       TENANT: ", Locataire: %"
-      ACTIVEAREA: "Vous êtes sur l'étendue: %"
+      ACTIVEAREA: "Tu es sur l'étendue: %"
       MAINPERMISSION: "Vos principales permissions: %"
       AREA: "-Étendue(s)- pour '%'"
     NOLAND: "Il n'y a pas de terrain ici."
     NOTEXIST: "Ce terrain n'existe pas."
   ADMINMODE:
-    JOIN: "Vous êtes maintenant en mode admin."
-    QUIT: "Vous quittez le mode admin."
+    JOIN: "Tu es maintenant en mode admin."
+    QUIT: "Tu quittes le mode admin."
   CANCEL:
-    ACTION: "Votre action est annulée."
+    ACTION: "Ton action est annulée."
     FLAGS: "Le mode de sélection de drapeaux est annulé."
-    SELECT: "Votre sélection est annulée."
+    SELECT: "Ta sélection est annulée."
     NOCANCEL: "Rien à annuler."
   RELOAD:
     START: "Le rechargement est commencé."
@@ -358,25 +352,25 @@ COMMAND:
     PLAYERNULL: "Ce joueur n'est pas valide."
     NOTINLAND: "Ce joueur n'est pas sur le terrain."
     DONE: "% a été éjecté du terrain '%'."
-    KICKED: "Vous avez été éjecté du terrain '%'."
+    KICKED: "Tu as été éjecté du terrain '%'."
   ECONOMY:
     NOTAVAILABLE: "Économie non disponible."
     LANDBALANCE: "La balance du terrain '%' est '%'."
     INVALIDAMOUNT: "Montant invalide."
-    LANDDEPOSIT: "Vous avez ajouté '%' au terrain '%'."
+    LANDDEPOSIT: "Tu as ajouté '%' au terrain '%'."
     LANDWITHDRAW: "you avez enlevé '%' au terrain '%'."
-    ERRORCREATESIGN: "Vous ne pouvez pas créer un panneau ici."
+    ERRORCREATESIGN: "Tu ne peux pas créer un panneau ici."
     SIGNDONE: "Le panneau est créé."
     NOTENOUGHMONEY: "Pas assez d'argent."
-    BUYLAND: "Vous avez acheté le terrain '%'."
-    RENTLAND: "Vous avez loué le terrain '%'."
-    UNRENTLAND: "Vous ne louez plus le terrain '%'."
+    BUYLAND: "Tu as acheté le terrain '%'."
+    RENTLAND: "Tu as loué le terrain '%'."
+    UNRENTLAND: "Tu ne loues plus le terrain '%'."
     UNFORRENT: "Le terrain '%' n'est plus à louer."
     UNFORSALE: "Le terrain '%' n'est plus à vendre."
     RECREATE: "Le panneau a été recréé."
     ALREADYSALE: "Le panneau est déja créé. Utilisez '/secuboid sale recreate' pour recréer ou déplacer le panneau."
     ALREADYRENT: "Le panneau est déja créé. Utilisez '/secuboid rent recreate' pour recréer ou déplacer le panneau."
-    MUSTHAVEISIGN: "Vous devez avoir un panneau en main."
+    MUSTHAVEISIGN: "Tu dois avoir un panneau en main."
   PARENT:
     INVALID: "Le nom du parent est invalide!"
     NOTCHILD: "Le parent ne peut pas être un enfant!"
@@ -386,7 +380,7 @@ COMMAND:
     NOTACTIVE: "MultipleInventories est pas configuré dans config.yml!"
     DEFAULTSAVE: "Inventaire par défaut sauvegardé."
     DEFAULTREMOVE: "Inventaire par défaut enlevé."
-    ERRORSAVEREMOVE: "Voulez-vous sauvegarder ou enlever l'inventaire par défaut?"
+    ERRORSAVEREMOVE: "Veux-tu sauvegarder ou enlever l'inventaire par défaut?"
     ERRORNOPLAYER: "Pas de joueur spécifié!"
     ERRORPLAYEROFFLINE: "Ce joueur est hors ligne!"
     ERRORDEATHNOTFOUND: "Le sauvegarde de la mort n'est pas trouvée ou le joueur est au mauvais endroit!"
@@ -405,8 +399,8 @@ COMMAND:
     DONE: "La nouvelle valeur pour le rayon est '%'."
     INFO: "Le valeur de la sélection du rayon est '%'."
 ACTION:
-  BANNED: "Vous êtes banni du terrain % !"
-  NOENTRY: "Vous ne pouvez pas entrez sur le terrain % !"
+  BANNED: "Tu es banni du terrain % !"
+  NOENTRY: "Tu ne peux pas entrez sur le terrain % !"
   PLAYERENTER: "% entre sur le terrain %."
   PLAYEREXIT: "% quitte le terrain %."
 SIGN:
@@ -417,4 +411,4 @@ SIGN:
     RENTED: "-Loué-"
     AUTORENEW: "Auto renouv."
 CHAT:
-  OUTSIDE: "Vous êtes à l'extérieur d'un terrain!"
+  OUTSIDE: "Tu es à l'extérieur d'un terrain!"

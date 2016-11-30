@@ -238,12 +238,6 @@ COMMAND:
       INFO2: "Number of blocks: %"
       INFO3: "Price for create land: %"
       INFO4: "Price for area add: %"
-  EXPAND:
-    JOINMODE: "You are now in Expand Mode."
-    QUITMODE: "You are no longer in Expand Mode."
-    ALREADY: "You are already in Expand Mode."
-    HINT: "Type % '/secuboid expand done' % % to confirm your choice."
-    COMPLETE: "You have Expanded your land."
   CREATE:
     LAND: "You have created your land."
     AREA:

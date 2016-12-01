@@ -358,7 +358,9 @@ public class PlayerListener extends CommonListener implements Listener {
                     && !checkPermission(land, player, PermissionList.OPEN_DROPPER.getPermissionType()))
                     || (ml == Material.HOPPER
                     && !checkPermission(land, player, PermissionList.OPEN_HOPPER.getPermissionType()))
-                    || (ml == Material.JUKEBOX && !checkPermission(land, player, PermissionList.OPEN_JUKEBOX.getPermissionType())))
+                    || (ml == Material.JUKEBOX && !checkPermission(land, player, PermissionList.OPEN_JUKEBOX.getPermissionType()))
+                    || (ml.name().matches(".*SHULKER_BOX$")
+                    && !checkPermission(land, player, PermissionList.OPEN_SHULKER_BOX.getPermissionType())))
                     // For dragon egg fix
                     || (ml == Material.DRAGON_EGG
                     && !checkPermission(land, event.getPlayer(), PermissionList.BUILD_DESTROY.getPermissionType()))) {
@@ -720,16 +722,13 @@ public class PlayerListener extends CommonListener implements Listener {
 
         if (event.getEntity() instanceof Player
                 && playerConf.get(player = (Player) event.getEntity()) != null // Citizens bugfix
-                && ((land instanceof Land && ((Land) land).isBanned(player))
+                && ((land != null && land.isBanned(player))
                 || (matFrom == Material.SOIL && matTo == Material.DIRT
                 && !checkPermission(land, player, PermissionList.CROP_TRAMPLE.getPermissionType())))) {
             event.setCancelled(true);
         }
     }
 
-    /**
-     * @param event
-     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     // Must be after Essentials
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -883,9 +882,6 @@ public class PlayerListener extends CommonListener implements Listener {
         }
     }
 
-    /**
-     * @param event
-     */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
 
@@ -919,7 +915,7 @@ public class PlayerListener extends CommonListener implements Listener {
             Land land = secuboid.getLands().getLandOrOutsideArea(
                     event.getBlock().getLocation());
 
-            if ((land instanceof Land && ((Land) land).isBanned(player)) || (!checkPermission(land, player,
+            if ((land != null && land.isBanned(player)) || (!checkPermission(land, player,
                     PermissionList.FIRE.getPermissionType()))) {
                 messagePermission(player);
                 return true;
@@ -962,7 +958,7 @@ public class PlayerListener extends CommonListener implements Listener {
             pm.callEvent(landEvent);
 
             if (landEvent.isCancelled()) {
-                if (isTp && event != null) {
+                if (isTp) {
                     ((PlayerTeleportEvent) event).setCancelled(true);
                     return;
                 }

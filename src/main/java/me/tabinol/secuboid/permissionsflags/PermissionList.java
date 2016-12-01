@@ -98,6 +98,10 @@ public enum PermissionList {
      */
     OPEN_JUKEBOX(true, "OPEN"),
     /**
+     * The shulker box.
+     */
+    OPEN_SHULKER_BOX(true, "OPEN"),
+    /**
      * The use.
      */
     USE(true, "USE"),

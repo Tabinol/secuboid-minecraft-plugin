@@ -52,7 +52,6 @@ public class CommandRent extends CommandExec {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(true, null);
@@ -63,13 +62,13 @@ public class CommandRent extends CommandExec {
         }
 
         String curArg = argList.getNext();
-        double rentPrice = 0;
-        int rentRenew = 0;
+        double rentPrice;
+        int rentRenew;
         boolean rentAutoRenew = true;
-        EcoSign ecoSign = null;
+        EcoSign ecoSign;
 
         // Check for sign in hand
-        if (player.getGameMode() != GameMode.CREATIVE && player.getItemInHand().getType() != Material.SIGN) {
+        if (player.getGameMode() != GameMode.CREATIVE && player.getEquipment().getItemInMainHand().getType() != Material.SIGN) {
             throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
         }
 

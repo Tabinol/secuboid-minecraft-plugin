@@ -31,6 +31,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -62,11 +63,6 @@ public abstract class CommandExec {
      * The player.
      */
     final Player player;
-
-    /**
-     * The player name.
-     */
-    final String playerName;
 
     /**
      * The player conf.
@@ -115,7 +111,6 @@ public abstract class CommandExec {
             player = null;
         }
 
-        playerName = sender.getName();
         playerConf = secuboid.getPlayerConf().get(sender);
 
         if (player != null) {
@@ -165,11 +160,11 @@ public abstract class CommandExec {
 
         if (mustBeSelectMode != null) {
             // Pasted to variable land, can take direcly
-            checkSelection(land != null, mustBeSelectMode, null, "GENERAL.JOIN.SELECTMODE",
+            checkSelection(land != null, mustBeSelectMode, "GENERAL.JOIN.SELECTMODE",
                     playerConf.getSelection().getLand() != null);
         }
         if (mustBeAreaSelected != null) {
-            checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, null, "GENERAL.JOIN.SELECTAREA", true);
+            checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, "GENERAL.JOIN.SELECTAREA", true);
         }
     }
 
@@ -178,18 +173,15 @@ public abstract class CommandExec {
      *
      * @param result            the result
      * @param neededResult      the needed result
-     * @param messageTrue       the message true
      * @param messageFalse      the message false
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
-    private void checkSelection(boolean result, boolean neededResult, String messageTrue, String messageFalse,
+    private void checkSelection(boolean result, boolean neededResult, String messageFalse,
                                 boolean startSelectCancel) throws SecuboidCommandException {
 
         if (result != neededResult) {
-            if (result) {
-                throw new SecuboidCommandException(secuboid, "Player Select", player, messageTrue);
-            } else {
+            if (!result) {
                 throw new SecuboidCommandException(secuboid, "Player Select", player, messageFalse);
             }
         } else if (startSelectCancel && !resetSelectCancel && result) {
@@ -247,13 +239,13 @@ public abstract class CommandExec {
     /**
      * Removes the sign from hand.
      */
-    @SuppressWarnings("deprecation")
     void removeSignFromHand() {
         if (player.getGameMode() != GameMode.CREATIVE) {
-            if (player.getItemInHand().getAmount() == 1) {
-                player.setItemInHand(new ItemStack(Material.AIR));
+            EntityEquipment equipment = player.getEquipment();
+            if (equipment.getItemInMainHand().getAmount() == 1) {
+                equipment.setItemInMainHand(new ItemStack(Material.AIR));
             } else {
-                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+                equipment.getItemInMainHand().setAmount(equipment.getItemInMainHand().getAmount() - 1);
             }
         }
     }

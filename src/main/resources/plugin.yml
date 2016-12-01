@@ -54,22 +54,18 @@ permissions:
         description: All permisions for inventory (except inventory changes)
         default: op
         children:
-            secuboid.inv.use: true
             secuboid.inv.forcesave: true
             secuboid.inv.default: true
             secuboid.inv.loaddeath: true
             secuboid.inv.ignoredisabledcommands: true
-    secuboid.inv.use:
-        description: Can use /finv command
-        default: true
     secuboid.inv.forcesave:
-        description: Can use /finv forcesave command
+        description: Can use /secuboid finv forcesave command
         default: op
     secuboid.inv.default:
-        description: Can use /finv default command
+        description: Can use /secuboid finv default command
         default: op
     secuboid.inv.loaddeath:
-        description: Can use /finv loaddeath command
+        description: Can use /secuboid finv loaddeath command
         default: op
     secuboid.inv.ignorecreativeinv:
         description: Ignore creative inventory change

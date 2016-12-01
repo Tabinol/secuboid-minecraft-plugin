@@ -71,12 +71,19 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 /**
  * Players listener
  */
 public class PlayerListener extends CommonListener implements Listener {
+
+    /**
+     * The Constant DEFAULT_TIME_LAPS.
+     */
+    public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
 
     /**
      * The conf.
@@ -87,11 +94,6 @@ public class PlayerListener extends CommonListener implements Listener {
      * The player conf.
      */
     private final PlayerConfig playerConf;
-
-    /**
-     * The Constant DEFAULT_TIME_LAPS.
-     */
-    public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
 
     /**
      * The time check.
@@ -233,7 +235,6 @@ public class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    @SuppressWarnings("deprecation")
     public void onPlayerInteract(PlayerInteractEvent event) {
 
         Land land;
@@ -242,10 +243,11 @@ public class PlayerListener extends CommonListener implements Listener {
         Action action = event.getAction();
         PlayerConfEntry entry;
         Location loc = event.getClickedBlock().getLocation();
+        ItemStack itemDeposit = getItemDeposit(player.getEquipment());
 
         // For infoItem
-        if (player.getItemInHand() != null && action == Action.LEFT_CLICK_BLOCK
-                && player.getItemInHand().getType() == conf.getInfoItem()) {
+        if (itemDeposit != null && action == Action.LEFT_CLICK_BLOCK
+                && itemDeposit.getType() == conf.getInfoItem()) {
             try {
                 Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
@@ -255,9 +257,9 @@ public class PlayerListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // For Select
-        } else if (player.getItemInHand() != null
+        } else if (itemDeposit != null
                 && action == Action.LEFT_CLICK_BLOCK
-                && player.getItemInHand().getType() == conf.getSelectItem()) {
+                && itemDeposit.getType() == conf.getSelectItem()) {
 
             try {
                 new CommandSelect(secuboid, player, new ArgList(secuboid, new String[]{"here"},
@@ -270,9 +272,9 @@ public class PlayerListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // For Select Cancel
-        } else if (player.getItemInHand() != null
+        } else if (player.getEquipment().getItemInMainHand() != null
                 && action == Action.RIGHT_CLICK_BLOCK
-                && player.getItemInHand().getType() == conf.getSelectItem()
+                && player.getEquipment().getItemInMainHand().getType() == conf.getSelectItem()
                 && playerConf.get(player).getSelection()
                 .hasSelection()) {
 
@@ -369,9 +371,9 @@ public class PlayerListener extends CommonListener implements Listener {
                 event.setCancelled(true);
 
                 // For armor stand
-            } else if (player.getItemInHand() != null
+            } else if (player.getEquipment().getItemInMainHand() != null
                     && action == Action.RIGHT_CLICK_BLOCK
-                    && player.getItemInHand().getType() == Material.ARMOR_STAND
+                    && player.getEquipment().getItemInMainHand().getType() == Material.ARMOR_STAND
                     && (land.isBanned(event.getPlayer())
                     || !checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType()))) {
 
@@ -379,9 +381,9 @@ public class PlayerListener extends CommonListener implements Listener {
                 event.setCancelled(true);
 
                 // For head place fix (do not spawn a wither)
-            } else if (player.getItemInHand() != null
+            } else if (player.getEquipment().getItemInMainHand() != null
                     && action == Action.RIGHT_CLICK_BLOCK
-                    && player.getItemInHand().getType() == Material.SKULL_ITEM
+                    && player.getEquipment().getItemInMainHand().getType() == Material.SKULL_ITEM
                     && (land.isBanned(event.getPlayer())
                     || !checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType()))) {
                 messagePermission(player);
@@ -396,8 +398,7 @@ public class PlayerListener extends CommonListener implements Listener {
         Land land;
         EntityType et = event.getRightClicked().getType();
         Player player = event.getPlayer();
-        @SuppressWarnings("deprecation")
-        Material mat = player.getItemInHand().getType();
+        Material mat = player.getEquipment().getItemInMainHand().getType();
         PlayerConfEntry entry;
         Location loc = event.getRightClicked().getLocation();
 
@@ -994,5 +995,12 @@ public class PlayerListener extends CommonListener implements Listener {
                 }
             }
         }
+    }
+
+    private ItemStack getItemDeposit(EntityEquipment equipment) {
+        if (equipment.getItemInOffHand() != null && equipment.getItemInOffHand().getType() != Material.AIR) {
+            return equipment.getItemInOffHand();
+        }
+        return equipment.getItemInMainHand();
     }
 }

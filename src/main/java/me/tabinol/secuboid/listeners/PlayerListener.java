@@ -243,11 +243,11 @@ public class PlayerListener extends CommonListener implements Listener {
         Action action = event.getAction();
         PlayerConfEntry entry;
         Location loc = event.getClickedBlock().getLocation();
-        ItemStack itemDeposit = getItemDeposit(player.getEquipment());
+        ItemStack itemInMainHand = player.getEquipment().getItemInMainHand();
 
         // For infoItem
-        if (itemDeposit != null && action == Action.LEFT_CLICK_BLOCK
-                && itemDeposit.getType() == conf.getInfoItem()) {
+        if (itemInMainHand != null && action == Action.LEFT_CLICK_BLOCK
+                && itemInMainHand.getType() == conf.getInfoItem()) {
             try {
                 Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
@@ -257,9 +257,9 @@ public class PlayerListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // For Select
-        } else if (itemDeposit != null
+        } else if (itemInMainHand != null
                 && action == Action.LEFT_CLICK_BLOCK
-                && itemDeposit.getType() == conf.getSelectItem()) {
+                && itemInMainHand.getType() == conf.getSelectItem()) {
 
             try {
                 new CommandSelect(secuboid, player, new ArgList(secuboid, new String[]{"here"},
@@ -272,9 +272,9 @@ public class PlayerListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // For Select Cancel
-        } else if (player.getEquipment().getItemInMainHand() != null
+        } else if (itemInMainHand != null
                 && action == Action.RIGHT_CLICK_BLOCK
-                && player.getEquipment().getItemInMainHand().getType() == conf.getSelectItem()
+                && itemInMainHand.getType() == conf.getSelectItem()
                 && playerConf.get(player).getSelection()
                 .hasSelection()) {
 
@@ -995,12 +995,5 @@ public class PlayerListener extends CommonListener implements Listener {
                 }
             }
         }
-    }
-
-    private ItemStack getItemDeposit(EntityEquipment equipment) {
-        if (equipment.getItemInOffHand() != null && equipment.getItemInOffHand().getType() != Material.AIR) {
-            return equipment.getItemInOffHand();
-        }
-        return equipment.getItemInMainHand();
     }
 }

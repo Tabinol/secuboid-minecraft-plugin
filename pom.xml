@@ -93,11 +93,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- CraftBukkit -->
+        <!-- MySql connector (included in CraftBukkit) -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
-            <version>1.11-R0.1-SNAPSHOT</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.39</version>
             <scope>provided</scope>
         </dependency>
 
@@ -243,18 +243,5 @@
 
         </plugins>
     </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Tabinol.me Artifactory-snapshots</name>
-            <url>http://tabinol.me/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-        <repository>
-            <id>releases</id>
-            <name>Tabinol.me Artifactory-releases</name>
-            <url>http://tabinol.me/artifactory/libs-release-local</url>
-        </repository>
-    </distributionManagement>
 
 </project>

@@ -93,7 +93,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- MySql connector (included in CraftBukkit) -->
+        <!-- MySql connector (included in Spigot) -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

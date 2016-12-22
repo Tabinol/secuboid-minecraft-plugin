@@ -63,13 +63,7 @@ _Global_:                           # _Global_ is for all worlds
     GHAST_DAMAGE:
       Value: true
       Inheritable: true
-    TNT_DAMAGE:
-      Value: true
-      Inheritable: true
     FULL_PVP:
-      Value: true
-      Inheritable: true
-    FACTION_PVP:
       Value: true
       Inheritable: true
     ECO_BLOCK_PRICE:

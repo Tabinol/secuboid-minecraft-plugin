@@ -89,8 +89,8 @@ public class Lang {
      */
     private void copyLang() {
         if (!langFile.exists()) {
-            if (!langFile.getParentFile().mkdirs()) {
-                secuboid.getLog().severe("Unable to make the directory " + langFile.getParentFile().getPath() + ".");
+            if (!langFile.getParentFile().exists() && !langFile.getParentFile().mkdirs()) {
+                secuboid.getLog().severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
             }
             try {
                 FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);

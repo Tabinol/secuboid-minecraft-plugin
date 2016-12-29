@@ -106,10 +106,8 @@ public class StorageFlat implements Storage {
 
         File file = new File(dir);
 
-        if (!file.exists()) {
-            if (!file.mkdir()) {
-                secuboid.getLog().severe("Unable to create directory " + file.getPath() + ".");
-            }
+        if (!file.exists() && !file.mkdir()) {
+            secuboid.getLog().severe("Unable to create directory " + file.getPath() + ".");
         }
     }
 

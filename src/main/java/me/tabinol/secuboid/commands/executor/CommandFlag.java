@@ -64,7 +64,7 @@ public class CommandFlag extends CommandExec {
         checkSelections(true, null);
         String curArg = argList.getNext();
 
-        if (curArg.equalsIgnoreCase("set")) {
+        if (curArg.equalsIgnoreCase("add")) {
 
             // Permission check is on getFlagFromArg
             Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), land.isOwner(player));
@@ -78,7 +78,7 @@ public class CommandFlag extends CommandExec {
                     + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
                     landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
 
-        } else if (curArg.equalsIgnoreCase("unset")) {
+        } else if (curArg.equalsIgnoreCase("remove")) {
 
             FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
             if (!land.getPermissionsFlags().removeFlag(flagType)) {

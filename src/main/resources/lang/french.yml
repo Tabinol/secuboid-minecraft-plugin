@@ -327,7 +327,7 @@ COMMAND:
       OWNER: "Propriétaire: %"
       TENANT: ", Locataire: %"
       ACTIVEAREA: "Tu es sur l'étendue: %"
-      MAINPERMISSION: "Vos principales permissions: %"
+      MAINPERMISSION: "Tes principales permissions: %"
       AREA: "-Étendue(s)- pour '%'"
     NOLAND: "Il n'y a pas de terrain ici."
     NOTEXIST: "Ce terrain n'existe pas."

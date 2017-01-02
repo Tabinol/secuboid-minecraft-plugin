@@ -208,7 +208,7 @@ public class WorldConfig {
                 FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
                 dl.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags().newFlag(ft,
                         secuboid.getNewInstance().getFlagValueFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
-                        fc.getBoolean(flags + "." + flag + ".Heritable")));
+                        fc.getBoolean(flags + "." + flag + ".Inheritable")));
             }
         }
 

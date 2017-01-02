@@ -127,7 +127,8 @@ public abstract class CommandExec {
 
             // Show help if there is no more parameter and the command needs one
             if (infoCommand.forceParameter() && argList != null && argList.isLast()) {
-                new CommandHelp(secuboid, infoCommand, sender, argList).commandExecute();
+                new CommandHelp(secuboid, null, sender,
+                        new ArgList(secuboid, new String[]{infoCommand.name()}, sender)).commandExecute();
                 isExecutable = false;
             }
         }

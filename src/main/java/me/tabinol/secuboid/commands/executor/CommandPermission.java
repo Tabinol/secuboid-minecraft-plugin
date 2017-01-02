@@ -71,13 +71,13 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
         fonction = argList.getNext();
 
-        if (fonction.equalsIgnoreCase("set")) {
+        if (fonction.equalsIgnoreCase("add")) {
 
             pc = argList.getPlayerContainerFromArg(land, null);
 
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
-        } else if (fonction.equalsIgnoreCase("unset")) {
+        } else if (fonction.equalsIgnoreCase("remove")) {
 
             pc = argList.getPlayerContainerFromArg(land, null);
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
@@ -166,7 +166,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
         convertPcIfNeeded(playerCacheEntry);
 
-        if (fonction.equalsIgnoreCase("set")) {
+        if (fonction.equalsIgnoreCase("add")) {
 
             Permission perm = argList.getPermissionFromArg(playerConf.isAdminMode(), land.isOwner(player));
 
@@ -183,7 +183,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
                     pc.getPrint() + ChatColor.YELLOW, land.getName()));
 
-        } else if (fonction.equalsIgnoreCase("unset")) {
+        } else if (fonction.equalsIgnoreCase("remove")) {
 
             PermissionType pt = argList.getPermissionTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
             if (!land.getPermissionsFlags().removePermission(pc, pt)) {

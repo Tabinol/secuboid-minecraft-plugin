@@ -34,7 +34,7 @@ public class CommandHelp extends CommandExec {
     /**
      * The command name.
      */
-    private String commandName = null;
+    private String commandName;
 
     /**
      * Instantiates a new command help.
@@ -46,31 +46,28 @@ public class CommandHelp extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandHelp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
-
         super(secuboid, infoCommand, sender, argList);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        if (commandName == null) {
-            String arg = argList.getNext();
+        String arg = argList.getNext();
 
-            if (arg == null) {
-                commandName = "GENERAL";
-            } else {
-                // Will throw an exception if the command name is invalid
-                try {
-                    InfoCommand infoCommandLocal = secuboid.getCommandListener().getInfoCommand(arg);
-                    if (infoCommandLocal != null) {
-                        commandName = infoCommandLocal.name().toUpperCase();
-                    } else {
-                        // Invalid command, just arg and will run Exception with showHelp()
-                        commandName = arg;
-                    }
-                } catch (IllegalArgumentException ex) {
-                    commandName = "GENERAL";
+        if (arg == null) {
+            commandName = "GENERAL";
+        } else {
+            // Will throw an exception if the command name is invalid
+            try {
+                InfoCommand infoCommandLocal = secuboid.getCommandListener().getInfoCommand(arg);
+                if (infoCommandLocal != null) {
+                    commandName = infoCommandLocal.name().toUpperCase();
+                } else {
+                    // Invalid command, just arg and will run Exception with showHelp()
+                    commandName = arg;
                 }
+            } catch (IllegalArgumentException ex) {
+                commandName = "GENERAL";
             }
         }
 

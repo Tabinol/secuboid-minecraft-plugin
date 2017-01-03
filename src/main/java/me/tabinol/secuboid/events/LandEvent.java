@@ -52,7 +52,7 @@ public class LandEvent extends Event {
 
         this.dummyLand = dummyLand;
 
-        if (dummyLand.isRealLand()) {
+        if (dummyLand.getLandType() == Land.LandType.REAL) {
             land = (RealLand) dummyLand;
         } else {
             land = null;

@@ -28,18 +28,37 @@ import org.bukkit.entity.Player;
 public interface Land {
 
     /**
-     * Gets the world name.
+     * Land class type (not the Secuboid land type).
+     */
+    enum LandType {
+        /**
+         * global world land
+         */
+        WORLD,
+        /**
+         * default values land
+         */
+        DEFAULT,
+
+        /**
+         * real land
+         */
+        REAL
+    }
+
+    /**
+     * Gets the world name (or null for a Default land).
      *
      * @return the world name
      */
-    public String getWorldName();
+    String getWorldName();
 
     /**
-     * Gets if this land is a real land.
+     * Gets if this land class type (not the Secuboid land type).
      *
-     * @return True, if this is real land, false, if this is a global land.
+     * @return land class type
      */
-    boolean isRealLand();
+     LandType getLandType();
 
     /**
      * Gets the permissions and flags.

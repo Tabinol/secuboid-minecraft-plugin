@@ -225,8 +225,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
     }
 
     @Override
-    public boolean isRealLand() {
-        return true;
+    public LandType getLandType() {
+        return LandType.REAL;
     }
 
     @Override

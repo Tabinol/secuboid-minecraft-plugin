@@ -87,7 +87,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
         super(dummyLand);
         this.lastDummyLand = lastDummyLand;
 
-        if (lastDummyLand != null && lastDummyLand.isRealLand()) {
+        if (lastDummyLand != null && lastDummyLand.getLandType() == Land.LandType.REAL) {
             lastLand = (RealLand) lastDummyLand;
         } else {
             lastLand = null;

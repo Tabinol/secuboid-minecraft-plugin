@@ -23,13 +23,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.lands.Land;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -163,7 +162,7 @@ public class InventoryStorage {
             if (enderChestOnly) {
                 ConfigPlayerItemFile.set("Level", 0);
                 ConfigPlayerItemFile.set("Exp", 0f);
-                ConfigPlayerItemFile.set("Health", player.getMaxHealth());
+                ConfigPlayerItemFile.set("Health", player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 ConfigPlayerItemFile.set("FoodLevel", MAX_FOOD_LEVEL);
 
                 ItemStack[] itemEnderChest = player.getEnderChest().getContents();
@@ -272,7 +271,7 @@ public class InventoryStorage {
                         player.setFoodLevel(ConfigPlayerItemFile.getInt("FoodLevel"));
                     } else {
                         // Fix Death infinite loop
-                        player.setHealth(player.getMaxHealth());
+                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
                         player.setFoodLevel(MAX_FOOD_LEVEL);
                     }
                 }
@@ -319,7 +318,7 @@ public class InventoryStorage {
             // The file is not existing, only clear all inventory
             player.setLevel(0);
             player.setExp(0);
-            player.setHealth(player.getMaxHealth());
+            player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
             player.setFoodLevel(MAX_FOOD_LEVEL);
             player.getInventory().clear();
             player.getInventory().setBoots(new ItemStack(Material.AIR));

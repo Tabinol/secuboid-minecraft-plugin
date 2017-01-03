@@ -9,33 +9,28 @@ import me.tabinol.secuboid.Secuboid;
 import org.bukkit.entity.Player;
 
 /**
- * Represents global, entire world or defaults.
+ * Represents global, entire world.
  *
  * @author tabinol
  */
-public class GlobalLand implements Land {
+public class WorldLand implements Land {
 
     private final LandPermissionsFlags landPermissionsFlags;
     private final String worldName;
 
-    public GlobalLand(Secuboid secuboid, String worldName) {
+    public WorldLand(Secuboid secuboid, String worldName) {
         this.worldName = worldName;
         landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
     }
 
-    /**
-     * Gets the world name.
-     *
-     * @return the world name
-     */
     @Override
     public String getWorldName() {
         return worldName;
     }
 
     @Override
-    public boolean isRealLand() {
-        return false;
+    public LandType getLandType() {
+        return LandType.WORLD;
     }
 
     @Override

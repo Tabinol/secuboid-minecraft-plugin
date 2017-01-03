@@ -33,6 +33,7 @@ import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -86,7 +87,7 @@ public class LandListener extends CommonListener implements Listener {
                         player.setFoodLevel(foodLevel);
                     }
                     health = player.getHealth();
-                    maxHealth = player.getMaxHealth();
+                    maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
                     if (health < maxHealth) {
                         health += maxHealth / 10;
                         if (health > maxHealth) {
@@ -127,7 +128,7 @@ public class LandListener extends CommonListener implements Listener {
         Land land = playerConf.get(player).getLastLand();
 
         // Notify for quit
-        while (land != null && land.isRealLand()) {
+        while (land != null && land.getLandType() == Land.LandType.REAL) {
             notifyPlayers((RealLand) land, "ACTION.PLAYEREXIT", player);
             land = ((RealLand) land).getParent();
         }

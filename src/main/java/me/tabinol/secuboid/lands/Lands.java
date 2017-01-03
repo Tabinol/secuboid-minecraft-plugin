@@ -39,14 +39,10 @@ import me.tabinol.secuboid.lands.areas.AreaIndex;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
 import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.permissionsflags.FlagType;
-import me.tabinol.secuboid.permissionsflags.FlagValue;
-import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -101,17 +97,17 @@ public class Lands {
     /**
      * The outside area in worlds.
      */
-    private final TreeMap<String, GlobalLand> outsideArea;
+    private final TreeMap<String, WorldLand> outsideArea;
 
     /**
      * Default configuration (Type not exist or Type null).
      */
-    private final Land defaultConfNoType;
+    private final DefaultLand defaultConfNoType;
 
     /**
      * The default configuration for a land.
      */
-    private final TreeMap<Type, GlobalLand> defaultConf;
+    private final TreeMap<Type, DefaultLand> defaultConf;
 
     /**
      * The plugin manager.
@@ -170,9 +166,9 @@ public class Lands {
      * @param type the land type
      * @return the default configuration (land format).
      */
-    public Land getDefaultConf(Type type) {
+    public DefaultLand getDefaultConf(Type type) {
 
-        Land land;
+        DefaultLand land;
 
         // No type? Return default config
         if (type == null) {
@@ -276,8 +272,7 @@ public class Lands {
         }
 
         if (isNameExist(landName)) {
-            throw new SecuboidLandException(secuboid, landName, (Area) area,
-                    LandAction.LAND_ADD, LandError.NAME_IN_USE);
+            throw new SecuboidLandException(secuboid, landName, area, LandAction.LAND_ADD, LandError.NAME_IN_USE);
         }
 
         land = new RealLand(secuboid, landNameLower, landUUID, owner, area, genealogy, parent, areaId, type);
@@ -476,7 +471,7 @@ public class Lands {
      * @param loc the loc
      * @return the outside area
      */
-    public GlobalLand getOutsideArea(Location loc) {
+    public WorldLand getOutsideArea(Location loc) {
         return getOutsideArea(loc.getWorld().getName());
     }
 
@@ -486,14 +481,14 @@ public class Lands {
      * @param worldName the world name
      * @return the outside area
      */
-    public GlobalLand getOutsideArea(String worldName) {
+    public WorldLand getOutsideArea(String worldName) {
 
         String worldNameLower = worldName.toLowerCase();
-        GlobalLand globalLand = outsideArea.get(worldNameLower);
+        WorldLand globalLand = outsideArea.get(worldNameLower);
 
         // Not exist, create one
         if (globalLand == null) {
-            globalLand = new GlobalLand(secuboid, worldName);
+            globalLand = new WorldLand(secuboid, worldName);
             outsideArea.get(Config.GLOBAL).getPermissionsFlags().copyPermsFlagsTo(globalLand.getPermissionsFlags());
             outsideArea.put(worldNameLower, globalLand);
         }
@@ -565,56 +560,11 @@ public class Lands {
      * @param price     the price
      * @return the price from player
      */
-    protected boolean getPriceFromPlayer(String worldName, PlayerContainer pc, double price) {
+    boolean getPriceFromPlayer(String worldName, PlayerContainer pc, double price) {
 
-        if (pc.getContainerType() == PlayerContainerType.PLAYER && price > 0) {
-            return secuboid.getPlayerMoney()
-                    .getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName, price);
-        }
+        return !(pc.getContainerType() == PlayerContainerType.PLAYER && price > 0)
+                || secuboid.getPlayerMoney().getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName, price);
 
-        return true;
-    }
-
-    /**
-     * Gets the permission in world.
-     *
-     * @param worldName   the world name
-     * @param player      the player
-     * @param pt          the pt
-     * @param onlyInherit the only inherit
-     * @return the permission in world
-     */
-    protected boolean getPermissionInWorld(String worldName, Player player, PermissionType pt, boolean onlyInherit) {
-
-        Boolean result;
-        GlobalLand dl;
-
-        if ((dl = outsideArea.get(worldName.toLowerCase())) != null
-                && (result = dl.getPermissionsFlags().getPermission(player, pt, onlyInherit)) != null) {
-            return result;
-        }
-
-        return pt.getDefaultValue();
-    }
-
-    /**
-     * Gets the flag in world.
-     *
-     * @param worldName   the world name
-     * @param ft          the ft
-     * @param onlyInherit the only inherit
-     * @return the flag value in world
-     */
-    protected FlagValue getFlagInWorld(String worldName, FlagType ft, boolean onlyInherit) {
-
-        FlagValue result;
-        GlobalLand dl;
-
-        if ((dl = outsideArea.get(worldName.toLowerCase())) != null && (result = dl.getPermissionsFlags().getFlag(ft, onlyInherit)) != null) {
-            return result;
-        }
-
-        return ft.getDefaultValue();
     }
 
     /**

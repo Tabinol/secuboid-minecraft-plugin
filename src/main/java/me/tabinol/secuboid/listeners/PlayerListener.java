@@ -157,7 +157,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
         // Remove player from the land
         Land land = playerConf.get(player).getLastLand();
-        if (land.isRealLand()) {
+        if (land.getLandType() == Land.LandType.REAL) {
             ((RealLand) land).removePlayerInLand(player);
         }
 
@@ -516,7 +516,7 @@ public class PlayerListener extends CommonListener implements Listener {
             Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
             Material mat = event.getBlock().getType();
 
-            if (land.isBanned(player) || (land.isRealLand() && hasEcoSign((RealLand) land, event.getBlock()))) {
+            if (land.isBanned(player) || (land.getLandType() == Land.LandType.REAL && hasEcoSign((RealLand) land, event.getBlock()))) {
                 // Player banned (or ecosign)
                 messagePermission(player);
                 event.setCancelled(true);
@@ -977,10 +977,10 @@ public class PlayerListener extends CommonListener implements Listener {
             entry.setLastLand(land);
 
             // Update player in the lands
-            if (landOld.isRealLand() && landOld != land) {
+            if (landOld.getLandType() == Land.LandType.REAL && landOld != land) {
                 ((RealLand) landOld).removePlayerInLand(player);
             }
-            if (land.isRealLand()) {
+            if (land.getLandType() == Land.LandType.REAL) {
                 ((RealLand) land).addPlayerInLand(player);
             }
         }

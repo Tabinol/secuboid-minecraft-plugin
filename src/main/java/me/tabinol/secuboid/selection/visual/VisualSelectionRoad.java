@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.selection.visual;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.GlobalLand;
+import me.tabinol.secuboid.lands.WorldLand;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -119,7 +119,7 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public void makeVisualSelection() {
 
-        GlobalLand outsideArea = secuboid.getLands().getOutsideArea(area.getWorldName());
+        WorldLand outsideArea = secuboid.getLands().getOutsideArea(area.getWorldName());
         boolean canCreate = outsideArea.getPermissionsFlags()
                 .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
         int stepX = visualCommon.getStepX(area);
@@ -142,7 +142,7 @@ public class VisualSelectionRoad implements VisualSelection {
         }
     }
 
-    private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive, GlobalLand outsideArea, boolean canCreate) {
+    private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive, WorldLand outsideArea, boolean canCreate) {
 
         Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
         boolean isLocationInside = area.isLocationInside(newloc);
@@ -171,7 +171,7 @@ public class VisualSelectionRoad implements VisualSelection {
         return isLastActive;
     }
 
-    private void setChangedBlocks(GlobalLand outsideArea, boolean canCreate, Location newloc) {
+    private void setChangedBlocks(WorldLand outsideArea, boolean canCreate, Location newloc) {
 
         Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
         if (isFromLand) {

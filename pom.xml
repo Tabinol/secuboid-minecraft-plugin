@@ -21,7 +21,7 @@
 
         <!-- site deploy (do not make "deploy" if you are not tabinol.me/jenkins)-->
         <url.repository>file:///var/www/maven/</url.repository>
-        <dir.javadoc>/var/www/javadoc/${project.artifactId}/</dir.javadoc>
+        <dir.javadoc>/var/www/html/javadoc/${project.artifactId}/</dir.javadoc>
     </properties>
 
     <repositories>

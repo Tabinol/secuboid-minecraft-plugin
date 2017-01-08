@@ -18,6 +18,10 @@
         <playersCacheVersion>1</playersCacheVersion>
         <!-- *** Change Inventory Storage version here *** -->
         <InventoryStorageVersion>1</InventoryStorageVersion>
+
+        <!-- site deploy (do not make "deploy" if you are not tabinol.me/jenkins)-->
+        <url.repository>file:///var/www/maven/</url.repository>
+        <dir.javadoc>/var/www/javadoc/${project.artifactId}/</dir.javadoc>
     </properties>
 
     <repositories>
@@ -208,11 +212,46 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>javadoc-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${dir.javadoc}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Test begin -->
@@ -243,5 +282,15 @@
 
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>tabinol-maven-repo</id>
+            <name>tabinol.me Maven repository</name>
+            <url>${url.repository}</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
 
 </project>

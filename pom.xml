@@ -248,7 +248,7 @@
                             <goal>javadoc</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${dir.javadoc}</outputDirectory>
+                            <reportOutputDirectory>${dir.javadoc}</reportOutputDirectory>
                         </configuration>
                     </execution>
                 </executions>

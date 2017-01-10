@@ -82,6 +82,8 @@ public class PermissionsFlags {
 
     /**
      * Instantiates a new parameters.
+     *
+     * @param secuboid the secuboid instance
      */
     public PermissionsFlags(Secuboid secuboid) {
 

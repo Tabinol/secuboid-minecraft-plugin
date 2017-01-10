@@ -280,7 +280,15 @@ public enum PermissionList {
     /**
      * The god
      */
-    GOD(false);
+    GOD(false),
+    /**
+     * End portal
+     */
+    END_PORTAL_TP(true),
+    /**
+     * Nether portal
+     */
+    NETHER_PORTAL_TP(true);
 
     /**
      * The base value.

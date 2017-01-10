@@ -40,9 +40,7 @@ import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
 import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
@@ -71,7 +69,6 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
@@ -897,6 +894,28 @@ public class PlayerListener extends CommonListener implements Listener {
             Land land = secuboid.getLands().getLandOrOutsideArea(player.getLocation());
 
             if (!checkPermission(land, player, PermissionList.GOD.getPermissionType())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerPortal(PlayerPortalEvent event) {
+
+        Player player = (Player) event.getPlayer();
+        PlayerConfEntry entry;
+
+        if ((entry = playerConf.get(player)) != null
+                && !entry.isAdminMode()) {
+
+            Land land = secuboid.getLands().getLandOrOutsideArea(event.getFrom());
+            World.Environment worldEnvFrom = event.getFrom().getWorld().getEnvironment();
+            World.Environment worldEnvTo = event.getTo().getWorld().getEnvironment();
+
+            if (((worldEnvFrom == World.Environment.NETHER || worldEnvTo == World.Environment.NETHER)
+                    && !checkPermission(land, player, PermissionList.NETHER_PORTAL_TP.getPermissionType()))
+                    || ((worldEnvFrom == World.Environment.THE_END || worldEnvTo == World.Environment.THE_END)
+                    && !checkPermission(land, player, PermissionList.END_PORTAL_TP.getPermissionType()))) {
                 event.setCancelled(true);
             }
         }

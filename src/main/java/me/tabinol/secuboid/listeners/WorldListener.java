@@ -94,7 +94,7 @@ public class WorldListener extends CommonListener implements Listener {
         // Check for Explosion cancel
         if ((entityType == EntityType.CREEPER
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.CREEPER_EXPLOSION.getFlagType()).getValueBoolean())
-                || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT)
+                || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT || entityType == EntityType.ENDER_CRYSTAL)
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType()).getValueBoolean())
                 || !land.getPermissionsFlags().getFlagAndInherit(FlagList.EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);

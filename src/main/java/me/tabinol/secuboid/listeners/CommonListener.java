@@ -21,10 +21,10 @@ package me.tabinol.secuboid.listeners;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import me.tabinol.secuboid.utilities.StringChanges;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -142,5 +142,40 @@ class CommonListener {
 
     boolean isDoor(Material material) {
         return doors.contains(material);
+    }
+
+    /**
+     * Gets the spawn point for a land and transform it to location
+     *
+     * @param land the land
+     * @return the location
+     */
+    Location getLandSpawnPoint(Land land) {
+        String strLoc;
+        Location loc;
+
+        // Check for land spawn
+        if (land.getLandType() == Land.LandType.REAL) {
+            if (!(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString()).isEmpty()
+                    && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+                return loc;
+            }
+            secuboid.getLog().warning("Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
+            return null;
+        }
+
+        // Check for world spawn (if land is world)
+        return getWorldSpawnPoint(land.getWorldName());
+    }
+
+    Location getWorldSpawnPoint(String worldName) {
+        World world = Bukkit.getWorld(worldName);
+
+        if (world != null) {
+            return world.getSpawnLocation();
+        }
+
+        secuboid.getLog().warning("Teleportation requested and no world named \"" + worldName + "\"!");
+        return null;
     }
 }

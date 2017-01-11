@@ -39,7 +39,6 @@ import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
-import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Animals;
@@ -734,13 +733,11 @@ public class PlayerListener extends CommonListener implements Listener {
         Player player = event.getPlayer();
         PlayerConfEntry entry = playerConf.get(player);
         Land land = secuboid.getLands().getLandOrOutsideArea(player.getLocation());
-        String strLoc;
         Location loc;
 
         // For repsawn after death
         if (entry != null && land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.TP_DEATH.getPermissionType())
-                && !(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString()).isEmpty()
-                && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+                && (loc = getLandSpawnPoint(land)) != null) {
             event.setRespawnLocation(loc);
         }
     }

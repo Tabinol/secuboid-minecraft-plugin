@@ -288,7 +288,11 @@ public enum PermissionList {
     /**
      * Nether portal
      */
-    NETHER_PORTAL_TP(true);
+    NETHER_PORTAL_TP(true),
+    /**
+     * Teleport from Secuboid portal
+     */
+    PORTAL_TP(true);
 
     /**
      * The base value.

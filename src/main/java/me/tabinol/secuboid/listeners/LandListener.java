@@ -21,18 +21,23 @@ package me.tabinol.secuboid.listeners;
 import java.util.ArrayList;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -206,11 +211,6 @@ public class LandListener extends CommonListener implements Listener {
                 }
             }
 
-
-	    /*for(String playername:land.getPlayersInLand()){
-             secuboid.iScoreboard().sendScoreboard(land.getPlayersInLand(), secuboid.getServer().getPlayer(playername), land.getName());
-             }
-             secuboid.iScoreboard().sendScoreboard(land.getPlayersInLand(), player, land.getName());*/
         } else {
             dummyLand = secuboid.getLands().getOutsideArea(event.getToLoc());
         }
@@ -233,6 +233,56 @@ public class LandListener extends CommonListener implements Listener {
                 && dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
             player.setHealth(0);
         }
+    }
+
+    /**
+     * On player land change (teleport).
+     *
+     * @param event the events
+     */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerLandChangeTp(PlayerLandChangeEvent event) {
+        Player player = event.getPlayer();
+        RealLand land = event.getLand();
+        PlayerConfEntry entry;
+
+        if (land == null || (entry = playerConf.get(player)) == null) {
+            return;
+        }
+        LandPermissionsFlags lpf = land.getPermissionsFlags();
+        PermissionType permissionType = PermissionList.PORTAL_TP.getPermissionType();
+
+        if (entry.isAdminMode() || lpf.checkPermissionAndInherit(player, permissionType)) {
+            String targetTp;
+            RealLand targetLand;
+            Location targetLoc;
+            World world;
+
+            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_LAND.getFlagType()).getValueString()).isEmpty()
+                    && (targetLand = secuboid.getLands().getLand(targetTp)) != null
+                    && (targetLoc = getLandSpawnPoint(targetLand)) != null) {
+                player.teleport(targetLoc);
+            }
+
+            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_LAND_RANDOM.getFlagType()).getValueString()).isEmpty()
+                    && (targetLand = secuboid.getLands().getLand(targetTp)) != null) {
+                randomTp(player, targetLand.getWorld(), targetLand);
+            }
+
+            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_WORLD.getFlagType()).getValueString()).isEmpty()
+                    && (targetLoc = getWorldSpawnPoint(targetTp)) != null) {
+                player.teleport(targetLoc);
+            }
+
+            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_WORLD_RANDOM.getFlagType()).getValueString()).isEmpty()
+                    && (world = Bukkit.getWorld(targetTp)) != null) {
+                randomTp(player, world, null);
+            }
+        }
+    }
+
+    private void randomTp(Player player, World world, RealLand land) {
+        // TODO randomTp
     }
 
     /**

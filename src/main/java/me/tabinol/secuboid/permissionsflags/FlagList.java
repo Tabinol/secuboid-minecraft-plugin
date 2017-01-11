@@ -136,7 +136,23 @@ public enum FlagList {
     /**
      * Inherit from parent tenant
      */
-    INHERIT_TENANT(true);
+    INHERIT_TENANT(true),
+    /**
+     * Is a portal for a world (spawn)
+     */
+    PORTAL_WORLD(""),
+    /**
+     * Is a portal for a world (random)
+     */
+    PORTAL_WORLD_RANDOM(""),
+    /**
+     * Is a portal for a land (spawn)
+     */
+    PORTAL_LAND(""),
+    /**
+     * Is a portal for a world (random)
+     */
+    PORTAL_LAND_RANDOM("");
 
     /**
      * The base value.

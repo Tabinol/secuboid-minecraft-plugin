@@ -19,6 +19,8 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
@@ -29,16 +31,15 @@ import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,6 +51,11 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Land listener
  */
 public class LandListener extends CommonListener implements Listener {
+
+    /**
+     * Number of times retry random tp
+     */
+    private static final int MAX_TP_PASS = 32;
 
     /**
      * The player heal.
@@ -282,7 +288,86 @@ public class LandListener extends CommonListener implements Listener {
     }
 
     private void randomTp(Player player, World world, RealLand land) {
-        // TODO randomTp
+        Random r = new Random();
+        double randomX;
+        double randomZ;
+        boolean tpOk;
+        int pass = 0;
+        int floor;
+
+        switch (world.getEnvironment()) {
+            case NETHER:
+                floor = 10;
+                break;
+            case THE_END:
+                floor = 45;
+                break;
+            case NORMAL:
+            default:
+                floor = 63;
+                break;
+        }
+
+        Location loc;
+        do {
+            tpOk = true;
+            ++pass;
+            if (land != null) {
+                // tp to land
+                Area[] areas = land.getAreas().toArray(new Area[0]);
+                Area area = areas[r.nextInt(areas.length)];
+                randomX = area.getX1() + (area.getX2() - area.getX1()) * r.nextDouble();
+                randomZ = area.getZ1() + (area.getZ2() - area.getZ1()) * r.nextDouble();
+            } else {
+                // tp to world
+                WorldBorder worldBorder = world.getWorldBorder();
+                Location center = worldBorder.getCenter();
+                double size = worldBorder.getSize();
+                int warningDistance = worldBorder.getWarningDistance();
+                double radius = (size - warningDistance) / 2;
+                randomX = center.getX() - radius + radius * 2.0D * r.nextDouble();
+                randomZ = center.getZ() - radius + radius * 2.0D * r.nextDouble();
+            }
+            loc = new Location(world, randomX, floor, randomZ);
+
+            // Check for land (or not land if world)
+            if (land != null) {
+                if (!land.isLocationInside(loc)) {
+                    tpOk = false;
+                }
+            } else {
+                if (secuboid.getLands().getLand(loc) != null) {
+                    tpOk = false;
+                }
+            }
+
+            if (tpOk && !this.locSafe(loc)) {
+                tpOk = false;
+            }
+        } while (!tpOk && pass <= MAX_TP_PASS);
+
+        if (tpOk) {
+            player.teleport(loc);
+        } else {
+            secuboid.getLog().warning("Unable to random teleport player " + player.getName() + "!");
+        }
+    }
+
+    private boolean locSafe(Location loc) {
+        int max;
+        if (loc.getWorld().getEnvironment() == World.Environment.NETHER) {
+            max = 125;
+        } else {
+            max = loc.getWorld().getMaxHeight();
+        }
+        while (loc.getBlockY() <= max) {
+            if (loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid() && loc.getBlock().getType() == Material.AIR && loc.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR) {
+                return true;
+            }
+            loc.add(0.0D, 1.0D, 0.0D);
+        }
+
+        return false;
     }
 
     /**

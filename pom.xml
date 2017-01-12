@@ -11,7 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- *** Change Language version here here *** -->
-        <langVersion>28</langVersion>
+        <langVersion>29</langVersion>
         <!-- *** Change land .conf version here here *** -->
         <landVersion>7</landVersion>
         <!-- *** Change players cache .conf version here here *** -->

@@ -276,17 +276,17 @@ public class InventoryStorage {
                     }
                 }
 
-                ItemStack[] itemListLoad = new ItemStack[36];
-                ItemStack[] itemArmorLoad = new ItemStack[4];
-                ItemStack[] itemEnderChest = new ItemStack[27];
+                ItemStack[] itemListLoad = new ItemStack[player.getInventory().getContents().length];
+                ItemStack[] itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
+                ItemStack[] itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
                 for (int t = 0; t < itemListLoad.length; t++) {
-                    itemListLoad[t] = ConfigPlayerItemFile.getItemStack("Slot." + t);
+                    itemListLoad[t] = ConfigPlayerItemFile.getItemStack("Slot." + t, new ItemStack(Material.AIR));
                 }
                 for (int t = 0; t < itemArmorLoad.length; t++) {
-                    itemArmorLoad[t] = ConfigPlayerItemFile.getItemStack("Armor." + t);
+                    itemArmorLoad[t] = ConfigPlayerItemFile.getItemStack("Armor." + t, new ItemStack(Material.AIR));
                 }
                 for (int t = 0; t < itemEnderChest.length; t++) {
-                    itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t);
+                    itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t, new ItemStack(Material.AIR));
                 }
 
                 player.getInventory().setContents(itemListLoad);

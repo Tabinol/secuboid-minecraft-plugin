@@ -187,6 +187,7 @@ COLLISION:
     DONE: "Cette action est approuvée."
     REMOVE: "Cette action est enlevée de la liste."
     CLEAR: "La liste est maintenant détruite."
+    PERCENT: "En attente du gestionnaire de collisions... (% pourcent fait)"
 COMMAND:
   TP:
     LANDNOTFOUND: "Ce terrain n'existe pas."

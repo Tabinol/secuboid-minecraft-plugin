@@ -37,6 +37,9 @@ import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
+
+import java.io.IOException;
 
 /**
  * The Class Secuboid.
@@ -142,6 +145,13 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
 
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();

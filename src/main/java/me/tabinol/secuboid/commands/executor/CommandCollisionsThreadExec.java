@@ -31,21 +31,53 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Can create a command and calculate the collisions in a thread.
  */
 public abstract class CommandCollisionsThreadExec extends CommandExec {
 
+    private static final long STATUS_FIRST_NB_TICKS = 40;
+    private static final long STATUS_NEXT_NB_TICKS = 400;
+
+
     private boolean addForApprove = false;
     private Collisions.LandAction action = null;
+    private BukkitTask statusTask = null;
     Type type = null;
     int removeId = 0;
     Area newArea = null;
     PlayerContainer owner = null;
     RealLand parent = null;
+
+    private class CollisionThreadStatus extends BukkitRunnable {
+
+        private final Player player;
+        private final Collisions collisions;
+        private long nbTick;
+
+        CollisionThreadStatus(Player player, Collisions collisions) {
+            this.player = player;
+            this.collisions = collisions;
+            nbTick = STATUS_FIRST_NB_TICKS;
+        }
+
+        @Override
+        public void run() {
+            if (player.isOnline()) {
+                player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COLLISION.GENERAL.PERCENT", collisions.getPercentDone() + ""));
+            }
+            secuboid.getLog().info("Collision manger is running and takes " + nbTick + " ticks.");
+            nbTick += STATUS_NEXT_NB_TICKS;
+        }
+    }
 
     /**
      * Instantiates a new command collisions thread exec.
@@ -72,7 +104,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
             throws SecuboidCommandException;
 
     /**
-     * Check collision. Why Land paramater? The land can be an other land, not the land stored here.
+     * Check collision. Why Land parameter? The land can be an other land, not the land stored here.
      *
      * @param landName      the land name
      * @param land          the land
@@ -101,6 +133,9 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         Collisions coll = new Collisions(secuboid, landName, land, action, removeId, newArea, parent,
                 owner, isFree, !addForApprove);
         secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
+        CollisionThreadStatus collisionThreadStatus = new CollisionThreadStatus(player, coll);
+        statusTask = Bukkit.getScheduler().runTaskTimer(secuboid, (Runnable) collisionThreadStatus,
+                STATUS_FIRST_NB_TICKS, STATUS_NEXT_NB_TICKS);
     }
 
     /**
@@ -112,6 +147,10 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
     public void commandThreadParentExecute(Collisions collisions) throws SecuboidCommandException {
 
         boolean allowApprove = collisions.getAllowApprove();
+
+        if (statusTask != null) {
+            statusTask.cancel();
+        }
 
         if (collisions.hasCollisions()) {
             sender.sendMessage(collisions.getPrints());

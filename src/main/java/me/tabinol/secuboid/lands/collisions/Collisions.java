@@ -153,6 +153,11 @@ public class Collisions {
     private boolean allowApprove;
 
     /**
+     * Collision percentage done
+     */
+    private int percentDone;
+
+    /**
      * Instantiates a new collisions.
      *
      * @param secuboid         secuboid instance
@@ -187,6 +192,7 @@ public class Collisions {
         outsideParent = false;
         priceArea = 0;
         priceLand = 0;
+        percentDone = 0;
     }
 
     // Called from this package only
@@ -275,6 +281,20 @@ public class Collisions {
         // Prepare for land calculation
         double priceLandFlag = 0;
         double priceAreaFlag = 0;
+        int nbSteps;
+        int completedSteps = 0;
+
+        // Gets Number of steps
+        if (land != null) {
+            if (newArea != null) {
+                nbSteps = 3;
+            } else {
+                nbSteps = 2;
+            }
+        } else {
+            nbSteps = 0;
+        }
+
         FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
         if (newArea != null) {
             if (land == null) {
@@ -292,6 +312,7 @@ public class Collisions {
                     priceAreaFlag = land.getParent().getPermissionsFlags().getFlagAndInherit(flagType).getValueDouble();
                 }
             }
+            completedSteps++;
         }
 
         // Loop for Land first
@@ -310,6 +331,8 @@ public class Collisions {
                 y2 = LocalMath.greaterInt(area.getY2(), y2);
                 z2 = LocalMath.greaterInt(area.getZ2(), z2);
             }
+            long points = (x2 - x1) * (y2 - y1) * (z2 - z1);
+            long i = 0;
             for (int x = x1; x <= x2; x++) {
                 for (int y = y1; y <= y2; y++) {
                     for (int z = z1; z <= z2; z++) {
@@ -325,13 +348,20 @@ public class Collisions {
                                 outsideParent = true;
                             }
                         }
+                        // Completed steps
+                        i++;
+                        percentDone = (int) ((i / points / nbSteps + (completedSteps / nbSteps)) * 95);
                     }
                 }
             }
+            completedSteps++;
         }
 
         // The new area
         if (newArea != null && land != null) {
+            long points = (newArea.getX2() - newArea.getX1()) * (newArea.getY2() - newArea.getY1())
+                    * (newArea.getZ2() - newArea.getZ1());
+            long i = 0;
             for (int x = newArea.getX1(); x <= newArea.getX2(); x++) {
                 for (int y = newArea.getY1(); y <= newArea.getY2(); y++) {
                     for (int z = newArea.getZ1(); z <= newArea.getZ2(); z++) {
@@ -343,18 +373,23 @@ public class Collisions {
                             }
                             if (!isFree) {
                                 priceLand += priceLandFlag;
-                                if (land == null || !lands2.contains(land)) {
+                                if (!lands2.contains(land)) {
                                     priceArea += priceAreaFlag;
                                 }
                             }
                         }
+                        // Completed steps
+                        i++;
+                        percentDone = (int) ((i / points / nbSteps + (completedSteps / nbSteps)) * 95);
                     }
                 }
             }
+            completedSteps++;
         }
 
         //Children outside
         if (land != null) {
+            long i = 0;
             HashSet<Area> areaList = new HashSet<Area>();
 
             if (action != LandAction.LAND_REMOVE) {
@@ -368,6 +403,7 @@ public class Collisions {
                 areaList.add(newArea);
             }
 
+            int points = areaList.size();
             for (Area areaC : areaList) {
                 for (int x = areaC.getX1(); x <= areaC.getX2(); x++) {
                     for (int y = areaC.getY1(); y <= areaC.getY2(); y++) {
@@ -383,6 +419,9 @@ public class Collisions {
                         }
                     }
                 }
+                // Completed steps
+                i++;
+                percentDone = (int) ((i / points / nbSteps + (completedSteps / nbSteps)) * 95);
             }
         }
     }
@@ -506,5 +545,14 @@ public class Collisions {
             return priceLand;
         }
         return priceArea;
+    }
+
+    /**
+     * Gets the number of percent done for collision steps.
+     *
+     * @return the number on percent
+     */
+    public synchronized int getPercentDone() {
+        return percentDone;
     }
 }

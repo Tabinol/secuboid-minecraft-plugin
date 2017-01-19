@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -64,7 +61,7 @@ public class CommandRename extends CommandCollisionsThreadExec {
         }
 
         // Check for collision
-        checkCollision(curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
+        checkCollision(land.getWorldName(), curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
                 null, land.getParent(), land.getOwner(), true);
     }
 

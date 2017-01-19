@@ -245,21 +245,26 @@ public final class RoadArea implements Area {
         regionMatrix.removePoint(x, z);
     }
 
-    /**
-     * Gets the volume.
-     *
-     * @return the volume (in block)
-     */
+    @Override
+    public long getArea() {
+        return regionMatrix.countPoints();
+    }
+
     @Override
     public long getVolume() {
-        return regionMatrix.countPoints() * (getY2() - getY1() + 1);
+        return getArea() * (getY2() - getY1() + 1);
+    }
+
+    @Override
+    public boolean isLocationInside(String worldName, int x, int z) {
+        return worldName.equals(areaCommon.getWorldName())
+                && regionMatrix.getPoint(x, z);
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return worldName.equals(areaCommon.getWorldName())
-                && LocalMath.isInInterval(y, getY1(), getY2())
-                && regionMatrix.getPoint(x, z);
+        return isLocationInside(worldName, x, z)
+                && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
     @Override

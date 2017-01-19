@@ -144,10 +144,14 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             PlayerContainer owner = approve.getOwner();
 
             if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
+                String worldName;
 
-                // Print area
+                // Print area and get world
                 if (newArea != null) {
+                    worldName = newArea.getWorldName();
                     sender.sendMessage(newArea.getPrint());
+                } else {
+                    worldName = land.getWorldName();
                 }
 
                 if (curArg.equalsIgnoreCase("confirm")) {
@@ -155,7 +159,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
                     confirm = true;
                 }
                 // Info on the specified land (Collision)
-                checkCollision(param, apprLand, null, action, removeId, newArea, parent, owner, false);
+                checkCollision(worldName, param, apprLand, null, action, removeId, newArea, parent, owner, false);
 
             } else if (curArg.equalsIgnoreCase("cancel")) {
 

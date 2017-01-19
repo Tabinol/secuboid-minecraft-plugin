@@ -166,22 +166,27 @@ public final class CuboidArea implements Area {
         areaCommon.setZ2(z2);
     }
 
-    /**
-     * Gets the volume.
-     *
-     * @return the volume (in block)
-     */
+    @Override
+    public long getArea() {
+        return (getX2() - getX1() + 1) * (getZ2() - getZ1() + 1);
+    }
+
     @Override
     public long getVolume() {
-        return (getX2() - getX1() + 1) * (getY2() - getY1() + 1) * (getZ2() - getZ1() + 1);
+        return getArea() * (getY2() - getY1() + 1);
+    }
+
+    @Override
+    public boolean isLocationInside(String worldName, int x, int z) {
+        return worldName.equals(areaCommon.getWorldName())
+                && LocalMath.isInInterval(x, getX1(), getX2())
+                && LocalMath.isInInterval(z, getZ1(), getZ2());
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return worldName.equals(areaCommon.getWorldName())
-                && LocalMath.isInInterval(x, getX1(), getX2())
-                && LocalMath.isInInterval(y, getY1(), getY2())
-                && LocalMath.isInInterval(z, getZ1(), getZ2());
+        return isLocationInside(worldName, x, z)
+                && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
     @Override

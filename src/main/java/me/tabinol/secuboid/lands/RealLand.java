@@ -52,7 +52,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     /**
      * The Constant DEFAULT_PRIORITY.
      */
-    public static final short DEFAULT_PRIORITY = 10;
+    private static final short DEFAULT_PRIORITY = 10;
 
     /**
      * The Constant MINIM_PRIORITY.
@@ -477,6 +477,25 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public String getWorldName() {
 
         return worldName;
+    }
+
+    /**
+     * Check if the location is inside the land. This method does not check for Y value.
+     *
+     * @param world the string world
+     * @param x     the x
+     * @param z     the z
+     * @return true if inside the land
+     */
+    public boolean isLocationInside(String world, int x, int z) {
+
+        for (Area area1 : areas.values()) {
+            if (area1.isLocationInside(world, x, z)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

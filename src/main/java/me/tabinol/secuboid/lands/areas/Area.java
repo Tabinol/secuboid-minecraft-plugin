@@ -174,11 +174,28 @@ public interface Area extends Comparable<Area> {
     void setZ2(int z2);
 
     /**
+     * Gets the area (surface).
+     *
+     * @return the area
+     */
+    long getArea();
+
+    /**
      * Gets the volume.
      *
      * @return the volume
      */
     long getVolume();
+
+    /**
+     * Gets if the location is inside the area. This method ignore y value.
+     *
+     * @param worldName the world name
+     * @param x         the x
+     * @param z         the z
+     * @return if true or false
+     */
+    boolean isLocationInside(String worldName, int x, int z);
 
     /**
      * Gets if the location is inside the area.

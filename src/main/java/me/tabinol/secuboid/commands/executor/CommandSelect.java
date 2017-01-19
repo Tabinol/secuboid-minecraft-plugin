@@ -96,21 +96,21 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                     }
                     new CommandSelectWorldedit(secuboid, player, playerConf).MakeSelect();
 
-                } else if(curArg.toLowerCase().matches("^cub(oid)?")) {
+                } else if (curArg.toLowerCase().matches("^cub(oid)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().matches("^cyl(inder)?")) {
+                } else if (curArg.toLowerCase().matches("^cyl(inder)?")) {
                     doVisualActiveSelect(AreaType.CYLINDER, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().matches("^roa(d)?")) {
+                } else if (curArg.toLowerCase().matches("^roa(d)?")) {
                     doVisualActiveSelect(AreaType.ROAD, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().matches("^exp(and)?")) {
+                } else if (curArg.toLowerCase().matches("^exp(and)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.EXPAND);
-                } else if(curArg.toLowerCase().matches("^ret(ract)?")) {
+                } else if (curArg.toLowerCase().matches("^ret(ract)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.RETRACT);
-                } else if(curArg.toLowerCase().matches("^mov(e)?")) {
+                } else if (curArg.toLowerCase().matches("^mov(e)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.MOVE);
-                } else if(curArg.toLowerCase().matches("^lan(d)?")) {
+                } else if (curArg.toLowerCase().matches("^lan(d)?")) {
                     String curArg2 = argList.getNext();
-                    if(curArg2 != null ) {
+                    if (curArg2 != null) {
                         doSelectLand(curArg2);
                     } else {
                         doSelectLand(curArg);
@@ -244,24 +244,19 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                     area.getVolume() + ""));
         }
 
-        checkCollision(null, null, null, Collisions.LandAction.LAND_ADD,
+        checkCollision(area.getWorldName(), null, null, null, Collisions.LandAction.LAND_ADD,
                 0, playerConf.getSelection().getArea(), null, playerConf.getPlayerContainer(), true);
     }
 
     @Override
     public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
         // Info only
-
-        double price;
+        double price = collisions.getPrice();
 
         // Price (economy)
-        price = collisions.getPriceLand();
         if (price != 0L) {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
                     secuboid.getPlayerMoney().toFormat(price)));
-        }
-        price = collisions.getPriceArea();
-        if (price != 0L) {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
                     secuboid.getPlayerMoney().toFormat(price)));
         }

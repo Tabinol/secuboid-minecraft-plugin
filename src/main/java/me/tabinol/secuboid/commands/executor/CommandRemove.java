@@ -53,7 +53,7 @@ public class CommandRemove extends CommandCollisionsThreadExec {
         checkPermission(true, true, null, null);
 
         // Check for collision
-        checkCollision(land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
+        checkCollision(land.getWorldName(), land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
                 0, null, land.getParent(), land.getOwner(), true);
     }
 

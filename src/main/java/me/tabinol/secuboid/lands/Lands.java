@@ -21,7 +21,6 @@ package me.tabinol.secuboid.lands;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -499,19 +498,39 @@ public class Lands {
     /**
      * Gets the lands.
      *
+     * @param worldName the world name
+     * @param x         the x
+     * @param z         the z
+     * @return the lands
+     */
+    public Collection<RealLand> getLands(String worldName, int x, int z) {
+
+        Collection<Area> areas = getAreas(worldName, x, z);
+        Collection<RealLand> lands = new HashSet<RealLand>();
+
+        for (Area area : areas) {
+            lands.add(area.getLand());
+        }
+
+        return lands;
+    }
+
+    /**
+     * Gets the lands.
+     *
      * @param loc the loc
      * @return the lands
      */
     public Collection<RealLand> getLands(Location loc) {
 
         Collection<Area> areas = getAreas(loc);
-        HashMap<String, RealLand> lands = new HashMap<String, RealLand>();
+        Collection<RealLand> lands = new HashSet<RealLand>();
 
         for (Area area : areas) {
-            lands.put(area.getLand().getName(), area.getLand());
+            lands.add(area.getLand());
         }
 
-        return lands.values();
+        return lands;
     }
 
     /**
@@ -568,15 +587,30 @@ public class Lands {
     }
 
     /**
+     * Gets the cuboid areas. This method ignore Y value.
+     *
+     * @param worldName the world name
+     * @param x         the x
+     * @param z         the z
+     * @return the cuboid areas
+     */
+    public Collection<Area> getAreas(String worldName, int x, int z) {
+        return getAreas(worldName, x, 0, z, false);
+    }
+
+    /**
      * Gets the cuboid areas.
      *
      * @param loc the loc
      * @return the cuboid areas
      */
     public Collection<Area> getAreas(Location loc) {
+        return getAreas(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), true);
+    }
+
+    private Collection<Area> getAreas(String worldName, int x, int y, int z, boolean isY) {
 
         Collection<Area> areas = new ArrayList<Area>();
-        String worldName = loc.getWorld().getName();
         int SearchIndex;
         int nbToFind;
         boolean ForwardSearch;
@@ -585,9 +619,9 @@ public class Lands {
         Iterator<AreaIndex> it;
 
         // First, determinate if what is the highest number between x1, x2, z1 and z2
-        if (Math.abs(loc.getBlockX()) > Math.abs(loc.getBlockZ())) {
-            nbToFind = loc.getBlockX();
-            if (loc.getBlockX() < 0) {
+        if (Math.abs(x) > Math.abs(z)) {
+            nbToFind = x;
+            if (x < 0) {
                 SearchIndex = INDEX_X1;
                 ForwardSearch = true;
             } else {
@@ -595,8 +629,8 @@ public class Lands {
                 ForwardSearch = false;
             }
         } else {
-            nbToFind = loc.getBlockZ();
-            if (loc.getBlockZ() < 0) {
+            nbToFind = z;
+            if (z < 0) {
                 SearchIndex = INDEX_Z1;
                 ForwardSearch = true;
             } else {
@@ -619,7 +653,7 @@ public class Lands {
         // Adds all areas to the list
         while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, SearchIndex)) {
 
-            if (ai.getArea().isLocationInside(loc)) {
+            if (isY ? ai.getArea().isLocationInside(worldName, x, y, z) : ai.getArea().isLocationInsideSquare(x, z)) {
                 areas.add(ai.getArea());
             }
         }

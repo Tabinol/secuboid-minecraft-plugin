@@ -105,7 +105,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
     /**
      * Check collision. Why Land parameter? The land can be an other land, not the land stored here.
-     *
+     * @param worldName the world name
      * @param landName      the land name
      * @param land          the land
      * @param type          the type
@@ -117,7 +117,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param addForApprove the add for approve
      * @throws SecuboidCommandException the secuboid command exception
      */
-    void checkCollision(String landName, RealLand land, Type type, Collisions.LandAction action,
+    void checkCollision(String worldName, String landName, RealLand land, Type type, Collisions.LandAction action,
                         int removeId, Area newArea, RealLand parent, PlayerContainer owner,
                         boolean addForApprove) throws SecuboidCommandException {
 
@@ -130,7 +130,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         this.owner = owner;
         this.parent = parent;
         boolean isFree = !isPlayerMustPay();
-        Collisions coll = new Collisions(secuboid, landName, land, action, removeId, newArea, parent,
+        Collisions coll = new Collisions(secuboid, worldName, landName, land, action, removeId, newArea, parent,
                 owner, isFree, !addForApprove);
         secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
         CollisionThreadStatus collisionThreadStatus = new CollisionThreadStatus(player, coll);

@@ -72,7 +72,7 @@ public class CommandParent extends CommandCollisionsThreadExec {
         }
 
         // Check for collision
-        checkCollision(land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
+        checkCollision(land.getWorldName(), land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
                 land.getOwner(), true);
     }
 

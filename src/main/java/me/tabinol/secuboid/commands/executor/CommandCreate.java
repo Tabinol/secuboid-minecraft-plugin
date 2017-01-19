@@ -119,7 +119,7 @@ public class CommandCreate extends CommandCollisionsThreadExec {
             localType = secuboid.getConf().getTypeNoneAdminMode();
         }
 
-        checkCollision(curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
+        checkCollision(area.getWorldName(), curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
     }
 
     @Override

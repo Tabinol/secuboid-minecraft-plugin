@@ -73,7 +73,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
             Area area = playerConf.getSelection().getArea();
 
             // Check for collision
-            checkCollision(land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(),
+            checkCollision(area.getWorldName(), land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(),
                     land.getOwner(), true);
 
         } else if (fonction.equalsIgnoreCase("remove") || fonction.equalsIgnoreCase("replace")) {
@@ -114,8 +114,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
             if (fonction.equalsIgnoreCase("remove")) {
 
                 // Check for collision
-                checkCollision(fonction, land, null, LandAction.AREA_REMOVE, areaNb, null, land.getParent(),
-                        land.getOwner(), true);
+                checkCollision(land.getWorldName(), fonction, land, null, LandAction.AREA_REMOVE, areaNb, null,
+                        land.getParent(), land.getOwner(), true);
 
             } else {
 
@@ -125,8 +125,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
                 Area area = playerConf.getSelection().getArea();
 
                 // Check for collision
-                checkCollision(land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area, land.getParent(),
-                        land.getOwner(), true);
+                checkCollision(land.getWorldName(), land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area,
+                        land.getParent(), land.getOwner(), true);
             }
 
         } else if (fonction.equalsIgnoreCase("list")) {

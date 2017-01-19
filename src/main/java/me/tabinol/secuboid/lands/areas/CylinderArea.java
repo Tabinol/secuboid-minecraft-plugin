@@ -261,21 +261,26 @@ public final class CylinderArea implements Area {
         return (int) Math.round(originH - (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
-    /**
-     * Gets the volume.
-     *
-     * @return the volume (in block)
-     */
+    @Override
+    public long getArea() {
+        return Math.round(rX * rZ * Math.PI);
+    }
+
     @Override
     public long getVolume() {
-        return Math.round(rX * (getY2() - getY1() + 1) * rZ * Math.PI);
+        return getArea() * (getY2() - getY1() + 1);
+    }
+
+    @Override
+    public boolean isLocationInside(String worldName, int x, int z) {
+        return getWorldName().equals(worldName)
+                && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }
 
     @Override
     public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return getWorldName().equals(worldName)
-                && LocalMath.isInInterval(y, getY1(), getY2())
-                && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
+        return isLocationInside(worldName, x, z)
+                && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
     @Override

@@ -489,8 +489,8 @@ public class StorageFlat implements Storage {
                 cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
                 cb.writeParam("SalePrice", land.getSalePrice());
             }
+            cb.writeParam("ForRent", land.isForRent() + "");
             if (land.isForRent()) {
-                cb.writeParam("ForRent", land.isForRent() + "");
                 cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
                 cb.writeParam("RentPrice", land.getRentPrice());
                 cb.writeParam("ForRenew", land.getRentRenew());

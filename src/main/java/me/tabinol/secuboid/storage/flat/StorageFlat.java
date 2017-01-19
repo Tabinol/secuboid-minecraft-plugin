@@ -181,7 +181,7 @@ public class StorageFlat implements Storage {
         ConfLoaderFlat cf = null;
         UUID uuid;
         String landName;
-        String type = null;
+        String type;
         RealLand land = null;
         Map<Integer, Area> areas = new TreeMap<Integer, Area>();
         boolean isLandCreated = false;
@@ -197,10 +197,10 @@ public class StorageFlat implements Storage {
         Set<PlayerContainerPlayer> pNotifs = new TreeSet<PlayerContainerPlayer>();
 
         // For economy
-        boolean forSale = false;
+        boolean forSale;
         Location forSaleSignLoc = null;
         double salePrice = 0;
-        boolean forRent = false;
+        boolean forRent;
         Location forRentSignLoc = null;
         double rentPrice = 0;
         int rentRenew = 0;
@@ -212,13 +212,11 @@ public class StorageFlat implements Storage {
         try {
             cf = new ConfLoaderFlat(secuboid, file);
             String str;
-            version = cf.getVersion();
+            // Add for different version support: version = cf.getVersion();
             uuid = cf.getUUID();
             landName = cf.getName();
-            if (version >= 5) {
                 cf.readParam();
                 type = cf.getValueString();
-            }
             cf.readParam();
             String ownerS = cf.getValueString();
 
@@ -230,11 +228,6 @@ public class StorageFlat implements Storage {
 
             cf.readParam();
             parentUUID = cf.getValueString();
-
-            // Old Faction Territory value
-            if (version < 6) {
-                cf.readParam();
-            }
 
             cf.readParam();
 
@@ -298,34 +291,32 @@ public class StorageFlat implements Storage {
             }
 
             // Economy
-            if (version >= 4) {
+            cf.readParam();
+            forSale = Boolean.parseBoolean(cf.getValueString());
+            if (forSale) {
                 cf.readParam();
-                forSale = Boolean.parseBoolean(cf.getValueString());
-                if (forSale) {
-                    cf.readParam();
-                    forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
-                    cf.readParam();
-                    salePrice = cf.getValueDouble();
-                }
+                forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
                 cf.readParam();
-                forRent = Boolean.parseBoolean(cf.getValueString());
-                if (forRent) {
+                salePrice = cf.getValueDouble();
+            }
+            cf.readParam();
+            forRent = Boolean.parseBoolean(cf.getValueString());
+            if (forRent) {
+                cf.readParam();
+                forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                cf.readParam();
+                rentPrice = cf.getValueDouble();
+                cf.readParam();
+                rentRenew = cf.getValueInt();
+                cf.readParam();
+                rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
+                cf.readParam();
+                rented = Boolean.parseBoolean(cf.getValueString());
+                if (rented) {
                     cf.readParam();
-                    forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                    tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
                     cf.readParam();
-                    rentPrice = cf.getValueDouble();
-                    cf.readParam();
-                    rentRenew = cf.getValueInt();
-                    cf.readParam();
-                    rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
-                    cf.readParam();
-                    rented = Boolean.parseBoolean(cf.getValueString());
-                    if (rented) {
-                        cf.readParam();
-                        tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
-                        cf.readParam();
-                        lastPayment = Timestamp.valueOf(cf.getValueString());
-                    }
+                    lastPayment = Timestamp.valueOf(cf.getValueString());
                 }
             }
 
@@ -396,7 +387,6 @@ public class StorageFlat implements Storage {
         }
 
         // Economy add
-        if (version >= 4) {
             if (forSale) {
                 land.setForSale(true, salePrice, forSaleSignLoc);
             }
@@ -407,12 +397,8 @@ public class StorageFlat implements Storage {
                     land.setLastPaymentTime(lastPayment);
                 }
             }
-        }
     }
 
-    /* (non-Javadoc)
-     * @see me.tabinol.secuboid.storage.Storage#saveLand(me.tabinol.secuboid.lands.Land)
-     */
     @Override
     public void saveLand(RealLand land) {
         try {

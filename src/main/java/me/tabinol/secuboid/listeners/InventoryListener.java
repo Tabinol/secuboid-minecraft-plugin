@@ -134,8 +134,7 @@ public class InventoryListener extends CommonListener implements Listener {
                         secuboid.getLands().getLandOrOutsideArea(player.getLocation()),
                         player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
             }
-        } else if (reason != LandModifyEvent.LandModifyReason.PERMISSION_SET && reason != LandModifyEvent.LandModifyReason.PERMISSION_SET
-                && reason != LandModifyEvent.LandModifyReason.RENAME) {
+        } else if (reason != LandModifyEvent.LandModifyReason.PERMISSION_SET && reason != LandModifyEvent.LandModifyReason.RENAME) {
 
             // No land resize or area replace, only players in the land affected
             for (Player player : event.getLand().getPlayersInLandAndChildren()) {
@@ -216,7 +215,7 @@ public class InventoryListener extends CommonListener implements Listener {
         }
     }
 
-    public Land getDummyLand(Location location) {
+    private Land getDummyLand(Location location) {
 
         return secuboid.getLands().getLandOrOutsideArea(location);
     }

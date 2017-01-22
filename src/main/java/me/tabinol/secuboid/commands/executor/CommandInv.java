@@ -62,8 +62,6 @@ public class CommandInv extends CommandExec {
             throw new SecuboidCommandException(secuboid, "Multiple Inventories is not active", player, "COMMAND.INV.NOTACTIVE");
         }
 
-        checkPermission(false, false, PermissionList.RESIDENT_MANAGER.getPermissionType(), null);
-
         String function = argList.getNext();
 
         if (function.equalsIgnoreCase("default")) {

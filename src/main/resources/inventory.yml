@@ -2,7 +2,7 @@
 #
 # "InventoryName"
 # You give the name you want.
-# "Default" is anywhere except where you have INVENTORY flag set.
+# "Default" is anywhere except where you have INVENTORY flag is set.
 # CAUTION : Inventory name is Case Sensitive.
 # Do not remove Default inventory!
 #

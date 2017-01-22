@@ -268,7 +268,7 @@ public final class CylinderArea implements Area {
 
     @Override
     public long getVolume() {
-        return getArea() * (getY2() - getY1() + 1);
+        return Math.round(rX * rZ * Math.PI * (getY2() - getY1() + 1));
     }
 
     @Override

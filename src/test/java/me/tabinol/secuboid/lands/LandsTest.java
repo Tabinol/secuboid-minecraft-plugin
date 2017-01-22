@@ -24,28 +24,15 @@ import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
-import me.tabinol.secuboid.lands.types.Types;
-import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboid.storage.StorageThread;
-import me.tabinol.secuboid.utilities.Log;
-import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-
-import org.powermock.api.mockito.PowerMockito;
-
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import static me.tabinol.secuboid.lands.InitLands.WORLD;
 
 /**
  * Tests for lands.
@@ -54,7 +41,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(Secuboid.class)
 public class LandsTest {
 
-    private static final String WORLD = "world";
     private static final String TEST_CUBOID = "testcuboid";
     private static final String TEST_CYLINDER = "testcylinder";
     private static final String TEST_ROAD = "road";
@@ -63,39 +49,7 @@ public class LandsTest {
 
     @Before
     public void initLands() throws SecuboidLandException {
-
-        // Prepare Mock
-        PowerMockito.mockStatic(Secuboid.class);
-        Secuboid secuboid = mock(Secuboid.class);
-
-        // log
-        Log log = mock(Log.class);
-        doNothing().when(log).info(anyString());
-        doNothing().when(log).warning(anyString());
-        doNothing().when(log).severe(anyString());
-        when(secuboid.getLog()).thenReturn(log);
-
-        // Permissions Flags
-        PermissionsFlags permissionsFlags = new PermissionsFlags(secuboid);
-        when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
-
-        // Tyles
-        Types types = new Types();
-        when(secuboid.getTypes()).thenReturn(types);
-
-        // Server
-        PluginManager pm = mock(PluginManager.class);
-        Server server = mock(Server.class);
-        when(server.getPluginManager()).thenReturn(pm);
-        when(secuboid.getServer()).thenReturn(server);
-
-        // Lands
-        lands = new Lands(secuboid);
-        when(secuboid.getLands()).thenReturn(lands);
-
-        StorageThread storageThread = mock(StorageThread.class);
-        doNothing().when(storageThread).saveLand(any(RealLand.class));
-        when(secuboid.getStorageThread()).thenReturn(storageThread);
+        lands = new InitLands().getLands();
 
         // Create lands for test
         lands.createLand(TEST_CUBOID, new PlayerContainerNobody(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));

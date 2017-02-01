@@ -37,7 +37,7 @@
 
         <repository>
             <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
+            <url>https://maven.sk89q.com/repo/</url>
         </repository>
 
         <repository>
@@ -134,8 +134,15 @@
 
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-core</artifactId>
+            <version>6.1</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>6.1.2</version>
+            <version>6.1.5</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>

@@ -208,7 +208,7 @@ public class PlayerListener extends CommonListener implements Listener {
         Player player = event.getPlayer();
         PlayerConfEntry entry = playerConf.get(player);
 
-        if (player == null) {
+        if (player == null || entry == null) {
             return;
         }
         long last = entry.getLastMoveUpdate();

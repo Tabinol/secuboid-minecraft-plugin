@@ -111,7 +111,7 @@ public class CollisionsManagerThread extends Thread {
 
                 while (!requests.isEmpty()) {
 
-                    // Do collsion and price check
+                    // Do collision and price check
                     OutputRequest output = requests.remove(0);
                     output.collisions.doCollisionCheck();
 

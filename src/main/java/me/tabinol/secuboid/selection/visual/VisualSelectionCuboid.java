@@ -154,8 +154,21 @@ public class VisualSelectionCuboid implements VisualSelection {
         //MakeSquare
         int stepX = visualCommon.getStepX(area);
         int stepZ = visualCommon.getStepZ(area);
-        for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
-            for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
+
+        int posX = area.getX1() - stepX;
+        while (posX < area.getX2()) {
+            posX += stepX;
+            // Force to do not skip the X line
+            if (posX > area.getX2()) {
+                posX = area.getX2();
+            }
+            int posZ = area.getZ1() - stepZ;
+            while (posZ < area.getZ2()) {
+                posZ += stepZ;
+                // Force to do not skip the Z line
+                if (posZ > area.getZ2()) {
+                    posZ = area.getZ2();
+                }
                 if (posX == area.getX1() || posX == area.getX2()
                         || posZ == area.getZ1() || posZ == area.getZ2()) {
 

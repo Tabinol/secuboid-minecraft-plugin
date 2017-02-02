@@ -172,10 +172,6 @@ public class Collisions {
     public Collisions(Secuboid secuboid, String worldName, String landName, RealLand land, LandAction action, int removedAreaId,
                       Area newArea, RealLand parent, PlayerContainer owner, boolean isFree, boolean checkApproveList) {
 
-        synchronized (secuboid.getLog()) {
-            secuboid.getLog().info("New collision MANAGER!!!!");
-        }
-
         this.secuboid = secuboid;
         this.worldName = worldName;
         collisionsEntries = new ArrayList<CollisionsEntry>();
@@ -196,15 +192,8 @@ public class Collisions {
     // Called from this package only
     void doCollisionCheck() {
 
-        synchronized (secuboid.getLog()) {
-            secuboid.getLog().info("--- Collision Check Start ---");
-        }
-
         // Pass 1 & 2 check if there is a collision and is outside parent
         if (action.errorsToCheck.contains(COLLISION)) { // COLLISION check adds always OUT_OF_PARENT
-            synchronized (secuboid.getLog()) {
-                secuboid.getLog().info("checkCollisionsAndInsideParent()");
-            }
             checkCollisionsAndInsideParent();
         }
         percentDone = 20;
@@ -212,27 +201,18 @@ public class Collisions {
         // Pass 3 check if children are not out of land
         if (action.errorsToCheck.contains(CHILD_OUT_OF_BORDER)
                 && !land.getChildren().isEmpty()) {
-            synchronized (secuboid.getLog()) {
-                secuboid.getLog().info("checkIfChildrenOutside()");
-            }
             checkIfChildrenOutside();
         }
         percentDone = 30;
 
         // Pass 4 check if the deleted land has children
         if (action.errorsToCheck.contains(HAS_CHILDREN)) {
-            synchronized (secuboid.getLog()) {
-                secuboid.getLog().info("checkIfLandHasChildren()");
-            }
             checkIfLandHasChildren();
         }
         percentDone = 40;
 
         // Pass 5 check if the name is already existing
         if (landName != null && action.errorsToCheck.contains(NAME_IN_USE)) {
-            synchronized (secuboid.getLog()) {
-                secuboid.getLog().info("checkIfNameExist()");
-            }
             checkIfNameExist();
         }
         percentDone = 50;
@@ -287,10 +267,6 @@ public class Collisions {
                 return;
             }
         }
-
-        synchronized (secuboid.getLog()) {
-            secuboid.getLog().info("--- Collision Check End ---");
-        }
     }
 
     /**
@@ -310,7 +286,7 @@ public class Collisions {
                         }
                     }
                 }
-                if (!lands.getLands(worldName, x, z).contains(parent)) {
+                if (parent != null && !lands.getLands(worldName, x, z).contains(parent)) {
                     outsideParent = true;
                 }
             }

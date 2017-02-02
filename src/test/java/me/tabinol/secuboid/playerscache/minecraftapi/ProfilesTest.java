@@ -21,25 +21,22 @@ package me.tabinol.secuboid.playerscache.minecraftapi;
 import org.junit.Test;
 
 /**
- * Test profile resquest
+ * Test profile requests
  */
 public class ProfilesTest {
 
     private final String[] names = {"Notch", "Tabinol"};
 
-    /**
-     *
-     */
     @Test
     public void testHtmlNamesRequest() {
 
-	HttpProfileRepository httpProfileRepository = new HttpProfileRepository("minecraft");
-	Profile[] profiles = httpProfileRepository.findProfilesByNames(names);
+        HttpProfileRepository httpProfileRepository = new HttpProfileRepository("minecraft");
+        Profile[] profiles = httpProfileRepository.findProfilesByNames(names);
 
-	for (int t = 0; t < names.length; t++) {
+        for (int t = 0; t < names.length; t++) {
 
-	    // Write result
-	    System.out.println(names[t] + "-->" + profiles[t].getId());
-	}
+            // Write result
+            System.out.println(names[t] + "-->" + profiles[t].getId());
+        }
     }
 }

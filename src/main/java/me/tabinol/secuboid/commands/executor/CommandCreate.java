@@ -127,7 +127,7 @@ public class CommandCreate extends CommandCollisionsThreadExec {
 
         // Check for collision
         if (collisions.hasCollisions()) {
-            new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+            new CommandCancel(secuboid, null, sender, argList).commandExecute();
             return;
         }
 

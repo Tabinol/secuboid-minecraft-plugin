@@ -155,7 +155,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
             land.addArea(newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-            new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
+            new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         } else if (fonction.equalsIgnoreCase("remove")) {
 
@@ -173,7 +173,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
             land.replaceArea(removeId, newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
-            new CommandCancel(secuboid, infoCommand, sender, null).commandExecute();
+            new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         }
 

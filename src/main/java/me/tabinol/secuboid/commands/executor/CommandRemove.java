@@ -65,7 +65,7 @@ public class CommandRemove extends CommandCollisionsThreadExec {
             return;
         }
 
-        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        new CommandCancel(secuboid, null, sender, argList).commandExecute();
         playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, land, 0));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }

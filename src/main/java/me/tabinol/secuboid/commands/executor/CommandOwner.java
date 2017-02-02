@@ -70,7 +70,7 @@ public class CommandOwner extends CommandPlayerThreadExec {
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
 
         // Cancel the selection
-        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        new CommandCancel(secuboid, null, sender, argList).commandExecute();
 
     }
 }

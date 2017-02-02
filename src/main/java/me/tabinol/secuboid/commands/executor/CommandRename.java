@@ -85,6 +85,6 @@ public class CommandRename extends CommandCollisionsThreadExec {
         player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.RENAME.ISDONE", oldName, newName));
 
         // Cancel the selection
-        new CommandCancel(secuboid, infoCommand, sender, argList).commandExecute();
+        new CommandCancel(secuboid, null, sender, argList).commandExecute();
     }
 }

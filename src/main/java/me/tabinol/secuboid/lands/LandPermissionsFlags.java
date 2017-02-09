@@ -104,11 +104,6 @@ public class LandPermissionsFlags {
             return null;
         }
 
-        // From first real land, return default
-        if (realLand != null && realLand == originLand) {
-            return secuboid.getLands().getDefaultConf(realLand.getType()).getPermissionsFlags();
-        }
-
         RealLand parent = null;
 
         // Return parent if exist
@@ -259,6 +254,15 @@ public class LandPermissionsFlags {
         if ((permValue = getPermission(player, pt, onlyInherit, originLand)) != null) {
             return permValue;
         }
+
+        // Return default if realLand
+        if (realLand != null) {
+            DefaultLand defaultConf = secuboid.getLands().getDefaultConf(realLand.getType());
+            if (defaultConf != null && (permValue = defaultConf.getPermissionsFlags().getPermission(player, pt, onlyInherit, originLand)) != null) {
+                return permValue;
+            }
+        }
+
         LandPermissionsFlags permsFlagsParent = getPermsFlagsParent(originLand);
         if (permsFlagsParent != null) {
             return permsFlagsParent.checkPermissionAndInherit(player, pt, true, originLand);
@@ -372,6 +376,14 @@ public class LandPermissionsFlags {
         FlagValue flagValue;
         if ((flagValue = getFlag(ft, onlyInherit)) != null) {
             return flagValue;
+        }
+
+        // Return default if realLand
+        if (realLand != null) {
+            DefaultLand defaultConf = secuboid.getLands().getDefaultConf(realLand.getType());
+            if (defaultConf != null && (flagValue = defaultConf.getPermissionsFlags().getFlag(ft, onlyInherit)) != null) {
+                return flagValue;
+            }
         }
 
         LandPermissionsFlags permsFlagsParent = getPermsFlagsParent(originLand);

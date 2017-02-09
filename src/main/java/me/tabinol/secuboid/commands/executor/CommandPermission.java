@@ -28,7 +28,6 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -94,7 +93,7 @@ public class CommandPermission extends CommandPlayerThreadExec {
             if (land.getType() != null) {
                 stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
                         land.getType().getName())).append(Config.NEWLINE);
-                importDisplayPermsFrom(((Lands) secuboid.getLands()).getDefaultConf(land.getType()), false);
+                importDisplayPermsFrom(secuboid.getLands().getDefaultConf(land.getType()), false);
             }
 
             // For parent (if exist)

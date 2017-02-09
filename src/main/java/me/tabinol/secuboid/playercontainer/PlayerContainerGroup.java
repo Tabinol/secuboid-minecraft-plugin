@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -39,22 +40,8 @@ public class PlayerContainerGroup implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player) {
+    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
         return player != null && secuboid.getDependPlugin().getPermission().playerInGroup(player, groupName);
-    }
-
-    @Override
-    public boolean hasAccess(Player player, RealLand land) {
-        return hasAccess(player);
-    }
-
-    @Override
-    public RealLand getLand() {
-        return null;
-    }
-
-    @Override
-    public void setLand(RealLand land) {
     }
 
     @Override

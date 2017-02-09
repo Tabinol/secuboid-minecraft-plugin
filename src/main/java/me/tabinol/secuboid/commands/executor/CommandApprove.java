@@ -95,7 +95,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             // show Approve List
             for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
                 Approve app = approveEntry.getValue();
-                if (app != null && (isApprover || app.getOwner().hasAccess(player))) {
+                if (app != null && (isApprover || app.getOwner().hasAccess(player, land, land))) {
                     stList.append(ChatColor.WHITE).append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
                             ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
                             ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
@@ -131,7 +131,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             // Check permission
             if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
                     || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-                    && !(isApprover || approve.getOwner().hasAccess(player)))) {
+                    && !(isApprover || approve.getOwner().hasAccess(player, land, land)))) {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
 

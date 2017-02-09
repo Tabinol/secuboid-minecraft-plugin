@@ -20,7 +20,6 @@ package me.tabinol.secuboid.commands;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.FlagValue;
@@ -83,7 +82,7 @@ public class ArgList {
      *
      * @return the cur
      */
-    public String getCur() {
+    private String getCur() {
 
         if (iterator >= arg.length) {
             return null;
@@ -96,23 +95,12 @@ public class ArgList {
     }
 
     /**
-     * Gets the pos.
+     * Sets the iterator to zero position.
      *
-     * @return the pos
      */
-    public int getPos() {
+    public void setPosZero() {
 
-        return iterator;
-    }
-
-    /**
-     * Sets the pos.
-     *
-     * @param iterator the new pos
-     */
-    public void setPos(int iterator) {
-
-        this.iterator = iterator;
+        this.iterator = 0;
     }
 
     /**
@@ -140,7 +128,7 @@ public class ArgList {
      *
      * @return the next to end
      */
-    public String getNextToEnd() {
+    private String getNextToEnd() {
 
         StringBuilder result = new StringBuilder();
         String cur;
@@ -212,13 +200,11 @@ public class ArgList {
     /**
      * Gets the player container from arg.
      *
-     * @param land          the land
      * @param bannedPCTList the banned pct list
      * @return the player container from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PlayerContainer getPlayerContainerFromArg(RealLand land,
-                                                     PlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
+    public PlayerContainer getPlayerContainerFromArg(PlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
 
         String curArg = getNext();
         String param = null;
@@ -251,9 +237,9 @@ public class ArgList {
             if (param == null) {
                 throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player, "COMMAND.CONTAINER.CONTAINERNULL");
             }
-            pc = secuboid.getNewInstance().createPlayerContainer(land, pcType, param);
+            pc = secuboid.getNewInstance().createPlayerContainer(pcType, param);
         } else {
-            pc = secuboid.getNewInstance().createPlayerContainer(land, pcType, "");
+            pc = secuboid.getNewInstance().createPlayerContainer(pcType, "");
         }
 
         if (pcType == PlayerContainerType.PLAYER && pc == null) {

@@ -18,7 +18,9 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 import org.bukkit.entity.Player;
 
 /**
@@ -28,30 +30,23 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerVisitor implements PlayerContainer {
 
-    private RealLand land;
-
-    public PlayerContainerVisitor(RealLand land) {
-        this.land = land;
-    }
-
     @Override
-    public boolean hasAccess(Player player) {
-        return hasAccess(player, land);
-    }
+    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
+        if (!(PCLand instanceof RealLand) && !(testLand instanceof RealLand) && PCLand != testLand) {
+            return false;
+        }
 
-    @Override
-    public boolean hasAccess(Player player, RealLand land) {
-        return land != null && !land.getOwner().hasAccess(player) && !land.isResident(player) && !land.isTenant(player);
-    }
+        RealLand realPCLand = (RealLand) PCLand;
+        boolean value = !realPCLand.getOwner().hasAccess(player, PCLand, testLand) && !realPCLand.isResident(player) && !realPCLand.isTenant(player);
+        RealLand actual = realPCLand;
+        RealLand parent;
 
-    @Override
-    public RealLand getLand() {
-        return land;
-    }
+        while (!value && (parent = actual.getParent()) != null) {
+            value = !actual.getOwner().hasAccess(player, actual, actual) && !actual.isResident(player) && !actual.isTenant(player);
+            actual = parent;
+        }
 
-    @Override
-    public void setLand(RealLand land) {
-        this.land = land;
+        return value;
     }
 
     @Override

@@ -21,7 +21,6 @@ package me.tabinol.secuboid;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.*;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -61,23 +60,22 @@ public class NewInstance {
     /**
      * Creates the player container
      *
-     * @param land the land
      * @param pct  the pct
      * @param name the name
      * @return the player container
      */
-    public PlayerContainer createPlayerContainer(RealLand land, PlayerContainerType pct, String name) {
+    public PlayerContainer createPlayerContainer(PlayerContainerType pct, String name) {
 
         if (null != pct) {
             switch (pct) {
                 case GROUP:
                     return new PlayerContainerGroup(secuboid, name);
                 case RESIDENT:
-                    return new PlayerContainerResident(land);
+                    return new PlayerContainerResident();
                 case VISITOR:
-                    return new PlayerContainerVisitor(land);
+                    return new PlayerContainerVisitor();
                 case OWNER:
-                    return new PlayerContainerOwner(land);
+                    return new PlayerContainerOwner();
                 case EVERYBODY:
                     return new PlayerContainerEverybody();
                 case NOBODY:
@@ -100,7 +98,7 @@ public class NewInstance {
                 case PERMISSION:
                     return new PlayerContainerPermission(name);
                 case TENANT:
-                    return new PlayerContainerTenant(land);
+                    return new PlayerContainerTenant();
                 default:
                     break;
             }
@@ -118,7 +116,7 @@ public class NewInstance {
 
         String strs[] = StringChanges.splitAddVoid(string, ":");
         PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
-        return createPlayerContainer(null, type, strs[1]);
+        return createPlayerContainer(type, strs[1]);
     }
 
     /**

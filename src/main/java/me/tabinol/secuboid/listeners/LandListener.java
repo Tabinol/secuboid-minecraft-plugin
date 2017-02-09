@@ -417,7 +417,7 @@ public class LandListener extends CommonListener implements Listener {
         Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
 
         for (Player players : playersArray) {
-            if (pc.hasAccess(players)
+            if (pc.hasAccess(players, land, land)
                     && !land.isOwner(players)
                     && !playerConf.get(players).isAdminMode()
                     && !players.hasPermission("secuboid.bypassban")

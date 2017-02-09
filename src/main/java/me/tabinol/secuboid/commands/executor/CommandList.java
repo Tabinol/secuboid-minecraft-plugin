@@ -89,8 +89,8 @@ public class CommandList extends CommandPlayerThreadExec {
             } else {
 
                 // Get the player Container
-                argList.setPos(0);
-                pc = argList.getPlayerContainerFromArg(null, null);
+                argList.setPosZero();
+                pc = argList.getPlayerContainerFromArg(null);
 
             }
         }

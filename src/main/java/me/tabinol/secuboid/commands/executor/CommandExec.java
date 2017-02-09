@@ -211,7 +211,7 @@ public abstract class CommandExec {
 
         if (mustBeAdminMode && playerConf.isAdminMode()) {
             canDo = true;
-        } else if (mustBeOwner && (land == null || new PlayerContainerOwner(land).hasAccess(player))) {
+        } else if (mustBeOwner && (land == null || new PlayerContainerOwner().hasAccess(player, land, land))) {
             canDo = true;
         } else if (neededPerm != null && land.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
             canDo = true;

@@ -92,7 +92,7 @@ public class CommandEcosign extends CommandExec {
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
                         land.getName()));
             } else // Rent and unrent
-                if (land.isRented() && (land.getTenant().hasAccess(player) || land.getOwner().hasAccess(player)
+                if (land.isRented() && (land.getTenant().hasAccess(player, land, land) || land.getOwner().hasAccess(player, land, land)
                         || playerConf.isAdminMode())) {
 
                     // Unrent
@@ -134,7 +134,7 @@ public class CommandEcosign extends CommandExec {
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
                             land.getName()));
                 }
-        } else if (land.getOwner().hasAccess(player) || playerConf.isAdminMode()) {
+        } else if (land.getOwner().hasAccess(player, land, land) || playerConf.isAdminMode()) {
 
             // Left Click, destroy the sign
             if (signType == SignType.SALE) {

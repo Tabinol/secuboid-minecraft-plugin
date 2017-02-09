@@ -151,7 +151,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         }
         PlayerContainer ownerLocal = landtest.getOwner();
 
-        if (!ownerLocal.hasAccess(player) && !playerConf.isAdminMode()
+        if (!ownerLocal.hasAccess(player, land, land) && !playerConf.isAdminMode()
                 && !(landtest.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.RESIDENT_MANAGER.getPermissionType())
                 && (landtest.isResident(player) || landtest.isOwner(player)))) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");

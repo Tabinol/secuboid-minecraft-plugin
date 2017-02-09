@@ -577,7 +577,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is owner
      */
     public boolean isOwner(Player player) {
-        return owner.hasAccess(player);
+        return owner.hasAccess(player, this, this);
     }
 
     /**
@@ -602,7 +602,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addResident(PlayerContainer resident) {
 
-        resident.setLand(this);
         residents.add(resident);
         doSave();
 
@@ -650,7 +649,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public boolean isResident(Player player) {
 
         for (PlayerContainer resident : residents) {
-            if (resident.hasAccess(player)) {
+            if (resident.hasAccess(player, this, this)) {
                 return true;
             }
         }
@@ -664,7 +663,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addBanned(PlayerContainer banned) {
 
-        banned.setLand(this);
         banneds.add(banned);
         doSave();
 
@@ -709,7 +707,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public boolean isBanned(Player player) {
 
         for (PlayerContainer banned : banneds) {
-            if (banned.hasAccess(player)) {
+            if (banned.hasAccess(player, this, this)) {
                 return true;
             }
         }
@@ -1288,7 +1286,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is tenant
      */
     public boolean isTenant(Player player) {
-        return rented && tenant.hasAccess(player);
+        return rented && tenant.hasAccess(player, this, this);
     }
 
     /**

@@ -21,7 +21,6 @@ package me.tabinol.secuboid.playercontainer;
 import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
 
 /**
  * Represents a bukkit permission.
@@ -30,10 +29,13 @@ import org.bukkit.permissions.Permission;
  */
 public class PlayerContainerPermission implements PlayerContainer {
 
-    private final Permission perm;
+    /**
+     * The permission: Must be a String, not a new Permission() or Bukkit (sometimes) will not be able to compare.
+     */
+    private final String perm;
 
     public PlayerContainerPermission(String bukkitPermission) {
-        perm = new Permission(bukkitPermission);
+        perm = bukkitPermission;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class PlayerContainerPermission implements PlayerContainer {
 
     @Override
     public String getPrint() {
-        return ChatColor.GRAY + "B:" + ChatColor.WHITE + perm.getName();
+        return ChatColor.GRAY + "B:" + ChatColor.WHITE + perm;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class PlayerContainerPermission implements PlayerContainer {
 
     @Override
     public String getName() {
-        return perm.getName();
+        return perm;
     }
 
     @Override
@@ -67,7 +69,7 @@ public class PlayerContainerPermission implements PlayerContainer {
 
     @Override
     public String toFileFormat() {
-        return PlayerContainerType.PERMISSION + ":" + perm.getName();
+        return PlayerContainerType.PERMISSION + ":" + perm;
     }
 
     @Override
@@ -81,6 +83,6 @@ public class PlayerContainerPermission implements PlayerContainer {
         if (result != 0) {
             return result;
         }
-        return perm.getName().compareTo(t.getName());
+        return perm.compareTo(t.getName());
     }
 }

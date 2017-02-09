@@ -20,6 +20,7 @@ package me.tabinol.secuboid.playercontainer;
 
 import java.util.UUID;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,15 +44,10 @@ public class PlayerContainerPlayer implements PlayerContainer {
 	this.minecraftUUID = minecraftUUID;
     }
 
-    @Override
-    public boolean hasAccess(Player player) {
+	@Override
+	public boolean hasAccess(Player player, Land PCLand, Land testLand) {
 		return player != null && minecraftUUID.equals(player.getUniqueId());
 	}
-
-    @Override
-    public boolean hasAccess(Player player, RealLand land) {
-	return hasAccess(player);
-    }
 
     @Override
     public String getPrint() {
@@ -96,10 +92,6 @@ public class PlayerContainerPlayer implements PlayerContainer {
 	return null;
     }
 
-    @Override
-    public void setLand(RealLand land) {
-    }
-
     public UUID getMinecraftUUID() {
 	return minecraftUUID;
     }
@@ -125,11 +117,6 @@ public class PlayerContainerPlayer implements PlayerContainer {
     @Override
     public String toFileFormat() {
 	return PlayerContainerType.PLAYER + ":" + name;
-    }
-
-    @Override
-    public RealLand getLand() {
-	return null;
     }
 
     @Override

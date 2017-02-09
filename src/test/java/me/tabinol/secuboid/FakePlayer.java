@@ -48,9 +48,11 @@ import java.util.*;
  */
 public class FakePlayer implements Player {
 
+    private final UUID uuid;
     private String name;
 
-    public FakePlayer(String name) {
+    public FakePlayer(UUID uuid, String name) {
+        this.uuid = uuid;
         this.name = name;
     }
 
@@ -711,7 +713,7 @@ public class FakePlayer implements Player {
 
     @Override
     public UUID getUniqueId() {
-        return null;
+        return uuid;
     }
 
     @Override

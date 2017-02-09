@@ -173,8 +173,7 @@ public class ApproveList {
         }
 
         String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        PlayerContainer pc = secuboid.getNewInstance().createPlayerContainer(null,
-                PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        PlayerContainer pc = secuboid.getNewInstance().createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
         RealLand parent = null;
         Area newArea = null;
 

@@ -25,10 +25,6 @@ package me.tabinol.secuboid.playercontainer;
 public enum PlayerContainerType {
 
     /**
-     * The undefined (do not use).
-     */
-    UNDEFINED("UNDEFINED", false),
-    /**
      * The land owner.
      */
     OWNER("Owner", false),

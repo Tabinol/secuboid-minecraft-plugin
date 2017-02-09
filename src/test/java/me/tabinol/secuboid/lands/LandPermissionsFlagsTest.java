@@ -16,20 +16,15 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.lands.collisions;
+package me.tabinol.secuboid.lands;
 
 import me.tabinol.secuboid.FakePlayer;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.DefaultLand;
-import me.tabinol.secuboid.lands.InitLands;
-import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
-import me.tabinol.secuboid.playercontainer.PlayerContainerEverybody;
-import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.playercontainer.*;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,8 +32,11 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.UUID;
+
 import static me.tabinol.secuboid.lands.InitLands.WORLD;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test permissions and flags.
@@ -69,7 +67,7 @@ public class LandPermissionsFlagsTest {
                 new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
         child = lands.createLand(LAND_CHILD, new PlayerContainerNobody(),
                 new CuboidArea(WORLD, 9, 9, 9, 60, 255, 60), parent);
-        fakePlayer = new FakePlayer("fakeplayer");
+        fakePlayer = new FakePlayer(UUID.randomUUID(), "fakeplayer");
     }
 
     @Test
@@ -119,5 +117,55 @@ public class LandPermissionsFlagsTest {
                 secuboid.getPermissionsFlags().newFlag(FlagList.ANIMAL_SPAWN.getFlagType(), false, true));
         assertFalse("Flag should be false",
                 parent.getPermissionsFlags().getFlagAndInherit(FlagList.ANIMAL_SPAWN.getFlagType()).getValueBoolean());
+    }
+
+    @Test
+    public void visitorPermission() {
+        parent.getPermissionsFlags().addPermission(new PlayerContainerVisitor(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.USE.getPermissionType(), false, true));
+        assertFalse("Permission should be false",
+                parent.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.USE.getPermissionType()));
+    }
+
+    @Test
+    public void visitorDefaultPermission() {
+        defaultConfNoType.getPermissionsFlags().addPermission(new PlayerContainerVisitor(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.USE.getPermissionType(), false, true));
+        assertFalse("Permission should be false",
+                parent.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.USE.getPermissionType()));
+    }
+
+    @Test
+    public void notVisitorDefaultPermission() {
+        parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+        defaultConfNoType.getPermissionsFlags().addPermission(new PlayerContainerVisitor(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.USE.getPermissionType(), false, true));
+        assertTrue("Permission should be true",
+                parent.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.USE.getPermissionType()));
+    }
+
+    @Test
+    public void visitorParentPermission() {
+        parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.USE.getPermissionType(), false, true));
+        assertFalse("Permission should be false",
+                child.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.USE.getPermissionType()));
+    }
+
+    @Test
+    public void ownerPermission() {
+        parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+        parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.GOD.getPermissionType(), true, true));
+        assertTrue("Permission should be true",
+                parent.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.GOD.getPermissionType()));
+    }
+
+    @Test
+    public void notOwnerPermission() {
+        parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(),
+                secuboid.getPermissionsFlags().newPermission(PermissionList.GOD.getPermissionType(), true, true));
+        assertFalse("Permission should be false",
+                parent.getPermissionsFlags().checkPermissionAndInherit(fakePlayer, PermissionList.GOD.getPermissionType()));
     }
 }

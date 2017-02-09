@@ -54,9 +54,8 @@ public class CommandOwner extends CommandPlayerThreadExec {
         checkSelections(true, null);
         checkPermission(true, true, null, null);
 
-        pc = argList.getPlayerContainerFromArg(land,
-                new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-                        PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
+        pc = argList.getPlayerContainerFromArg(new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                PlayerContainerType.OWNER, PlayerContainerType.VISITOR});
         secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 

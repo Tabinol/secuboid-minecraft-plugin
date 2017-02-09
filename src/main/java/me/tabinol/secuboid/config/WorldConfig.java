@@ -186,7 +186,7 @@ public class WorldConfig {
 
                             assert secuboid != null;
                             dl.getPermissionsFlags().addPermission(
-                                    secuboid.getNewInstance().createPlayerContainer(null, pcType, containerNameLower),
+                                    secuboid.getNewInstance().createPlayerContainer(pcType, containerNameLower),
                                     secuboid.getPermissionsFlags().newPermission(
                                             secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
                                             fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
@@ -196,7 +196,7 @@ public class WorldConfig {
                 } else {
                     for (String perm : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
                         dl.getPermissionsFlags().addPermission(
-                                secuboid.getNewInstance().createPlayerContainer(null, pcType, null),
+                                secuboid.getNewInstance().createPlayerContainer(pcType, null),
                                 secuboid.getPermissionsFlags().newPermission(
                                         secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
                                         fc.getBoolean(perms + "." + container + "." + perm + ".Value"),

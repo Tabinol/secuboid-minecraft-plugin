@@ -69,15 +69,13 @@ public class CommandResident extends CommandPlayerThreadExec {
 
         if (fonction.equalsIgnoreCase("add")) {
 
-            pc = argList.getPlayerContainerFromArg(land,
-                    new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-                            PlayerContainerType.OWNER, PlayerContainerType.VISITOR,
-                            PlayerContainerType.RESIDENT});
+            pc = argList.getPlayerContainerFromArg(new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
+                    PlayerContainerType.OWNER, PlayerContainerType.VISITOR, PlayerContainerType.RESIDENT});
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
-            pc = argList.getPlayerContainerFromArg(land, null);
+            pc = argList.getPlayerContainerFromArg(null);
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("list")) {

@@ -72,13 +72,13 @@ public class CommandPermission extends CommandPlayerThreadExec {
 
         if (fonction.equalsIgnoreCase("add")) {
 
-            pc = argList.getPlayerContainerFromArg(land, null);
+            pc = argList.getPlayerContainerFromArg(null);
 
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
-            pc = argList.getPlayerContainerFromArg(land, null);
+            pc = argList.getPlayerContainerFromArg(null);
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("list")) {

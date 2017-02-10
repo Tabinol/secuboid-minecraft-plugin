@@ -68,7 +68,7 @@ public class CommandBan extends CommandPlayerThreadExec {
         if (fonction.equalsIgnoreCase("add")) {
 
             pc = argList.getPlayerContainerFromArg(new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-                    PlayerContainerType.OWNER, PlayerContainerType.VISITOR, PlayerContainerType.RESIDENT});
+                    PlayerContainerType.OWNER, PlayerContainerType.RESIDENT});
             secuboid.getPlayersCache().getUUIDWithNames(this, pc);
 
         } else if (fonction.equalsIgnoreCase("remove")) {

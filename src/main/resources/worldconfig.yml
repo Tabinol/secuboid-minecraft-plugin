@@ -4,20 +4,20 @@
 
 _Global_:                           # _Global_ is for all worlds
   ContainerPermissions:
+    everybody:
+      BUILD:
+        Value: false
+        Inheritable: true
+      OPEN:
+        Value: false
+        Inheritable: true
+      BUCKET_WATER:
+        Value: false
+        Inheritable: true
+      BUCKET_LAVA:
+        Value: false
+        Inheritable: true
     Permission:
-      group_newbies:
-        BUILD:
-          Value: false
-          Inheritable: true
-        OPEN:
-          Value: false
-          Inheritable: true
-        BUCKET_WATER:
-          Value: false
-          Inheritable: true
-        BUCKET_LAVA:
-          Value: false
-          Inheritable: true
       group_users:
         LAND_CREATE:
           Value: true
@@ -70,7 +70,7 @@ _Global_:                           # _Global_ is for all worlds
       Inheritable: true
 #world1:
 #  ContainerPermissions:
-#    Group:
+#    group:
 #      newbies:
 #        BUILD_PLACE:
 #          Value: false

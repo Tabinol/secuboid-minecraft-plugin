@@ -36,7 +36,6 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playercontainer.PlayerContainerResident;
 import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-import me.tabinol.secuboid.playercontainer.PlayerContainerVisitor;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
 import me.tabinol.secuboid.selection.visual.VisualSelectionCuboid;
 import me.tabinol.secuboid.selection.visual.VisualSelectionCylinder;
@@ -72,8 +71,6 @@ public class NewInstance {
                     return new PlayerContainerGroup(secuboid, name);
                 case RESIDENT:
                     return new PlayerContainerResident();
-                case VISITOR:
-                    return new PlayerContainerVisitor();
                 case OWNER:
                     return new PlayerContainerOwner();
                 case EVERYBODY:

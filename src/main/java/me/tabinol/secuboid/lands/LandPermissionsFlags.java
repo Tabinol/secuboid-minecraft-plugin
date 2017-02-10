@@ -28,6 +28,7 @@ import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerAddNoEnterEvent;
 import me.tabinol.secuboid.permissionsflags.*;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.entity.Player;
 
 /**
@@ -231,49 +232,58 @@ public class LandPermissionsFlags {
      * @return the boolean
      */
     public boolean checkPermissionAndInherit(Player player, PermissionType pt) {
-        return checkPermissionAndInherit(player, pt, false, land);
-    }
-
-    /**
-     * Check land permission and inherit.
-     *
-     * @param player      the player
-     * @param pt          the pt
-     * @param onlyInherit the only inherit
-     * @param originLand  the origin land
-     * @return the boolean
-     */
-    private boolean checkPermissionAndInherit(Player player, PermissionType pt, boolean onlyInherit, Land originLand) {
-
-        Boolean permValue;
-
-        if ((permValue = getPermission(player, pt, onlyInherit, originLand)) != null) {
-            return permValue;
-        }
-
-        LandPermissionsFlags permsFlagsParent = getPermsFlagsParent(originLand);
-        if (permsFlagsParent != null) {
-            return permsFlagsParent.checkPermissionAndInherit(player, pt, true, originLand);
+        for (PlayerContainerType pcType : PlayerContainerType.values()) {
+            Boolean result = checkPermissionAndInherit(pcType, player, pt, false, land);
+            if (result != null) {
+                return result;
+            }
         }
 
         return pt.getDefaultValue();
     }
 
     /**
+     * Check land permission and inherit.
+     *
+     * @param pcType      the player container to check
+     * @param player      the player
+     * @param pt          the pt
+     * @param onlyInherit the only inherit
+     * @param originLand  the origin land
+     * @return the boolean
+     */
+    private Boolean checkPermissionAndInherit(PlayerContainerType pcType, Player player, PermissionType pt,
+                                              boolean onlyInherit, Land originLand) {
+        Boolean permValue;
+
+        if ((permValue = getPermission(pcType, player, pt, onlyInherit, originLand)) != null) {
+            return permValue;
+        }
+
+        LandPermissionsFlags permsFlagsParent = getPermsFlagsParent(originLand);
+        if (permsFlagsParent != null) {
+            return permsFlagsParent.checkPermissionAndInherit(pcType, player, pt, true, originLand);
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the permission.
      *
+     * @param pcType      the player container to check
      * @param player      the player
      * @param pt          the pt
      * @param onlyInherit the only inherit
      * @param originLand  the origin land (if exist)
      * @return the permission
      */
-    private Boolean getPermission(Player player, PermissionType pt, boolean onlyInherit, Land originLand) {
-
+    private Boolean getPermission(PlayerContainerType pcType, Player player, PermissionType pt, boolean onlyInherit,
+                                  Land originLand) {
         Boolean result;
 
         for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
-            result = permissionSingleCheck(permissionEntry, player, pt, onlyInherit, originLand);
+            result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originLand);
             if (result != null) {
                 return result;
             }
@@ -284,7 +294,7 @@ public class LandPermissionsFlags {
         if (realLand != null && (defaultLand = secuboid.getLands().getDefaultConf(realLand.getType())) != null) {
             for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry :
                     defaultLand.getPermissionsFlags().permissions.entrySet()) {
-                result = permissionSingleCheck(permissionEntry, player, pt, onlyInherit, originLand);
+                result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originLand);
                 if (result != null) {
                     return result;
                 }
@@ -294,8 +304,13 @@ public class LandPermissionsFlags {
         return null;
     }
 
-    private Boolean permissionSingleCheck(Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry,
+    private Boolean permissionSingleCheck(PlayerContainerType pcType,
+                                          Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry,
                                           Player player, PermissionType pt, boolean onlyInherit, Land originLand) {
+        if (pcType != permissionEntry.getKey().getContainerType()) {
+            return null;
+        }
+
         boolean value;
         value = permissionEntry.getKey().hasAccess(player, land, originLand);
         if (value) {

@@ -45,6 +45,7 @@ public class InitLands {
     private Secuboid secuboid;
     private Lands lands;
     private DefaultLand defaultConfNoType;
+    private WorldLand worldLand;
 
     public InitLands() {
         // Prepare Mock
@@ -78,7 +79,8 @@ public class InitLands {
 
         // Outside areas
         TreeMap<String, WorldLand> outsideArea = new TreeMap<String, WorldLand>();
-        outsideArea.put(Config.GLOBAL, new WorldLand(secuboid, Config.GLOBAL));
+        worldLand = new WorldLand(secuboid, Config.GLOBAL);
+        outsideArea.put(Config.GLOBAL, worldLand);
         Whitebox.setInternalState(lands, "outsideArea", outsideArea);
 
         // defaultConfNoType
@@ -101,5 +103,9 @@ public class InitLands {
 
     public DefaultLand getDefaultConfNoType() {
         return defaultConfNoType;
+    }
+
+    public WorldLand getWorldLand() {
+        return worldLand;
     }
 }

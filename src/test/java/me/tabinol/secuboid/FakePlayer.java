@@ -46,6 +46,7 @@ import java.util.*;
  * Implements Bukkit player class (fake player for tests).
  * Created by Tabinol on 2017-02-08.
  */
+@SuppressWarnings("deprecation")
 public class FakePlayer implements Player {
 
     private final UUID uuid;

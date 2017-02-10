@@ -41,10 +41,6 @@ public enum PlayerContainerType {
      */
     TENANT("Tenant", false),
     /**
-     * The land visitor.
-     */
-    VISITOR("Visitor", false),
-    /**
      * The group from permision system.
      */
     GROUP("Group", true),

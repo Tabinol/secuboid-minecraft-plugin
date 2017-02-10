@@ -2,7 +2,7 @@
 
                                # Default configuration when a land is created (all lands)
 ContainerPermissions:          # Permissions
-  Visitor:
+  everybody:
     BUCKET_WATER:
       Value: false
       Inheritable: true
@@ -24,7 +24,7 @@ ContainerPermissions:          # Permissions
     FIRE:
       Value: false
       Inheritable: true
-  Owner:
+  owner:
     RESIDENT_MANAGER:
       Value: true
       Inheritable: false
@@ -73,7 +73,7 @@ ContainerPermissions:          # Permissions
     FIRE:
       Value: true
       Inheritable: true
-  Resident:
+  resident:
     BUILD:
       Value: true
       Inheritable: false
@@ -100,7 +100,7 @@ ContainerFlags:                # Flags
 # Here is the configuration for specific types in config.yml
 admin:                         # The name of the type
   ContainerPermissions:
-    Resident:
+    resident:
       BUILD:
         Value: false
         Inheritable: false

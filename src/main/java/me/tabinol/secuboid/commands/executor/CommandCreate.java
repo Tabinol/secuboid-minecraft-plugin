@@ -23,6 +23,7 @@ import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
@@ -66,7 +67,8 @@ public class CommandCreate extends CommandCollisionsThreadExec {
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
 
         Area area = select.getVisualSelection().getArea();
-        RealLand localParent;
+        Land localParent;
+        RealLand realLocalParent;
 
         // Quit select mod
         // playerConf.setAreaSelection(null);
@@ -118,8 +120,14 @@ public class CommandCreate extends CommandCollisionsThreadExec {
             localOwner = playerConf.getPlayerContainer();
             localType = secuboid.getConf().getTypeNoneAdminMode();
         }
+        if (localParent.getLandType() == Land.LandType.REAL) {
+            realLocalParent = (RealLand) localParent;
+        } else {
+            realLocalParent = null;
+        }
 
-        checkCollision(area.getWorldName(), curArg, null, localType, LandAction.LAND_ADD, 0, area, localParent, localOwner, true);
+        checkCollision(area.getWorldName(), curArg, null, localType, LandAction.LAND_ADD, 0, area,
+                realLocalParent, localOwner, true);
     }
 
     @Override

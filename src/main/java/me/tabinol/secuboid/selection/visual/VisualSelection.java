@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 
@@ -59,9 +59,9 @@ public interface VisualSelection {
     void removeSelection();
 
     /**
-     * Gets if the parent is detected.
+     * Gets if the parent is detected. The parent can be the world if there is no parent.
      *
      * @return the detected parent
      */
-    RealLand getParentDetected();
+    Land getParentDetected();
 }

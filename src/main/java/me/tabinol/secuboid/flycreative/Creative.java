@@ -58,7 +58,7 @@ public class Creative {
      *
      * @param secuboid secuboid instance.
      */
-    public Creative(Secuboid secuboid) {
+    public Creative(Secuboid secuboid, FlyCreativeListener flyCreativeListener) {
 
         this.secuboid = secuboid;
         conf = secuboid.getConf();
@@ -66,7 +66,7 @@ public class Creative {
         // Register flags
         permissionType = secuboid.getPermissionsFlags().registerPermissionType("CREATIVE", false);
 
-        flyCreativeListener = secuboid.getFlyCreativeListener();
+        this.flyCreativeListener = flyCreativeListener;
     }
 
     public boolean creative(Event event, Player player, Land land) {

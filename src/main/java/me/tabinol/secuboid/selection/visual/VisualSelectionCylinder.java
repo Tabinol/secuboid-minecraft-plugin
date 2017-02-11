@@ -90,11 +90,8 @@ public class VisualSelectionCylinder implements VisualSelection {
     }
 
     @Override
-    public RealLand getParentDetected() {
-        if (parentDetected.getLandType() == Land.LandType.REAL) {
-            return (RealLand) parentDetected;
-        }
-        return null;
+    public Land getParentDetected() {
+        return parentDetected;
     }
 
     @Override

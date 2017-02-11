@@ -64,7 +64,7 @@ public class FlyCreativeListener implements Listener {
 
         this.secuboid = secuboid;
         fly = new Fly(secuboid);
-        creative = new Creative(secuboid);
+        creative = new Creative(secuboid, this);
         conf = secuboid.getConf();
         ignoredGMPlayers = new ArrayList<Player>();
     }

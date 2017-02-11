@@ -213,7 +213,6 @@ public class PermissionsFlags {
         }
 
         return flagType;
-
     }
 
     /**
@@ -227,7 +226,7 @@ public class PermissionsFlags {
         PermissionType pt = permissions.get(permissionName);
 
         if (pt != null && pt.isRegistered()) {
-            return permissions.get(permissionName);
+            return pt;
         } else {
             return null;
         }
@@ -244,7 +243,7 @@ public class PermissionsFlags {
         FlagType ft = flags.get(flagName);
 
         if (ft != null && ft.isRegistered()) {
-            return flags.get(flagName);
+            return ft;
         } else {
             return null;
         }

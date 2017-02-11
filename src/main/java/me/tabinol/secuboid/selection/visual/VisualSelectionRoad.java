@@ -21,7 +21,6 @@ package me.tabinol.secuboid.selection.visual;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.WorldLand;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -97,8 +96,8 @@ public class VisualSelectionRoad implements VisualSelection {
     }
 
     @Override
-    public RealLand getParentDetected() {
-        return null;
+    public Land getParentDetected() {
+        return secuboid.getLands().getOutsideArea(area.getWorldName());
     }
 
     @Override

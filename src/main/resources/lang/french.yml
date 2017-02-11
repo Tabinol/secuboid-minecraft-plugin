@@ -88,8 +88,8 @@ HELP:
       1: "/secuboid default : Remet le terrain à sa configuration par défaut."
     FLAG:
       1: "/secuboid flag list : Afficher les drapeaux."
-      2: "/secuboid flag set <drapeau> <drapeau> : Ajoute un drapeau."
-      3: "/secuboid flag unset <drapeau> : Enlève un drapeau."
+      2: "/secuboid flag add <drapeau> <valeur> : Ajoute un drapeau."
+      3: "/secuboid flag remove <drapeau> : Enlève un drapeau."
     INV:
       1: "/secuboid inv loaddeath <joueur> [(1-9)] : Recharge l'inventaire avant la mort, 1 = dernière mort"
       2: "/secuboid inv default <save/remove>: Sauvegarde (ou enlève) ton inventaire pour le défaut pour les joueurs"
@@ -113,8 +113,8 @@ HELP:
       2: "/secuboid parent unset : Enlever le parent."
     PERMISSION:
       1: "/secuboid permission list : Affiche les permissions."
-      2: "/secuboid permission set <contenant joueur> <perm> <valeur> : Ajoute une permission."
-      3: "/secuboid flag unset unset <contenant joueur> <perm> : Enlève une permission."
+      2: "/secuboid permission add <contenant joueur> <perm> <valeur> : Ajoute une permission."
+      3: "/secuboid flag unset remove <contenant joueur> <perm> : Enlève une permission."
     PRIORITY:
       1: "/secuboid priority <nombre> : Change la priorité du terrain."
     RADIUS:

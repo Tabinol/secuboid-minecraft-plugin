@@ -20,7 +20,6 @@ package me.tabinol.secuboid.selection.visual;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -94,11 +93,8 @@ public class VisualSelectionCuboid implements VisualSelection {
     }
 
     @Override
-    public RealLand getParentDetected() {
-        if (parentDetected.getLandType() == Land.LandType.REAL) {
-            return (RealLand) parentDetected;
-        }
-        return null;
+    public Land getParentDetected() {
+        return parentDetected;
     }
 
     @Override

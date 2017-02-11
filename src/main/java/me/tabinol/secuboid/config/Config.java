@@ -571,7 +571,7 @@ public class Config {
         }
 
         // Fly and creative
-        flyAndCreative = config.getBoolean("General.flyAndCreative", false);
+        flyAndCreative = config.getBoolean("General.FlyAndCreative", false);
 
         config.addDefault("FlyCreativeListener.IgnoredGameMode", new String[]{"ADVENTURE", "SPECTATOR"});
         ignoredGameMode = EnumSet.noneOf(GameMode.class);

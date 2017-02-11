@@ -82,14 +82,14 @@ permissions:
     # FlyCreative
     secuboid.flycreative.*:
         description: Gives access to all flyncrative permissions
-        default: false
+        default: op
         children:
             secuboid.flycreative.ignorefly: true
             secuboid.flycreative.ignorecreative: true
             secuboid.flycreative.override.*: true
     secuboid.flycreative.override.*:
         description: Gives access to all override permissions
-        default: false
+        default: op
         children:
             secuboid.flycreative.override.nodrop: true
             secuboid.flycreative.override.noopenchest: true
@@ -97,10 +97,10 @@ permissions:
             secuboid.flycreative.override.allowbanneditems: true
     secuboid.flycreative.ignorefly:
         description: Ignore fly change in cuboid
-        default: false
+        default: op
     secuboid.flycreative.ignorecreative:
         description: Ignore creative mode change in cuboid
-        default: false
+        default: op
         children:
             secuboid.flycreative.override.nodrop: true
             secuboid.flycreative.override.noopenchest: true
@@ -108,14 +108,14 @@ permissions:
             secuboid.flycreative.override.allowbanneditems: true
     secuboid.flycreative.override.nodrop:
         description: Can drop items in creative
-        default: false
+        default: op
     secuboid.flycreative.override.noopenchest:
         description: Can open chests in creative
-        default: false
+        default: op
     secuboid.flycreative.override.nobuildoutside:
         description: Can build outside the zone in creative
-        default: false
+        default: op
     secuboid.flycreative.override.allowbanneditems:
         description: Can have banned items in creative
-        default: false
+        default: op
 

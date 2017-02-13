@@ -140,7 +140,7 @@ public class Creative {
             } else {
                 blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
             }
-            if (!askCreativeFlag(player, secuboid.getLands().getLand(blockLoc))) {
+            if (!askCreativeFlag(player, secuboid.getLands().getLandOrOutsideArea(blockLoc))) {
 
                 return true;
             }

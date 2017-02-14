@@ -178,7 +178,7 @@ public class PlayerConfEntry {
     public boolean isAdminMode() {
 
         // Security for adminmode
-        if (adminMode && !sender.hasPermission("secuboid.adminmod")) {
+        if (adminMode && !sender.hasPermission("secuboid.adminmode")) {
             adminMode = false;
             return false;
         }

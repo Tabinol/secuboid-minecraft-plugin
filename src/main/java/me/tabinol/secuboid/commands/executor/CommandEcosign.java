@@ -27,6 +27,7 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 
@@ -78,8 +79,12 @@ public class CommandEcosign extends CommandExec {
                 }
                 secuboid.getPlayerMoney().getFromPlayer(player, land.getWorldName(), land.getSalePrice());
                 if (land.getOwner().getContainerType() == PlayerContainerType.PLAYER) {
-                    secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
-                            land.getWorldName(), land.getSalePrice());
+                    OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
+                    secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
+                    if (offlineOwner.isOnline()) {
+                        offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SALERECEIVE",
+                                String.valueOf(land.getRentPrice()), land.getName()));
+                    }
                 }
                 try {
                     new EcoSign(secuboid, land, land.getSaleSignLoc()).removeSign();
@@ -91,6 +96,8 @@ public class CommandEcosign extends CommandExec {
                 land.setOwner(playerConf.getPlayerContainer());
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
                         land.getName()));
+                secuboid.getLog().info(player.getName() + " gave '" + String.valueOf(land.getRentPrice()
+                        + "' for land '" + land.getName() + "'."));
             } else // Rent and unrent
                 if (land.isRented() && (land.getTenant().hasAccess(player, land, land) || land.getOwner().hasAccess(player, land, land)
                         || playerConf.isAdminMode())) {
@@ -120,8 +127,12 @@ public class CommandEcosign extends CommandExec {
                     secuboid.getPlayerMoney().getFromPlayer(player,
                             land.getWorldName(), land.getRentPrice());
                     if (land.getOwner() instanceof PlayerContainerPlayer) {
-                        secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
-                                land.getWorldName(), land.getRentPrice());
+                        OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
+                        secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
+                        if (offlineOwner.isOnline()) {
+                            offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
+                                    String.valueOf(land.getRentPrice()), land.getName()));
+                        }
                     }
                     land.setRented(playerConf.getPlayerContainer());
                     try {
@@ -133,6 +144,8 @@ public class CommandEcosign extends CommandExec {
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
                             land.getName()));
+                    secuboid.getLog().info(player.getName() + " gave '" + String.valueOf(land.getRentPrice()
+                            + "' for land '" + land.getName() + "'."));
                 }
         } else if (land.getOwner().hasAccess(player, land, land) || playerConf.isAdminMode()) {
 

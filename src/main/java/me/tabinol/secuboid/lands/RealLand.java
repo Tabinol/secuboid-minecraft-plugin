@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.lands;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -302,7 +301,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     public void addArea(Area area, int key) {
 
-        ((Area) area).setLand(this);
+        area.setLand(this);
         areas.put(key, area);
         secuboid.getLands().addAreaToList(area);
         doSave();
@@ -432,7 +431,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the ids and areas
      */
     public Map<Integer, Area> getIdsAndAreas() {
-        return Collections.unmodifiableMap(areas);
+        return areas;
     }
 
     /**
@@ -615,7 +614,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the residents
      */
     public final Set<PlayerContainer> getResidents() {
-        return Collections.unmodifiableSet(residents);
+        return residents;
     }
 
     /**
@@ -668,7 +667,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the banneds
      */
     public final Set<PlayerContainer> getBanneds() {
-        return Collections.unmodifiableSet(banneds);
+        return banneds;
     }
 
     /**
@@ -943,7 +942,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players notify
      */
     public Set<PlayerContainerPlayer> getPlayersNotify() {
-        return Collections.unmodifiableSet(playerNotify);
+        return playerNotify;
     }
 
     /**
@@ -1006,7 +1005,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players in land
      */
     public Set<Player> getPlayersInLand() {
-        return Collections.unmodifiableSet(playersInLand);
+        return playersInLand;
     }
 
     /**
@@ -1209,13 +1208,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
     public void setRented(PlayerContainerPlayer tenant) {
         rented = true;
         this.tenant = tenant;
-        updateRentedPayment(); // doSave() done in this method
-    }
-
-    /**
-     * Update rented payment.
-     */
-    public void updateRentedPayment() {
         lastPayment = System.currentTimeMillis();
         doSave();
     }

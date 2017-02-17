@@ -207,7 +207,7 @@ public class StorageFlat implements Storage {
         boolean rentAutoRenew = false;
         boolean rented = false;
         PlayerContainerPlayer tenant = null;
-        Timestamp lastPayment = null;
+        long lastPayment = 0;
 
         try {
             cf = new ConfLoaderFlat(secuboid, file);
@@ -215,8 +215,8 @@ public class StorageFlat implements Storage {
             // Add for different version support: version = cf.getVersion();
             uuid = cf.getUUID();
             landName = cf.getName();
-                cf.readParam();
-                type = cf.getValueString();
+            cf.readParam();
+            type = cf.getValueString();
             cf.readParam();
             String ownerS = cf.getValueString();
 
@@ -316,7 +316,7 @@ public class StorageFlat implements Storage {
                     cf.readParam();
                     tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
                     cf.readParam();
-                    lastPayment = Timestamp.valueOf(cf.getValueString());
+                    lastPayment = cf.getValueLong();
                 }
             }
 
@@ -387,16 +387,16 @@ public class StorageFlat implements Storage {
         }
 
         // Economy add
-            if (forSale) {
-                land.setForSale(true, salePrice, forSaleSignLoc);
+        if (forSale) {
+            land.setForSale(true, salePrice, forSaleSignLoc);
+        }
+        if (forRent) {
+            land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
+            if (rented) {
+                land.setRented(tenant);
+                land.setLastPaymentTime(lastPayment);
             }
-            if (forRent) {
-                land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
-                if (rented) {
-                    land.setRented(tenant);
-                    land.setLastPaymentTime(lastPayment);
-                }
-            }
+        }
     }
 
     @Override
@@ -484,7 +484,7 @@ public class StorageFlat implements Storage {
                 cb.writeParam("Rented", land.isRented() + "");
                 if (land.isRented()) {
                     cb.writeParam("Tenant", land.getTenant().toFileFormat());
-                    cb.writeParam("LastPayment", land.getLastPaymentTime().toString());
+                    cb.writeParam("LastPayment", land.getLastPaymentTime() + "");
                 }
             }
 

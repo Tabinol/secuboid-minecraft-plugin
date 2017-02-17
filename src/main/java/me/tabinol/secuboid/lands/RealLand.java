@@ -18,10 +18,8 @@
  */
 package me.tabinol.secuboid.lands;
 
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -203,7 +201,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
     /**
      * The last payment.
      */
-    private Timestamp lastPayment = new Timestamp(0);
+    private long lastPayment = 0;
 
     /**
      * Instantiates a new real land. <br>
@@ -345,14 +343,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean removeArea(Area area) {
-
         Integer key = getAreaKey(area);
-
-        if (key != null) {
-            return removeArea(key);
-        }
-
-        return false;
+        return key != null && removeArea(key);
     }
 
     /**
@@ -380,12 +372,11 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean replaceArea(int key, Area newArea) {
-
         Area area;
 
         if ((area = areas.remove(key)) != null) {
             secuboid.getLands().removeAreaFromList(area);
-            ((Area) newArea).setLand(this);
+            newArea.setLand(this);
             areas.put(key, newArea);
             secuboid.getLands().addAreaToList(newArea);
             doSave();
@@ -407,7 +398,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the area
      */
     public Area getArea(int key) {
-
         return areas.get(key);
     }
 
@@ -418,7 +408,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the area key
      */
     public Integer getAreaKey(Area area) {
-
         for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
             if (entry.getValue() == area) {
                 return entry.getKey();
@@ -434,7 +423,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the areas key
      */
     public Set<Integer> getAreasKey() {
-
         return areas.keySet();
     }
 
@@ -444,7 +432,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the ids and areas
      */
     public Map<Integer, Area> getIdsAndAreas() {
-
         return Collections.unmodifiableMap(areas);
     }
 
@@ -454,7 +441,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the areas
      */
     public Collection<Area> getAreas() {
-
         return areas.values();
     }
 
@@ -464,7 +450,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the world
      */
     public World getWorld() {
-
         return Bukkit.getWorld(worldName);
     }
 
@@ -475,7 +460,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     @Override
     public String getWorldName() {
-
         return worldName;
     }
 
@@ -488,7 +472,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true if inside the land
      */
     public boolean isLocationInside(String world, int x, int z) {
-
         for (Area area1 : areas.values()) {
             if (area1.isLocationInside(world, x, z)) {
                 return true;
@@ -518,7 +501,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true if inside the land
      */
     public boolean isLocationInside(String world, int x, int y, int z) {
-
         for (Area area1 : areas.values()) {
             if (area1.isLocationInside(world, x, y, z)) {
                 return true;
@@ -552,7 +534,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param newName the new name
      */
     protected void setName(String newName) {
-
         this.name = newName;
         doSave();
 
@@ -586,7 +567,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param owner the new owner
      */
     public void setOwner(PlayerContainer owner) {
-
         this.owner = owner;
         doSave();
 
@@ -601,7 +581,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param resident the resident
      */
     public void addResident(PlayerContainer resident) {
-
         residents.add(resident);
         doSave();
 
@@ -617,7 +596,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean removeResident(PlayerContainer resident) {
-
         if (residents.remove(resident)) {
             doSave();
 
@@ -647,7 +625,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if is resident
      */
     public boolean isResident(Player player) {
-
         for (PlayerContainer resident : residents) {
             if (resident.hasAccess(player, this, this)) {
                 return true;
@@ -662,7 +639,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param banned the banned
      */
     public void addBanned(PlayerContainer banned) {
-
         banneds.add(banned);
         doSave();
 
@@ -678,7 +654,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean removeBanned(PlayerContainer banned) {
-
         if (banneds.remove(banned)) {
             doSave();
             return true;
@@ -693,7 +668,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the banneds
      */
     public final Set<PlayerContainer> getBanneds() {
-
         return Collections.unmodifiableSet(banneds);
     }
 
@@ -705,7 +679,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      */
     @Override
     public boolean isBanned(Player player) {
-
         for (PlayerContainer banned : banneds) {
             if (banned.hasAccess(player, this, this)) {
                 return true;
@@ -720,7 +693,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the priority
      */
     public short getPriority() {
-
         if (parent != null) {
             return parent.getPriority();
         }
@@ -734,7 +706,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the genealogy
      */
     public int getGenealogy() {
-
         return genealogy;
     }
 
@@ -744,7 +715,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param priority the new priority
      */
     public void setPriority(short priority) {
-
         this.priority = priority;
         doSave();
     }
@@ -755,7 +725,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the parent
      */
     public RealLand getParent() {
-
         return parent;
     }
 
@@ -765,7 +734,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param newParent the land parent
      */
     public void setParent(RealLand newParent) {
-
         // Remove files
         removeChildFiles();
 
@@ -816,7 +784,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the ancestor
      */
     public RealLand getAncestor(int gen) { // 1 parent, 2 grand-parent, 3 ...
-
         RealLand ancestor = this;
 
         for (int t = 0; t < gen; t++) {
@@ -903,7 +870,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
     }
 
     void doSave() {
-
         if (autoSave) {
             forceSave();
         }
@@ -955,7 +921,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return true, if successful
      */
     public boolean removePlayerNotify(PlayerContainerPlayer player) {
-
         boolean ret = playerNotify.remove(player);
         doSave();
 
@@ -1050,7 +1015,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players in land and children
      */
     public Set<Player> getPlayersInLandAndChildren() {
-
         Set<Player> playLandChild = new HashSet<Player>();
 
         playLandChild.addAll(playersInLand);
@@ -1069,7 +1033,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @return the players in land no vanish
      */
     public Set<Player> getPlayersInLandNoVanish(Player fromPlayer) {
-
         Set<Player> playerList = new HashSet<Player>();
 
         for (Player player : playersInLand) {
@@ -1101,7 +1064,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param signLoc   the sign location
      */
     public void setForSale(boolean isForSale, double salePrice, Location signLoc) {
-
         forSale = isForSale;
         if (forSale) {
             this.salePrice = salePrice;
@@ -1161,7 +1123,6 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * @param signLoc       the sign location
      */
     public void setForRent(double rentPrice, int rentRenew, boolean rentAutoRenew, Location signLoc) {
-
         forRent = true;
         this.rentPrice = rentPrice;
         this.rentRenew = rentRenew;
@@ -1255,7 +1216,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      * Update rented payment.
      */
     public void updateRentedPayment() {
-        lastPayment = new Timestamp(new Date().getTime());
+        lastPayment = System.currentTimeMillis();
         doSave();
     }
 
@@ -1266,7 +1227,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
 
         rented = false;
         tenant = null;
-        lastPayment = new Timestamp(0);
+        lastPayment = 0;
         doSave();
     }
 
@@ -1294,7 +1255,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      *
      * @param lastPayment the new last payment time
      */
-    public void setLastPaymentTime(Timestamp lastPayment) {
+    public void setLastPaymentTime(long lastPayment) {
         this.lastPayment = lastPayment;
         doSave();
     }
@@ -1304,7 +1265,7 @@ public final class RealLand implements Land, Comparable<RealLand> {
      *
      * @return the last payment time
      */
-    public Timestamp getLastPaymentTime() {
+    public long getLastPaymentTime() {
         return lastPayment;
     }
 

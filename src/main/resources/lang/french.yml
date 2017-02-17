@@ -368,6 +368,9 @@ COMMAND:
     ALREADYSALE: "Le panneau est déja créé. Utilisez '/secuboid sale recreate' pour recréer ou déplacer le panneau."
     ALREADYRENT: "Le panneau est déja créé. Utilisez '/secuboid rent recreate' pour recréer ou déplacer le panneau."
     MUSTHAVEISIGN: "Tu dois avoir un panneau en main."
+    LOCATIONGIVE: "Tu as donné '%' pour la location du terrain '%'."
+    LOCATIONRECEIVE: "Tu as reçu '%' pour la location du terrain '%'."
+    SALERECEIVE: "Tu as reçu '%' pour la vente du terrain '%'."
   PARENT:
     INVALID: "Le nom du parent est invalide!"
     NOTCHILD: "Le parent ne peut pas être un enfant!"

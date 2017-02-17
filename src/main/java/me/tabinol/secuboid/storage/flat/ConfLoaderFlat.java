@@ -222,6 +222,21 @@ final class ConfLoaderFlat {
     }
 
     /**
+     * Gets the value long.
+     *
+     * @return the value long
+     * @throws FileLoadException the file load exception
+     */
+    long getValueLong() throws FileLoadException {
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
+        }
+    }
+
+    /**
      * Gets the value short.
      *
      * @return the value short

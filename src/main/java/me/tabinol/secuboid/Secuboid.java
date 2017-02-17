@@ -20,7 +20,7 @@ package me.tabinol.secuboid;
 
 import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.config.DependPlugin;
+import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.economy.EcoScheduler;

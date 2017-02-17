@@ -16,26 +16,32 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.vanish;
+package me.tabinol.secuboid.dependencies.vanish;
 
+import com.earth2me.essentials.Essentials;
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
- * Only return false if there is no Vanish plugin.
+ * Essentials Functions.
+ *
+ * @author Tabinol
  */
-public class DummyVanish implements Vanish {
+public class VanishEssentials implements Vanish {
 
+    private final Essentials essentials;
     private final Secuboid secuboid;
 
-    public DummyVanish(Secuboid secuboid) {
+    public VanishEssentials(Secuboid secuboid) {
         this.secuboid = secuboid;
+        essentials = (Essentials) secuboid.getDependPlugin().getEssentials();
     }
 
     @Override
     public boolean isVanished(Player player) {
-        return secuboid.getConf().isSpectatorIsVanish()
-                && player.getGameMode() == GameMode.SPECTATOR;
+        return (secuboid.getConf().isSpectatorIsVanish()
+                && player.getGameMode() == GameMode.SPECTATOR)
+                || essentials.getUser(player).isVanished();
     }
 }

@@ -16,7 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config;
+package me.tabinol.secuboid.dependencies;
 
 import me.tabinol.secuboid.Secuboid;
 import net.milkbowl.vault.chat.Chat;

@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.chat.Chat;
-import me.tabinol.secuboid.config.chat.ChatEssentials;
-import me.tabinol.secuboid.config.chat.ChatSecuboid;
-import me.tabinol.secuboid.config.vanish.DummyVanish;
-import me.tabinol.secuboid.config.vanish.Vanish;
-import me.tabinol.secuboid.config.vanish.VanishEssentials;
-import me.tabinol.secuboid.config.vanish.VanishNoPacket;
+import me.tabinol.secuboid.dependencies.chat.Chat;
+import me.tabinol.secuboid.dependencies.chat.ChatEssentials;
+import me.tabinol.secuboid.dependencies.chat.ChatSecuboid;
+import me.tabinol.secuboid.dependencies.vanish.DummyVanish;
+import me.tabinol.secuboid.dependencies.vanish.Vanish;
+import me.tabinol.secuboid.dependencies.vanish.VanishEssentials;
+import me.tabinol.secuboid.dependencies.vanish.VanishNoPacket;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

@@ -16,7 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.vanish;
+package me.tabinol.secuboid.dependencies.vanish;
 
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.GameMode;

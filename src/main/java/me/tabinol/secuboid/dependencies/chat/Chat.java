@@ -1,7 +1,6 @@
 /*
- Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Secuboid: Lands and Factions plugin for Minecraft server
+ Copyright (C) 2014 Kaz00, Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,22 +15,28 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.vanish;
+package me.tabinol.secuboid.dependencies.chat;
 
 import org.bukkit.entity.Player;
 
-
 /**
- * The Interface Vanish.
+ * The Interface Chat.
  */
-public interface Vanish {
+public interface Chat {
 
     /**
-     * Checks if is vanished.
+     * Checks if is spy.
      *
      * @param player the player
-     * @return true, if is vanished
+     * @return true, if is spy
      */
-    public boolean isVanished(Player player);
+    boolean isSpy(Player player);
 
+    /**
+     * Checks if is muted.
+     *
+     * @param player the player
+     * @return true, if is muted
+     */
+    boolean isMuted(Player player);
 }

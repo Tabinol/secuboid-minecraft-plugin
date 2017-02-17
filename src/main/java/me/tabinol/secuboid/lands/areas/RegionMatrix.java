@@ -45,7 +45,7 @@ public class RegionMatrix {
     }
 
     Map<Integer, Map<Integer, ChunkMatrix>> getPoints() {
-        return Collections.unmodifiableMap(points);
+        return points;
     }
 
     /**

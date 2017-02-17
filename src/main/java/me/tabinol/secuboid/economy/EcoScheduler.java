@@ -18,13 +18,12 @@
  */
 package me.tabinol.secuboid.economy;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -41,21 +40,24 @@ public class EcoScheduler extends BukkitRunnable {
     @Override
     public void run() {
 
-        Calendar now = Calendar.getInstance();
+        long now = System.currentTimeMillis();
 
         // Check for rent renew
         for (RealLand land : secuboid.getLands().getForRent()) {
 
-            long nextPaymentTime = land.getLastPaymentTime().getTime() + (86400000 * land.getRentRenew());
+            long nextPaymentTime = land.getLastPaymentTime() + (86400000 * land.getRentRenew());
 
-            if (land.isRented() && nextPaymentTime < now.getTimeInMillis()) {
+            if (land.isRented() && nextPaymentTime < now) {
+                OfflinePlayer offlineTenant = land.getTenant().getOfflinePlayer();
 
                 //Check if the tenant has enough money or time limit whit no auto renew
-                if (secuboid.getPlayerMoney().getPlayerBalance(land.getTenant().getOfflinePlayer(), land.getWorldName()) < land.getRentPrice()
+                if (secuboid.getPlayerMoney().getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
                         || !land.getRentAutoRenew()) {
 
                     // Unrent
                     land.unSetRented();
+                    secuboid.getLog().info(offlineTenant.getName() + " lost land '" + land.getName()
+                            + "' rent. (Not enough money)");
                     try {
                         new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(
                                 land.getRentPrice(), land.getRentRenew(),
@@ -66,13 +68,22 @@ public class EcoScheduler extends BukkitRunnable {
                 } else {
 
                     // renew rent
-                    secuboid.getPlayerMoney().getFromPlayer(land.getTenant().getOfflinePlayer(),
-                            land.getWorldName(), land.getRentPrice());
-                    if (land.getOwner() instanceof PlayerContainerPlayer) {
-                        secuboid.getPlayerMoney().giveToPlayer(((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer(),
-                                land.getWorldName(), land.getRentPrice());
+                    secuboid.getPlayerMoney().getFromPlayer(offlineTenant, land.getWorldName(), land.getRentPrice());
+                    if (offlineTenant.isOnline()) {
+                        offlineTenant.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONGIVE",
+                                String.valueOf(land.getRentPrice()), land.getName()));
                     }
-                    land.setLastPaymentTime(new Timestamp(now.getTime().getTime()));
+                    if (land.getOwner() instanceof PlayerContainerPlayer) {
+                        OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
+                        secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
+                        if (offlineOwner.isOnline()) {
+                            offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
+                                    String.valueOf(land.getRentPrice()), land.getName()));
+                        }
+                    }
+                    secuboid.getLog().info(offlineTenant.getName() + " gave '" + String.valueOf(land.getRentPrice()
+                            + "' for land '" + land.getName() + "'."));
+                    land.setLastPaymentTime(now);
                 }
             }
         }

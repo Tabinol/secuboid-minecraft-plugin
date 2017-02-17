@@ -368,6 +368,9 @@ COMMAND:
     ALREADYSALE: "The sign is already created. Use '/secuboid sale recreate' to recreate or move the sign"
     ALREADYRENT: "The sign is already created. Use '/secuboid rent recreate' to recreate or move the sign"
     MUSTHAVEISIGN: "You must have a sign in your hand."
+    LOCATIONGIVE: "You gave '%' for the rent of the land '%'."
+    LOCATIONRECEIVE: "You received '%' for the rent of the land '%'."
+    SALERECEIVE: "You received '%' for the sale of the land '%'."
   PARENT:
     INVALID: "The parent name is invalid!"
     NOTCHILD: "The parent can not be a child!"

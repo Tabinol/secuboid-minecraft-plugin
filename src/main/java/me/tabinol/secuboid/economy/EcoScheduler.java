@@ -45,7 +45,7 @@ public class EcoScheduler extends BukkitRunnable {
         // Check for rent renew
         for (RealLand land : secuboid.getLands().getForRent()) {
 
-            long nextPaymentTime = land.getLastPaymentTime() + (86400000 * land.getRentRenew());
+            long nextPaymentTime = land.getLastPaymentTime() + (86400000L * land.getRentRenew());
 
             if (land.isRented() && nextPaymentTime < now) {
                 OfflinePlayer offlineTenant = land.getTenant().getOfflinePlayer();

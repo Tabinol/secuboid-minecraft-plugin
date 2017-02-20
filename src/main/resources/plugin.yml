@@ -2,7 +2,7 @@ name: Secuboid
 main: me.tabinol.secuboid.Secuboid
 version: ${project.version}
 description: "Lands and grief protection plugin"
-author: [Tabinol, Kaz00]
+authors: [Tabinol, Kaz00]
 depend: [Vault]
 softdepend: [WorldEdit, Essentials, VanishNoPacket]
 commands:
@@ -25,6 +25,7 @@ permissions:
             secuboid.use: true
             secuboid.reload: true
             secuboid.inv.*: true
+            secuboid.flycreative.*: true
     secuboid.adminmode:
         description: Can use Admin Mod
         default: op

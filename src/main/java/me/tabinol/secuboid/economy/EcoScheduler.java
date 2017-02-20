@@ -19,11 +19,13 @@
 package me.tabinol.secuboid.economy;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.events.LandEconomyEvent;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -39,7 +41,7 @@ public class EcoScheduler extends BukkitRunnable {
 
     @Override
     public void run() {
-
+        PluginManager pm = secuboid.getServer().getPluginManager();
         long now = System.currentTimeMillis();
 
         // Check for rent renew
@@ -48,7 +50,8 @@ public class EcoScheduler extends BukkitRunnable {
             long nextPaymentTime = land.getLastPaymentTime() + (86400000L * land.getRentRenew());
 
             if (land.isRented() && nextPaymentTime < now) {
-                OfflinePlayer offlineTenant = land.getTenant().getOfflinePlayer();
+                PlayerContainerPlayer tenant = land.getTenant();
+                OfflinePlayer offlineTenant = tenant.getOfflinePlayer();
 
                 //Check if the tenant has enough money or time limit whit no auto renew
                 if (secuboid.getPlayerMoney().getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
@@ -65,6 +68,8 @@ public class EcoScheduler extends BukkitRunnable {
                     } catch (SignException e) {
                         secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
+                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
+                            tenant));
                 } else {
 
                     // renew rent
@@ -84,6 +89,8 @@ public class EcoScheduler extends BukkitRunnable {
                     secuboid.getLog().info(offlineTenant.getName() + " gave '" + String.valueOf(land.getRentPrice()
                             + "' for land '" + land.getName() + "'."));
                     land.setLastPaymentTime(now);
+                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT_RENEW, land.getOwner(),
+                            tenant));
                 }
             }
         }

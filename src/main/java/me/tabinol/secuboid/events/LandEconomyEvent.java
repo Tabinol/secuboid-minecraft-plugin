@@ -91,7 +91,7 @@ public class LandEconomyEvent extends LandEvent {
      *
      * @return the seller
      */
-    public PlayerContainer getFromPlayer() {
+    public PlayerContainer getFromPC() {
         return fromPC;
     }
 
@@ -100,7 +100,7 @@ public class LandEconomyEvent extends LandEvent {
      *
      * @return the seller
      */
-    public PlayerContainer getToPlayer() {
+    public PlayerContainer getToPC() {
         return toPC;
     }
 }

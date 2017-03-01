@@ -457,4 +457,13 @@ public class Collisions {
     public synchronized int getPercentDone() {
         return percentDone;
     }
+
+    /**
+     * Gets the action requested (CREATE, REMOVE, etc.)
+     *
+     * @return the land action
+     */
+    public LandAction getAction() {
+        return action;
+    }
 }

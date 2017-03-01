@@ -25,12 +25,16 @@ import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.types.Type;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.selection.region.AreaSelection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -184,5 +188,71 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         return !(secuboid.getPlayerMoney() == null
                 || !secuboid.getConf().useEconomy()
                 || playerConf.isAdminMode());
+    }
+
+    /**
+     * Class for multiple return for landCheckForCreate.
+     * It is just for land create/check.
+     */
+    class LandCheckValues {
+        Land localParent;
+        RealLand realLocalParent;
+        PlayerContainer localOwner;
+        Type localType;
+    }
+
+    /**
+     * This is common check for land create and land select info commands.
+     * @param select the player selection
+     * @return multiple the value for area create
+     * @throws SecuboidCommandException no permission/command error
+     */
+    LandCheckValues landCheckForCreate(AreaSelection select) throws SecuboidCommandException {
+        LandCheckValues landCheckValues = new LandCheckValues();
+
+        // Check for parent
+        if (!argList.isLast()) {
+
+            String curString = argList.getNext();
+
+            if (curString.equalsIgnoreCase("noparent")) {
+
+                landCheckValues.localParent = null;
+            } else {
+
+                landCheckValues.localParent = secuboid.getLands().getLand(curString);
+
+                if (landCheckValues.localParent == null) {
+                    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.PARENTNOTEXIST");
+                }
+            }
+        } else {
+
+            // Autodetect parent
+            landCheckValues.localParent = select.getVisualSelection().getParentDetected();
+        }
+
+        // Not complicated! The player must be AdminMode, or access to create (in world)
+        // or access to create in parent if it is a subland.
+        if (!playerConf.isAdminMode() && (landCheckValues.localParent == null
+                || !landCheckValues.localParent.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
+            throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
+        }
+
+        // If the player is adminmode, the owner is nobody, and set type
+        if (playerConf.isAdminMode()) {
+            landCheckValues.localOwner = new PlayerContainerNobody();
+            landCheckValues.localType = secuboid.getConf().getTypeAdminMode();
+        } else {
+            landCheckValues.localOwner = playerConf.getPlayerContainer();
+            landCheckValues.localType = secuboid.getConf().getTypeNoneAdminMode();
+        }
+        if (landCheckValues.localParent.getLandType() == Land.LandType.REAL) {
+            landCheckValues.realLocalParent = (RealLand) landCheckValues.localParent;
+        } else {
+            landCheckValues.realLocalParent = null;
+        }
+
+        return landCheckValues;
     }
 }

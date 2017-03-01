@@ -96,8 +96,8 @@ public class CommandEcosign extends CommandExec {
                 land.setOwner(playerConf.getPlayerContainer());
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
                         land.getName()));
-                secuboid.getLog().info(player.getName() + " gave '" + String.valueOf(land.getRentPrice()
-                        + "' for land '" + land.getName() + "'."));
+                secuboid.getLog().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                        + " for land '" + land.getName() + "'.");
             } else // Rent and unrent
                 if (land.isRented() && (land.getTenant().hasAccess(player, land, land) || land.getOwner().hasAccess(player, land, land)
                         || playerConf.isAdminMode())) {
@@ -131,7 +131,7 @@ public class CommandEcosign extends CommandExec {
                         secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
                         if (offlineOwner.isOnline()) {
                             offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
-                                    String.valueOf(land.getRentPrice()), land.getName()));
+                                    secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
                         }
                     }
                     land.setRented(playerConf.getPlayerContainer());
@@ -144,8 +144,8 @@ public class CommandEcosign extends CommandExec {
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
                             land.getName()));
-                    secuboid.getLog().info(player.getName() + " gave '" + String.valueOf(land.getRentPrice()
-                            + "' for land '" + land.getName() + "'."));
+                    secuboid.getLog().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                            + " for land '" + land.getName() + "'.");
                 }
         } else if (land.getOwner().hasAccess(player, land, land) || playerConf.isAdminMode()) {
 

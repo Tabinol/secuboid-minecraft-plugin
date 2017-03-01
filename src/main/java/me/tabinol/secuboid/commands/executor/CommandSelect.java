@@ -234,8 +234,8 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 
         checkSelections(null, true);
 
-        AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
-        Area area = select.getVisualSelection().getArea();
+        AreaSelection areaSelection = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
+        Area area = areaSelection.getVisualSelection().getArea();
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO1",
                 area.getPrint()));
@@ -244,8 +244,19 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                     area.getVolume() + ""));
         }
 
-        checkCollision(area.getWorldName(), null, null, null, Collisions.LandAction.LAND_ADD,
-                0, playerConf.getSelection().getArea(), null, playerConf.getPlayerContainer(), true);
+        LandSelection landSelection = (LandSelection) playerConf.getSelection().getSelection(SelectionType.LAND);
+
+        if (landSelection != null) {
+            // Area add
+            RealLand land = landSelection.getLand();
+            checkCollision(area.getWorldName(), land.getName(), land, null, Collisions.LandAction.AREA_ADD,
+                    0, playerConf.getSelection().getArea(), land.getParent(), land.getOwner(), false);
+        } else {
+            // Land create
+            LandCheckValues landCheckValues = landCheckForCreate(areaSelection);
+            checkCollision(area.getWorldName(), null, null, landCheckValues.localType, Collisions.LandAction.LAND_ADD, 0, area,
+                    landCheckValues.realLocalParent, landCheckValues.localOwner, true);
+        }
     }
 
     @Override
@@ -255,10 +266,19 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 
         // Price (economy)
         if (price != 0L) {
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
-                    secuboid.getPlayerMoney().toFormat(price)));
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
-                    secuboid.getPlayerMoney().toFormat(price)));
+            switch (collisions.getAction()) {
+                case AREA_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                            + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",
+                            secuboid.getPlayerMoney().toFormat(price)));
+                    break;
+                case LAND_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                            + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO3",
+                            secuboid.getPlayerMoney().toFormat(price)));
+                    break;
+                default:
+            }
         }
     }
 }

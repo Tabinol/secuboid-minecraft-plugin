@@ -55,7 +55,8 @@ public class Creative {
     /**
      * Instantiates a new creative.
      *
-     * @param secuboid secuboid instance.
+     * @param secuboid            secuboid instance.
+     * @param flyCreativeListener fly creative listener instance
      */
     public Creative(Secuboid secuboid, FlyCreativeListener flyCreativeListener) {
 

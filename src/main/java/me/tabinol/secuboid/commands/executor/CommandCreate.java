@@ -23,15 +23,10 @@ import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
-import me.tabinol.secuboid.lands.types.Type;
-import me.tabinol.secuboid.permissionsflags.PermissionList;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import org.bukkit.ChatColor;
@@ -62,18 +57,10 @@ public class CommandCreate extends CommandCollisionsThreadExec {
     public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(null, true);
-        // checkPermission(false, false, null, null);
 
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
 
         Area area = select.getVisualSelection().getArea();
-        Land localParent;
-        RealLand realLocalParent;
-
-        // Quit select mod
-        // playerConf.setAreaSelection(null);
-        // playerConf.setLandSelected(null);
-        // select.resetSelection();
         String curArg = argList.getNext();
 
         // Check if is is a banned word
@@ -81,53 +68,9 @@ public class CommandCreate extends CommandCollisionsThreadExec {
             throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.HINTUSE");
         }
 
-        // Check for parent
-        if (!argList.isLast()) {
-
-            String curString = argList.getNext();
-
-            if (curString.equalsIgnoreCase("noparent")) {
-
-                localParent = null;
-            } else {
-
-                localParent = secuboid.getLands().getLand(curString);
-
-                if (localParent == null) {
-                    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.PARENTNOTEXIST");
-                }
-            }
-        } else {
-
-            // Autodetect parent
-            localParent = select.getVisualSelection().getParentDetected();
-        }
-
-        // Not complicated! The player must be AdminMode, or access to create (in world)
-        // or access to create in parent if it is a subland.
-        if (!playerConf.isAdminMode() && (localParent == null
-                || !localParent.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
-            throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
-        }
-
-        // If the player is adminmode, the owner is nobody, and set type
-        PlayerContainer localOwner;
-        Type localType;
-        if (playerConf.isAdminMode()) {
-            localOwner = new PlayerContainerNobody();
-            localType = secuboid.getConf().getTypeAdminMode();
-        } else {
-            localOwner = playerConf.getPlayerContainer();
-            localType = secuboid.getConf().getTypeNoneAdminMode();
-        }
-        if (localParent.getLandType() == Land.LandType.REAL) {
-            realLocalParent = (RealLand) localParent;
-        } else {
-            realLocalParent = null;
-        }
-
-        checkCollision(area.getWorldName(), curArg, null, localType, LandAction.LAND_ADD, 0, area,
-                realLocalParent, localOwner, true);
+        LandCheckValues landCheckValues = landCheckForCreate(select);
+        checkCollision(area.getWorldName(), curArg, null, landCheckValues.localType, LandAction.LAND_ADD, 0, area,
+                landCheckValues.realLocalParent, landCheckValues.localOwner, true);
     }
 
     @Override

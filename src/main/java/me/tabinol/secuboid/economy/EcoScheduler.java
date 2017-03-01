@@ -71,18 +71,18 @@ public class EcoScheduler extends BukkitRunnable {
                     secuboid.getPlayerMoney().getFromPlayer(offlineTenant, land.getWorldName(), land.getRentPrice());
                     if (offlineTenant.isOnline()) {
                         offlineTenant.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONGIVE",
-                                String.valueOf(land.getRentPrice()), land.getName()));
+                                secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
                     }
                     if (land.getOwner() instanceof PlayerContainerPlayer) {
                         OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
                         secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
                         if (offlineOwner.isOnline()) {
                             offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
-                                    String.valueOf(land.getRentPrice()), land.getName()));
+                                    secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
                         }
                     }
-                    secuboid.getLog().info(offlineTenant.getName() + " gave '" + String.valueOf(land.getRentPrice()
-                            + "' for land '" + land.getName() + "'."));
+                    secuboid.getLog().info(offlineTenant.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                            + " for land '" + land.getName() + "'.");
                     land.setLastPaymentTime(now);
                 }
             }

@@ -46,7 +46,7 @@ public class VisualSelectionCuboid implements VisualSelection {
     /**
      * Is from land.
      */
-    private final boolean isFromLand;
+    private final boolean isActive;
 
     /**
      * The is collision.
@@ -60,8 +60,12 @@ public class VisualSelectionCuboid implements VisualSelection {
 
     private CuboidArea area;
 
-    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, boolean isFromLand, Player player) {
+    private final CuboidArea originalArea;
+
+    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, CuboidArea originalArea, boolean isActive,
+                                 Player player) {
         this.secuboid = secuboid;
+        this.originalArea = originalArea;
         if (area == null) {
             visualCommon = new VisualCommon(secuboid, this, player,
                     secuboid.getPlayerConf().get(player), player.getLocation());
@@ -70,7 +74,7 @@ public class VisualSelectionCuboid implements VisualSelection {
                     secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
         }
         changedBlocks = new ChangedBlocks(player);
-        this.isFromLand = isFromLand;
+        this.isActive = isActive;
         this.player = player;
         isCollision = false;
         parentDetected = null;
@@ -100,6 +104,11 @@ public class VisualSelectionCuboid implements VisualSelection {
     @Override
     public Area getArea() {
         return area;
+    }
+
+    @Override
+    public Area getOriginalArea() {
+        return originalArea;
     }
 
     @Override
@@ -170,7 +179,7 @@ public class VisualSelectionCuboid implements VisualSelection {
 
                     Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
 
-                    if (!isFromLand) {
+                    if (isActive) {
                         // Active Selection
                         Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
                         if (parentDetected == testCuboidarea

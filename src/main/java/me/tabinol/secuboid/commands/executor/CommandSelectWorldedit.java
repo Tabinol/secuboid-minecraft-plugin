@@ -96,13 +96,13 @@ class CommandSelectWorldedit {
                         sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
                         sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
                         sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-                        false, AreaType.CUBOID, MoveType.PASSIVE);
+                        null, true, AreaType.CUBOID, MoveType.PASSIVE);
             } else {
                 select = new AreaSelection(secuboid, player, new CylinderArea(player.getWorld().getName(),
                         sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
                         sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
                         sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
-                        false, AreaType.CYLINDER, MoveType.PASSIVE);
+                        null, true, AreaType.CYLINDER, MoveType.PASSIVE);
             }
 
             entry.getSelection().addSelection(select);

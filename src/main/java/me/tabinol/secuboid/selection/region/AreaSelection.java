@@ -63,25 +63,26 @@ public class AreaSelection implements RegionSelection {
     /**
      * Instantiates a new area selection.
      *
-     * @param secuboid   secuboid instance
-     * @param player     the player
-     * @param area       the area (null will create the area from player)
-     * @param isFromLand is from land or must be false
-     * @param areaType   area type (can be null if the area is not null)
-     * @param moveType   move type
+     * @param secuboid     secuboid instance
+     * @param player       the player
+     * @param area         the area (null will create the area from player)
+     * @param originalArea the original area from a land for expand
+     * @param isActive     is from land (active) or must be false (passive)
+     * @param areaType     area type (can be null if the area is not null)
+     * @param moveType     move type
      */
-    public AreaSelection(Secuboid secuboid, Player player, Area area, boolean isFromLand,
+    public AreaSelection(Secuboid secuboid, Player player, Area area, Area originalArea, boolean isActive,
                          AreaType areaType, MoveType moveType) {
 
         this.moveType = moveType;
 
         if (area == null) {
             visualSelection = secuboid.getNewInstance().createVisualSelection(areaType,
-                    isFromLand, player);
+                    isActive, player);
             visualSelection.setActiveSelection();
         } else {
-            visualSelection = secuboid.getNewInstance().createVisualSelection(area,
-                    isFromLand, player);
+            visualSelection = secuboid.getNewInstance().createVisualSelection(area, originalArea,
+                    isActive, player);
             visualSelection.makeVisualSelection();
         }
     }

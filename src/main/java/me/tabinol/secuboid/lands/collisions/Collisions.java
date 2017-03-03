@@ -428,6 +428,7 @@ public class Collisions {
      */
     public double getPrice() {
         double priceFlag;
+        double price;
 
         if (newArea == null) {
             return 0;
@@ -446,7 +447,12 @@ public class Collisions {
             }
         }
 
-        return priceFlag * newArea.getArea();
+        price = priceFlag * newArea.getArea();
+        if (removedAreaId != 0) {
+            price -= land.getArea(removedAreaId).getArea();
+        }
+
+        return price < 0 ? 0 : price;
     }
 
     /**

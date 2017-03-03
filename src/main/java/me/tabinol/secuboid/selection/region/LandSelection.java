@@ -56,7 +56,7 @@ public class LandSelection implements RegionSelection {
 
         // Add visual areas
         for (Area area : land.getAreas()) {
-            visualAreas.put(area, new AreaSelection(secuboid, player, area, true, null, MoveType.PASSIVE));
+            visualAreas.put(area, new AreaSelection(secuboid, player, area, null, false, null, MoveType.PASSIVE));
         }
     }
 

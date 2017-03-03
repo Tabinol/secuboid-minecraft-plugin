@@ -50,7 +50,7 @@ public class VisualSelectionRoad implements VisualSelection {
     /**
      * Is from land.
      */
-    private final boolean isFromLand;
+    private final boolean isActive;
 
     /**
      * The is collision.
@@ -59,13 +59,16 @@ public class VisualSelectionRoad implements VisualSelection {
 
     private RoadArea area;
 
+    private final RoadArea originalArea;
+
     /**
      * True if there is a change and we have to change visual selection;
      */
     private boolean isAreaChange = false;
 
-    public VisualSelectionRoad(Secuboid secuboid, RoadArea area, boolean isFromLand, Player player) {
+    public VisualSelectionRoad(Secuboid secuboid, RoadArea area, RoadArea originalArea, boolean isActive, Player player) {
         this.secuboid = secuboid;
+        this.originalArea = originalArea;
         if (area == null) {
             visualCommon = new VisualCommon(secuboid, this, player,
                     secuboid.getPlayerConf().get(player), player.getLocation());
@@ -74,7 +77,7 @@ public class VisualSelectionRoad implements VisualSelection {
                     secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
         }
         changedBlocks = new ChangedBlocks(player);
-        this.isFromLand = isFromLand;
+        this.isActive = isActive;
         this.player = player;
         isCollision = false;
         this.area = area;
@@ -103,6 +106,11 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public Area getArea() {
         return area;
+    }
+
+    @Override
+    public Area getOriginalArea() {
+        return originalArea;
     }
 
     @Override
@@ -173,7 +181,7 @@ public class VisualSelectionRoad implements VisualSelection {
     private void setChangedBlocks(WorldLand outsideArea, boolean canCreate, Location newloc) {
 
         Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
-        if (isFromLand) {
+        if (!isActive) {
             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
         } else {
             if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {

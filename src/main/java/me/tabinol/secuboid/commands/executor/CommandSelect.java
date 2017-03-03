@@ -90,6 +90,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
             if (!argList.isLast()) {
 
                 curArg = argList.getNext();
+                String curArg2 = argList.isLast() ? curArg : argList.getNext();
                 if (curArg.equalsIgnoreCase("worldedit") || curArg.equalsIgnoreCase("we")) {
                     if (secuboid.getDependPlugin().getWorldEdit() == null) {
                         throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
@@ -109,12 +110,9 @@ public class CommandSelect extends CommandCollisionsThreadExec {
                 } else if (curArg.toLowerCase().matches("^mov(e)?")) {
                     doVisualActiveSelect(AreaType.CUBOID, AreaSelection.MoveType.MOVE);
                 } else if (curArg.toLowerCase().matches("^lan(d)?")) {
-                    String curArg2 = argList.getNext();
-                    if (curArg2 != null) {
-                        doSelectLand(curArg2);
-                    } else {
-                        doSelectLand(curArg);
-                    }
+                    doSelectLand(curArg2);
+                } else if (curArg.toLowerCase().matches("^are(a)?")) {
+                    doSelectArea(curArg2);
                 } else {
                     doSelectLand(curArg);
                 }
@@ -139,6 +137,12 @@ public class CommandSelect extends CommandCollisionsThreadExec {
     private void doSelectLand(String curArg) throws SecuboidCommandException {
 
         RealLand landtest;
+
+        // If land is already selected, select an area, not a land
+        if (playerConf.getSelection().getLand() != null) {
+            doSelectArea(curArg);
+            return;
+        }
 
         if (curArg.equalsIgnoreCase("here")) {
             landtest = doSelectHere();
@@ -166,6 +170,45 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         }
     }
 
+    private void doSelectArea(String curArg) throws SecuboidCommandException {
+
+        RealLand landtest = playerConf.getSelection().getLand();
+        Area areaSelect;
+
+        if (landtest == null) {
+            throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.JOIN.SELECTMODE");
+        }
+
+        PlayerContainer ownerLocal = landtest.getOwner();
+
+        if (!ownerLocal.hasAccess(player, land, land) && !playerConf.isAdminMode() && !landtest.isOwner(player)) {
+            throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
+        }
+
+        try {
+            int areaNb = Integer.parseInt(curArg);
+            areaSelect = landtest.getArea(areaNb);
+        } catch (NumberFormatException ex) {
+            // this not a number, take the areaNb where the player is
+            areaSelect = doSelectAreaHere(landtest);
+        }
+
+        if (areaSelect == null) {
+            throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
+        }
+
+        if (playerConf.getSelection().getArea() == null) {
+            playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, areaSelect.copyOf(), areaSelect,
+                    true, areaSelect.getAreaType(), AreaSelection.MoveType.EXPAND));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " +
+                    ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.SELECTEDAREA",
+                    String.valueOf(areaSelect.getKey())));
+            playerConf.setAutoCancelSelect(true);
+        } else {
+            player.sendMessage(ChatColor.RED + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.ALREADY"));
+        }
+    }
+
     private RealLand doSelectHere() {
 
         RealLand landtest;
@@ -182,11 +225,27 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         return landtest;
     }
 
+    private Area doSelectAreaHere(RealLand landtest) {
+
+        Area areatest;
+
+        // add select Here to select the the cuboid
+        if (location != null) {
+            // With an item
+            areatest = secuboid.getLands().getArea(location);
+        } else {
+            // Player location
+            areatest = secuboid.getLands().getArea(player.getLocation());
+        }
+
+        return areatest.getLand() == landtest ? areatest : null;
+    }
+
     private void doVisualActiveSelect(AreaType areaType, AreaSelection.MoveType moveType) {
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.JOINMODE"));
         player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
-        AreaSelection select = new AreaSelection(secuboid, player, null, false, areaType, moveType);
+        AreaSelection select = new AreaSelection(secuboid, player, null, null, true, areaType, moveType);
         playerConf.getSelection().addSelection(select);
         playerConf.setAutoCancelSelect(true);
     }
@@ -197,7 +256,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.HINT", ChatColor.ITALIC.toString(), ChatColor.RESET.toString(), ChatColor.DARK_GRAY.toString()));
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
         playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, select.getVisualSelection().getArea(),
-                false, null, moveType));
+                select.getVisualSelection().getOriginalArea(), true, null, moveType));
         playerConf.setAutoCancelSelect(true);
     }
 
@@ -212,7 +271,7 @@ public class CommandSelect extends CommandCollisionsThreadExec {
 
         AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
         playerConf.getSelection().addSelection(new AreaSelection(secuboid, player, select.getVisualSelection().getArea(),
-                false, null, AreaSelection.MoveType.PASSIVE));
+                select.getVisualSelection().getOriginalArea(), true, null, AreaSelection.MoveType.PASSIVE));
         playerConf.setAutoCancelSelect(true);
 
         if (!select.getVisualSelection().hasCollision()) {
@@ -247,10 +306,17 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         LandSelection landSelection = (LandSelection) playerConf.getSelection().getSelection(SelectionType.LAND);
 
         if (landSelection != null) {
-            // Area add
             RealLand land = landSelection.getLand();
-            checkCollision(area.getWorldName(), land.getName(), land, null, Collisions.LandAction.AREA_ADD,
-                    0, playerConf.getSelection().getArea(), land.getParent(), land.getOwner(), false);
+            Area originalArea = areaSelection.getVisualSelection().getOriginalArea();
+            if (originalArea != null) {
+                // Area replace
+                checkCollision(area.getWorldName(), land.getName(), land, null, Collisions.LandAction.AREA_MODIFY,
+                        originalArea.getKey(), playerConf.getSelection().getArea(), land.getParent(), land.getOwner(), false);
+            } else {
+                // Area add
+                checkCollision(area.getWorldName(), land.getName(), land, null, Collisions.LandAction.AREA_ADD,
+                        0, playerConf.getSelection().getArea(), land.getParent(), land.getOwner(), false);
+            }
         } else {
             // Land create
             LandCheckValues landCheckValues = landCheckForCreate(areaSelection);
@@ -265,8 +331,9 @@ public class CommandSelect extends CommandCollisionsThreadExec {
         double price = collisions.getPrice();
 
         // Price (economy)
-        if (price != 0L) {
+        if (price != 0d) {
             switch (collisions.getAction()) {
+                case AREA_MODIFY:
                 case AREA_ADD:
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
                             + secuboid.getLanguage().getMessage("COMMAND.SELECT.INFO.INFO4",

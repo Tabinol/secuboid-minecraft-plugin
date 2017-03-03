@@ -27,7 +27,17 @@ import me.tabinol.secuboid.selection.region.AreaSelection;
  */
 public interface VisualSelection {
 
+    /**
+     * Gets the area.
+     * @return the area
+     */
     Area getArea();
+
+    /**
+     * Gets the origin area to modify if exist.
+     * @return the origine area
+     */
+    Area getOriginalArea();
 
     /**
      * Sets the active selection.

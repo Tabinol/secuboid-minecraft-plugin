@@ -62,11 +62,6 @@ public class PlayerSelection {
     private final EnumMap<SelectionType, RegionSelection> selectionList; // SelectionList for the player
 
     /**
-     * The area to replace.
-     */
-    private Area areaToReplace; // If it is an areaToReplace with an expand
-
-    /**
      * Instantiates a new player selection.
      *
      * @param secuboid        secuboid instance
@@ -77,7 +72,6 @@ public class PlayerSelection {
         this.secuboid = secuboid;
         this.playerConfEntry = playerConfEntry;
         selectionList = new EnumMap<SelectionType, RegionSelection>(SelectionType.class);
-        areaToReplace = null;
     }
 
     /**
@@ -132,10 +126,6 @@ public class PlayerSelection {
         RegionSelection select = selectionList.remove(type);
 
         if (select != null) {
-
-            // reset AreaToReplace if exist
-            areaToReplace = null;
-
             select.removeSelection();
         }
 
@@ -186,22 +176,17 @@ public class PlayerSelection {
     }
 
     /**
-     * Sets the area to replace.
-     *
-     * @param areaToReplace the new area to replace
-     */
-    public void setAreaToReplace(Area areaToReplace) {
-
-        this.areaToReplace = areaToReplace;
-    }
-
-    /**
      * Gets the area to replace.
      *
      * @return the area to replace
      */
     public Area getAreaToReplace() {
 
-        return areaToReplace;
+        AreaSelection sel = (AreaSelection) selectionList.get(SelectionType.AREA);
+        if (sel != null) {
+            return sel.getVisualSelection().getOriginalArea();
+        } else {
+            return null;
+        }
     }
 }

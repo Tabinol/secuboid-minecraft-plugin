@@ -182,11 +182,11 @@ public class NewInstance {
 
         switch (areaType) {
             case CUBOID:
-                return new VisualSelectionCuboid(secuboid, null, isFromLand, player);
+                return new VisualSelectionCuboid(secuboid, null, null, isFromLand, player);
             case CYLINDER:
-                return new VisualSelectionCylinder(secuboid, null, isFromLand, player);
+                return new VisualSelectionCylinder(secuboid, null, null, isFromLand, player);
             case ROAD:
-                return new VisualSelectionRoad(secuboid, null, isFromLand, player);
+                return new VisualSelectionRoad(secuboid, null, null, isFromLand, player);
             default:
                 return null;
         }
@@ -195,20 +195,21 @@ public class NewInstance {
     /**
      * Create a visual selection from an area
      *
-     * @param area       area
-     * @param isFromLand is from land or must be false
-     * @param player     the player
+     * @param area         area
+     * @param originalArea the original area from a land for expand (in this case, area must be a copy of)
+     * @param isFromLand   is from land or must be false
+     * @param player       the player
      * @return visual selection
      */
-    public VisualSelection createVisualSelection(Area area, boolean isFromLand, Player player) {
+    public VisualSelection createVisualSelection(Area area, Area originalArea, boolean isFromLand, Player player) {
 
         switch (area.getAreaType()) {
             case CUBOID:
-                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, isFromLand, player);
+                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) area, isFromLand, player);
             case CYLINDER:
-                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, isFromLand, player);
+                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) area, isFromLand, player);
             case ROAD:
-                return new VisualSelectionRoad(secuboid, (RoadArea) area, isFromLand, player);
+                return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) area, isFromLand, player);
             default:
                 return null;
         }

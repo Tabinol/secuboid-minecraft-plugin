@@ -56,6 +56,7 @@ HELP:
       9: "/secuboid select done : Conclure une sélection visuelle."
       10: "/secuboid select worldedit : Prendre une sélection WorldEdit."
       11: "/secuboid select info : Informations à propos de la sélection."
+      12: "/secuboid select are[a] [area nb] : Sélectionner une étendue en mode expansion."
     INFO:
       1: "/secuboid info [terrain] : Affiche les informations générales du terrain."
     ADMINMODE:
@@ -72,7 +73,7 @@ HELP:
       1: "/secuboid area list : Affiche les étendues."
       2: "/secuboid area add : Ajoute une étendue."
       3: "/secuboid area remove <num étendue nb> : Enlève une étendue."
-      4: "/secuboid area replace : Remplace une étendue."
+      4: "/secuboid area replace [num étendue nb] : Remplace une étendue."
     BAN:
       1: "/secuboid ban list : Affiche les joueurs/contenants bannis."
       2: "/secuboid ban add <contenant joueur> : Banne un joueur/contenant"
@@ -157,9 +158,6 @@ GENERAL:
   FROMDEFAULTTYPE: "héritage du défaut type '%':"
   FROMPARENT: "héritage du parent '%':"
   FROMWORLD: "héritage du monde '%':"
-  QUIT:
-    EXPENDMODE: "Quittez le mode expansion."
-    FLAGSMODE: "Quittez le mode drapeau avant."
   JOIN:
     SELECTMODE: "Joindre le mode sélection avant."
     SELECTAREA: "Tu dois avoir sélectionné ton étendue avant."

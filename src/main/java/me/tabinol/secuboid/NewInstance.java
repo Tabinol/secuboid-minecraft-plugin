@@ -205,11 +205,11 @@ public class NewInstance {
 
         switch (area.getAreaType()) {
             case CUBOID:
-                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) area, isFromLand, player);
+                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) originalArea, isFromLand, player);
             case CYLINDER:
-                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) area, isFromLand, player);
+                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) originalArea, isFromLand, player);
             case ROAD:
-                return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) area, isFromLand, player);
+                return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) originalArea, isFromLand, player);
             default:
                 return null;
         }

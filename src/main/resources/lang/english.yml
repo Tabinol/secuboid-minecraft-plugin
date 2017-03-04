@@ -56,6 +56,7 @@ HELP:
       9: "/secuboid select done : Set a visual selection done."
       10: "/secuboid select worldedit : Select the WorldEdit selection."
       11: "/secuboid select info : Informations about the selection."
+      12: "/secuboid select are[a] [area nb] : Select an area in expand mode."
     INFO:
       1: "/secuboid INFO [land] : Show global informations of the curent land."
     ADMINMODE:
@@ -72,7 +73,7 @@ HELP:
       1: "/secuboid area list : List areas."
       2: "/secuboid area add : Add an area."
       3: "/secuboid area remove <area nb> : Remove an area."
-      4: "/secuboid area replace : Replace an area."
+      4: "/secuboid area replace [area nb] : Replace an area."
     BAN:
       1: "/secuboid ban list : List banned players/containers."
       2: "/secuboid ban add <player container> : Ban a player/container"
@@ -157,9 +158,6 @@ GENERAL:
   FROMDEFAULTTYPE: "Inheritance from default type '%':"
   FROMPARENT: "Inheritance from parent '%':"
   FROMWORLD: "Inheritance from world '%':"
-  QUIT:
-    EXPENDMODE: "Quit the Expand Mode before."
-    FLAGSMODE: "Quit the Flags Mode before."
   JOIN:
     SELECTMODE: "Join the Select Mode before."
     SELECTAREA: "You need to have an area selected before."

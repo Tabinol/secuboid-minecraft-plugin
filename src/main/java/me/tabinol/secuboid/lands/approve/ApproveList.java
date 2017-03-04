@@ -97,7 +97,7 @@ public class ApproveList {
         if (approve.getNewArea() != null) {
             section.set("NewArea", approve.getNewArea().toFileFormat());
         }
-        section.set("Owner", approve.getOwner().getPrint());
+        section.set("Owner", approve.getOwner().toFileFormat());
         if (approve.getParent() != null) {
             section.set("Parent", approve.getParent().getName());
         }

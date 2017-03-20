@@ -168,8 +168,8 @@ public class Secuboid extends JavaPlugin {
         log = new Log(getLogger());
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
-        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
         } else {
             playerMoney = null;
         }
@@ -224,8 +224,8 @@ public class Secuboid extends JavaPlugin {
         if (inventoryConf != null) {
             inventoryConf.reloadConfig();
         }
-        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
         } else {
             playerMoney = null;
         }

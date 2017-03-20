@@ -94,6 +94,12 @@
             <artifactId>spigot-api</artifactId>
             <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Bukkit API -->
@@ -202,6 +208,12 @@
                     <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>de.myzelyam.supervanish</groupId>
+            <artifactId>SuperVanish</artifactId>
+            <version>5.9.1</version>
         </dependency>
 
         <!-- For color console -->

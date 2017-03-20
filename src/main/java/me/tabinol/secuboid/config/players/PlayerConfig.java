@@ -18,19 +18,12 @@
  */
 package me.tabinol.secuboid.config.players;
 
-import com.earth2me.essentials.Essentials;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.dependencies.chat.Chat;
-import me.tabinol.secuboid.dependencies.chat.ChatEssentials;
-import me.tabinol.secuboid.dependencies.chat.ChatSecuboid;
-import me.tabinol.secuboid.dependencies.vanish.DummyVanish;
 import me.tabinol.secuboid.dependencies.vanish.Vanish;
-import me.tabinol.secuboid.dependencies.vanish.VanishEssentials;
-import me.tabinol.secuboid.dependencies.vanish.VanishNoPacket;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -62,29 +55,10 @@ public class PlayerConfig {
      * @param secuboid secuboid instance
      */
     public PlayerConfig(Secuboid secuboid) {
-
         this.secuboid = secuboid;
         playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
-
-        // Check for VanishNoPacket plugin
-        if (secuboid.getDependPlugin().getVanishNoPacket() != null) {
-            vanish = new VanishNoPacket(secuboid);
-
-            // Check for Essentials plugin
-        } else if (secuboid.getDependPlugin().getEssentials() != null) {
-            vanish = new VanishEssentials(secuboid);
-
-            // Dummy Vanish if no plugins
-        } else {
-            vanish = new DummyVanish(secuboid);
-        }
-
-        // Check for Chat plugin
-        if (secuboid.getDependPlugin().getEssentials() != null) {
-            chat = new ChatEssentials((Essentials) secuboid.getDependPlugin().getEssentials());
-        } else {
-            chat = new ChatSecuboid();
-        }
+        vanish = secuboid.getDependPlugin().getVanish();
+        chat = secuboid.getDependPlugin().getChat();
     }
 
     /**
@@ -94,7 +68,6 @@ public class PlayerConfig {
      * @return the player conf entry
      */
     public PlayerConfEntry add(CommandSender sender) {
-
         PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender);
         playerConfList.put(sender, entry);
 
@@ -107,7 +80,6 @@ public class PlayerConfig {
      * @param sender the sender
      */
     public void remove(CommandSender sender) {
-
         PlayerConfEntry entry = playerConfList.get(sender);
 
         // First, remove AutoCancelSelect
@@ -123,7 +95,6 @@ public class PlayerConfig {
      * @return the player static configuration
      */
     public PlayerConfEntry get(CommandSender sender) {
-
         return playerConfList.get(sender);
     }
 
@@ -131,7 +102,6 @@ public class PlayerConfig {
      * Adds all static configurations.
      */
     public void addAll() {
-
         // Add the consle in the list
         add(secuboid.getServer().getConsoleSender());
 
@@ -145,12 +115,9 @@ public class PlayerConfig {
      * Removes all static configurations.
      */
     public void removeAll() {
-
         for (PlayerConfEntry entry : playerConfList.values()) {
-
             // First, remove AutoCancelSelect
             entry.setAutoCancelSelect(false);
-
         }
         playerConfList.clear();
     }

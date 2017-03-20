@@ -18,7 +18,11 @@
  */
 package me.tabinol.secuboid.dependencies;
 
+import com.earth2me.essentials.Essentials;
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.dependencies.chat.ChatEssentials;
+import me.tabinol.secuboid.dependencies.chat.ChatSecuboid;
+import me.tabinol.secuboid.dependencies.vanish.*;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -46,24 +50,39 @@ public class DependPlugin {
     private Plugin essentials = null;
 
     /**
+     * The vanish
+     */
+    private Vanish vanish;
+
+    /**
+     * The chat.
+     */
+    private me.tabinol.secuboid.dependencies.chat.Chat chat;
+
+    /**
      * The vanish no packet.
      */
     private Plugin vanishNoPacket = null;
 
     /**
-     * The permission.
+     * The super/premium vanish no packet.
      */
-    private Permission permission = null;
+    private Plugin superVanish = null;
 
     /**
-     * The economy.
+     * The vault permission.
      */
-    private Economy economy = null;
+    private Permission vaultPermission = null;
 
     /**
-     * The chat.
+     * The vault economy.
      */
-    private Chat chat = null;
+    private Economy vaultEconomy = null;
+
+    /**
+     * The vault chat.
+     */
+    private Chat vaultChat = null;
 
     /**
      * Instantiates a new depend plugin.
@@ -77,9 +96,14 @@ public class DependPlugin {
         worldEdit = getPlugin("WorldEdit");
         essentials = getPlugin("Essentials");
         vanishNoPacket = getPlugin("VanishNoPacket");
+        superVanish = getPlugin("PremiumVanish");
+        if (superVanish == null) {
+            superVanish = getPlugin("SuperVanish");
+        }
         setupPermissions();
         setupChat();
         setupEconomy();
+        setupVanish();
     }
 
     /**
@@ -103,6 +127,62 @@ public class DependPlugin {
     }
 
     /**
+     * Setup permissions.
+     */
+    private void setupPermissions() {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            vaultPermission = permissionProvider.getProvider();
+        }
+    }
+
+    /**
+     * Setup chat.
+     */
+    private void setupChat() {
+        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null) {
+            vaultChat = chatProvider.getProvider();
+        }
+
+        // Get chat for social spy.
+        if (essentials != null) {
+            chat = new ChatEssentials((Essentials) essentials);
+        } else {
+            chat = new ChatSecuboid();
+        }
+    }
+
+    /**
+     * Setup vaultEconomy.
+     */
+    private void setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null) {
+            vaultEconomy = economyProvider.getProvider();
+        }
+    }
+
+    /**
+     * Setup vanish.
+     */
+    private void setupVanish() {
+        if (superVanish != null) {
+            vanish = new SuperVanish(secuboid);
+
+        } else if (vanishNoPacket != null) {
+            vanish = new VanishNoPacket(secuboid);
+
+        } else if (essentials != null) {
+            vanish = new VanishEssentials(secuboid);
+
+            // Dummy Vanish if no plugins
+        } else {
+            vanish = new DummyVanish(secuboid);
+        }
+    }
+
+    /**
      * Gets the world edit.
      *
      * @return the world edit
@@ -123,83 +203,40 @@ public class DependPlugin {
     }
 
     /**
-     * Gets the vanish no packet.
+     * Gets the vault permission.
      *
-     * @return the vanish no packet
+     * @return the vault permission
      */
-    public Plugin getVanishNoPacket() {
+    public Permission getVaultPermission() {
 
-        return vanishNoPacket;
+        return vaultPermission;
     }
 
     /**
-     * Setup permissions.
+     * Gets the vault economy.
      *
-     * @return true, if successful
+     * @return the vault economy
      */
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permission = permissionProvider.getProvider();
-        }
-        return (permission != null);
+    public Economy getVaultEconomy() {
+
+        return vaultEconomy;
     }
 
     /**
-     * Setup chat.
+     * Gets the vault chat.
      *
-     * @return true, if successful
+     * @return the vault chat
      */
-    private boolean setupChat() {
-        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if (chatProvider != null) {
-            chat = chatProvider.getProvider();
-        }
+    public Chat getVaultChat() {
 
-        return (chat != null);
+        return vaultChat;
     }
 
-    /**
-     * Setup economy.
-     *
-     * @return true, if successful
-     */
-    private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null) {
-            economy = economyProvider.getProvider();
-        }
-
-        return (economy != null);
+    public Vanish getVanish() {
+        return vanish;
     }
 
-    /**
-     * Gets the permission.
-     *
-     * @return the permission
-     */
-    public Permission getPermission() {
-
-        return permission;
-    }
-
-    /**
-     * Gets the economy.
-     *
-     * @return the economy
-     */
-    public Economy getEconomy() {
-
-        return economy;
-    }
-
-    /**
-     * Gets the chat.
-     *
-     * @return the chat
-     */
-    public Chat getChat() {
-
+    public me.tabinol.secuboid.dependencies.chat.Chat getChat() {
         return chat;
     }
 }

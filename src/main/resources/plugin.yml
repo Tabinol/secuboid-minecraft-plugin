@@ -4,7 +4,7 @@ version: ${project.version}
 description: "Lands and grief protection plugin"
 authors: [Tabinol, Kaz00]
 depend: [Vault]
-softdepend: [WorldEdit, Essentials, VanishNoPacket]
+softdepend: [WorldEdit, Essentials, VanishNoPacket, SuperVanish, PremiumVanish]
 commands:
    secuboid:
       description: Secuboid Command

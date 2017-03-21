@@ -174,7 +174,7 @@ public class DependPlugin {
             vanish = new VanishNoPacket(secuboid);
 
         } else if (essentials != null) {
-            vanish = new VanishEssentials(secuboid);
+            vanish = new VanishEssentials(secuboid, (Essentials) essentials);
 
             // Dummy Vanish if no plugins
         } else {

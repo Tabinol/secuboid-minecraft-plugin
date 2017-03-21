@@ -33,9 +33,9 @@ public class VanishEssentials implements Vanish {
     private final Essentials essentials;
     private final Secuboid secuboid;
 
-    public VanishEssentials(Secuboid secuboid) {
+    public VanishEssentials(Secuboid secuboid, Essentials essentials) {
         this.secuboid = secuboid;
-        essentials = (Essentials) secuboid.getDependPlugin().getEssentials();
+        this.essentials = essentials;
     }
 
     @Override

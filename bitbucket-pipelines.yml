@@ -9,5 +9,12 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - mvn --batch-mode clean install
+          - echo ${BB_RSA_PRIVATE_KEY} > ~/.ssh/id_rsa.tmp
+          - base64 -d ~/.ssh/id_rsa.tmp > ~/.ssh/id_rsa
+          - chmod 600 ~/.ssh/id_rsa
+          - mvn --batch-mode clean source:jar javadoc:jar javadoc:javadoc deploy
           - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls target/*.jar | grep -v javadoc.jar$ | grep -v sources.jar$)"
+          - git clone git@bitbucket.org:Tabinol/tabinol.bitbucket.org.git target/tabinol.bitbucket.org
+          - mkdir -p target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
+          - cp -r target/site/apidocs/* target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
+          - cd target/tabinol.bitbucket.org && git add --all && commit -m 'Docs for ${BITBUCKET_REPO_SLUG}' && push origin master

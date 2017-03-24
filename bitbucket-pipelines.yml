@@ -17,4 +17,4 @@ pipelines:
           - git clone git@bitbucket.org:Tabinol/tabinol.bitbucket.org.git target/tabinol.bitbucket.org
           - mkdir -p target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
           - cp -r target/site/apidocs/* target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
-          - cd target/tabinol.bitbucket.org && git add --all && commit -m 'Docs for ${BITBUCKET_REPO_SLUG}' && git push origin master
+          - cd target/tabinol.bitbucket.org && git add --all && git commit -m 'Docs for ${BITBUCKET_REPO_SLUG}' && git push origin master

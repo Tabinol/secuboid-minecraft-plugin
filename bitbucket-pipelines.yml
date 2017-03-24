@@ -17,6 +17,7 @@ pipelines:
           - mvn --batch-mode clean source:jar javadoc:jar javadoc:javadoc deploy
           - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls target/*.jar | grep -v javadoc.jar$ | grep -v sources.jar$)"
           - git clone git@bitbucket.org:Tabinol/tabinol.bitbucket.org.git target/tabinol.bitbucket.org
+          - rm -rf target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
           - mkdir -p target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
           - cp -r target/site/apidocs/* target/tabinol.bitbucket.org/docs/${BITBUCKET_REPO_SLUG}
           - cd target/tabinol.bitbucket.org && git add --all && git commit -m 'Docs for ${BITBUCKET_REPO_SLUG}' && git push origin master

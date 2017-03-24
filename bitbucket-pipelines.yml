@@ -9,6 +9,8 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
+          - git config --global user.email "${USER_EMAIL}"
+          - git config --global user.name "${BITBUCKET_REPO_OWNER}"
           - echo ${BB_RSA_PRIVATE_KEY} > ~/.ssh/id_rsa.tmp
           - base64 -d ~/.ssh/id_rsa.tmp > ~/.ssh/id_rsa
           - chmod 600 ~/.ssh/id_rsa

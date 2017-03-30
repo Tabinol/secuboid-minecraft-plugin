@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.tabinol.secuboid</groupId>
     <artifactId>Secuboid</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <name>Secuboid</name>
     <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
 
@@ -18,10 +18,6 @@
         <playersCacheVersion>1</playersCacheVersion>
         <!-- *** Change Inventory Storage version here *** -->
         <InventoryStorageVersion>1</InventoryStorageVersion>
-
-        <!-- site deploy (do not make "deploy" if you are not tabinol.me/jenkins)-->
-        <url.repository>file:///var/www/maven/</url.repository>
-        <dir.javadoc>/var/www/html/javadoc/${project.artifactId}/</dir.javadoc>
     </properties>
 
     <repositories>
@@ -46,10 +42,18 @@
         </repository>
 
         <repository>
-            <id>Plugin Metrics</id>
-            <url>http://repo.mcstats.org/content/repositories/public</url>
+            <id>tabinol-maven-repo</id>
+            <name>tabinol maven repo</name>
+            <url>https://bitbucket.org/Tabinol/tabinol-maven-repo/raw/master/</url>
         </repository>
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>synergian-repo</id>
+            <url>https://raw.github.com/synergian/wagon-git/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <dependency>
@@ -94,6 +98,12 @@
             <artifactId>spigot-api</artifactId>
             <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Bukkit API -->
@@ -102,13 +112,6 @@
             <artifactId>bukkit</artifactId>
             <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mcstats.bukkit</groupId>
-            <artifactId>metrics-lite</artifactId>
-            <version>R8-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- MySql connector (included in Spigot) -->
@@ -204,6 +207,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>de.myzelyam.supervanish</groupId>
+            <artifactId>SuperVanish</artifactId>
+            <version>5.9.1</version>
+        </dependency>
+
         <!-- For color console -->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
@@ -215,6 +224,14 @@
     </dependencies>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>ar.com.synergian</groupId>
+                <artifactId>wagon-git</artifactId>
+                <version>0.2.5</version>
+            </extension>
+        </extensions>
+
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -238,71 +255,6 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>org.mcstats.*:*</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.mcstats</pattern>
-                            <shadedPattern>me.tabinol.secuboid</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>javadoc-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                        <configuration>
-                            <reportOutputDirectory>${dir.javadoc}</reportOutputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <!-- Test begin -->
@@ -336,10 +288,10 @@
 
     <distributionManagement>
         <repository>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
             <id>tabinol-maven-repo</id>
-            <name>tabinol.me Maven repository</name>
-            <url>${url.repository}</url>
+            <name>tabinol maven repo</name>
+            <url>git:master://git@bitbucket.org:Tabinol/tabinol-maven-repo.git</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>

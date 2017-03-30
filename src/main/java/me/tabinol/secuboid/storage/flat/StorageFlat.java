@@ -20,7 +20,6 @@ package me.tabinol.secuboid.storage.flat;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -370,7 +369,7 @@ public class StorageFlat implements Storage {
             land.addResident(resident);
         }
         for (PlayerContainer banned : banneds) {
-            land.addResident(banned);
+            land.addBanned(banned);
         }
         for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> entry : permissions.entrySet()) {
             for (Map.Entry<PermissionType, Permission> entryP : entry.getValue().entrySet()) {

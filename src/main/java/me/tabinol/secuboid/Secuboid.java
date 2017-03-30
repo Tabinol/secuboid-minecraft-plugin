@@ -37,9 +37,6 @@ import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
-
-import java.io.IOException;
 
 /**
  * The Class Secuboid.
@@ -145,14 +142,6 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-        try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-        }
-
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
@@ -168,8 +157,8 @@ public class Secuboid extends JavaPlugin {
         log = new Log(getLogger());
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
-        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
         } else {
             playerMoney = null;
         }
@@ -224,8 +213,8 @@ public class Secuboid extends JavaPlugin {
         if (inventoryConf != null) {
             inventoryConf.reloadConfig();
         }
-        if (conf.useEconomy() && dependPlugin.getEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getEconomy());
+        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
+            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
         } else {
             playerMoney = null;
         }

@@ -18,30 +18,36 @@
  */
 package me.tabinol.secuboid.dependencies.vanish;
 
-import com.earth2me.essentials.Essentials;
+import de.myzelyam.api.vanish.VanishAPI;
 import me.tabinol.secuboid.Secuboid;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
- * Essentials Functions.
- *
- * @author Tabinol
+ * SuperVanish/PremiumVanish dependency.
+ * Created by mblanchet on 2017-03-20.
  */
-public class VanishEssentials implements Vanish {
+public class SuperVanish implements Vanish {
 
-    private final Essentials essentials;
     private final Secuboid secuboid;
 
-    public VanishEssentials(Secuboid secuboid, Essentials essentials) {
+    /**
+     * Instantiates a new super vanish.
+     *
+     * @param secuboid secuboid instance
+     */
+    public SuperVanish(Secuboid secuboid) {
         this.secuboid = secuboid;
-        this.essentials = essentials;
     }
 
     @Override
     public boolean isVanished(Player player) {
-        return (secuboid.getConf().isSpectatorIsVanish()
-                && player.getGameMode() == GameMode.SPECTATOR)
-                || essentials.getUser(player).isVanished();
+
+        if ((secuboid.getConf().isSpectatorIsVanish()
+                && player.getGameMode() == GameMode.SPECTATOR)) {
+            return true;
+        }
+
+        return VanishAPI.isInvisible(player);
     }
 }

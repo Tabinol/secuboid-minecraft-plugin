@@ -21,7 +21,6 @@ package me.tabinol.secuboid.commands;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandExec;

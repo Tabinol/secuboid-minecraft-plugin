@@ -27,9 +27,6 @@ import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static me.tabinol.secuboid.lands.InitLands.WORLD;
 import static org.junit.Assert.fail;
@@ -37,8 +34,6 @@ import static org.junit.Assert.fail;
 /**
  * Test land collisions.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Secuboid.class)
 public class CollisionsTest {
 
     private static Secuboid secuboid;

@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.economy;
 
-import java.util.HashSet;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.RealLand;
@@ -28,6 +26,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +37,9 @@ import org.bukkit.inventory.ItemStack;
  * @author Tabinol
  */
 public class EcoSign {
+
+    private static final String SIGN_SUFFIX = "_SIGN";
+    public static final String WALL_SIGN_SUFFIX = "_WALL_SIGN";
 
     private final Secuboid secuboid;
 
@@ -62,6 +64,11 @@ public class EcoSign {
     private final boolean isWallSign;
 
     /**
+     * The prefix (kind of wook)
+     */
+    private final String signPrefix;
+
+    /**
      * Instantiates a new eco sign. Creates from player position.
      *
      * @param secuboid the secuboid instance
@@ -72,10 +79,10 @@ public class EcoSign {
     public EcoSign(Secuboid secuboid, RealLand land, Player player) throws SignException {
 
         this.secuboid = secuboid;
-        @SuppressWarnings("deprecation")
-        Block targetBlock = player.getTargetBlock((HashSet<Byte>) null, 10);
+        Block targetBlock = player.getTargetBlock(null, 10);
         Block testBlock;
         this.land = land;
+        signPrefix = player.getEquipment().getItemInMainHand().getType().name().replace(SIGN_SUFFIX, "");
 
         if (targetBlock == null) {
             throw new SignException();
@@ -128,18 +135,17 @@ public class EcoSign {
         // Get Sign parameter
         Block blockPlace = location.getBlock();
 
-        switch (blockPlace.getType()) {
-            case WALL_SIGN:
-                isWallSign = true;
-                break;
-            case SIGN_POST:
-                isWallSign = false;
-                break;
-            default:
-                throw new SignException();
+        final String materialName = blockPlace.getType().name();
+        if (materialName.endsWith(WALL_SIGN_SUFFIX)) {
+            isWallSign = true;
+            signPrefix = materialName.replace(WALL_SIGN_SUFFIX, "");
+        } else if (materialName.endsWith(SIGN_SUFFIX)) {
+            isWallSign = false;
+            signPrefix = materialName.replace(SIGN_SUFFIX, "");
+        } else {
+            throw new SignException();
         }
-
-        this.facing = ((org.bukkit.material.Sign) ((Sign) blockPlace.getState()).getData()).getFacing();
+        this.facing = ((Directional) ((Sign) blockPlace.getState()).getData()).getFacing();
     }
 
     /**
@@ -160,8 +166,7 @@ public class EcoSign {
     public void createSignForSale(double price) throws SignException {
 
         String[] lines = new String[4];
-        lines[0] = ChatColor.GREEN
-                + secuboid.getLanguage().getMessage("SIGN.SALE.FORSALE");
+        lines[0] = ChatColor.GREEN + secuboid.getLanguage().getMessage("SIGN.SALE.FORSALE");
         lines[1] = ChatColor.GREEN + land.getName();
         lines[2] = "";
         lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price);
@@ -178,30 +183,25 @@ public class EcoSign {
      * @param tenantName the tenant name
      * @throws SignException the sign exception
      */
-    public void createSignForRent(double price, int renew,
-                                  boolean autoRenew, String tenantName) throws SignException {
+    public void createSignForRent(double price, int renew, boolean autoRenew, String tenantName) throws SignException {
 
         String[] lines = new String[4];
 
         if (tenantName != null) {
-            lines[0] = ChatColor.RED
-                    + secuboid.getLanguage().getMessage("SIGN.RENT.RENTED");
+            lines[0] = ChatColor.RED + secuboid.getLanguage().getMessage("SIGN.RENT.RENTED");
             lines[1] = ChatColor.RED + tenantName;
         } else {
-            lines[0] = ChatColor.GREEN
-                    + secuboid.getLanguage().getMessage("SIGN.RENT.FORRENT");
+            lines[0] = ChatColor.GREEN + secuboid.getLanguage().getMessage("SIGN.RENT.FORRENT");
             lines[1] = ChatColor.GREEN + land.getName();
         }
 
         if (autoRenew) {
-            lines[2] = ChatColor.BLUE
-                    + secuboid.getLanguage().getMessage("SIGN.RENT.AUTORENEW");
+            lines[2] = ChatColor.BLUE + secuboid.getLanguage().getMessage("SIGN.RENT.AUTORENEW");
         } else {
             lines[2] = "";
         }
 
-        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price)
-                + "/" + renew;
+        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price) + "/" + renew;
 
         createSign(lines);
     }
@@ -233,10 +233,9 @@ public class EcoSign {
         // Determinate material
         Material mat;
         if (isWallSign) {
-
-            mat = Material.WALL_SIGN;
+            mat = Material.getMaterial(signPrefix + WALL_SIGN_SUFFIX);
         } else {
-            mat = Material.SIGN_POST;
+            mat = Material.getMaterial(signPrefix + SIGN_SUFFIX);
         }
 
         // Create sign
@@ -250,7 +249,7 @@ public class EcoSign {
         }
 
         // Set facing
-        ((org.bukkit.material.Sign) sign.getData()).setFacingDirection(facing);
+        ((Directional) sign.getData()).setFacing(facing);
 
         sign.update();
     }
@@ -274,12 +273,12 @@ public class EcoSign {
         block.getChunk().load();
 
         // Remove only if it is a sign;
-        if (block.getType() == Material.SIGN_POST
-                || block.getType() == Material.WALL_SIGN) {
+        if (Sign.class.isAssignableFrom(block.getType().data)) {
             block.setType(Material.AIR);
 
-            //Drop item
-            oldSignLocation.getWorld().dropItem(oldSignLocation, new ItemStack(Material.SIGN, 1));
+            // Drop item
+            oldSignLocation.getWorld().dropItem(oldSignLocation,
+                    new ItemStack(Material.getMaterial(signPrefix + SIGN_SUFFIX), 1));
         }
     }
 
@@ -360,5 +359,4 @@ public class EcoSign {
 
         return facing;
     }
-
 }

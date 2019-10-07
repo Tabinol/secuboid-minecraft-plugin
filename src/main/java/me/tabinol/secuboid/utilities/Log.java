@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.utilities;
 
-import org.bukkit.Bukkit;
-
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**

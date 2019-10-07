@@ -41,6 +41,9 @@ import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.data.type.Furnace;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -61,6 +64,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -284,7 +288,7 @@ public class PlayerListener extends CommonListener implements Listener {
 
             // For economy (buy or rent/unrent)
         } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
-                && (ml == Material.SIGN_POST || ml == Material.WALL_SIGN)) {
+                && Sign.class.isAssignableFrom(ml.data)) {
 
             RealLand trueLand = secuboid.getLands().getLand(loc);
 
@@ -313,21 +317,21 @@ public class PlayerListener extends CommonListener implements Listener {
                     || (action == Action.RIGHT_CLICK_BLOCK
                     && isDoor(ml) && !checkPermission(land, player, PermissionList.USE_DOOR.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK
-                    && (ml == Material.STONE_BUTTON || ml == Material.WOOD_BUTTON)
+                    && ml.name().endsWith(BUTTON_SUFFIX)
                     && !checkPermission(land, player, PermissionList.USE_BUTTON.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.LEVER
                     && !checkPermission(land, player, PermissionList.USE_LEVER.getPermissionType()))
-                    || (action == Action.PHYSICAL && (ml == Material.WOOD_PLATE || ml == Material.STONE_PLATE)
+                    || (action == Action.PHYSICAL && ml.name().endsWith(PRESSURE_PLATE_SUFFIX)
                     && !checkPermission(land, player, PermissionList.USE_PRESSUREPLATE.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.TRAPPED_CHEST
                     && !checkPermission(land, player, PermissionList.USE_TRAPPEDCHEST.getPermissionType()))
                     || (action == Action.PHYSICAL && ml == Material.STRING
                     && !checkPermission(land, player, PermissionList.USE_STRING.getPermissionType()))
-                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.MOB_SPAWNER
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.SPAWNER
                     && !checkPermission(land, player, PermissionList.USE_MOBSPAWNER.getPermissionType()))
-                    || (action == Action.RIGHT_CLICK_BLOCK && (ml == Material.DAYLIGHT_DETECTOR || ml == Material.DAYLIGHT_DETECTOR_INVERTED)
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.DAYLIGHT_DETECTOR
                     && !checkPermission(land, player, PermissionList.USE_LIGHTDETECTOR.getPermissionType()))
-                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.ENCHANTMENT_TABLE
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.ENCHANTING_TABLE
                     && !checkPermission(land, player, PermissionList.USE_ENCHANTTABLE.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.ANVIL
                     && !checkPermission(land, player, PermissionList.USE_ANVIL.getPermissionType()))) {
@@ -342,11 +346,11 @@ public class PlayerListener extends CommonListener implements Listener {
                     && !checkPermission(land, player, PermissionList.OPEN_CHEST.getPermissionType()))
                     || (ml == Material.ENDER_CHEST
                     && !checkPermission(land, player, PermissionList.OPEN_ENDERCHEST.getPermissionType()))
-                    || (ml == Material.WORKBENCH
+                    || (ml == Material.CRAFTING_TABLE
                     && !checkPermission(land, player, PermissionList.OPEN_CRAFT.getPermissionType()))
                     || (ml == Material.BREWING_STAND
                     && !checkPermission(land, player, PermissionList.OPEN_BREW.getPermissionType()))
-                    || ((ml == Material.FURNACE || ml == Material.BURNING_FURNACE)
+                    || (Furnace.class.isAssignableFrom(ml.data)
                     && !checkPermission(land, player, PermissionList.OPEN_FURNACE.getPermissionType()))
                     || (ml == Material.BEACON
                     && !checkPermission(land, player, PermissionList.OPEN_BEACON.getPermissionType()))
@@ -379,7 +383,7 @@ public class PlayerListener extends CommonListener implements Listener {
                 // For head place fix (do not spawn a wither)
             } else if (player.getEquipment().getItemInMainHand() != null
                     && action == Action.RIGHT_CLICK_BLOCK
-                    && player.getEquipment().getItemInMainHand().getType() == Material.SKULL_ITEM
+                    && Rotatable.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)
                     && (land.isBanned(event.getPlayer())
                     || !checkPermission(land, event.getPlayer(), PermissionList.BUILD_PLACE.getPermissionType()))) {
                 messagePermission(player);
@@ -579,14 +583,17 @@ public class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+    public void onEntityPickupItem(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            final Player player = (Player) event.getEntity();
 
-        if (!playerConf.get(event.getPlayer()).isAdminMode()) {
-            Land land = secuboid.getLands().getLandOrOutsideArea(event.getPlayer().getLocation());
+            if (!playerConf.get(player).isAdminMode()) {
+                Land land = secuboid.getLands().getLandOrOutsideArea(player.getLocation());
 
-            if (!checkPermission(land, event.getPlayer(), PermissionList.PICKUP.getPermissionType())) {
-                messagePermission(event.getPlayer());
-                event.setCancelled(true);
+                if (!checkPermission(land, player, PermissionList.PICKUP.getPermissionType())) {
+                    messagePermission(player);
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -720,7 +727,7 @@ public class PlayerListener extends CommonListener implements Listener {
         if (event.getEntity() instanceof Player
                 && playerConf.get(player = (Player) event.getEntity()) != null // Citizens bugfix
                 && ((land != null && land.isBanned(player))
-                || (matFrom == Material.SOIL && matTo == Material.DIRT
+                || (matFrom == Material.FARMLAND && matTo == Material.DIRT
                 && !checkPermission(land, player, PermissionList.CROP_TRAMPLE.getPermissionType())))) {
             event.setCancelled(true);
         }

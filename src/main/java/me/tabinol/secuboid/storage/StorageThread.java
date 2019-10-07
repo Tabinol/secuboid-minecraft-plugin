@@ -84,12 +84,6 @@ public class StorageThread extends Thread {
 
         UUID landUUID;
         int landGenealogy;
-
-        NameGenealogy(UUID landUUID, int landGenealogy) {
-
-            this.landUUID = landUUID;
-            this.landGenealogy = landGenealogy;
-        }
     }
 
     /**

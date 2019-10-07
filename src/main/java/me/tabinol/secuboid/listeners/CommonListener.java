@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.listeners;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.FlagList;
@@ -27,38 +28,26 @@ import me.tabinol.secuboid.utilities.StringChanges;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Openable;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-
-import java.util.EnumSet;
 
 /**
  * Common methods for Listeners
  */
 class CommonListener {
 
+    static final String BUTTON_SUFFIX = "_BUTTON";
+    static final String PRESSURE_PLATE_SUFFIX = "_PRESSURE_PLATE";
+
     final Secuboid secuboid;
-    private static final EnumSet<Material> doors = EnumSet.noneOf(Material.class);
 
     CommonListener(Secuboid secuboid) {
         this.secuboid = secuboid;
-
-        // Adds doors
-        doors.add(Material.WOODEN_DOOR);
-        doors.add(Material.TRAP_DOOR);
-        doors.add(Material.FENCE_GATE);
-        doors.add(Material.SPRUCE_DOOR);
-        doors.add(Material.SPRUCE_FENCE_GATE);
-        doors.add(Material.BIRCH_DOOR);
-        doors.add(Material.BIRCH_FENCE_GATE);
-        doors.add(Material.JUNGLE_DOOR);
-        doors.add(Material.JUNGLE_FENCE_GATE);
-        doors.add(Material.ACACIA_DOOR);
-        doors.add(Material.ACACIA_FENCE_GATE);
-        doors.add(Material.DARK_OAK_DOOR);
-        doors.add(Material.DARK_OAK_FENCE_GATE);
     }
 
     /**
@@ -79,7 +68,8 @@ class CommonListener {
      * @param player the player
      */
     void messagePermission(Player player) {
-        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
+        player.sendMessage(
+                ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
     }
 
     /**
@@ -95,8 +85,7 @@ class CommonListener {
         // Check if the damager is a player
         if (entity instanceof Player) {
             return (Player) entity;
-        } else if (entity instanceof Projectile
-                && entity.getType() != EntityType.EGG
+        } else if (entity instanceof Projectile && entity.getType() != EntityType.EGG
                 && entity.getType() != EntityType.SNOWBALL) {
             damagerProjectile = (Projectile) entity;
             if (damagerProjectile.getShooter() instanceof Player) {
@@ -127,7 +116,8 @@ class CommonListener {
      * @return true if the sign is attached
      */
     private boolean hasEcoSign(Block block, Location ecoSignLoc) {
-        return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc) && block.getRelative(BlockFace.UP).getType() == Material.SIGN_POST)
+        return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc)
+                && Sign.class.isAssignableFrom(block.getRelative(BlockFace.UP).getType().data))
                 || isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)
                 || isEcoSignAttached(block, BlockFace.SOUTH, ecoSignLoc)
                 || isEcoSignAttached(block, BlockFace.EAST, ecoSignLoc)
@@ -136,12 +126,13 @@ class CommonListener {
 
     private boolean isEcoSignAttached(Block block, BlockFace face, Location ecoSignLoc) {
         Block checkBlock = block.getRelative(face);
-        return checkBlock.getLocation().equals(ecoSignLoc) && checkBlock.getType() == Material.WALL_SIGN
-                && ((org.bukkit.material.Sign) checkBlock.getState().getData()).getFacing() == face;
+        return checkBlock.getLocation().equals(ecoSignLoc)
+                && checkBlock.getType().name().endsWith(EcoSign.WALL_SIGN_SUFFIX)
+                && ((Directional) checkBlock.getState().getData()).getFacing() == face;
     }
 
     boolean isDoor(Material material) {
-        return doors.contains(material);
+        return Openable.class.isAssignableFrom(material.data);
     }
 
     /**
@@ -156,11 +147,12 @@ class CommonListener {
 
         // Check for land spawn
         if (land.getLandType() == Land.LandType.REAL) {
-            if (!(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString()).isEmpty()
-                    && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+            if (!(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString())
+                    .isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
                 return loc;
             }
-            secuboid.getLog().warning("Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
+            secuboid.getLog().warning(
+                    "Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
             return null;
         }
 

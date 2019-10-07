@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.lands;
 
-import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
@@ -27,18 +26,12 @@ import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static me.tabinol.secuboid.lands.InitLands.WORLD;
 
 /**
  * Tests for lands.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Secuboid.class)
 public class LandsTest {
 
     private static final String TEST_CUBOID = "testcuboid";

@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.lands;
 
-import me.tabinol.secuboid.FakePlayer;
+import me.tabinol.secuboid.bukkit.FakePlayer;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
@@ -28,9 +28,6 @@ import me.tabinol.secuboid.playercontainer.*;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.UUID;
 
@@ -42,8 +39,6 @@ import static org.junit.Assert.assertTrue;
  * Test permissions and flags.
  * Created by Tabinol on 2017-02-08.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Secuboid.class)
 public class LandPermissionsFlagsTest {
 
     private static final String LAND_PARENT = "parent";

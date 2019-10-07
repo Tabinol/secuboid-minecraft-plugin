@@ -26,14 +26,18 @@ import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Log;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.TreeMap;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Init lands database and methods.
@@ -49,8 +53,9 @@ public class InitLands {
 
     public InitLands() {
         // Prepare Mock
-        PowerMockito.mockStatic(Secuboid.class);
+        //PowerMockito.mockStatic(Secuboid.class);
         secuboid = mock(Secuboid.class);
+        doNothing().when(secuboid).saveResource(anyString(), anyBoolean());
 
         // log
         Log log = mock(Log.class);
@@ -71,7 +76,7 @@ public class InitLands {
         PluginManager pm = mock(PluginManager.class);
         Server server = mock(Server.class);
         when(server.getPluginManager()).thenReturn(pm);
-        when(secuboid.getServer()).thenReturn(server);
+        doReturn(server).when(secuboid).getServer();
 
         // Lands
         lands = spy(new Lands(secuboid));
@@ -81,11 +86,11 @@ public class InitLands {
         TreeMap<String, WorldLand> outsideArea = new TreeMap<String, WorldLand>();
         worldLand = new WorldLand(secuboid, Config.GLOBAL);
         outsideArea.put(Config.GLOBAL, worldLand);
-        Whitebox.setInternalState(lands, "outsideArea", outsideArea);
+        //Whitebox.setInternalState(lands, "outsideArea", outsideArea);
 
         // defaultConfNoType
-        defaultConfNoType = new DefaultLand(secuboid, null);
-        Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
+        defaultConfNoType = new DefaultLand(secuboid);
+        //Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
 
         // Storage
         StorageThread storageThread = mock(StorageThread.class);

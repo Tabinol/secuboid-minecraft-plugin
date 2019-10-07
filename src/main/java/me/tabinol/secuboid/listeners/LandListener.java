@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.listeners;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 import me.tabinol.secuboid.Secuboid;

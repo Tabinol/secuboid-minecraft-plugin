@@ -236,7 +236,7 @@ public class WorldListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // Crop trample
-        } else if (matFrom == Material.SOIL && matTo == Material.DIRT
+        } else if (matFrom == Material.FARMLAND && matTo == Material.DIRT
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.CROP_TRAMPLE.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
         }
@@ -322,9 +322,9 @@ public class WorldListener extends CommonListener implements Listener {
         Material ml = event.getBlock().getType();
 
         // Liquid flow
-        if (((ml == Material.LAVA || ml == Material.STATIONARY_LAVA)
+        if ((ml == Material.LAVA
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.LAVA_FLOW.getFlagType()).getValueBoolean())
-                || ((ml == Material.WATER || ml == Material.STATIONARY_WATER)
+                || (ml == Material.WATER
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.WATER_FLOW.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
         }

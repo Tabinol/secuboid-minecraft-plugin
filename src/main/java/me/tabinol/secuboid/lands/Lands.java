@@ -41,7 +41,6 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.Location;
-import org.bukkit.plugin.PluginManager;
 
 /**
  * The Class Lands manager.
@@ -108,11 +107,6 @@ public class Lands {
     private final TreeMap<Type, DefaultLand> defaultConf;
 
     /**
-     * The plugin manager.
-     */
-    private final PluginManager pm;
-
-    /**
      * The approve list.
      */
     private final ApproveList approveList;
@@ -136,7 +130,6 @@ public class Lands {
 
         this.secuboid = secuboid;
         areaList = new AreaMap[4];
-        pm = secuboid.getServer().getPluginManager();
 
         for (int i = 0; i < 4; i++) {
             areaList[i] = new AreaMap();
@@ -315,7 +308,7 @@ public class Lands {
         }
 
         // Call Land Event and check if it is cancelled
-        pm.callEvent(landEvent);
+        secuboid.getServer().getPluginManager().callEvent(landEvent);
 
         if (landEvent.isCancelled()) {
             return false;

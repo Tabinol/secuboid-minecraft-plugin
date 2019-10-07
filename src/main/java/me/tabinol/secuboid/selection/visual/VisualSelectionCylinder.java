@@ -86,7 +86,6 @@ public class VisualSelectionCylinder implements VisualSelection {
         return isCollision;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void removeSelection() {
         changedBlocks.resetBlocks();

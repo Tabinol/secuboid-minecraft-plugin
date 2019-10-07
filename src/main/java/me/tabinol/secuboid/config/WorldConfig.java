@@ -126,7 +126,7 @@ public class WorldConfig {
      * @return the land default conf
      */
     private DefaultLand getLandDefaultConf() {
-        DefaultLand dl = new DefaultLand(secuboid, null);
+        DefaultLand dl = new DefaultLand(secuboid);
         landModify(dl, landDefault, "ContainerPermissions", "ContainerFlags");
         return dl;
     }
@@ -151,7 +151,7 @@ public class WorldConfig {
         for (Type type : secuboid.getTypes().getTypes()) {
             ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
             if (typeConf != null) {
-                DefaultLand dl = new DefaultLand(secuboid, type);
+                DefaultLand dl = new DefaultLand(secuboid);
                 defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
                 landModify(dl, typeConf, "ContainerPermissions", "ContainerFlags");
                 defaultConf.put(type, dl);

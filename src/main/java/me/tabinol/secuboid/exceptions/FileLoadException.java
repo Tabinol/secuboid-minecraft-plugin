@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.exceptions;
 
-import java.util.logging.Level;
-
 import me.tabinol.secuboid.Secuboid;
 
 /**

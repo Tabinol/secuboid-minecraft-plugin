@@ -27,7 +27,7 @@ import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -68,7 +68,7 @@ public class CommandSale extends CommandExec {
         EcoSign ecoSign;
 
         // Check for sign in hand
-        if (player.getGameMode() != GameMode.CREATIVE && player.getEquipment().getItemInMainHand().getType() != Material.SIGN) {
+        if (player.getGameMode() != GameMode.CREATIVE && !Sign.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)) {
             throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
         }
 

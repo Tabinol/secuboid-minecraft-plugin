@@ -16,15 +16,38 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid;
+package me.tabinol.secuboid.bukkit;
 
-import org.bukkit.*;
+import org.bukkit.Achievement;
+import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Note;
+import org.bukkit.Particle;
+import org.bukkit.Server;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.Statistic;
+import org.bukkit.WeatherType;
+import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.*;
@@ -33,18 +56,21 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
 import java.util.*;
 
 /**
- * Implements Bukkit player class (fake player for tests).
- * Created by Tabinol on 2017-02-08.
+ * Implements Bukkit player class (fake player for tests). Created by Tabinol on
+ * 2017-02-08.
  */
 @SuppressWarnings("deprecation")
 public class FakePlayer implements Player {
@@ -245,11 +271,6 @@ public class FakePlayer implements Player {
     @Override
     public boolean sendChunkChange(Location location, int i, int i1, int i2, byte[] bytes) {
         return false;
-    }
-
-    @Override
-    public void sendBlockChange(Location location, int i, byte b) {
-
     }
 
     @Override
@@ -490,11 +511,6 @@ public class FakePlayer implements Player {
     @Override
     public boolean isBanned() {
         return false;
-    }
-
-    @Override
-    public void setBanned(boolean b) {
-
     }
 
     @Override
@@ -948,7 +964,8 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5) {
+    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4,
+            double v5) {
 
     }
 
@@ -958,7 +975,8 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, T t) {
+    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4,
+            double v5, T t) {
 
     }
 
@@ -968,17 +986,20 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6) {
+    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5,
+            double v6) {
 
     }
 
     @Override
-    public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3, T t) {
+    public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2,
+            double v3, T t) {
 
     }
 
     @Override
-    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, T t) {
+    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4,
+            double v5, double v6, T t) {
 
     }
 
@@ -1128,27 +1149,12 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public List<Block> getLineOfSight(HashSet<Byte> hashSet, int i) {
-        return null;
-    }
-
-    @Override
     public List<Block> getLineOfSight(Set<Material> set, int i) {
         return null;
     }
 
     @Override
-    public Block getTargetBlock(HashSet<Byte> hashSet, int i) {
-        return null;
-    }
-
-    @Override
     public Block getTargetBlock(Set<Material> set, int i) {
-        return null;
-    }
-
-    @Override
-    public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hashSet, int i) {
         return null;
     }
 
@@ -1193,17 +1199,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public int _INVALID_getLastDamage() {
-        return 0;
-    }
-
-    @Override
     public void setLastDamage(double v) {
-
-    }
-
-    @Override
-    public void _INVALID_setLastDamage(int i) {
 
     }
 
@@ -1343,17 +1339,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public void _INVALID_damage(int i) {
-
-    }
-
-    @Override
     public void damage(double v, Entity entity) {
-
-    }
-
-    @Override
-    public void _INVALID_damage(int i, Entity entity) {
 
     }
 
@@ -1363,17 +1349,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public int _INVALID_getHealth() {
-        return 0;
-    }
-
-    @Override
     public void setHealth(double v) {
-
-    }
-
-    @Override
-    public void _INVALID_setHealth(int i) {
 
     }
 
@@ -1383,17 +1359,7 @@ public class FakePlayer implements Player {
     }
 
     @Override
-    public int _INVALID_getMaxHealth() {
-        return 0;
-    }
-
-    @Override
     public void setMaxHealth(double v) {
-
-    }
-
-    @Override
-    public void _INVALID_setMaxHealth(int i) {
 
     }
 
@@ -1515,5 +1481,270 @@ public class FakePlayer implements Player {
     @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> aClass, Vector vector) {
         return null;
+    }
+
+    @Override
+    public boolean hasCooldown(Material material) {
+        return false;
+    }
+
+    @Override
+    public int getCooldown(Material material) {
+        return 0;
+    }
+
+    @Override
+    public void setCooldown(Material material, int ticks) {
+
+    }
+
+    @Override
+    public boolean sleep(Location location, boolean force) {
+        return false;
+    }
+
+    @Override
+    public void wakeup(boolean setSpawnLocation) {
+
+    }
+
+    @Override
+    public Location getBedLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean discoverRecipe(NamespacedKey recipe) {
+        return false;
+    }
+
+    @Override
+    public int discoverRecipes(Collection<NamespacedKey> recipes) {
+        return 0;
+    }
+
+    @Override
+    public boolean undiscoverRecipe(NamespacedKey recipe) {
+        return false;
+    }
+
+    @Override
+    public int undiscoverRecipes(Collection<NamespacedKey> recipes) {
+        return 0;
+    }
+
+    @Override
+    public Entity getShoulderEntityLeft() {
+        return null;
+    }
+
+    @Override
+    public void setShoulderEntityLeft(Entity entity) {
+
+    }
+
+    @Override
+    public Entity getShoulderEntityRight() {
+        return null;
+    }
+
+    @Override
+    public void setShoulderEntityRight(Entity entity) {
+
+    }
+
+    @Override
+    public Block getTargetBlockExact(int maxDistance) {
+        return null;
+    }
+
+    @Override
+    public Block getTargetBlockExact(int maxDistance, FluidCollisionMode fluidCollisionMode) {
+        return null;
+    }
+
+    @Override
+    public RayTraceResult rayTraceBlocks(double maxDistance) {
+        return null;
+    }
+
+    @Override
+    public RayTraceResult rayTraceBlocks(double maxDistance, FluidCollisionMode fluidCollisionMode) {
+        return null;
+    }
+
+    @Override
+    public boolean isSwimming() {
+        return false;
+    }
+
+    @Override
+    public void setSwimming(boolean swimming) {
+
+    }
+
+    @Override
+    public boolean isRiptiding() {
+        return false;
+    }
+
+    @Override
+    public <T> T getMemory(MemoryKey<T> memoryKey) {
+        return null;
+    }
+
+    @Override
+    public <T> void setMemory(MemoryKey<T> memoryKey, T memoryValue) {
+
+    }
+
+    @Override
+    public double getAbsorptionAmount() {
+        return 0;
+    }
+
+    @Override
+    public void setAbsorptionAmount(double amount) {
+
+    }
+
+    @Override
+    public double getHeight() {
+        return 0;
+    }
+
+    @Override
+    public double getWidth() {
+        return 0;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return null;
+    }
+
+    @Override
+    public void setRotation(float yaw, float pitch) {
+
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return false;
+    }
+
+    @Override
+    public void setPersistent(boolean persistent) {
+
+    }
+
+    @Override
+    public List<Entity> getPassengers() {
+        return null;
+    }
+
+    @Override
+    public boolean addPassenger(Entity passenger) {
+        return false;
+    }
+
+    @Override
+    public boolean removePassenger(Entity passenger) {
+        return false;
+    }
+
+    @Override
+    public PistonMoveReaction getPistonMoveReaction() {
+        return null;
+    }
+
+    @Override
+    public BlockFace getFacing() {
+        return null;
+    }
+
+    @Override
+    public Pose getPose() {
+        return null;
+    }
+
+    @Override
+    public PersistentDataContainer getPersistentDataContainer() {
+        return null;
+    }
+
+    @Override
+    public String getPlayerListHeader() {
+        return null;
+    }
+
+    @Override
+    public String getPlayerListFooter() {
+        return null;
+    }
+
+    @Override
+    public void setPlayerListHeader(String header) {
+
+    }
+
+    @Override
+    public void setPlayerListFooter(String footer) {
+
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(String header, String footer) {
+
+    }
+
+    @Override
+    public void sendBlockChange(Location loc, BlockData block) {
+
+    }
+
+    @Override
+    public void sendSignChange(Location loc, String[] lines, DyeColor dyeColor) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public void hidePlayer(Plugin plugin, Player player) {
+
+    }
+
+    @Override
+    public void showPlayer(Plugin plugin, Player player) {
+
+    }
+
+    @Override
+    public void setResourcePack(String url, byte[] hash) {
+
+    }
+
+    @Override
+    public AdvancementProgress getAdvancementProgress(Advancement advancement) {
+        return null;
+    }
+
+    @Override
+    public int getClientViewDistance() {
+        return 0;
+    }
+
+    @Override
+    public String getLocale() {
+        return null;
+    }
+
+    @Override
+    public void updateCommands() {
+
+    }
+
+    @Override
+    public void openBook(ItemStack book) {
+
     }
 }

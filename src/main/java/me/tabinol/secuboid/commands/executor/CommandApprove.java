@@ -140,7 +140,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             int removeId = approve.getRemovedAreaId();
             Area newArea = approve.getNewArea();
             RealLand parent = approve.getParent();
-            Double price = approve.getPrice();
+            // Double price = approve.getPrice();
             PlayerContainer owner = approve.getOwner();
 
             if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {

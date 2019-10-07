@@ -19,7 +19,6 @@
 package me.tabinol.secuboid.lands;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.types.Type;
 import org.bukkit.entity.Player;
 
 /**
@@ -29,10 +28,8 @@ import org.bukkit.entity.Player;
 public class DefaultLand implements Land {
 
     private final LandPermissionsFlags landPermissionsFlags;
-    private final Type type;
 
-    public DefaultLand(Secuboid secuboid, Type type) {
-        this.type = type;
+    public DefaultLand(Secuboid secuboid) {
         landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
     }
 

@@ -307,8 +307,8 @@ public final class RealLand implements Land, Comparable<RealLand> {
         doSave();
 
         // Start Event
-        secuboid.getServer().getPluginManager().callEvent(new LandModifyEvent(this,
-                LandModifyEvent.LandModifyReason.AREA_ADD, area));
+        secuboid.getServer().getPluginManager() /* .callEvent(new LandModifyEvent(this,
+                LandModifyEvent.LandModifyReason.AREA_ADD, area)) */;
     }
 
     /**

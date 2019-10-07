@@ -176,7 +176,7 @@ public class StorageFlat implements Storage {
     private void loadLand(File file) {
 
         NewInstance newInstance = secuboid.getNewInstance();
-        int version;
+        // int version;
         ConfLoaderFlat cf = null;
         UUID uuid;
         String landName;

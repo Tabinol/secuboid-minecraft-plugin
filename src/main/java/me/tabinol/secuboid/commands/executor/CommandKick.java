@@ -64,7 +64,6 @@ public class CommandKick extends CommandExec {
             throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.PLAYERNULL");
         }
 
-        @SuppressWarnings("deprecation")
         Player playerKick = secuboid.getServer().getPlayer(playerKickName);
 
         // Player not in land?

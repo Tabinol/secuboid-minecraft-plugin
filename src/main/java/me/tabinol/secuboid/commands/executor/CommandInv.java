@@ -27,7 +27,6 @@ import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.InventoryStorage;
-import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -117,7 +116,6 @@ public class CommandInv extends CommandExec {
         }
 
         // Check for player
-        @SuppressWarnings("deprecation")
         Player player = Bukkit.getPlayer(playerName);
 
         if (player == null) {

@@ -26,7 +26,6 @@ import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Log;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.TreeMap;
 
@@ -53,9 +52,10 @@ public class InitLands {
 
     public InitLands() {
         // Prepare Mock
-        //PowerMockito.mockStatic(Secuboid.class);
+        // PowerMockito.mockStatic(Secuboid.class);
         secuboid = mock(Secuboid.class);
         doNothing().when(secuboid).saveResource(anyString(), anyBoolean());
+        doNothing().when((Secuboid) secuboid).saveResource(anyString(), anyBoolean());
 
         // log
         Log log = mock(Log.class);
@@ -86,11 +86,11 @@ public class InitLands {
         TreeMap<String, WorldLand> outsideArea = new TreeMap<String, WorldLand>();
         worldLand = new WorldLand(secuboid, Config.GLOBAL);
         outsideArea.put(Config.GLOBAL, worldLand);
-        //Whitebox.setInternalState(lands, "outsideArea", outsideArea);
+        // Whitebox.setInternalState(lands, "outsideArea", outsideArea);
 
         // defaultConfNoType
         defaultConfNoType = new DefaultLand(secuboid);
-        //Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
+        // Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
 
         // Storage
         StorageThread storageThread = mock(StorageThread.class);

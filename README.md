@@ -6,4 +6,4 @@ Lands and grief protection plugin for Minecraft (Factoid fork)
 
 [English](https://bitbucket.org/Tabinol/secuboid/wiki/Home)
 
-[Français](https://bitbucket.org/Tabinol/secuboid/wiki/Home_fr)
+[FranÃ§ais](https://bitbucket.org/Tabinol/secuboid/wiki/Home_fr)

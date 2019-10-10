@@ -20,11 +20,6 @@ package me.tabinol.secuboid.commands;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.Set;
 import static org.junit.Assert.fail;
 
@@ -54,25 +49,6 @@ public class CommandsTest {
 				fail("The class \"" + classUnit.getCanonicalName()
 						+ "\" is not declared in class \"CommandClassList\".");
 			}
-		}
-
-		// TODO Only a test to remove
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		Enumeration<URL> resources = classLoader.getResources(".");
-		while (resources.hasMoreElements()) {
-			URL resource = resources.nextElement();
-			System.out.println(resource.getFile());
-			Path path = Paths.get(resource.getFile().replaceFirst("^/", ""));
-			Files.find(path, Integer.MAX_VALUE,
-					(filePath, fileAttr) -> filePath.toString().endsWith(".class") && fileAttr.isRegularFile())
-					.forEach(file -> {
-						try {
-							System.out.println(Class.forName(file.toString()));
-						} catch (ClassNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
 		}
 	}
 }

@@ -22,6 +22,8 @@ pipelines:
           script:
             - bash pipelines/configure-maven.sh
             - mvn --batch-mode source:jar javadoc:jar javadoc:javadoc deploy
+          artifacts: # defining the artifacts to be passed to each future step.
+            - target/**
       - step:
           name: Javadoc deploy
           image: cschlosser/alpine-lftps

@@ -42,7 +42,7 @@
         <repository>
             <id>tabinol-maven-repo</id>
             <name>tabinol maven repo</name>
-            <url>https://bitbucket.org/Tabinol/tabinol-maven-repo/raw/master/</url>
+            <url>https://repo.tabinol.me/</url>
         </repository>
     </repositories>
 
@@ -236,14 +236,6 @@
     </dependencies>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>ar.com.synergian</groupId>
-                <artifactId>wagon-git</artifactId>
-                <version>0.2.5</version>
-            </extension>
-        </extensions>
-
         <resources>
             <resource>
                 <targetPath>.</targetPath>
@@ -283,8 +275,14 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+            </extension>
+        </extensions>    
     </build>
 
     <distributionManagement>
@@ -292,7 +290,7 @@
             <uniqueVersion>true</uniqueVersion>
             <id>tabinol-maven-repo</id>
             <name>tabinol maven repo</name>
-            <url>git:master://git@bitbucket.org:Tabinol/tabinol-maven-repo.git</url>
+            <url>ftps://ftp.tabinol.me/repo</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>

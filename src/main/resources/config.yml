@@ -46,8 +46,8 @@ Lands:
   AllowCollision: approve            # true, approve, false
 
   LandChat: true                     # Allow private chat in lands (=, < and >)
-  SpectatorIsVanish: true            # true, Spectator players are not show in 
-                                     # land players list 
+  SpectatorIsVanish: true            # true, Spectator players are not shown in 
+                                     # land players list
   ApproveNotifyTime: 24002           # Time to notify for Approval (in ticks)
                                      # or 0 for disabling
   SelectAutoCancel: 12000            # Time before auto cancel a selection
@@ -64,12 +64,20 @@ Lands:
   DefaultNonSelectedMaterials:
     - BEDROCK
     - DIRT
-    - ENDER_STONE
+    - END_STONE
     - GRASS
-    - LEAVES
-    - LEAVES_2
-    - LOG
-    - LOG_2
+    - ACACIA_LEAVES
+    - BIRCH_LEAVES
+    - DARK_OAK_LEAVES
+    - JUNGLE_LEAVES
+    - OAK_LEAVES
+    - SPRUCE_LEAVES
+    - ACACIA_LOG
+    - BIRCH_LOG
+    - DARK_OAK_LOG
+    - JUNGLE_LOG
+    - OAK_LOG
+    - SPRUCE_LOG
     - NETHERRACK
     - SAND
     - SOUL_SAND

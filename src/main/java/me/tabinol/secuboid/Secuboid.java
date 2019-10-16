@@ -142,6 +142,7 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        log = new Log(getLogger());
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
@@ -154,7 +155,6 @@ public class Secuboid extends JavaPlugin {
             inventoryConf = new InventoryConfig(this);
         }
 
-        log = new Log(getLogger());
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {

@@ -5,6 +5,7 @@ description: "Lands and grief protection plugin"
 authors: [Tabinol, Kaz00]
 depend: [Vault]
 softdepend: [WorldEdit, Essentials, VanishNoPacket, SuperVanish, PremiumVanish]
+api-version: 1.14
 commands:
    secuboid:
       description: Secuboid Command

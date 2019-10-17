@@ -24,9 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.InventoryConfig;
-import me.tabinol.secuboid.lands.Land;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
@@ -36,6 +33,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.InventoryConfig;
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The inventory storage class.
@@ -151,51 +152,53 @@ public class InventoryStorage {
         }
 
         // Save Inventory
-        YamlConfiguration ConfigPlayerItemFile = new YamlConfiguration();
+        YamlConfiguration configPlayerItemFile = new YamlConfiguration();
         File playerItemFile = new File(file, "/" + filePreName + ".yml");
 
         try {
 
-            ConfigPlayerItemFile.set("Version", storageVersion);
+            configPlayerItemFile.set("Version", storageVersion);
 
             // Save Only ender chest (Death)
             if (enderChestOnly) {
-                ConfigPlayerItemFile.set("Level", 0);
-                ConfigPlayerItemFile.set("Exp", 0f);
-                ConfigPlayerItemFile.set("Health", player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                ConfigPlayerItemFile.set("FoodLevel", MAX_FOOD_LEVEL);
+                configPlayerItemFile.set("Level", 0);
+                configPlayerItemFile.set("Exp", 0f);
+                configPlayerItemFile.set("Health", player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                configPlayerItemFile.set("FoodLevel", MAX_FOOD_LEVEL);
 
                 ItemStack[] itemEnderChest = player.getEnderChest().getContents();
                 for (int t = 0; t < 4; t++) {
-                    ConfigPlayerItemFile.set("Armor." + t, new ItemStack(Material.AIR));
+                    configPlayerItemFile.set("Armor." + t, new ItemStack(Material.AIR));
                 }
                 for (int t = 0; t < itemEnderChest.length; t++) {
-                    ConfigPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
+                    configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
                 }
             } else {
 
                 // Save all
-                ConfigPlayerItemFile.set("Level", player.getLevel());
-                ConfigPlayerItemFile.set("Exp", player.getExp());
-                ConfigPlayerItemFile.set("Health", player.getHealth());
-                ConfigPlayerItemFile.set("FoodLevel", player.getFoodLevel());
+                configPlayerItemFile.set("Level", player.getLevel());
+                configPlayerItemFile.set("Exp", player.getExp());
+                configPlayerItemFile.set("Health", player.getHealth());
+                configPlayerItemFile.set("FoodLevel", player.getFoodLevel());
 
                 ItemStack[] itemListSave = player.getInventory().getContents();
                 ItemStack[] itemArmorSave = player.getInventory().getArmorContents();
                 ItemStack[] itemEnderChest = player.getEnderChest().getContents();
+                ItemStack itemOffhand = player.getInventory().getItemInOffHand();
                 for (int t = 0; t < itemListSave.length; t++) {
-                    ConfigPlayerItemFile.set("Slot." + t, itemListSave[t]);
+                    configPlayerItemFile.set("Slot." + t, itemListSave[t]);
                 }
                 for (int t = 0; t < itemArmorSave.length; t++) {
-                    ConfigPlayerItemFile.set("Armor." + t, itemArmorSave[t]);
+                    configPlayerItemFile.set("Armor." + t, itemArmorSave[t]);
                 }
                 for (int t = 0; t < itemEnderChest.length; t++) {
-                    ConfigPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
+                    configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
                 }
+                configPlayerItemFile.set("OffHand.0", itemOffhand);
 
                 // PotionsEffects
                 Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
-                ConfigurationSection effectSection = ConfigPlayerItemFile.createSection("PotionEffect");
+                ConfigurationSection effectSection = configPlayerItemFile.createSection("PotionEffect");
                 for (PotionEffect effect : activePotionEffects) {
                     ConfigurationSection effectSubSection = effectSection.createSection(effect.getType().getName());
                     effectSubSection.set("Duration", effect.getDuration());
@@ -204,7 +207,7 @@ public class InventoryStorage {
                 }
             }
 
-            ConfigPlayerItemFile.save(playerItemFile);
+            configPlayerItemFile.save(playerItemFile);
 
         } catch (IOException ex) {
             secuboid.getLog().severe("Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath());
@@ -288,10 +291,12 @@ public class InventoryStorage {
                 for (int t = 0; t < itemEnderChest.length; t++) {
                     itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t, new ItemStack(Material.AIR));
                 }
+                ItemStack itemOffhand = ConfigPlayerItemFile.getItemStack("OffHand.0", new ItemStack(Material.AIR));
 
                 player.getInventory().setContents(itemListLoad);
                 player.getInventory().setArmorContents(itemArmorLoad);
                 player.getEnderChest().setContents(itemEnderChest);
+                player.getInventory().setItemInOffHand(itemOffhand);
 
                 // PotionsEffects
                 removePotionEffects(player);

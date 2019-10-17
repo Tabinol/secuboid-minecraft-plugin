@@ -162,7 +162,8 @@ public class StorageFlat implements Storage {
             if (parent != null) {
                 land.setParent(parent);
             } else {
-                secuboid.getLog().severe("Error: The parent is not found for land: " + land);
+                secuboid.getLog().severe("Error: The parent is not found! [name=" + land.getName() 
+                    + ", uuid=" + land.getUUID() + ", parentUuid=" + entry.getValue() + "]");
             }
         }
         secuboid.getLog().info(loadedlands + " land(s) loaded.");
@@ -478,8 +479,8 @@ public class StorageFlat implements Storage {
             if (land.isForRent()) {
                 cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
                 cb.writeParam("RentPrice", land.getRentPrice());
-                cb.writeParam("ForRenew", land.getRentRenew());
-                cb.writeParam("ForAutoRenew", land.getRentAutoRenew() + "");
+                cb.writeParam("RentRenew", land.getRentRenew());
+                cb.writeParam("RentAutoRenew", land.getRentAutoRenew() + "");
                 cb.writeParam("Rented", land.isRented() + "");
                 if (land.isRented()) {
                     cb.writeParam("Tenant", land.getTenant().toFileFormat());

@@ -41,6 +41,12 @@ public class EcoScheduler extends BukkitRunnable {
 
     @Override
     public void run() {
+        if (secuboid.getConf().useEconomy()) {
+            runEcoTask();
+        }
+    }
+
+    private void runEcoTask() {
         PluginManager pm = secuboid.getServer().getPluginManager();
         long now = System.currentTimeMillis();
 

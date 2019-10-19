@@ -18,25 +18,33 @@
  */
 package me.tabinol.secuboid;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
 import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.config.players.PlayerConfig;
+import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
-import me.tabinol.secuboid.listeners.*;
+import me.tabinol.secuboid.listeners.ChatListener;
+import me.tabinol.secuboid.listeners.FlyCreativeListener;
+import me.tabinol.secuboid.listeners.InventoryListener;
+import me.tabinol.secuboid.listeners.LandListener;
+import me.tabinol.secuboid.listeners.PlayerListener;
+import me.tabinol.secuboid.listeners.PvpListener;
+import me.tabinol.secuboid.listeners.WorldListener;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playerscache.PlayersCache;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * The Class Secuboid.
@@ -178,8 +186,10 @@ public class Secuboid extends JavaPlugin {
         commandListener = new CommandListener(this);
         approveNotif = new ApproveNotif(this);
         approveNotif.runApproveNotifLater();
-        EcoScheduler ecoScheduler = new EcoScheduler(this);
-        ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
+        if (dependPlugin.getVaultEconomy() != null) {
+            EcoScheduler ecoScheduler = new EcoScheduler(this);
+            ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
+        }
         playersCache = new PlayersCache(this);
         playersCache.start();
         getServer().getPluginManager().registerEvents(worldListener, this);

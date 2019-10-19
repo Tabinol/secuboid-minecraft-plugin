@@ -33,97 +33,97 @@ import org.bukkit.entity.Player;
  */
 public class PlayerContainerPlayer implements PlayerContainer {
 
-    private final Secuboid secuboid;
-    private final UUID minecraftUUID;
-    private final String name;
+	private final Secuboid secuboid;
+	private final UUID minecraftUUID;
+	private final String name;
 
-    public PlayerContainerPlayer(Secuboid secuboid, UUID minecraftUUID) {
-	this.secuboid = secuboid;
-	name = "ID-" + minecraftUUID.toString();
-	this.minecraftUUID = minecraftUUID;
-    }
+	public PlayerContainerPlayer(Secuboid secuboid, UUID minecraftUUID) {
+		this.secuboid = secuboid;
+		name = "ID-" + minecraftUUID.toString();
+		this.minecraftUUID = minecraftUUID;
+	}
 
 	@Override
 	public boolean hasAccess(Player player, Land PCLand, Land testLand) {
 		return player != null && minecraftUUID.equals(player.getUniqueId());
 	}
 
-    @Override
-    public String getPrint() {
+	@Override
+	public String getPrint() {
 
-	StringBuilder sb = new StringBuilder();
-	String playerName = getPlayerName();
+		StringBuilder sb = new StringBuilder();
+		String playerName = getPlayerName();
 
-	sb.append(ChatColor.DARK_RED).append("P:");
+		sb.append(ChatColor.DARK_RED).append("P:");
 
-	if (playerName != null) {
-	    sb.append(ChatColor.WHITE).append(playerName);
-	} else {
-	    // Player never connected on the server, show UUID
-	    sb.append(ChatColor.DARK_GRAY).append(name);
+		if (playerName != null) {
+			sb.append(ChatColor.WHITE).append(playerName);
+		} else {
+			// Player never connected on the server, show UUID
+			sb.append(ChatColor.DARK_GRAY).append(name);
+		}
+
+		return sb.toString();
 	}
 
-	return sb.toString();
-    }
+	public String getPlayerName() {
 
-    public String getPlayerName() {
+		String playerName;
 
-	String playerName;
+		// Pass 1 get in Online players
+		Player player = Bukkit.getPlayer(minecraftUUID);
+		if (player != null) {
+			return player.getName();
+		}
 
-	// Pass 1 get in Online players
-	Player player = Bukkit.getPlayer(minecraftUUID);
-	if (player != null) {
-	    return player.getName();
+		// Pass 2 get from Secuboid cache
+		playerName = secuboid.getPlayersCache().getNameFromUUID(minecraftUUID);
+		if (playerName != null) {
+			return playerName;
+		}
+
+		// Pass 3 get from offline players
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
+		if (offlinePlayer != null) {
+			return offlinePlayer.getName();
+		}
+
+		return null;
 	}
 
-	// Pass 2 get from Secuboid cache
-	playerName = secuboid.getPlayersCache().getNameFromUUID(minecraftUUID);
-	if (playerName != null) {
-	    return playerName;
+	public UUID getMinecraftUUID() {
+		return minecraftUUID;
 	}
 
-	// Pass 3 get from offline players
-	OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
-	if (offlinePlayer != null) {
-	    return offlinePlayer.getName();
+	public Player getPlayer() {
+		return Bukkit.getPlayer(minecraftUUID);
 	}
 
-	return null;
-    }
-
-    public UUID getMinecraftUUID() {
-	return minecraftUUID;
-    }
-
-    public Player getPlayer() {
-	return Bukkit.getPlayer(minecraftUUID);
-    }
-
-    public OfflinePlayer getOfflinePlayer() {
-	return Bukkit.getOfflinePlayer(minecraftUUID);
-    }
-
-    @Override
-    public String getName() {
-	return name;
-    }
-
-    @Override
-    public PlayerContainerType getContainerType() {
-	return PlayerContainerType.PLAYER;
-    }
-
-    @Override
-    public String toFileFormat() {
-	return PlayerContainerType.PLAYER + ":" + name;
-    }
-
-    @Override
-    public int compareTo(PlayerContainer t) {
-	int result = PlayerContainerType.PLAYER.compareTo(t.getContainerType());
-	if (result != 0) {
-	    return result;
+	public OfflinePlayer getOfflinePlayer() {
+		return Bukkit.getOfflinePlayer(minecraftUUID);
 	}
-	return minecraftUUID.compareTo(((PlayerContainerPlayer) t).minecraftUUID);
-    }
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public PlayerContainerType getContainerType() {
+		return PlayerContainerType.PLAYER;
+	}
+
+	@Override
+	public String toFileFormat() {
+		return PlayerContainerType.PLAYER + ":" + name;
+	}
+
+	@Override
+	public int compareTo(PlayerContainer t) {
+		int result = PlayerContainerType.PLAYER.compareTo(t.getContainerType());
+		if (result != 0) {
+			return result;
+		}
+		return minecraftUUID.compareTo(((PlayerContainerPlayer) t).minecraftUUID);
+	}
 }

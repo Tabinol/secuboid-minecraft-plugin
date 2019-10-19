@@ -19,7 +19,6 @@
 package me.tabinol.secuboid;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;

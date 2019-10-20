@@ -306,6 +306,10 @@ public enum PermissionList {
      */
     CROP_TRAMPLE(true),
     /**
+     * The frost walker
+     */
+    FROST_WALKER(true),
+    /**
      * The god
      */
     GOD(false),

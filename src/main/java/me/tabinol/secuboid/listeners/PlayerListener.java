@@ -764,7 +764,9 @@ public class PlayerListener extends CommonListener implements Listener {
                 && playerConf.get(player = (Player) event.getEntity()) != null // Citizens bugfix
                 && ((land != null && land.isBanned(player))
                 || (matFrom == Material.FARMLAND && matTo == Material.DIRT
-                && !checkPermission(land, player, PermissionList.CROP_TRAMPLE.getPermissionType())))) {
+                && !checkPermission(land, player, PermissionList.CROP_TRAMPLE.getPermissionType()))
+                || (matFrom == Material.WATER && matTo == Material.FROSTED_ICE
+                && !checkPermission(land, player, PermissionList.FROST_WALKER.getPermissionType())))) {
             event.setCancelled(true);
         }
     }

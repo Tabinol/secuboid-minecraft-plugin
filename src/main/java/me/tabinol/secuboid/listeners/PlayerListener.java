@@ -18,6 +18,62 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.data.type.Furnace;
+import org.bukkit.block.data.type.Sign;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Hanging;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
+import org.bukkit.plugin.PluginManager;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
@@ -39,41 +95,6 @@ import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.Rotatable;
-import org.bukkit.block.data.type.Furnace;
-import org.bukkit.block.data.type.Sign;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
 /**
  * Players listener
@@ -334,7 +355,13 @@ public class PlayerListener extends CommonListener implements Listener {
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.ENCHANTING_TABLE
                     && !checkPermission(land, player, PermissionList.USE_ENCHANTTABLE.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.ANVIL
-                    && !checkPermission(land, player, PermissionList.USE_ANVIL.getPermissionType()))) {
+                    && !checkPermission(land, player, PermissionList.USE_ANVIL.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.COMPARATOR
+                    && !checkPermission(land, player, PermissionList.USE_COMPARATOR.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.REPEATER
+                    && !checkPermission(land, player, PermissionList.USE_REPEATER.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.NOTE_BLOCK
+                    && !checkPermission(land, player, PermissionList.USE_NOTEBLOCK.getPermissionType()))) {
 
                 if (action != Action.PHYSICAL) {
                     messagePermission(player);
@@ -488,16 +515,25 @@ public class PlayerListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (!playerConf.get(event.getPlayer()).isAdminMode()
-                && event.getRightClicked() instanceof ItemFrame) {
+        final Player player = event.getPlayer();
+        if (playerConf.get(event.getPlayer()).isAdminMode()) {
+            return;
+        }
 
-            Player player = event.getPlayer();
-            Land land = secuboid.getLands().getLandOrOutsideArea(event.getRightClicked().getLocation());
-
-            if (land.isBanned(player) || !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType())) {
-                messagePermission(player);
-                event.setCancelled(true);
-            }
+        final Land land = secuboid.getLands().getLandOrOutsideArea(event.getRightClicked().getLocation());
+        if (land.isBanned(player) || (event.getRightClicked() instanceof ItemFrame
+                && !checkPermission(land, player, PermissionList.BUILD_PLACE.getPermissionType()))
+                || (event.getRightClicked() instanceof Tameable
+                && !event.getPlayer().equals(((Tameable) event.getRightClicked()).getOwner()) 
+                && !checkPermission(land, player, PermissionList.TAME.getPermissionType()))
+                || (event.getRightClicked() instanceof Merchant
+                && !checkPermission(land, player, PermissionList.TRADE.getPermissionType()))
+                || (event.getRightClicked() instanceof StorageMinecart
+                && !checkPermission(land, player, PermissionList.OPEN_CHEST.getPermissionType()))
+                || (event.getRightClicked() instanceof Vehicle
+                && !checkPermission(land, player, PermissionList.USE_VEHICLE.getPermissionType()))) {
+            messagePermission(player);
+            event.setCancelled(true);
         }
     }
 
@@ -844,7 +880,9 @@ public class PlayerListener extends CommonListener implements Listener {
 
             Land land = secuboid.getLands().getLandOrOutsideArea(player.getLocation());
 
-            if (!checkPermission(land, player, PermissionList.EAT.getPermissionType())) {
+            if (!checkPermission(land, player, PermissionList.EAT.getPermissionType())
+                    || (event.getItem().getType() == Material.CHORUS_FRUIT)
+                    && !checkPermission(land, player, PermissionList.EAT_CHORUS_FRUIT.getPermissionType())) {
                 messagePermission(player);
                 event.setCancelled(true);
             }

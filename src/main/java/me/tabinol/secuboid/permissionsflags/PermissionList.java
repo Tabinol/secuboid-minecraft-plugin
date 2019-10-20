@@ -130,21 +130,45 @@ public enum PermissionList {
      */
     USE_STRING(true, "USE"),
     /**
-     * The use enchanting table *
+     * The use enchanting table.
      */
     USE_ENCHANTTABLE(true, "USE"),
     /**
-     * The use anvil *
+     * The use anvil.
      */
     USE_ANVIL(true, "USE"),
     /**
-     * The mob spawner *
+     * The mob spawner.
      */
     USE_MOBSPAWNER(true, "USE"),
     /**
-     * For daylight detector *
+     * For daylight detector.
      */
     USE_LIGHTDETECTOR(true, "USE"),
+    /**
+     * For comparator.
+     */
+    USE_COMPARATOR(true, "USE"),
+    /**
+     * For repeater.
+     */
+    USE_REPEATER(true, "USE"),
+    /**
+     * For note block.
+     */
+    USE_NOTEBLOCK(true, "USE"),
+    /**
+     * Use Vehicle (boat, minecart, ...)
+     */
+    USE_VEHICLE(true, "USE"),
+    /**
+     * For taming.
+     */
+    TAME(true),
+    /**
+     * For trading.
+     */
+    TRADE(true),
     /**
      * The animal kill.
      */
@@ -189,6 +213,10 @@ public enum PermissionList {
      * The eat.
      */
     EAT(true),
+    /**
+     * Eat a chorus fruit.
+     */
+    EAT_CHORUS_FRUIT(true),
     /**
      * The food heal.
      */

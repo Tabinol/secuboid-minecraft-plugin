@@ -18,15 +18,16 @@
  */
 package me.tabinol.secuboid.economy;
 
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandEconomyEvent;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Economy scheduler.
@@ -58,6 +59,12 @@ public class EcoScheduler extends BukkitRunnable {
             if (land.isRented() && nextPaymentTime < now) {
                 PlayerContainerPlayer tenant = land.getTenant();
                 OfflinePlayer offlineTenant = tenant.getOfflinePlayer();
+                
+                if (offlineTenant == null || !offlineTenant.hasPlayedBefore()) {
+                    secuboid.getLog().warning("Player " + tenant.getMinecraftUUID() + " not found in this server and cannot pay for the land "
+                            + land.getName() + ", UUID: " + land.getUUID() + ".");
+                    continue;
+                }
 
                 //Check if the tenant has enough money or time limit whit no auto renew
                 if (secuboid.getPlayerMoney().getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()

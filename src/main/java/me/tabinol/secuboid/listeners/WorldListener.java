@@ -21,12 +21,6 @@ package me.tabinol.secuboid.listeners;
 import java.util.Iterator;
 import java.util.List;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.permissionsflags.FlagList;
-import me.tabinol.secuboid.permissionsflags.FlagType;
-import me.tabinol.secuboid.permissionsflags.FlagValue;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -53,6 +47,13 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.FlagValue;
 
 /**
  * World listener
@@ -94,8 +95,12 @@ public class WorldListener extends CommonListener implements Listener {
         // Check for Explosion cancel
         if ((entityType == EntityType.CREEPER
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.CREEPER_EXPLOSION.getFlagType()).getValueBoolean())
-                || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT || entityType == EntityType.ENDER_CRYSTAL)
+                || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT)
                 && !land.getPermissionsFlags().getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType()).getValueBoolean())
+                || (entityType == EntityType.ENDER_CRYSTAL
+                && !land.getPermissionsFlags().getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
+                || (entityType == EntityType.FIREWORK
+                && !land.getPermissionsFlags().getFlagAndInherit(FlagList.FIREWORK_EXPLOSION.getFlagType()).getValueBoolean())
                 || !land.getPermissionsFlags().getFlagAndInherit(FlagList.EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
             if (entityType == EntityType.CREEPER) {
@@ -154,6 +159,16 @@ public class WorldListener extends CommonListener implements Listener {
                     case ENDER_DRAGON:
                         ExplodeBlocks(event, event.blockList(), FlagList.ENDERDRAGON_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), 4L, false);
+                        break;
+
+                    case ENDER_CRYSTAL:
+                        ExplodeBlocks(event, event.blockList(), FlagList.END_CRYSTAL_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 4L, false);
+                        break;
+
+                    case FIREWORK:
+                        ExplodeBlocks(event, event.blockList(), FlagList.FIREWORK_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 0L, false);
                         break;
 
                     default:

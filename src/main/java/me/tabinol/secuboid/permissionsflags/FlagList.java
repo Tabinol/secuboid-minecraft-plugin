@@ -50,6 +50,14 @@ public enum FlagList {
      */
     TNT_EXPLOSION(true),
     /**
+     * The end crystal explosion.
+     */
+    END_CRYSTAL_EXPLOSION(true),
+    /**
+     * The firework explosion.
+     */
+    FIREWORK_EXPLOSION(true),
+    /**
      * The creeper damage.
      */
     CREEPER_DAMAGE(true),
@@ -69,6 +77,14 @@ public enum FlagList {
      * The enderdragon damage.
      */
     ENDERDRAGON_DAMAGE(true),
+    /**
+     * The ender crystal damage.
+     */
+    END_CRYSTAL_DAMAGE(true),
+    /**
+     * The firework damage.
+     */
+    FIREWORK_DAMAGE(true),
     /**
      * The tnt damage.
      */

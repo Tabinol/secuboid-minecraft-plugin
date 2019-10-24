@@ -12,7 +12,7 @@ pipelines:
         caches:
           - maven
         script: # Modify the commands below to build your repository.
-          - mvn verify
+          - mvn --batch-mode verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
   branches:
     master:
       - step:
@@ -21,7 +21,7 @@ pipelines:
             - maven
           script:
             - bash pipelines/configure-maven.sh
-            - mvn --batch-mode source:jar javadoc:jar javadoc:javadoc deploy
+            - mvn --batch-mode source:jar javadoc:jar javadoc:javadoc deploy org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           artifacts: # defining the artifacts to be passed to each future step.
             - target/**
       - step:

@@ -5,6 +5,8 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 image: maven:3.6.2-jdk-8
 
+clone:
+  depth: full # Required for sonarcloud
 pipelines:
   default:
     - step:

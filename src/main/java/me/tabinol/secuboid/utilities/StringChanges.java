@@ -189,7 +189,7 @@ public class StringChanges {
      * 
      * @param arrayStr the string array
      * @param firstIdx the first index from 0
-     * @param endIdx the last index
+     * @param endIdx   the last index
      * @return a string
      */
     public static String arrayToString(String[] arrayStr, int firstIdx, int endIdx) {
@@ -200,7 +200,7 @@ public class StringChanges {
                 bf.append(" ");
             }
             bf.append(arrayStr[i]);
-            i ++;
+            i++;
         }
         return bf.toString();
     }

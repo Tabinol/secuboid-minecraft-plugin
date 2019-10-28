@@ -20,11 +20,13 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.*;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
@@ -39,7 +41,11 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandApprove.
  */
-@InfoCommand(name = "approve", allowConsole = true, forceParameter = true)
+@InfoCommand(name = "approve", allowConsole = true, forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "clear", "list", "info", "confirm", "cancel" }), //
+                @CompletionMap(regex = "^(info|confirm|cancel)$", completions = { "@land" }) //
+        })
 public class CommandApprove extends CommandCollisionsThreadExec {
 
     private final ApproveList approveList;
@@ -62,7 +68,9 @@ public class CommandApprove extends CommandCollisionsThreadExec {
         approveList = secuboid.getLands().getApproveList();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
@@ -78,7 +86,8 @@ public class CommandApprove extends CommandCollisionsThreadExec {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
             approveList.removeAll();
-            sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
+            sender.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.CLEAR"));
 
         } else if (curArg.equalsIgnoreCase("list")) {
 
@@ -87,7 +96,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             int t = 0;
             TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
 
-            //create list (short by date/time)
+            // create list (short by date/time)
             for (Approve app : approveList.getApproveList().values()) {
                 approveTree.put(app.getDateTime().getTime(), app);
             }
@@ -96,11 +105,12 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
                 Approve app = approveEntry.getValue();
                 if (app != null && (isApprover || app.getOwner().hasAccess(player, land, land))) {
-                    stList.append(ChatColor.WHITE).append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
-                            ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
-                            ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
-                            app.getOwner().getPrint() + ChatColor.WHITE,
-                            ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
+                    stList.append(ChatColor.WHITE)
+                            .append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
+                                    ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
+                                    ChatColor.BLUE + app.getLandName() + ChatColor.WHITE,
+                                    app.getOwner().getPrint() + ChatColor.WHITE,
+                                    ChatColor.BLUE + app.getAction().toString() + ChatColor.WHITE));
                     stList.append(Config.NEWLINE);
                     t++;
                 }
@@ -108,13 +118,15 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             if (t == 0) {
 
                 // List empty
-                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
+                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COLLISION.SHOW.LISTROWNULL"));
             } else {
 
                 // List not empty
                 new ChatPage(secuboid, "COLLISION.SHOW.LISTSTART", stList.toString(), sender, null).getPage(1);
             }
-        } else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm") || curArg.equalsIgnoreCase("cancel")) {
+        } else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")
+                || curArg.equalsIgnoreCase("cancel")) {
 
             String param = argList.getNext();
 
@@ -131,7 +143,7 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             // Check permission
             if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
                     || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-                    && !(isApprover || approve.getOwner().hasAccess(player, land, land)))) {
+                            && !(isApprover || approve.getOwner().hasAccess(player, land, land)))) {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
 
@@ -165,7 +177,8 @@ public class CommandApprove extends CommandCollisionsThreadExec {
 
                 // Remove in approve list
                 approveList.removeApprove(approve);
-                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
+                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
             } else {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
@@ -182,7 +195,8 @@ public class CommandApprove extends CommandCollisionsThreadExec {
             // Create the action (if it is possible)
             approveList.removeApprove(approve);
             approve.createAction();
-            sender.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
+            sender.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
         }
     }
 }

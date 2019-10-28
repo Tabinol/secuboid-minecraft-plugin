@@ -25,8 +25,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
- * The Class StringChanges. This is for static methods for String conversion
- * or modification.
+ * The Class StringChanges. This is for static methods for String conversion or
+ * modification.
  */
 public class StringChanges {
 
@@ -58,7 +58,8 @@ public class StringChanges {
     public static String fromQuote(String str) {
 
         if (isStartQuote(str) && isEndQuote(str)) {
-            return (new StringBuffer(str).deleteCharAt(str.length() - 1).deleteCharAt(0)).toString().replaceAll("''", "'");
+            return (new StringBuffer(str).deleteCharAt(str.length() - 1).deleteCharAt(0)).toString().replaceAll("''",
+                    "'");
         } else {
             return str;
         }
@@ -181,5 +182,26 @@ public class StringChanges {
         }
 
         return location;
+    }
+
+    /**
+     * Convert a array to a String with spaces.
+     * 
+     * @param arrayStr the string array
+     * @param firstIdx the first index from 0
+     * @param endIdx the last index
+     * @return a string
+     */
+    public static String arrayToString(String[] arrayStr, int firstIdx, int endIdx) {
+        final StringBuilder bf = new StringBuilder();
+        int i = firstIdx;
+        while (i < arrayStr.length && i <= endIdx) {
+            if (i != firstIdx) {
+                bf.append(" ");
+            }
+            bf.append(arrayStr[i]);
+            i ++;
+        }
+        return bf.toString();
     }
 }

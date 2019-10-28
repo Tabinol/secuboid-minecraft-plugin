@@ -61,13 +61,13 @@ enum CommandClassList {
     TYPE(CommandType.class),
     WHO(CommandWho.class);
 
-    private final Class<?> commandClass;
+    private final Class<? extends CommandExec> commandClass;
 
-    CommandClassList(Class<?> commandClass) {
+    CommandClassList(Class<? extends CommandExec> commandClass) {
         this.commandClass = commandClass;
     }
 
-    public Class<?> getCommandClass() {
+    public Class<? extends CommandExec> getCommandClass() {
         return commandClass;
     }
 }

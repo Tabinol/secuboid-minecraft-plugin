@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid;
 
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.tabinol.secuboid.commands.CommandListener;
@@ -196,7 +197,11 @@ public class Secuboid extends JavaPlugin {
         getServer().getPluginManager().registerEvents(pvpListener, this);
         getServer().getPluginManager().registerEvents(landListener, this);
         getServer().getPluginManager().registerEvents(chatListener, this);
-        getCommand("secuboid").setExecutor(commandListener);
+        
+        
+        final PluginCommand pluginCommand = getCommand("secuboid");
+        pluginCommand.setExecutor(commandListener);
+        pluginCommand.setTabCompleter(commandListener);
 
         // Register events only if Inventory is active
         if (inventoryConf != null) {

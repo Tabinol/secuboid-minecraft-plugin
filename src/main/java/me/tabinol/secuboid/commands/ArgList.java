@@ -114,16 +114,6 @@ public class ArgList {
     }
 
     /**
-     * Length.
-     *
-     * @return the int
-     */
-    public int length() {
-
-        return iterator;
-    }
-
-    /**
      * Gets the next to end.
      *
      * @return the next to end

@@ -25,12 +25,34 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The Interface InfoCommand. Annotation used for commands in me.tabinol.secuboid.commands.executor
+ * The Interface InfoCommand. Annotation used for commands in
+ * me.tabinol.secuboid.commands.executor
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
 public @interface InfoCommand {
+
+    /**
+     * Completion map with a regex and a completion list.
+     */
+    public @interface CompletionMap {
+
+        /**
+         * Regex to match for completion
+         * 
+         * @return the string
+         */
+        public String regex();
+
+        /**
+         * Argument list for command completion.<br>
+         * {@literal @}land: for land name<br>
+         * 
+         * @return the string command list
+         */
+        public String[] completions();
+    }
 
     /**
      * The command name.
@@ -59,4 +81,11 @@ public @interface InfoCommand {
      * @return true, if successful
      */
     boolean forceParameter() default false;
+
+    /**
+     * {@link CompletionMap}
+     * 
+     * @return the command completion map
+     */
+    CompletionMap[] completion() default {};
 }

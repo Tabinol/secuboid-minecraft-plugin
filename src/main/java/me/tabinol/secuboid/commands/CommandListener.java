@@ -19,24 +19,37 @@
 package me.tabinol.secuboid.commands;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.executor.CommandExec;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.utilities.StringChanges;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 /**
  * The Class OnCommand.
  */
-public class CommandListener implements CommandExecutor {
+public class CommandListener implements CommandExecutor, TabCompleter {
 
     private final Secuboid secuboid;
-    private final Map<String, Class<?>> commands;
+    private final Map<String, Class<? extends CommandExec>> commandToClass;
+    private final List<String> consoleCommands;
+    private final List<String> playerCommands;
 
     /**
      * Instantiates a new on command.
@@ -48,23 +61,35 @@ public class CommandListener implements CommandExecutor {
         this.secuboid = secuboid;
 
         // Create Command list
-        commands = new TreeMap<String, Class<?>>();
+        commandToClass = new TreeMap<String, Class<? extends CommandExec>>();
+        consoleCommands = new ArrayList<String>();
+        playerCommands = new ArrayList<String>();
 
         for (CommandClassList presentClass : CommandClassList.values()) {
             // Store commands information
-            InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
-            commands.put(infoCommand.name().toLowerCase(), presentClass.getCommandClass());
+            final InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
+            final Class<? extends CommandExec> commandClass = (Class<? extends CommandExec>) presentClass
+                    .getCommandClass();
+            addCommandToList(infoCommand, infoCommand.name().toLowerCase(), commandClass);
             for (String alias : infoCommand.aliases()) {
-                commands.put(alias.toLowerCase(), presentClass.getCommandClass());
+                addCommandToList(infoCommand, alias.toLowerCase(), commandClass);
             }
         }
     }
 
+    private void addCommandToList(InfoCommand infoCommand, String command, Class<? extends CommandExec> commandClass) {
+        commandToClass.put(command, commandClass);
+        playerCommands.add(command);
+        if (infoCommand.allowConsole()) {
+            consoleCommands.add(command);
+        }
+    }
+
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] arg) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         // Others commands then /secuboid, /claim and /fd will not be send.
-        ArgList argList = new ArgList(secuboid, arg, sender);
+        final ArgList argList = new ArgList(secuboid, args, sender);
         try {
             // Check the command to send
             getCommand(sender, cmd, argList);
@@ -73,6 +98,65 @@ public class CommandListener implements CommandExecutor {
         } catch (SecuboidCommandException ex) {
             return true;
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        final String firstChars = args[args.length - 1];
+
+        // First arguments
+        if (args.length <= 1) {
+            if (sender instanceof Player) {
+                // Player connected
+                return filterList(playerCommands, firstChars);
+            }
+            // Console?
+            return filterList(consoleCommands, firstChars);
+        }
+
+        // Next arguments
+
+        // Take command
+        final Class<? extends CommandExec> cv = commandToClass.get(args[0]);
+        if (cv == null) {
+            return Collections.emptyList();
+        }
+
+        // Take the line without the command
+        final String line = StringChanges.arrayToString(args, 1, args.length - 2);
+        final InfoCommand ci = cv.getAnnotation(InfoCommand.class);
+
+        // Find match with regex
+        for (CompletionMap completionMap : ci.completion()) {
+            Pattern pattern = Pattern.compile(completionMap.regex(), Pattern.CASE_INSENSITIVE);
+            if (pattern.matcher(line).matches()) {
+                return makeArgList(completionMap.completions(), firstChars);
+            }
+        }
+
+        // No match found
+        return Collections.emptyList();
+    }
+
+    private List<String> makeArgList(String[] completions, String firstChars) {
+        List<String> argList = new ArrayList<>();
+        for (String completion : completions) {
+            switch (completion) {
+            case "@land":
+                for (RealLand land : secuboid.getLands().getLands()) {
+                    argList.add(land.getName());
+                }
+                break;
+            default:
+                argList.add(completion);
+            }
+        }
+        return filterList(argList, firstChars);
+    }
+
+    private List<String> filterList(List<String> matches, String firstChars) {
+        return matches.stream().filter(match -> match.startsWith(firstChars.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -92,24 +176,26 @@ public class CommandListener implements CommandExecutor {
                 return;
             }
 
-            String command = argList.getNext().toLowerCase();
+            final String command = argList.getNext().toLowerCase();
 
             // take the name
-            Class<?> cv = commands.get(command.toLowerCase());
+            final Class<? extends CommandExec> cv = commandToClass.get(command.toLowerCase());
 
             // The command does not exist
             if (cv == null) {
-                throw new SecuboidCommandException(secuboid, "Command not existing", sender, "COMMAND.NOTEXIST", "SECUBOID");
+                throw new SecuboidCommandException(secuboid, "Command not existing", sender, "COMMAND.NOTEXIST",
+                        "SECUBOID");
             }
 
             // Remove page from memory if needed
-            if (cv != commands.get("page")) {
+            if (cv != commandToClass.get("page")) {
                 secuboid.getPlayerConf().get(sender).setChatPage(null);
             }
 
             // Do the command
-            InfoCommand ci = cv.getAnnotation(InfoCommand.class);
-            CommandExec ce = (CommandExec) cv.getConstructor(Secuboid.class, InfoCommand.class, CommandSender.class, ArgList.class)
+            final InfoCommand ci = cv.getAnnotation(InfoCommand.class);
+            final CommandExec ce = (CommandExec) cv
+                    .getConstructor(Secuboid.class, InfoCommand.class, CommandSender.class, ArgList.class)
                     .newInstance(secuboid, ci, sender, argList);
             if (ce.isExecutable()) {
                 ce.commandExecute();
@@ -118,19 +204,24 @@ public class CommandListener implements CommandExecutor {
             // a huge number of Exception to catch!
         } catch (IllegalAccessException ex) {
             ex.printStackTrace();
-            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
+            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
+                    "GENERAL.ERROR");
         } catch (InstantiationException ex) {
             ex.printStackTrace();
-            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
+            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
+                    "GENERAL.ERROR");
         } catch (NoSuchMethodException ex) {
             ex.printStackTrace();
-            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
+            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
+                    "GENERAL.ERROR");
         } catch (SecurityException ex) {
             ex.printStackTrace();
-            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
+            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
+                    "GENERAL.ERROR");
         } catch (IllegalArgumentException ex) {
             ex.printStackTrace();
-            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender, "GENERAL.ERROR");
+            throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
+                    "GENERAL.ERROR");
         } catch (InvocationTargetException ex) {
             // Catched by SecuboidCommandException
         }
@@ -144,7 +235,7 @@ public class CommandListener implements CommandExecutor {
      */
     public InfoCommand getInfoCommand(String command) {
 
-        Class<?> infoClass = commands.get(command.toLowerCase());
+        final Class<?> infoClass = commandToClass.get(command.toLowerCase());
 
         if (infoClass == null) {
             return null;

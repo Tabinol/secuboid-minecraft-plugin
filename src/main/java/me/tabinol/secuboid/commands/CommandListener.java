@@ -130,7 +130,7 @@ public class CommandListener implements CommandExecutor, TabCompleter {
         for (CompletionMap completionMap : ci.completion()) {
             Pattern pattern = Pattern.compile(completionMap.regex(), Pattern.CASE_INSENSITIVE);
             if (pattern.matcher(line).matches()) {
-                return makeArgList(completionMap.completions(), firstChars);
+                return makeArgList(sender, completionMap.completions(), firstChars);
             }
         }
 
@@ -138,13 +138,18 @@ public class CommandListener implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    private List<String> makeArgList(String[] completions, String firstChars) {
+    private List<String> makeArgList(CommandSender sender, String[] completions, String firstChars) {
         List<String> argList = new ArrayList<>();
         for (String completion : completions) {
             switch (completion) {
             case "@land":
                 for (RealLand land : secuboid.getLands().getLands()) {
                     argList.add(land.getName());
+                }
+                break;
+            case "@approveLandList":
+                if (sender.hasPermission("secuboid.collisionapprove")) {
+                    argList.addAll(secuboid.getLands().getApproveList().getApproveList().keySet());
                 }
                 break;
             default:

@@ -27,6 +27,9 @@ import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -123,13 +126,14 @@ public abstract class CommandExec {
             if (player == null && !infoCommand.allowConsole()) {
 
                 // Send a message if this command is player only
-                throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(), "CONSOLE");
+                throw new SecuboidCommandException(secuboid, "Impossible to do from console", Bukkit.getConsoleSender(),
+                        "CONSOLE");
             }
 
             // Show help if there is no more parameter and the command needs one
             if (infoCommand.forceParameter() && argList != null && argList.isLast()) {
                 new CommandHelp(secuboid, null, sender,
-                        new ArgList(secuboid, new String[]{infoCommand.name()}, sender)).commandExecute();
+                        new ArgList(secuboid, new String[] { infoCommand.name() }, sender)).commandExecute();
                 isExecutable = false;
             }
         }
@@ -158,7 +162,8 @@ public abstract class CommandExec {
      * @param mustBeAreaSelected the must be area selected
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected) throws SecuboidCommandException {
+    protected void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected)
+            throws SecuboidCommandException {
 
         if (mustBeSelectMode != null) {
             // Pasted to variable land, can take direcly
@@ -166,7 +171,8 @@ public abstract class CommandExec {
                     playerConf.getSelection().getLand() != null);
         }
         if (mustBeAreaSelected != null) {
-            checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, "GENERAL.JOIN.SELECTAREA", true);
+            checkSelection(playerConf.getSelection().getArea() != null, mustBeAreaSelected, "GENERAL.JOIN.SELECTAREA",
+                    true);
         }
     }
 
@@ -179,8 +185,8 @@ public abstract class CommandExec {
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
-    private void checkSelection(boolean result, boolean neededResult, String messageFalse,
-                                boolean startSelectCancel) throws SecuboidCommandException {
+    private void checkSelection(boolean result, boolean neededResult, String messageFalse, boolean startSelectCancel)
+            throws SecuboidCommandException {
 
         if (result != neededResult) {
             if (!result) {
@@ -205,8 +211,8 @@ public abstract class CommandExec {
      * @param bukkitPermission the bukkit permission
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner,
-                                   PermissionType neededPerm, String bukkitPermission) throws SecuboidCommandException {
+    protected void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner, PermissionType neededPerm,
+            String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
 
@@ -222,7 +228,8 @@ public abstract class CommandExec {
 
         // No permission, this is an exception
         if (!canDo) {
-            throw new SecuboidCommandException(secuboid, "No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
+            throw new SecuboidCommandException(secuboid, "No permission to do this action", player,
+                    "GENERAL.MISSINGPERMISSION");
         }
     }
 

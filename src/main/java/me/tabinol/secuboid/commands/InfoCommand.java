@@ -47,6 +47,7 @@ public @interface InfoCommand {
 
         /**
          * Argument list for command completion.<br>
+         * {@literal @}approveLandList: for lands to approve<br>
          * {@literal @}land: for land name<br>
          * 
          * @return the string command list

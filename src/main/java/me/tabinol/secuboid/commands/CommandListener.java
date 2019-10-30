@@ -31,8 +31,10 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.executor.CommandExec;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 import org.bukkit.command.Command;
@@ -141,14 +143,34 @@ public class CommandListener implements CommandExecutor, TabCompleter {
         List<String> argList = new ArrayList<>();
         for (String completion : completions) {
             switch (completion) {
+            case "@approveLandList":
+                if (sender.hasPermission("secuboid.collisionapprove")) {
+                    argList.addAll(secuboid.getLands().getApproveList().getApproveList().keySet());
+                }
+                break;
+            case "@areaLand":
+                final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
+                if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
+                    final RealLand land = playerConf.getSelection().getLand();
+                    final List<String> areasStrs = land.getAreas().stream().map(Object::toString)
+                            .collect(Collectors.toList());
+                    argList.addAll(areasStrs);
+                }
+                break;
             case "@land":
                 for (RealLand land : secuboid.getLands().getLands()) {
                     argList.add(land.getName());
                 }
                 break;
-            case "@approveLandList":
-                if (sender.hasPermission("secuboid.collisionapprove")) {
-                    argList.addAll(secuboid.getLands().getApproveList().getApproveList().keySet());
+            case "@player":
+                argList.addAll(secuboid.getPlayersCache().getPlayerNames());
+                break;
+            case "@playerContainerName":
+                argList.addAll(secuboid.getPlayersCache().getPlayerNames());
+                for (PlayerContainerType pcType : PlayerContainerType.values()) {
+                    if (pcType != PlayerContainerType.PLAYERNAME) {
+                        argList.add(pcType.getPrint());
+                    }
                 }
                 break;
             default:

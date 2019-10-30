@@ -48,7 +48,10 @@ public @interface InfoCommand {
         /**
          * Argument list for command completion.<br>
          * {@literal @}approveLandList: for lands to approve<br>
-         * {@literal @}land: for land name<br>
+         * {@literal @}areaLand: areas for selected land<br>
+         * {@literal @}land: land name<br>
+         * {@literal @}player: player name<br>
+         * {@literal @}playerContainer: player container name or player name<br>
          * 
          * @return the string command list
          */

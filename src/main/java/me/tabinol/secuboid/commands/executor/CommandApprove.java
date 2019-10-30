@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.*;
+import me.tabinol.secuboid.commands.ArgList;
+import me.tabinol.secuboid.commands.ChatPage;
+import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;

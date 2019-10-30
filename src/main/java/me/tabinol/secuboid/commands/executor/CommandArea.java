@@ -25,6 +25,7 @@ import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
@@ -37,7 +38,11 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandArea.
  */
-@InfoCommand(name = "area", forceParameter = true)
+@InfoCommand(name = "area", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "add", "remove", "replace" }), //
+                @CompletionMap(regex = "^(remove|replace)$", completions = { "@areaLand" }) //
+        })
 public class CommandArea extends CommandCollisionsThreadExec {
 
     private String fonction;
@@ -57,7 +62,9 @@ public class CommandArea extends CommandCollisionsThreadExec {
         super(secuboid, infoCommand, sender, argList);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
@@ -73,8 +80,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
             Area area = playerConf.getSelection().getArea();
 
             // Check for collision
-            checkCollision(area.getWorldName(), land.getName(), land, null, LandAction.AREA_ADD, 0, area, land.getParent(),
-                    land.getOwner(), true);
+            checkCollision(area.getWorldName(), land.getName(), land, null, LandAction.AREA_ADD, 0, area,
+                    land.getParent(), land.getOwner(), true);
 
         } else if (fonction.equalsIgnoreCase("remove") || fonction.equalsIgnoreCase("replace")) {
 
@@ -119,7 +126,7 @@ public class CommandArea extends CommandCollisionsThreadExec {
 
             } else {
 
-                //Only for a replace
+                // Only for a replace
                 checkSelections(true, true);
 
                 Area area = playerConf.getSelection().getArea();
@@ -134,7 +141,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
             checkSelections(true, null);
             StringBuilder stList = new StringBuilder();
             for (Map.Entry<Integer, Area> entry : land.getIdsAndAreas().entrySet()) {
-                stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint()).append(Config.NEWLINE);
+                stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint())
+                        .append(Config.NEWLINE);
             }
             new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, land.getName()).getPage(1);
         } else {
@@ -154,7 +162,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
             // Add Area
             land.addArea(newArea, collisions.getPrice());
 
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
             new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         } else if (fonction.equalsIgnoreCase("remove")) {
@@ -172,7 +181,8 @@ public class CommandArea extends CommandCollisionsThreadExec {
             // Replace Area
             land.replaceArea(removeId, newArea, collisions.getPrice());
 
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
             new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         }

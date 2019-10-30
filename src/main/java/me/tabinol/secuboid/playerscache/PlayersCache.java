@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
@@ -168,6 +169,15 @@ public final class PlayersCache extends Thread {
         }
     }
 
+    /**
+     * Gets all player names in cache.
+     * 
+     * @return a set of player names
+     */
+    public Set<String> getPlayerNames() {
+        return playersCacheList.keySet();
+    }
+
     public String getNameFromUUID(UUID uuid) {
 
         PlayerCacheEntry entry = playersRevCacheList.get(uuid);
@@ -239,7 +249,8 @@ public final class PlayersCache extends Thread {
 
                     // Pass 2 check in Minecraft website
                     if (!names.isEmpty()) {
-                        Profile[] profiles = httpProfileRepository.findProfilesByNames(names.toArray(new String[names.size()]));
+                        Profile[] profiles = httpProfileRepository
+                                .findProfilesByNames(names.toArray(new String[names.size()]));
                         for (Profile profile : profiles) {
                             // Put in the correct position
                             int compt = 0;
@@ -248,8 +259,7 @@ public final class PlayersCache extends Thread {
                                 if (entries[compt] == null) {
                                     UUID uuid = stringToUUID(profile.getId());
                                     if (uuid != null) {
-                                        entries[compt] = new PlayerCacheEntry(uuid,
-                                                profile.getName());
+                                        entries[compt] = new PlayerCacheEntry(uuid, profile.getName());
                                         // Update now
                                         updatePlayerInlist(entries[compt]);
                                     }
@@ -259,7 +269,8 @@ public final class PlayersCache extends Thread {
                         }
                     }
                     // Return the output of the request on the main thread
-                    ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec, entries);
+                    ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec,
+                            entries);
                     Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
                 }
 

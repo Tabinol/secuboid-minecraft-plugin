@@ -43,7 +43,7 @@ import org.bukkit.command.CommandSender;
 @InfoCommand(name = "approve", allowConsole = true, forceParameter = true, //
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "clear", "list", "info", "confirm", "cancel" }), //
-                @CompletionMap(regex = "^(info|confirm|cancel)$", completions = { "approveLandList" }) //
+                @CompletionMap(regex = "^(info|confirm|cancel)$", completions = { "@approveLandList" }) //
         })
 public class CommandApprove extends CommandCollisionsThreadExec {
 

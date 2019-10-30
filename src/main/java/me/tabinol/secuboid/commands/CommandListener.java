@@ -61,15 +61,14 @@ public class CommandListener implements CommandExecutor, TabCompleter {
         this.secuboid = secuboid;
 
         // Create Command list
-        commandToClass = new TreeMap<String, Class<? extends CommandExec>>();
-        consoleCommands = new ArrayList<String>();
-        playerCommands = new ArrayList<String>();
+        commandToClass = new TreeMap<>();
+        consoleCommands = new ArrayList<>();
+        playerCommands = new ArrayList<>();
 
         for (CommandClassList presentClass : CommandClassList.values()) {
             // Store commands information
             final InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
-            final Class<? extends CommandExec> commandClass = (Class<? extends CommandExec>) presentClass
-                    .getCommandClass();
+            final Class<? extends CommandExec> commandClass = presentClass.getCommandClass();
             addCommandToList(infoCommand, infoCommand.name().toLowerCase(), commandClass);
             for (String alias : infoCommand.aliases()) {
                 addCommandToList(infoCommand, alias.toLowerCase(), commandClass);
@@ -199,7 +198,7 @@ public class CommandListener implements CommandExecutor, TabCompleter {
 
             // Do the command
             final InfoCommand ci = cv.getAnnotation(InfoCommand.class);
-            final CommandExec ce = (CommandExec) cv
+            final CommandExec ce = cv
                     .getConstructor(Secuboid.class, InfoCommand.class, CommandSender.class, ArgList.class)
                     .newInstance(secuboid, ci, sender, argList);
             if (ce.isExecutable()) {

@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
@@ -29,7 +30,10 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandNotify.
  */
-@InfoCommand(name = "notify")
+@InfoCommand(name = "notify", //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@land" }) //
+        })
 public class CommandNotify extends CommandExec {
 
     /**
@@ -56,9 +60,11 @@ public class CommandNotify extends CommandExec {
 
         if (land.isPlayerNotify(playerConf.getPlayerContainer())) {
             land.removePlayerNotify(playerConf.getPlayerContainer());
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
         } else {
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
             land.addPlayerNotify(playerConf.getPlayerContainer());
         }
     }

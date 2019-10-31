@@ -20,7 +20,7 @@ package me.tabinol.secuboid.lands.types;
 /**
  * The class for area types.
  */
-public class Type implements Comparable<Type> {
+public final class Type implements Comparable<Type> {
 
     private final String typeName;
 

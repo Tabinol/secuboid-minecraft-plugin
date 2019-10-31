@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -34,6 +35,7 @@ import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
 
@@ -157,6 +159,17 @@ public class CommandListener implements CommandExecutor, TabCompleter {
                     argList.addAll(areasStrs);
                 }
                 break;
+            case "@boolean":
+                argList.add("false");
+                argList.add("true");
+                break;
+            case "@command":
+                argList.addAll(filterList(playerCommands, firstChars));
+                break;
+            case "@flag":
+                final Set<String> flagNames = secuboid.getPermissionsFlags().getFlagTypeNames();
+                argList.addAll(flagNames);
+                break;
             case "@land":
                 for (RealLand land : secuboid.getLands().getLands()) {
                     argList.add(land.getName());
@@ -172,6 +185,15 @@ public class CommandListener implements CommandExecutor, TabCompleter {
                         argList.add(pcType.getPrint());
                     }
                 }
+                break;
+            case "@permission":
+                final Set<String> permNames = secuboid.getPermissionsFlags().getPermissionTypeNames();
+                argList.addAll(permNames);
+                break;
+            case "@type":
+                final List<String> typeNames = secuboid.getTypes().getTypes().stream().map(Type::getName)
+                        .collect(Collectors.toList());
+                argList.addAll(typeNames);
                 break;
             default:
                 argList.add(completion);

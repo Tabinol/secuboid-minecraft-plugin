@@ -22,13 +22,17 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandHelp.
  */
-@InfoCommand(name = "help", allowConsole = true)
+@InfoCommand(name = "help", allowConsole = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@command" }) //
+        })
 public class CommandHelp extends CommandExec {
 
     /**
@@ -45,7 +49,8 @@ public class CommandHelp extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandHelp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
+    public CommandHelp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
+            throws SecuboidCommandException {
         super(secuboid, infoCommand, sender, argList);
     }
 

@@ -25,6 +25,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
@@ -37,7 +38,12 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandFlag.
  */
-@InfoCommand(name = "flag", forceParameter = true)
+@InfoCommand(name = "flag", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "add", "remove", "list" }), //
+                @CompletionMap(regex = "^(add|remove)$", completions = { "@flag" }), //
+                @CompletionMap(regex = "^add (.*)$", completions = { "@boolean" }) //
+        })
 public class CommandFlag extends CommandExec {
 
     private List<Land> precDL; // Listed Precedent lands (no duplicates)
@@ -74,9 +80,9 @@ public class CommandFlag extends CommandExec {
             }
 
             land.getPermissionsFlags().addFlag(landFlag);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE", landFlag.getFlagType().toString(),
-                    landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE",
+                            landFlag.getFlagType().toString(), landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
 
         } else if (curArg.equalsIgnoreCase("remove")) {
 
@@ -84,7 +90,8 @@ public class CommandFlag extends CommandExec {
             if (!land.getPermissionsFlags().removeFlag(flagType)) {
                 throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.FLAGS.REMOVEISDONE", flagType.toString()));
 
         } else if (curArg.equalsIgnoreCase("list")) {
 
@@ -96,8 +103,9 @@ public class CommandFlag extends CommandExec {
 
             // For default Type
             if (land.getType() != null) {
-                stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
-                        land.getType().getName())).append(Config.NEWLINE);
+                stList.append(ChatColor.DARK_GRAY)
+                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", land.getType().getName()))
+                        .append(Config.NEWLINE);
                 importDisplayFlagsFrom((secuboid.getLands()).getDefaultConf(land.getType()), false);
             }
 
@@ -110,8 +118,9 @@ public class CommandFlag extends CommandExec {
             }
 
             // For world
-            stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD",
-                    land.getWorldName())).append(Config.NEWLINE);
+            stList.append(ChatColor.DARK_GRAY)
+                    .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", land.getWorldName()))
+                    .append(Config.NEWLINE);
             importDisplayFlagsFrom((secuboid.getLands()).getOutsideArea(land.getWorldName()), true);
 
             new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, land.getName()).getPage(1);

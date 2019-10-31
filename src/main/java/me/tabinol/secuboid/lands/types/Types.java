@@ -23,7 +23,7 @@ import java.util.TreeMap;
 /**
  * Represents an area type.
  */
-public class Types {
+public final class Types {
 
     final private TreeMap<String, Type> types;
 

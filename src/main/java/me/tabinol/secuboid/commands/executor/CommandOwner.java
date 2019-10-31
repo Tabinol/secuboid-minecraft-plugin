@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
@@ -30,7 +31,11 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandOwner.
  */
-@InfoCommand(name = "owner", forceParameter = true)
+@InfoCommand(name = "owner", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@playerContainer" }), //
+                @CompletionMap(regex = "^player$", completions = { "@player" }) //
+        })
 public class CommandOwner extends CommandPlayerThreadExec {
 
     /**
@@ -54,19 +59,19 @@ public class CommandOwner extends CommandPlayerThreadExec {
         checkSelections(true, null);
         checkPermission(true, true, null, null);
 
-        pc = argList.getPlayerContainerFromArg(new PlayerContainerType[]{PlayerContainerType.EVERYBODY,
-                PlayerContainerType.OWNER});
+        pc = argList.getPlayerContainerFromArg(
+                new PlayerContainerType[] { PlayerContainerType.EVERYBODY, PlayerContainerType.OWNER });
         secuboid.getPlayersCache().getUUIDWithNames(this, pc);
     }
 
     @Override
-    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-            throws SecuboidCommandException {
+    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
         convertPcIfNeeded(playerCacheEntry);
 
         land.setOwner(pc);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
 
         // Cancel the selection
         new CommandCancel(secuboid, null, sender, argList).commandExecute();

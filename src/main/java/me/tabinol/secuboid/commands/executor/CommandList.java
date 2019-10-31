@@ -24,6 +24,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.types.Type;
@@ -36,7 +37,12 @@ import org.bukkit.command.CommandSender;
  *
  * @author Tabinol
  */
-@InfoCommand(name = "list")
+@InfoCommand(name = "list", //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "world", "type", "@playerContainer" }), //
+                @CompletionMap(regex = "^player$", completions = { "@player" }), //
+                @CompletionMap(regex = "^type$", completions = { "@type" }) //
+        })
 public class CommandList extends CommandPlayerThreadExec {
 
     private String worldName = null;
@@ -99,8 +105,7 @@ public class CommandList extends CommandPlayerThreadExec {
     }
 
     @Override
-    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-            throws SecuboidCommandException {
+    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
         convertPcIfNeeded(playerCacheEntry);
 
@@ -119,8 +124,7 @@ public class CommandList extends CommandPlayerThreadExec {
 
         for (RealLand land : lands) {
             if (((worldName != null && worldName.equals(land.getWorldName()))
-                    || (type != null && type == land.getType())
-                    || (worldName == null && type == null))
+                    || (type != null && type == land.getType()) || (worldName == null && type == null))
                     && (pc == null || land.getOwner().equals(pc))) {
                 stList.append(land.getName()).append(" ");
             }

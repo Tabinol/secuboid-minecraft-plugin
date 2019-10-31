@@ -23,6 +23,7 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
@@ -33,7 +34,7 @@ import org.bukkit.Material;
  *
  * @author Tabinol
  */
-public class PermissionsFlags {
+public final class PermissionsFlags {
 
     /**
      * Prefix of specials permissions (ex: PLACE_SIGN).
@@ -95,17 +96,18 @@ public class PermissionsFlags {
         // Add flags and permissions
         for (PermissionList permissionList : PermissionList.values()) {
             if (permissionList.getParent() != null) {
-                permissionList.setPermissionType(registerPermissionType(permissionList.name(),
-                        permissionList.baseValue, getPermissionType(permissionList.getParent())));
+                permissionList.setPermissionType(registerPermissionType(permissionList.name(), permissionList.baseValue,
+                        getPermissionType(permissionList.getParent())));
             } else {
-                permissionList.setPermissionType(registerPermissionType(permissionList.name(),
-                        permissionList.baseValue));
+                permissionList
+                        .setPermissionType(registerPermissionType(permissionList.name(), permissionList.baseValue));
             }
         }
         for (FlagList flagList : FlagList.values()) {
             flagList.setFlagType(registerFlagType(flagList.name(), flagList.baseValue));
         }
-        // Add special permissions (PLACE_XXX and DESTROY_XXX, NOPLACE_XXX, NODESTROY_XXX)
+        // Add special permissions (PLACE_XXX and DESTROY_XXX, NOPLACE_XXX,
+        // NODESTROY_XXX)
         specialPermMap = new EnumMap<SpecialPermPrefix, Map<Material, PermissionType>>(SpecialPermPrefix.class);
 
         for (SpecialPermPrefix pref : SpecialPermPrefix.values()) {
@@ -166,8 +168,7 @@ public class PermissionsFlags {
      * @param parent         the parent permission
      * @return the permission type
      */
-    private PermissionType registerPermissionType(String permissionName, boolean defaultValue,
-                                                  PermissionType parent) {
+    private PermissionType registerPermissionType(String permissionName, boolean defaultValue, PermissionType parent) {
 
         String permissionNameUpper = permissionName.toUpperCase();
         PermissionType permissionType = getPermissionTypeNoValid(permissionNameUpper, parent);
@@ -184,8 +185,7 @@ public class PermissionsFlags {
      * @param defaultValue the default value
      * @return the flag type
      */
-    public final FlagType registerFlagType(String flagName,
-                                           Object defaultValue) {
+    public FlagType registerFlagType(String flagName, Object defaultValue) {
 
         FlagValue flagDefaultValue;
 
@@ -221,7 +221,7 @@ public class PermissionsFlags {
      * @param permissionName the permission name
      * @return the permission type
      */
-    public final PermissionType getPermissionType(String permissionName) {
+    public PermissionType getPermissionType(String permissionName) {
 
         PermissionType pt = permissions.get(permissionName);
 
@@ -233,12 +233,21 @@ public class PermissionsFlags {
     }
 
     /**
+     * Gets all permission type manes.
+     *
+     * @return the permission type names
+     */
+    public Set<String> getPermissionTypeNames() {
+        return permissions.keySet();
+    }
+
+    /**
      * Gets the flag type.
      *
      * @param flagName the flag name
      * @return the flag type
      */
-    public final FlagType getFlagType(String flagName) {
+    public FlagType getFlagType(String flagName) {
 
         FlagType ft = flags.get(flagName);
 
@@ -250,12 +259,21 @@ public class PermissionsFlags {
     }
 
     /**
+     * Gets all flag type manes.
+     *
+     * @return the flag type names
+     */
+    public Set<String> getFlagTypeNames() {
+        return flags.keySet();
+    }
+
+    /**
      * Gets the permission type no valid.
      *
      * @param permissionName the permission name
      * @return the permission type no valid
      */
-    public final PermissionType getPermissionTypeNoValid(String permissionName) {
+    public PermissionType getPermissionTypeNoValid(String permissionName) {
         return getPermissionTypeNoValid(permissionName, null);
     }
 
@@ -266,7 +284,7 @@ public class PermissionsFlags {
      * @param parent         the parent permission (or null)
      * @return the permission type no valid
      */
-    public final PermissionType getPermissionTypeNoValid(String permissionName, PermissionType parent) {
+    public PermissionType getPermissionTypeNoValid(String permissionName, PermissionType parent) {
 
         PermissionType pt = permissions.get(permissionName);
 
@@ -284,7 +302,7 @@ public class PermissionsFlags {
      * @param flagName the flag name
      * @return the flag type no valid
      */
-    public final FlagType getFlagTypeNoValid(String flagName) {
+    public FlagType getFlagTypeNoValid(String flagName) {
 
         FlagType ft = flags.get(flagName);
 
@@ -303,7 +321,7 @@ public class PermissionsFlags {
      * @param mat    the material
      * @return the permission type
      */
-    public final PermissionType getSpecialPermission(SpecialPermPrefix prefix, Material mat) {
+    public PermissionType getSpecialPermission(SpecialPermPrefix prefix, Material mat) {
 
         Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);
 

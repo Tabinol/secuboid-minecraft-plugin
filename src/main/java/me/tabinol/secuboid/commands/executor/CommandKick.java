@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import org.bukkit.ChatColor;
@@ -30,7 +31,10 @@ import org.bukkit.entity.Player;
 /**
  * The Class CommandKick.
  */
-@InfoCommand(name = "kick", forceParameter = true)
+@InfoCommand(name = "kick", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@player" }) //
+        })
 public class CommandKick extends CommandExec {
 
     /**
@@ -73,9 +77,11 @@ public class CommandKick extends CommandExec {
             throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.NOTINLAND");
         }
 
-        //Kick the player
+        // Kick the player
         playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
-        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
+        playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
     }
 }

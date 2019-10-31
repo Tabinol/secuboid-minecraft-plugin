@@ -22,9 +22,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
-
-import static me.tabinol.secuboid.config.Config.NEWLINE;
-
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -34,10 +32,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
+import static me.tabinol.secuboid.config.Config.NEWLINE;
+
 /**
  * The Class CommandInfo.
  */
-@InfoCommand(name = "info", aliases = {"current", "here"})
+@InfoCommand(name = "info", aliases = { "current", "here" }, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@land" }),//
+        })
 public class CommandInfo extends CommandExec {
 
     /**
@@ -70,8 +73,7 @@ public class CommandInfo extends CommandExec {
      * @param area     the aera
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandInfo(Secuboid secuboid, CommandSender sender, Area area)
-            throws SecuboidCommandException {
+    public CommandInfo(Secuboid secuboid, CommandSender sender, Area area) throws SecuboidCommandException {
 
         super(secuboid, null, sender, null);
         this.area = area;
@@ -103,32 +105,41 @@ public class CommandInfo extends CommandExec {
         if (land != null) {
             // Create list
             StringBuilder stList = new StringBuilder();
-            stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
-                    ChatColor.GREEN + land.getName() + ChatColor.YELLOW, ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
+            stList.append(ChatColor.YELLOW)
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
+                            ChatColor.GREEN + land.getName() + ChatColor.YELLOW,
+                            ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
+            stList.append(ChatColor.YELLOW)
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
             if (land.isForSale()) {
-                stList.append(ChatColor.RED).append(" ").append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
+                stList.append(ChatColor.RED).append(" ")
+                        .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
             }
             if (land.isForRent() && !land.isRented()) {
-                stList.append(ChatColor.RED).append(" ").append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
+                stList.append(ChatColor.RED).append(" ")
+                        .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
             }
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
                     land.getType() != null ? land.getType().getName() : "-null-"));
             if (land.getParent() != null) {
-                stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
+                stList.append(ChatColor.YELLOW).append(
+                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
             }
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
+            stList.append(ChatColor.YELLOW)
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
             if (land.isRented()) {
-                stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
+                stList.append(ChatColor.YELLOW).append(
+                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
             }
             stList.append(NEWLINE);
-            stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
-                    getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
-                            + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
-                            + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
+            stList.append(ChatColor.YELLOW)
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
+                            getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
+                                    + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
+                                    + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
             stList.append(NEWLINE);
             if (area != null) {
                 stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
@@ -139,7 +150,8 @@ public class CommandInfo extends CommandExec {
             new ChatPage(secuboid, "COMMAND.INFO.LAND.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
 
         } else {
-            player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INFO.NOLAND"));
+            player.sendMessage(
+                    ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INFO.NOLAND"));
         }
     }
 

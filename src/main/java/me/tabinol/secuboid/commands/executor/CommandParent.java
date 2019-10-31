@@ -20,6 +20,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.collisions.Collisions;
@@ -30,7 +31,10 @@ import org.bukkit.command.CommandSender;
 /**
  * The parent command.
  */
-@InfoCommand(name = "parent", forceParameter = true)
+@InfoCommand(name = "parent", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@land", "unset" }) //
+        })
 public class CommandParent extends CommandCollisionsThreadExec {
 
     /**
@@ -87,9 +91,11 @@ public class CommandParent extends CommandCollisionsThreadExec {
         // Set parent
         land.setParent(parent);
         if (parent == null) {
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
+            player.sendMessage(
+                    ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));
         } else {
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.PARENT.DONE", parent.getName()));
         }
     }
 }

@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -30,7 +31,10 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class CommandMoney.
  */
-@InfoCommand(name = "money", forceParameter = true)
+@InfoCommand(name = "money", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "balance", "deposit", "withdraw" }) //
+        })
 public class CommandMoney extends CommandExec {
 
     /**
@@ -59,7 +63,8 @@ public class CommandMoney extends CommandExec {
 
         if (playerMoney == null) {
 
-            throw new SecuboidCommandException(secuboid, "Economy not avalaible", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+            throw new SecuboidCommandException(secuboid, "Economy not avalaible", player,
+                    "COMMAND.ECONOMY.NOTAVAILABLE");
         }
 
         checkSelections(true, null);
@@ -85,8 +90,8 @@ public class CommandMoney extends CommandExec {
     private void balance() throws SecuboidCommandException {
 
         checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
-                land.getName(), playerMoney.toFormat(land.getMoney())));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
+                .getMessage("COMMAND.ECONOMY.LANDBALANCE", land.getName(), playerMoney.toFormat(land.getMoney())));
     }
 
     /**
@@ -108,8 +113,8 @@ public class CommandMoney extends CommandExec {
         // Land Deposit
         playerMoney.getFromPlayer(player.getPlayer(), land.getWorldName(), amount);
         land.addMoney(amount);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
-                playerMoney.toFormat(land.getMoney()), land.getName()));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
+                .getMessage("COMMAND.ECONOMY.LANDDEPOSIT", playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
     /**
@@ -131,8 +136,8 @@ public class CommandMoney extends CommandExec {
         // Land Deposit
         land.subtractMoney(amount);
         playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
-                playerMoney.toFormat(land.getMoney()), land.getName()));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
+                .getMessage("COMMAND.ECONOMY.LANDWITHDRAW", playerMoney.toFormat(land.getMoney()), land.getName()));
     }
 
     /**

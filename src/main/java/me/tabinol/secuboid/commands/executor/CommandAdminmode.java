@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandAdminmode.
  */
 @InfoCommand(name = "adminmode", aliases = "am")
-public class CommandAdminmode extends CommandExec {
+public final class CommandAdminmode extends CommandExec {
 
     /**
      * Instantiates a new command adminmode.

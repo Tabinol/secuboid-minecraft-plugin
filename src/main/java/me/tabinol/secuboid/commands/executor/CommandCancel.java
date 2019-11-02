@@ -30,7 +30,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandCancel.
  */
 @InfoCommand(name = "cancel")
-public class CommandCancel extends CommandExec {
+public final class CommandCancel extends CommandExec {
 
     /**
      * Instantiates a new command cancel.

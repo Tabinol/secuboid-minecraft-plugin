@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * Command bottom selection.
  */
 @InfoCommand(name = "bottom")
-public class CommandBottom extends CommandExec {
+public final class CommandBottom extends CommandExec {
 
     /**
      * Instantiates a new command bottom.

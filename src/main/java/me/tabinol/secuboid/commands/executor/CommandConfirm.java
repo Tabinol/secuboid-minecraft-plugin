@@ -31,7 +31,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandConfirm.
  */
 @InfoCommand(name = "confirm")
-public class CommandConfirm extends CommandExec {
+public final class CommandConfirm extends CommandExec {
 
     /**
      * Instantiates a new command confirm.

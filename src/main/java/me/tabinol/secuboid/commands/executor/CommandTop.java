@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * Command top selection.
  */
 @InfoCommand(name = "top")
-public class CommandTop extends CommandExec {
+public final class CommandTop extends CommandExec {
 
     /**
      * Instantiates a new command top.

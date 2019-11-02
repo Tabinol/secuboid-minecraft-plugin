@@ -22,6 +22,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
@@ -32,8 +33,11 @@ import org.bukkit.entity.Player;
 /**
  * The Class CommandWho.
  */
-@InfoCommand(name = "who")
-public class CommandWho extends CommandExec {
+@InfoCommand(name = "who", //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@land" }) //
+        })
+public final class CommandWho extends CommandExec {
 
     /**
      * Instantiates a new command who.
@@ -66,7 +70,8 @@ public class CommandWho extends CommandExec {
         if (stList.length() != 0) {
             new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
         } else {
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
         }
     }
 }

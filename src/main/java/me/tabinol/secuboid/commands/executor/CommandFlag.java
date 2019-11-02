@@ -44,7 +44,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^(add|remove)$", completions = { "@flag" }), //
                 @CompletionMap(regex = "^add (.*)$", completions = { "@boolean" }) //
         })
-public class CommandFlag extends CommandExec {
+public final class CommandFlag extends CommandExec {
 
     private List<Land> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;

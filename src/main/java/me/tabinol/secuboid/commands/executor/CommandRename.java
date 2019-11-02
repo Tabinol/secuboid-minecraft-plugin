@@ -32,7 +32,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandRename.
  */
 @InfoCommand(name = "rename", forceParameter = true)
-public class CommandRename extends CommandCollisionsThreadExec {
+public final class CommandRename extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command rename.

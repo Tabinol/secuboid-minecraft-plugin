@@ -41,7 +41,7 @@ import static me.tabinol.secuboid.config.Config.NEWLINE;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "@land" }),//
         })
-public class CommandInfo extends CommandExec {
+public final class CommandInfo extends CommandExec {
 
     /**
      * The area.

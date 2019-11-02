@@ -43,7 +43,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^$", completions = { "add", "remove", "replace" }), //
                 @CompletionMap(regex = "^(remove|replace)$", completions = { "@areaLand" }) //
         })
-public class CommandArea extends CommandCollisionsThreadExec {
+public final class CommandArea extends CommandCollisionsThreadExec {
 
     private String fonction;
 

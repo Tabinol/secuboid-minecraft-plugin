@@ -64,7 +64,7 @@ public abstract class CommandPlayerThreadExec extends CommandExec {
      * @param playerCacheEntry the player cache entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    void convertPcIfNeeded(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
+    final void convertPcIfNeeded(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
         if (pc instanceof PlayerContainerPlayerName) {
             if (playerCacheEntry.length == 1 && playerCacheEntry[0] != null) {

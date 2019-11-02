@@ -105,8 +105,12 @@ public final class CommandInv extends CommandExec {
         } else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
 
             // Remove inventory
-            new File(secuboid.getDataFolder() + "/" + InventoryStorage.INV_DIR + "/" + invSpec.getInventoryName() + "/"
-                    + InventoryStorage.DEFAULT_INV + ".yml").delete();
+            final String fileName = secuboid.getDataFolder() + "/" + InventoryStorage.INV_DIR + "/"
+                    + invSpec.getInventoryName() + "/" + InventoryStorage.DEFAULT_INV + ".yml";
+            final boolean isFileRemoved = new File(fileName).delete();
+            if (!isFileRemoved) {
+                secuboid.getLog().severe("Unable to remove this file: " + fileName);
+            }
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));
 

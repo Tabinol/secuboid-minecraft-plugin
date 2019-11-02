@@ -50,7 +50,6 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
     private static final long STATUS_FIRST_NB_TICKS = 40;
     private static final long STATUS_NEXT_NB_TICKS = 400;
 
-
     private boolean addForApprove = false;
     private Collisions.LandAction action = null;
     private BukkitTask statusTask = null;
@@ -75,8 +74,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         @Override
         public void run() {
             if (player.isOnline()) {
-                player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] "
-                        + secuboid.getLanguage().getMessage("COLLISION.GENERAL.PERCENT", collisions.getPercentDone() + ""));
+                player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage()
+                        .getMessage("COLLISION.GENERAL.PERCENT", collisions.getPercentDone() + ""));
             }
             secuboid.getLog().info("Collision manger is running and takes " + nbTick + " ticks.");
             nbTick += STATUS_NEXT_NB_TICKS;
@@ -92,8 +91,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandCollisionsThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandCollisionsThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender,
+            ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -104,12 +103,13 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param collisions collisions
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public abstract void commandThreadExecute(Collisions collisions)
-            throws SecuboidCommandException;
+    public abstract void commandThreadExecute(Collisions collisions) throws SecuboidCommandException;
 
     /**
-     * Check collision. Why Land parameter? The land can be an other land, not the land stored here.
-     * @param worldName the world name
+     * Check collision. Why Land parameter? The land can be an other land, not the
+     * land stored here.
+     * 
+     * @param worldName     the world name
      * @param landName      the land name
      * @param land          the land
      * @param type          the type
@@ -122,10 +122,10 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     final void checkCollision(String worldName, String landName, RealLand land, Type type, Collisions.LandAction action,
-                        int removeId, Area newArea, RealLand parent, PlayerContainer owner,
-                        boolean addForApprove) throws SecuboidCommandException {
+            int removeId, Area newArea, RealLand parent, PlayerContainer owner, boolean addForApprove) {
 
-        // allowApprove: false: The command can absolutely not be done if there is error!
+        // allowApprove: false: The command can absolutely not be done if there is
+        // error!
         this.addForApprove = addForApprove;
         this.type = type;
         this.action = action;
@@ -134,8 +134,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         this.owner = owner;
         this.parent = parent;
         boolean isFree = !isPlayerMustPay();
-        Collisions coll = new Collisions(secuboid, worldName, landName, land, action, removeId, newArea, parent,
-                owner, isFree, !addForApprove);
+        Collisions coll = new Collisions(secuboid, worldName, landName, land, action, removeId, newArea, parent, owner,
+                isFree, !addForApprove);
         secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
         CollisionThreadStatus collisionThreadStatus = new CollisionThreadStatus(player, coll);
         statusTask = Bukkit.getScheduler().runTaskTimer(secuboid, (Runnable) collisionThreadStatus,
@@ -162,14 +162,17 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
             if (addForApprove) {
                 if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove) {
 
-                    sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
-                    secuboid.getLands().getApproveList().addApprove(new Approve(secuboid, collisions.getLandName(), type, action, removeId, newArea,
-                            owner, parent, collisions.getPrice(), Calendar.getInstance()));
+                    sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage()
+                            .getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
+                    secuboid.getLands().getApproveList()
+                            .addApprove(new Approve(secuboid, collisions.getLandName(), type, action, removeId, newArea,
+                                    owner, parent, collisions.getPrice(), Calendar.getInstance()));
                     new CommandCancel(secuboid, null, sender, argList).commandExecute();
 
                 } else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || !allowApprove) {
 
-                    throw new SecuboidCommandException(secuboid, "Land collision", sender, "COLLISION.GENERAL.CANNOTDONE");
+                    throw new SecuboidCommandException(secuboid, "Land collision", sender,
+                            "COLLISION.GENERAL.CANNOTDONE");
                 }
             }
         }
@@ -185,14 +188,12 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
     private boolean isPlayerMustPay() {
         // Is Economy?
 
-        return !(secuboid.getPlayerMoney() == null
-                || !secuboid.getConf().useEconomy()
-                || playerConf.isAdminMode());
+        return !(secuboid.getPlayerMoney() == null || !secuboid.getConf().useEconomy() || playerConf.isAdminMode());
     }
 
     /**
-     * Class for multiple return for landCheckForCreate.
-     * It is just for land create/check.
+     * Class for multiple return for landCheckForCreate. It is just for land
+     * create/check.
      */
     final class LandCheckValues {
         Land localParent;
@@ -203,6 +204,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
     /**
      * This is common check for land create and land select info commands.
+     * 
      * @param select the player selection
      * @return multiple the value for area create
      * @throws SecuboidCommandException no permission/command error
@@ -223,7 +225,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                 landCheckValues.localParent = secuboid.getLands().getLand(curString);
 
                 if (landCheckValues.localParent == null) {
-                    throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.PARENTNOTEXIST");
+                    throw new SecuboidCommandException(secuboid, "CommandCreate", player,
+                            "COMMAND.CREATE.PARENTNOTEXIST");
                 }
             }
         } else {
@@ -234,8 +237,9 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
         // Not complicated! The player must be AdminMode, or access to create (in world)
         // or access to create in parent if it is a subland.
-        if (!playerConf.isAdminMode() && (landCheckValues.localParent == null
-                || !landCheckValues.localParent.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
+        if (!playerConf.isAdminMode()
+                && (landCheckValues.localParent == null || !landCheckValues.localParent.getPermissionsFlags()
+                        .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
             throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
         }
 

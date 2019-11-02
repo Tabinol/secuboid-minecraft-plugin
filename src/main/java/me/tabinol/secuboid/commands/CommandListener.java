@@ -20,6 +20,8 @@ package me.tabinol.secuboid.commands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,7 @@ import org.bukkit.entity.Player;
 /**
  * The Class OnCommand.
  */
-public class CommandListener implements CommandExecutor, TabCompleter {
+public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private final Secuboid secuboid;
     private final Map<String, Class<? extends CommandExec>> commandToClass;
@@ -146,60 +148,100 @@ public class CommandListener implements CommandExecutor, TabCompleter {
         for (String completion : completions) {
             switch (completion) {
             case "@approveLandList":
-                if (sender.hasPermission("secuboid.collisionapprove")) {
-                    argList.addAll(secuboid.getLands().getApproveList().getApproveList().keySet());
-                }
+                listApproveLandList(sender);
                 break;
             case "@areaLand":
-                final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
-                if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
-                    final RealLand land = playerConf.getSelection().getLand();
-                    final List<String> areasStrs = land.getAreas().stream().map(Object::toString)
-                            .collect(Collectors.toList());
-                    argList.addAll(areasStrs);
-                }
+                listAreaLand(sender);
                 break;
             case "@boolean":
-                argList.add("false");
-                argList.add("true");
+                listBoolean();
                 break;
             case "@command":
-                argList.addAll(filterList(playerCommands, firstChars));
+                listCommand();
                 break;
             case "@flag":
-                final Set<String> flagNames = secuboid.getPermissionsFlags().getFlagTypeNames();
-                argList.addAll(flagNames);
+                listFlag();
                 break;
             case "@land":
-                for (RealLand land : secuboid.getLands().getLands()) {
-                    argList.add(land.getName());
-                }
+                listLand();
                 break;
             case "@player":
-                argList.addAll(secuboid.getPlayersCache().getPlayerNames());
+                listPlayer();
                 break;
             case "@playerContainerName":
-                argList.addAll(secuboid.getPlayersCache().getPlayerNames());
-                for (PlayerContainerType pcType : PlayerContainerType.values()) {
-                    if (pcType != PlayerContainerType.PLAYERNAME) {
-                        argList.add(pcType.getPrint());
-                    }
-                }
+                listPlayerContainerName();
                 break;
             case "@permission":
-                final Set<String> permNames = secuboid.getPermissionsFlags().getPermissionTypeNames();
-                argList.addAll(permNames);
+                listPermission();
                 break;
             case "@type":
-                final List<String> typeNames = secuboid.getTypes().getTypes().stream().map(Type::getName)
-                        .collect(Collectors.toList());
-                argList.addAll(typeNames);
+                listType();
                 break;
             default:
                 argList.add(completion);
             }
         }
         return filterList(argList, firstChars);
+    }
+
+    private Set<String> listApproveLandList(CommandSender sender) {
+        if (sender.hasPermission("secuboid.collisionapprove")) {
+            return secuboid.getLands().getApproveList().getApproveList().keySet();
+        }
+        return Collections.emptySet();
+    }
+
+    private List<String> listAreaLand(CommandSender sender) {
+        final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
+        if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
+            final RealLand land = playerConf.getSelection().getLand();
+            final List<String> areasStrs = land.getAreas().stream().map(Object::toString).collect(Collectors.toList());
+            return areasStrs;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> listBoolean() {
+        return Arrays.asList("false", "true");
+    }
+
+    private List<String> listCommand() {
+        return playerCommands;
+    }
+
+    private Set<String> listFlag() {
+        return secuboid.getPermissionsFlags().getFlagTypeNames();
+    }
+
+    private List<String> listLand() {
+        final List<String> argList = new ArrayList<>();
+        for (RealLand land : secuboid.getLands().getLands()) {
+            argList.add(land.getName());
+        }
+        return argList;
+    }
+
+    private Set<String> listPlayer() {
+        return secuboid.getPlayersCache().getPlayerNames();
+    }
+
+    private List<String> listPlayerContainerName() {
+        final List<String> argList = new ArrayList<>();
+        argList.addAll(secuboid.getPlayersCache().getPlayerNames());
+        for (PlayerContainerType pcType : PlayerContainerType.values()) {
+            if (pcType != PlayerContainerType.PLAYERNAME) {
+                argList.add(pcType.getPrint());
+            }
+        }
+        return argList;
+    }
+
+    private Set<String> listPermission() {
+        return secuboid.getPermissionsFlags().getPermissionTypeNames();
+    }
+
+    private Collection<String> listType() {
+        return secuboid.getTypes().getTypes().stream().map(Type::getName).collect(Collectors.toList());
     }
 
     private List<String> filterList(List<String> matches, String firstChars) {

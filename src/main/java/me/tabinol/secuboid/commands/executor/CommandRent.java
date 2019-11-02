@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
@@ -33,8 +34,12 @@ import org.bukkit.command.CommandSender;
 /**
  * The rent command class.
  */
-@InfoCommand(name = "rent", forceParameter = true)
-public class CommandRent extends CommandExec {
+@InfoCommand(name = "rent", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "recreate" }), //
+                @CompletionMap(regex = "^([^\\s]+) ([^\\s]+)$", completions = { "@boolean" }) //
+        })
+public final class CommandRent extends CommandExec {
 
     /**
      * Instantiates a rent command.
@@ -68,14 +73,17 @@ public class CommandRent extends CommandExec {
         EcoSign ecoSign;
 
         // Check for sign in hand
-        if (player.getGameMode() != GameMode.CREATIVE && !Sign.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)) {
-            throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
+        if (player.getGameMode() != GameMode.CREATIVE
+                && !Sign.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)) {
+            throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player,
+                    "COMMAND.ECONOMY.MUSTHAVEISIGN");
         }
 
         // If 'recreate'
         if (curArg.equalsIgnoreCase("recreate")) {
             if (!land.isForRent()) {
-                throw new SecuboidCommandException(secuboid, "The land is not for rent", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+                throw new SecuboidCommandException(secuboid, "The land is not for rent", player,
+                        "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
             try {
                 ecoSign = new EcoSign(secuboid, land, player);
@@ -87,10 +95,12 @@ public class CommandRent extends CommandExec {
                     land.setRentSignLoc(ecoSign.getLocation());
                 }
             } catch (SignException e) {
-                throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+                throw new SecuboidCommandException(secuboid, "Error in the command", player,
+                        "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
 
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
 
             return;
         }
@@ -123,7 +133,8 @@ public class CommandRent extends CommandExec {
 
         // Land already for rent?
         if (land.isForRent()) {
-            throw new SecuboidCommandException(secuboid, "Land already for rent", player, "COMMAND.ECONOMY.ALREADYRENT");
+            throw new SecuboidCommandException(secuboid, "Land already for rent", player,
+                    "COMMAND.ECONOMY.ALREADYRENT");
         }
 
         // Create Sign
@@ -132,9 +143,11 @@ public class CommandRent extends CommandExec {
             ecoSign.createSignForRent(rentPrice, rentRenew, rentAutoRenew, null);
             removeSignFromHand();
         } catch (SignException e) {
-            throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+            throw new SecuboidCommandException(secuboid, "Error in the command", player,
+                    "COMMAND.ECONOMY.ERRORCREATESIGN");
         }
         land.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
+        player.sendMessage(
+                ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
     }
 }

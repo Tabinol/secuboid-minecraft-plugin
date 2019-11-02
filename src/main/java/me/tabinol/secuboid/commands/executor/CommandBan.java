@@ -41,7 +41,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^(add|remove)$", completions = { "@playerContainer" }), //
                 @CompletionMap(regex = "^(add|remove) player$", completions = { "@player" }) //
         })
-public class CommandBan extends CommandPlayerThreadExec {
+public final class CommandBan extends CommandPlayerThreadExec {
 
     private String fonction;
 

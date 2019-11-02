@@ -35,7 +35,7 @@ import org.bukkit.command.CommandSender;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "balance", "deposit", "withdraw" }) //
         })
-public class CommandMoney extends CommandExec {
+public final class CommandMoney extends CommandExec {
 
     /**
      * The player money.

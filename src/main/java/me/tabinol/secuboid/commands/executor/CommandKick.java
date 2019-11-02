@@ -33,7 +33,8 @@ import org.bukkit.entity.Player;
  */
 @InfoCommand(name = "kick", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "@player" }) //
+                @CompletionMap(regex = "^$", completions = { "@player", "@land" }), //
+                @CompletionMap(regex = "^add ([^\\s]+)$", completions = { "@player" }) //
         })
 public class CommandKick extends CommandExec {
 

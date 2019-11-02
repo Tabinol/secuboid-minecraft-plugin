@@ -33,7 +33,7 @@ import org.bukkit.command.CommandSender;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "@command" }) //
         })
-public class CommandHelp extends CommandExec {
+public final class CommandHelp extends CommandExec {
 
     /**
      * The command name.

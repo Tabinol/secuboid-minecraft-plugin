@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
                 @CompletionMap(regex = "^default$", completions = { "save", "remove" }), //
                 @CompletionMap(regex = "^loaddeath$", completions = { "@player" }) //
         })
-public class CommandInv extends CommandExec {
+public final class CommandInv extends CommandExec {
 
     /**
      * Instantiates a new command inventory.

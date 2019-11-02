@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandRemove.
  */
 @InfoCommand(name = "remove")
-public class CommandRemove extends CommandCollisionsThreadExec {
+public final class CommandRemove extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command remove.

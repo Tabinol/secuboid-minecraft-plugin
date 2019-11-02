@@ -68,7 +68,7 @@ public class CommandEcosign extends CommandExec {
     }
 
     @Override
-    public void commandExecute() throws SecuboidCommandException {
+    public final void commandExecute() throws SecuboidCommandException {
 
         PluginManager pm = secuboid.getServer().getPluginManager();
 

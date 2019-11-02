@@ -43,7 +43,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^player$", completions = { "@player" }), //
                 @CompletionMap(regex = "^type$", completions = { "@type" }) //
         })
-public class CommandList extends CommandPlayerThreadExec {
+public final class CommandList extends CommandPlayerThreadExec {
 
     private String worldName = null;
     private Type type = null;

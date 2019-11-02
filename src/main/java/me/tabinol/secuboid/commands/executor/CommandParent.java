@@ -35,7 +35,7 @@ import org.bukkit.command.CommandSender;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "@land", "unset" }) //
         })
-public class CommandParent extends CommandCollisionsThreadExec {
+public final class CommandParent extends CommandCollisionsThreadExec {
 
     /**
      * Create a parent command.

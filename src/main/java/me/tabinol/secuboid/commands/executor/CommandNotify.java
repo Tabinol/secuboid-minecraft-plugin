@@ -34,7 +34,7 @@ import org.bukkit.command.CommandSender;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "@land" }) //
         })
-public class CommandNotify extends CommandExec {
+public final class CommandNotify extends CommandExec {
 
     /**
      * Instantiates a new command notify.

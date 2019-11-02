@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
@@ -35,8 +36,11 @@ import org.bukkit.command.CommandSender;
  *
  * @author tabinol
  */
-@InfoCommand(name = "sale", forceParameter = true)
-public class CommandSale extends CommandExec {
+@InfoCommand(name = "sale", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "recreate" }) //
+        })
+public final class CommandSale extends CommandExec {
 
     /**
      * Instantiates a new command sale.
@@ -68,14 +72,17 @@ public class CommandSale extends CommandExec {
         EcoSign ecoSign;
 
         // Check for sign in hand
-        if (player.getGameMode() != GameMode.CREATIVE && !Sign.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)) {
-            throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player, "COMMAND.ECONOMY.MUSTHAVEISIGN");
+        if (player.getGameMode() != GameMode.CREATIVE
+                && !Sign.class.isAssignableFrom(player.getEquipment().getItemInMainHand().getType().data)) {
+            throw new SecuboidCommandException(secuboid, "Must have a sign in hand", player,
+                    "COMMAND.ECONOMY.MUSTHAVEISIGN");
         }
 
         // If 'recreate'
         if (curArg.equalsIgnoreCase("recreate")) {
             if (!land.isForSale()) {
-                throw new SecuboidCommandException(secuboid, "The land is not for sale", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+                throw new SecuboidCommandException(secuboid, "The land is not for sale", player,
+                        "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
             try {
                 ecoSign = new EcoSign(secuboid, land, player);
@@ -86,10 +93,12 @@ public class CommandSale extends CommandExec {
                     land.setSaleSignLoc(ecoSign.getLocation());
                 }
             } catch (SignException e) {
-                throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+                throw new SecuboidCommandException(secuboid, "Error in the command", player,
+                        "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
 
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RECREATE"));
 
             return;
         }
@@ -103,7 +112,8 @@ public class CommandSale extends CommandExec {
 
         // Land already for sale?
         if (land.isForSale()) {
-            throw new SecuboidCommandException(secuboid, "Land already for sale", player, "COMMAND.ECONOMY.ALREADYSALE");
+            throw new SecuboidCommandException(secuboid, "Land already for sale", player,
+                    "COMMAND.ECONOMY.ALREADYSALE");
         }
 
         // Create Sign
@@ -112,9 +122,11 @@ public class CommandSale extends CommandExec {
             ecoSign.createSignForSale(salePrice);
             removeSignFromHand();
         } catch (SignException e) {
-            throw new SecuboidCommandException(secuboid, "Error in the command", player, "COMMAND.ECONOMY.ERRORCREATESIGN");
+            throw new SecuboidCommandException(secuboid, "Error in the command", player,
+                    "COMMAND.ECONOMY.ERRORCREATESIGN");
         }
         land.setForSale(true, salePrice, ecoSign.getLocation());
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
+        player.sendMessage(
+                ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
     }
 }

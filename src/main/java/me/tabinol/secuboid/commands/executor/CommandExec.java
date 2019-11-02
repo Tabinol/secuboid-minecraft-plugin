@@ -148,7 +148,7 @@ public abstract class CommandExec {
      *
      * @return true, if is executable
      */
-    public boolean isExecutable() {
+    public final boolean isExecutable() {
         return isExecutable;
     }
 
@@ -159,7 +159,7 @@ public abstract class CommandExec {
      * @param mustBeAreaSelected the must be area selected
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected)
+    protected final void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected)
             throws SecuboidCommandException {
 
         if (mustBeSelectMode != null) {
@@ -182,7 +182,7 @@ public abstract class CommandExec {
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
-    private void checkSelection(boolean result, boolean neededResult, String messageFalse, boolean startSelectCancel)
+    private final void checkSelection(boolean result, boolean neededResult, String messageFalse, boolean startSelectCancel)
             throws SecuboidCommandException {
 
         if (result != neededResult) {
@@ -208,7 +208,7 @@ public abstract class CommandExec {
      * @param bukkitPermission the bukkit permission
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner, PermissionType neededPerm,
+    protected final void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner, PermissionType neededPerm,
             String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
@@ -235,7 +235,7 @@ public abstract class CommandExec {
     /**
      * Gets the land from command if no land selected.
      */
-    void getLandFromCommandIfNoLandSelected() {
+    final void getLandFromCommandIfNoLandSelected() {
 
         if (land == null && !argList.isLast()) {
             land = secuboid.getLands().getLand(argList.getNext());
@@ -245,7 +245,7 @@ public abstract class CommandExec {
     /**
      * Removes the sign from hand.
      */
-    void removeSignFromHand() {
+    final void removeSignFromHand() {
         if (player.getGameMode() != GameMode.CREATIVE) {
             EntityEquipment equipment = player.getEquipment();
             if (equipment.getItemInMainHand().getAmount() == 1) {

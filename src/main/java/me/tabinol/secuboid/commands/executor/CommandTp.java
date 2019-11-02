@@ -21,6 +21,7 @@ package me.tabinol.secuboid.commands.executor;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.FlagValue;
@@ -32,8 +33,11 @@ import org.bukkit.command.CommandSender;
 /**
  * The Class Command teleport.
  */
-@InfoCommand(name = "tp", forceParameter = true)
-public class CommandTp extends CommandExec {
+@InfoCommand(name = "tp", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "@land" }) //
+        })
+public final class CommandTp extends CommandExec {
 
     /**
      * Instantiates a new command teleport.

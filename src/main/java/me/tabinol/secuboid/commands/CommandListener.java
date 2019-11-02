@@ -21,7 +21,6 @@ package me.tabinol.secuboid.commands;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -148,34 +147,34 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         for (String completion : completions) {
             switch (completion) {
             case "@approveLandList":
-                listApproveLandList(sender);
+                argList.addAll(listApproveLandList(sender));
                 break;
             case "@areaLand":
-                listAreaLand(sender);
+                argList.addAll(listAreaLand(sender));
                 break;
             case "@boolean":
-                listBoolean();
+                argList.addAll(listBoolean());
                 break;
             case "@command":
-                listCommand();
+                argList.addAll(listCommand());
                 break;
             case "@flag":
-                listFlag();
+                argList.addAll(listFlag());
                 break;
             case "@land":
-                listLand();
+                argList.addAll(listLand());
                 break;
             case "@player":
-                listPlayer();
+                argList.addAll(listPlayer());
                 break;
-            case "@playerContainerName":
-                listPlayerContainerName();
+            case "@playerContainer":
+                argList.addAll(listPlayerContainer());
                 break;
             case "@permission":
-                listPermission();
+                argList.addAll(listPermission());
                 break;
             case "@type":
-                listType();
+                argList.addAll(listType());
                 break;
             default:
                 argList.add(completion);
@@ -225,7 +224,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return secuboid.getPlayersCache().getPlayerNames();
     }
 
-    private List<String> listPlayerContainerName() {
+    private List<String> listPlayerContainer() {
         final List<String> argList = new ArrayList<>();
         argList.addAll(secuboid.getPlayersCache().getPlayerNames());
         for (PlayerContainerType pcType : PlayerContainerType.values()) {
@@ -240,12 +239,12 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return secuboid.getPermissionsFlags().getPermissionTypeNames();
     }
 
-    private Collection<String> listType() {
+    private List<String> listType() {
         return secuboid.getTypes().getTypes().stream().map(Type::getName).collect(Collectors.toList());
     }
 
     private List<String> filterList(List<String> matches, String firstChars) {
-        return matches.stream().filter(match -> match.startsWith(firstChars.toLowerCase()))
+        return matches.stream().filter(match -> match.toLowerCase().startsWith(firstChars.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

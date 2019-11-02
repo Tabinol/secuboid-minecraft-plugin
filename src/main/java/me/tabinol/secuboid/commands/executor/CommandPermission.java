@@ -46,12 +46,12 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^$", completions = { "add", "remove", "list" }), //
                 @CompletionMap(regex = "^(add|remove)$", completions = { "@playerContainer" }), //
                 @CompletionMap(regex = "^(add|remove) player$", completions = { "@player" }), //
+                @CompletionMap(regex = "^(add|remove) \\w+\\b(?<!\\bplayer)$", completions = { "@permission" }), //
                 @CompletionMap(regex = "^(add|remove) player ([^\\s]+)$", completions = { "@permission" }), //
-                @CompletionMap(regex = "^(add|remove) ([^\\s]+)$", completions = { "@permission" }), //
-                @CompletionMap(regex = "^add player ([^\\s]+) .*$", completions = { "@boolean" }), //
-                @CompletionMap(regex = "^add ([^\\s]+)$ .*$", completions = { "@boolean" }) //
+                @CompletionMap(regex = "^add \\w+\\b(?<!\\bplayer)$ .*$", completions = { "@boolean" }), //
+                @CompletionMap(regex = "^add player ([^\\s]+) .*$", completions = { "@boolean" }) //
         })
-public class CommandPermission extends CommandPlayerThreadExec {
+public final class CommandPermission extends CommandPlayerThreadExec {
 
     private List<Land> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;

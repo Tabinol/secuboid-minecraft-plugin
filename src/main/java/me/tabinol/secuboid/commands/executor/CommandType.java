@@ -21,6 +21,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.types.Type;
@@ -30,8 +31,11 @@ import org.bukkit.command.CommandSender;
 /**
  * The type command class.
  */
-@InfoCommand(name = "type", forceParameter = true)
-public class CommandType extends CommandExec {
+@InfoCommand(name = "type", forceParameter = true, //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "remove", "list", "@type" }), //
+        })
+public final class CommandType extends CommandExec {
 
     /**
      * Instantiates a new command type.
@@ -71,7 +75,8 @@ public class CommandType extends CommandExec {
         } else if (curArg.equals("remove")) {
 
             land.setType(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
 
         } else { // Type change
 
@@ -82,7 +87,8 @@ public class CommandType extends CommandExec {
             }
 
             land.setType(type);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
         }
     }
 }

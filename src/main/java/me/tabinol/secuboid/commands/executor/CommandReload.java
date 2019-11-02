@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandReload.
  */
 @InfoCommand(name = "reload", allowConsole = true)
-public class CommandReload extends CommandExec {
+public final class CommandReload extends CommandExec {
 
     /**
      * Instantiates a new command reload.

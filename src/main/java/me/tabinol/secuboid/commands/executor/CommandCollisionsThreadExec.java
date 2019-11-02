@@ -121,7 +121,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param addForApprove the add for approve
      * @throws SecuboidCommandException the secuboid command exception
      */
-    void checkCollision(String worldName, String landName, RealLand land, Type type, Collisions.LandAction action,
+    final void checkCollision(String worldName, String landName, RealLand land, Type type, Collisions.LandAction action,
                         int removeId, Area newArea, RealLand parent, PlayerContainer owner,
                         boolean addForApprove) throws SecuboidCommandException {
 
@@ -148,7 +148,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param collisions collisions
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public void commandThreadParentExecute(Collisions collisions) throws SecuboidCommandException {
+    public final void commandThreadParentExecute(Collisions collisions) throws SecuboidCommandException {
 
         boolean allowApprove = collisions.getAllowApprove();
 
@@ -194,7 +194,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * Class for multiple return for landCheckForCreate.
      * It is just for land create/check.
      */
-    class LandCheckValues {
+    final class LandCheckValues {
         Land localParent;
         RealLand realLocalParent;
         PlayerContainer localOwner;
@@ -207,7 +207,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @return multiple the value for area create
      * @throws SecuboidCommandException no permission/command error
      */
-    LandCheckValues landCheckForCreate(AreaSelection select) throws SecuboidCommandException {
+    final LandCheckValues landCheckForCreate(AreaSelection select) throws SecuboidCommandException {
         LandCheckValues landCheckValues = new LandCheckValues();
 
         // Check for parent

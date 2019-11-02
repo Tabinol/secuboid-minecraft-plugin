@@ -36,7 +36,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandCreate.
  */
 @InfoCommand(name = "create", forceParameter = true)
-public class CommandCreate extends CommandCollisionsThreadExec {
+public final class CommandCreate extends CommandCollisionsThreadExec {
 
     /**
      * Instantiates a new command create.

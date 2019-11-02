@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * Command radius selection.
  */
 @InfoCommand(name = "radius")
-public class CommandRadius extends CommandExec {
+public final class CommandRadius extends CommandExec {
 
     /**
      * Instantiates a new command radius.

@@ -47,7 +47,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^$", completions = { "clear", "list", "info", "confirm", "cancel" }), //
                 @CompletionMap(regex = "^(info|confirm|cancel)$", completions = { "@approveLandList" }) //
         })
-public class CommandApprove extends CommandCollisionsThreadExec {
+public final class CommandApprove extends CommandCollisionsThreadExec {
 
     private final ApproveList approveList;
     private boolean confirm = false;

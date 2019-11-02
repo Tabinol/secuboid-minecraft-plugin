@@ -31,7 +31,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandPriority.
  */
 @InfoCommand(name = "priority", forceParameter = true)
-public class CommandPriority extends CommandExec {
+public final class CommandPriority extends CommandExec {
 
     /**
      * Instantiates a new command priority.

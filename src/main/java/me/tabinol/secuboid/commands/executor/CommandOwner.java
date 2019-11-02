@@ -36,7 +36,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^$", completions = { "@playerContainer" }), //
                 @CompletionMap(regex = "^player$", completions = { "@player" }) //
         })
-public class CommandOwner extends CommandPlayerThreadExec {
+public final class CommandOwner extends CommandPlayerThreadExec {
 
     /**
      * Instantiates a new command owner.

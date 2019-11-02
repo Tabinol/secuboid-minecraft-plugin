@@ -35,7 +35,7 @@ import org.bukkit.command.CommandSender;
  * @author Tabinol
  */
 @InfoCommand(name = "setspawn")
-public class CommandSetspawn extends CommandExec {
+public final class CommandSetspawn extends CommandExec {
 
     /**
      * Instantiates a new command set spawn.

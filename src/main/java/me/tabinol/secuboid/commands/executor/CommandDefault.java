@@ -30,7 +30,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandDefault.
  */
 @InfoCommand(name = "default")
-public class CommandDefault extends CommandExec {
+public final class CommandDefault extends CommandExec {
 
     /**
      * Instantiates a new command default.

@@ -78,10 +78,10 @@ class CommandSelectWorldedit {
         if (secuboid.getDependPlugin().getWorldEdit() == null) {
             throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
         }
-        LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
+        final LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
 
         try {
-            Region sel;
+            final Region sel;
             if (session.getSelectionWorld() == null
                     || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
                     || sel instanceof CylinderRegion))) {
@@ -90,7 +90,7 @@ class CommandSelectWorldedit {
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
 
-            AreaSelection select;
+            final AreaSelection select;
             if (sel instanceof CuboidRegion) {
                 select = new AreaSelection(secuboid, player, new CuboidArea(player.getWorld().getName(),
                         sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),

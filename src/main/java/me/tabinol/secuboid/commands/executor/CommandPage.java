@@ -29,7 +29,7 @@ import org.bukkit.command.CommandSender;
  * The Class CommandPage.
  */
 @InfoCommand(name = "page", allowConsole = true, forceParameter = true)
-public class CommandPage extends CommandExec {
+public final class CommandPage extends CommandExec {
 
     /**
      * Instantiates a new command page.

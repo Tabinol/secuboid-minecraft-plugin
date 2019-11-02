@@ -48,7 +48,7 @@ import org.bukkit.command.CommandSender;
                 @CompletionMap(regex = "^(add|remove) player$", completions = { "@player" }), //
                 @CompletionMap(regex = "^(add|remove) \\w+\\b(?<!\\bplayer)$", completions = { "@permission" }), //
                 @CompletionMap(regex = "^(add|remove) player ([^\\s]+)$", completions = { "@permission" }), //
-                @CompletionMap(regex = "^add \\w+\\b(?<!\\bplayer)$ .*$", completions = { "@boolean" }), //
+                @CompletionMap(regex = "^add \\w+\\b(?<!\\bplayer) .*$", completions = { "@boolean" }), //
                 @CompletionMap(regex = "^add player ([^\\s]+) .*$", completions = { "@boolean" }) //
         })
 public final class CommandPermission extends CommandPlayerThreadExec {

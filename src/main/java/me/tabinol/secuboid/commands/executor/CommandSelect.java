@@ -44,7 +44,7 @@ import org.bukkit.entity.Player;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "cub", "cuboid", "cyl", "cylinder", "rea", "read", "exp",
                         "expand", "ret", "retract", "mov", "move", "lan", "land", "are", "area", "done", "info", "we",
-                        "worldedit", "@land" }) //
+                        "worldedit", "here", "@land" }) //
         })
 public final class CommandSelect extends CommandCollisionsThreadExec {
 

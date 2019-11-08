@@ -184,14 +184,14 @@ public class VisualSelectionCuboid implements VisualSelection {
                         Land testCuboidarea = secuboid.getLands().getLandOrOutsideArea(newloc);
                         if (parentDetected == testCuboidarea
                                 && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE.createBlockData());
                         } else {
-                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
+                            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION.createBlockData());
                             isCollision = true;
                         }
                     } else {
                         // Passive Selection (created area)
-                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
+                        changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE.createBlockData());
                     }
 
                 } else {

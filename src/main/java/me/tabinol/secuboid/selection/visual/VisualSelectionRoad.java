@@ -182,12 +182,12 @@ public class VisualSelectionRoad implements VisualSelection {
 
         Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
         if (!isActive) {
-            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE);
+            changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE.createBlockData());
         } else {
             if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
-                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE);
+                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE.createBlockData());
             } else {
-                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION);
+                changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION.createBlockData());
                 isCollision = true;
             }
         }

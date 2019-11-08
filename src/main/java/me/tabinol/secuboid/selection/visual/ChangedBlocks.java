@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 /**
@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
  *
  * @author tabinol
  */
-class ChangedBlocks {
+final class ChangedBlocks {
 
     /**
      * Maximum visible distance in blocks.
@@ -46,36 +46,27 @@ class ChangedBlocks {
     /**
      * The block list.
      */
-    private final Map<Location, Material> blockList;
+    private final Map<Location, BlockData> locationToBlockData;
 
-    /**
-     * The block byte (option) list.
-     */
-    private final Map<Location, Byte> blockByteList;
 
     ChangedBlocks(Player player) {
         this.player = player;
-        blockList = new HashMap<Location, Material>();
-        blockByteList = new HashMap<Location, Byte>();
+        locationToBlockData = new HashMap<>();
     }
 
-    @SuppressWarnings("deprecation")
-    void changeBlock(Location location, Material material) {
+    void changeBlock(Location location, BlockData blockData) {
         if (!isDistanceMoreThan(player.getLocation(), location, MAX_DISTANCE)) {
-            Block block = location.getBlock();
-            blockList.put(location, block.getType());
-            blockByteList.put(location, block.getData());
-            player.sendBlockChange(location, material, (byte) 0);
+            BlockData currentBlockData = location.getBlock().getBlockData();
+            locationToBlockData.put(location, currentBlockData);
+            player.sendBlockChange(location, blockData);
         }
     }
 
-    @SuppressWarnings("deprecation")
     void resetBlocks() {
-        for (Map.Entry<Location, Material> entrySet : this.blockList.entrySet()) {
-            player.sendBlockChange(entrySet.getKey(), entrySet.getValue(), blockByteList.get(entrySet.getKey()));
+        for (Map.Entry<Location, BlockData> entrySet : this.locationToBlockData.entrySet()) {
+            player.sendBlockChange(entrySet.getKey(), entrySet.getValue());
         }
-        blockList.clear();
-        blockByteList.clear();
+        locationToBlockData.clear();
     }
 
     /**

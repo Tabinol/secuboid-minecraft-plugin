@@ -18,18 +18,21 @@
  */
 package me.tabinol.secuboid.economy;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SignException;
+import me.tabinol.secuboid.lands.RealLand;
 
 /**
  * Represent the economy sign.
@@ -153,7 +156,11 @@ public class EcoSign {
         } else {
             throw new SignException();
         }
-        this.facing = ((Directional) ((Sign) blockPlace.getState()).getBlockData()).getFacing();
+        if (isWallSign) {
+            this.facing = ((Directional) blockPlace.getBlockData()).getFacing();
+        } else {
+            this.facing = ((Rotatable) blockPlace.getBlockData()).getRotation();
+        }
     }
 
     /**
@@ -247,18 +254,25 @@ public class EcoSign {
         }
 
         // Create sign
-        blockPlace.setType(mat);
+        final BlockData blockData = secuboid.getServer().createBlockData(mat);
 
-        Sign sign = (Sign) blockPlace.getState();
+        // Set facing
+        if (isWallSign) {
+            ((Directional) blockData).setFacing(facing);
+        } else {
+            ((Rotatable) blockData).setRotation(facing);
+        }
+        
+        // Create new sign block
+        blockPlace.setBlockData(blockData);
 
         // Add lines
+        final Sign sign = (Sign) blockPlace.getState();
         for (int t = 0; t <= 3; t++) {
             sign.setLine(t, lines[t]);
         }
 
-        // Set facing
-        ((Directional) sign.getBlockData()).setFacing(facing);
-
+        // Update sign
         sign.update();
     }
 
@@ -276,12 +290,13 @@ public class EcoSign {
      */
     public void removeSign(Location oldSignLocation) {
 
-        Block block = oldSignLocation.getBlock();
+        final Block block = oldSignLocation.getBlock();
+        final BlockData blockData = block.getBlockData();
 
         block.getChunk().load();
 
         // Remove only if it is a sign;
-        if (Sign.class.isAssignableFrom(block.getType().data)) {
+        if (blockData instanceof org.bukkit.block.data.type.Sign) {
             block.setType(Material.AIR);
 
             // Drop item

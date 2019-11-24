@@ -45,6 +45,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -747,17 +748,17 @@ public class PlayerListener extends CommonListener implements Listener {
     }
 
     /**
-     * On entity change block.
+     * On entity block form.
      *
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+    public void onEntityBlockForm(EntityBlockFormEvent event) {
 
         // Crop trample
         Land land = secuboid.getLands().getLandOrOutsideArea(event.getBlock().getLocation());
         Material matFrom = event.getBlock().getType();
-        Material matTo = event.getTo();
+        Material matTo = event.getNewState().getType();
         Player player;
 
         if (event.getEntity() instanceof Player

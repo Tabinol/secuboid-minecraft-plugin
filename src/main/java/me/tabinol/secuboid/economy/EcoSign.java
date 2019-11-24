@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class EcoSign {
 
+    private static final String OAK_PREFIX = "OAK";
     private static final String SIGN_SUFFIX = "_SIGN";
     public static final String WALL_SIGN_SUFFIX = "_WALL_SIGN";
 
@@ -82,7 +83,14 @@ public class EcoSign {
         Block targetBlock = player.getTargetBlock(null, 10);
         Block testBlock;
         this.land = land;
-        signPrefix = player.getEquipment().getItemInMainHand().getType().name().replace(SIGN_SUFFIX, "");
+        final String materialInHandName = player.getEquipment().getItemInMainHand().getType().name();
+        if (materialInHandName.endsWith(SIGN_SUFFIX)) {
+            // Sign in hand
+            signPrefix = materialInHandName.replace(SIGN_SUFFIX, "");
+        } else {
+            // No sign in hand (admin)
+            signPrefix = OAK_PREFIX;
+        }
 
         if (targetBlock == null) {
             throw new SignException();
@@ -145,7 +153,7 @@ public class EcoSign {
         } else {
             throw new SignException();
         }
-        this.facing = ((Directional) ((Sign) blockPlace.getState()).getData()).getFacing();
+        this.facing = ((Directional) ((Sign) blockPlace.getState()).getBlockData()).getFacing();
     }
 
     /**
@@ -249,7 +257,7 @@ public class EcoSign {
         }
 
         // Set facing
-        ((Directional) sign.getData()).setFacing(facing);
+        ((Directional) sign.getBlockData()).setFacing(facing);
 
         sign.update();
     }

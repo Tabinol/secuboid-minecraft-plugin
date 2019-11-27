@@ -31,12 +31,12 @@ import org.bukkit.entity.Player;
 public class PlayerContainerTenant implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
-        if (!(PCLand instanceof RealLand) && !(testLand instanceof RealLand) && PCLand != testLand) {
+    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+        if (!(pcLand instanceof RealLand) && !(testLand instanceof RealLand) && pcLand != testLand) {
             return false;
         }
 
-        RealLand realPCLand = (RealLand) PCLand;
+        RealLand realPCLand = (RealLand) pcLand;
         boolean value = realPCLand.isTenant(player);
         RealLand actual = realPCLand;
         RealLand parent;

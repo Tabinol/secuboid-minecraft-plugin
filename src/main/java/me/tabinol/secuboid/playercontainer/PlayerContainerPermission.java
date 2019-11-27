@@ -39,7 +39,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
         return player.hasPermission(perm);
     }
 

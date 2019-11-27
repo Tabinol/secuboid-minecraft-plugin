@@ -39,11 +39,11 @@ public interface PlayerContainer extends Comparable<PlayerContainer> {
      * Return if the player has access from a land.
      *
      * @param player   the player
-     * @param PCLand   The land where this player container come from, owner/resident/... of what land?
+     * @param pcLand   The land where this player container come from, owner/resident/... of what land?
      * @param testLand The land where we want to test the access or where the action is done
      * @return true if the player has access
      */
-    boolean hasAccess(Player player, Land PCLand, Land testLand);
+    boolean hasAccess(Player player, Land pcLand, Land testLand);
 
     /**
      * Gets the printable format

@@ -328,7 +328,7 @@ COMMAND:
     NOTEXIST: "This land doesn't exist."
   ADMINMODE:
     JOIN: "you are now in admin mode."
-    QUIT: "you are no longur in admin mode."
+    QUIT: "you are no longer in admin mode."
   CANCEL:
     ACTION: "Your action is cancelled."
     FLAGS: "The flags selection mode is cancelled."

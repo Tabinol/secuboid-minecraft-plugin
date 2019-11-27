@@ -46,7 +46,6 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -309,7 +308,7 @@ public class PlayerListener extends CommonListener implements Listener {
             event.setCancelled(true);
 
             // For economy (buy or rent/unrent)
-        } else if ((action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
+        } else if (conf.useEconomy() && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
                 && Sign.class.isAssignableFrom(ml.data)) {
 
             RealLand trueLand = secuboid.getLands().getLand(loc);

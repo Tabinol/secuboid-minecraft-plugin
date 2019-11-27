@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 public class PlayerContainerNobody implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
         return false;
     }
 

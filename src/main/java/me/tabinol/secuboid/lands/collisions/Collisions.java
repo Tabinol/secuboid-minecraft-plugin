@@ -430,7 +430,7 @@ public class Collisions {
         double priceFlag;
         double price;
 
-        if (newArea == null) {
+        if (newArea == null || !secuboid.getConf().useEconomy()) {
             return 0;
         }
 

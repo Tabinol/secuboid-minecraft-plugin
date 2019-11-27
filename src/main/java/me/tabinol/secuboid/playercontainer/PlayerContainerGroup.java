@@ -39,7 +39,7 @@ public class PlayerContainerGroup implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
         return player != null && secuboid.getDependPlugin().getVaultPermission().playerInGroup(player, groupName);
     }
 

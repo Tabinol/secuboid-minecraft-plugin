@@ -59,6 +59,11 @@ public final class CommandRent extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
+        // Economy activated in configuration?
+        if (!secuboid.getConf().useEconomy()) {
+            throw new SecuboidCommandException(secuboid, "Economy not available.", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+        }
+
         checkSelections(true, null);
         checkPermission(true, true, null, null);
         if (!playerConf.isAdminMode()) {

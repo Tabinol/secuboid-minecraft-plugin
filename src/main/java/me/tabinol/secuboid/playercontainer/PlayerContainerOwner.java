@@ -31,20 +31,20 @@ import org.bukkit.entity.Player;
 public class PlayerContainerOwner implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land PCLand, Land testLand) {
-        if (!(PCLand instanceof RealLand) && !(testLand instanceof RealLand) && PCLand != testLand) {
+    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+        if (!(pcLand instanceof RealLand) && !(testLand instanceof RealLand) && pcLand != testLand) {
             return false;
         }
 
         boolean value;
         RealLand parent;
 
-        value = ((RealLand) PCLand).getOwner().hasAccess(player, PCLand, testLand);
+        value = ((RealLand) pcLand).getOwner().hasAccess(player, pcLand, testLand);
 
-        if (!value && (parent = ((RealLand) PCLand).getParent()) != null
-                && PCLand.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
+        if (!value && (parent = ((RealLand) pcLand).getParent()) != null
+                && pcLand.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
 
-            return parent.getOwner().hasAccess(player, PCLand, testLand);
+            return parent.getOwner().hasAccess(player, pcLand, testLand);
         }
 
         return value;

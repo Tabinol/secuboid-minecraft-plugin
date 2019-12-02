@@ -100,14 +100,14 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getSaleSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
+                    secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.setForSale(false, 0, null);
                 PlayerContainer oldOwner = land.getOwner();
                 land.setOwner(playerConf.getPlayerContainer());
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
                         land.getName()));
-                secuboid.getLog().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                secuboid.getLogger().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
                         + " for land '" + land.getName() + "'.");
                 pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.SELL, oldOwner, playerConf.getPlayerContainer()));
             } else // Rent and unrent
@@ -121,7 +121,7 @@ public class CommandEcosign extends CommandExec {
                                 land.getRentAutoRenew(), null);
                     } catch (SignException e) {
                         // Real Error
-                        secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
+                        secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND",
                             land.getName()));
@@ -154,11 +154,11 @@ public class CommandEcosign extends CommandExec {
                                 land.getRentRenew(), land.getRentAutoRenew(), player.getName());
                     } catch (SignException e) {
                         // Real Error
-                        secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
+                        secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                     player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
                             land.getName()));
-                    secuboid.getLog().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                    secuboid.getLogger().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
                             + " for land '" + land.getName() + "'.");
                     pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT, land.getOwner(),
                             playerConf.getPlayerContainer()));
@@ -173,7 +173,7 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getSaleSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
+                    secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.setForSale(false, 0, null);
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE",
@@ -185,7 +185,7 @@ public class CommandEcosign extends CommandExec {
                     new EcoSign(secuboid, land, land.getRentSignLoc()).removeSign();
                 } catch (SignException e) {
                     // Real Error
-                    secuboid.getLog().severe("Sign exception in location: " + land.getSaleSignLoc());
+                    secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 boolean wasRented = land.isRented();
                 PlayerContainer tenant = null;

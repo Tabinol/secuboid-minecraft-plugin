@@ -118,9 +118,9 @@ public class DependPlugin {
 
         if (plugin != null) {
             secuboid.getServer().getPluginManager().enablePlugin(plugin);
-            secuboid.getLog().info(pluginName + " detected!");
+            secuboid.getLogger().info(pluginName + " detected!");
         } else {
-            secuboid.getLog().info(pluginName + " IS NOT Detected!");
+            secuboid.getLogger().info(pluginName + " IS NOT Detected!");
         }
 
         return plugin;

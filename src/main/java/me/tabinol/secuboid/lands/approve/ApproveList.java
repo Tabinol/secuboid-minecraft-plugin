@@ -233,7 +233,7 @@ public class ApproveList {
         // Delete file
         if (approveFile.exists()) {
             if (!approveFile.delete()) {
-                secuboid.getLog().severe("Impossible to delete the file " + approveFile.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to delete the file " + approveFile.getPath() + ".");
             }
         }
 
@@ -256,15 +256,15 @@ public class ApproveList {
                     throw new IOException("Impossible to create the file " + approveFile.getPath() + ".");
                 }
             } catch (IOException ex) {
-                secuboid.getLog().severe("Error on approve file creation: " + ex.getLocalizedMessage());
+                secuboid.getLogger().severe("Error on approve file creation: " + ex.getLocalizedMessage());
             }
         }
         try {
             approveConfig.load(approveFile);
         } catch (IOException ex) {
-            secuboid.getLog().severe("Error on approve file load: " + ex.getLocalizedMessage());
+            secuboid.getLogger().severe("Error on approve file load: " + ex.getLocalizedMessage());
         } catch (InvalidConfigurationException ex) {
-            secuboid.getLog().severe("Error on approve file load" + ex.getLocalizedMessage());
+            secuboid.getLogger().severe("Error on approve file load" + ex.getLocalizedMessage());
         }
 
         // add land names to list
@@ -280,7 +280,7 @@ public class ApproveList {
         try {
             approveConfig.save(approveFile);
         } catch (IOException ex) {
-            secuboid.getLog().severe("Error on approve file save: " + ex.getLocalizedMessage());
+            secuboid.getLogger().severe("Error on approve file save: " + ex.getLocalizedMessage());
         }
     }
 }

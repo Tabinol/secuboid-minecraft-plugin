@@ -77,7 +77,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                 player.sendMessage(ChatColor.DARK_GRAY + "[Secuboid] " + secuboid.getLanguage()
                         .getMessage("COLLISION.GENERAL.PERCENT", collisions.getPercentDone() + ""));
             }
-            secuboid.getLog().info("Collision manger is running and takes " + nbTick + " ticks.");
+            secuboid.getLogger().info("Collision manger is running and takes " + nbTick + " ticks.");
             nbTick += STATUS_NEXT_NB_TICKS;
         }
     }

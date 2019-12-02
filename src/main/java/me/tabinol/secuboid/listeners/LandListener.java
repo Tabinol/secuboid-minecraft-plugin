@@ -348,7 +348,7 @@ public class LandListener extends CommonListener implements Listener {
         if (tpOk) {
             player.teleport(loc);
         } else {
-            secuboid.getLog().warning("Unable to random teleport player " + player.getName() + "!");
+            secuboid.getLogger().warning("Unable to random teleport player " + player.getName() + "!");
         }
     }
 

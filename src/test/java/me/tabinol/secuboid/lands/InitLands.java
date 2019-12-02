@@ -18,22 +18,25 @@
  */
 package me.tabinol.secuboid.lands;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.lands.types.Types;
-import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
-import me.tabinol.secuboid.storage.StorageThread;
-import me.tabinol.secuboid.utilities.Log;
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.util.TreeMap;
+import java.util.logging.Logger;
+
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
-import java.util.TreeMap;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.*;
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.lands.types.Types;
+import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
+import me.tabinol.secuboid.storage.StorageThread;
 
 /**
  * Init lands database and methods.
@@ -42,10 +45,10 @@ public class InitLands {
 
     public static final String WORLD = "world";
 
-    private Secuboid secuboid;
-    private Lands lands;
-    private DefaultLand defaultConfNoType;
-    private WorldLand worldLand;
+    private final Secuboid secuboid;
+    private final Lands lands;
+    private final DefaultLand defaultConfNoType;
+    private final WorldLand worldLand;
 
     public InitLands() {
         // Prepare Mock
@@ -53,23 +56,20 @@ public class InitLands {
         secuboid = mock(Secuboid.class);
 
         // log
-        Log log = mock(Log.class);
-        doNothing().when(log).info(anyString());
-        doNothing().when(log).warning(anyString());
-        doNothing().when(log).severe(anyString());
-        when(secuboid.getLog()).thenReturn(log);
+        final Logger log = Logger.getLogger("Secuboid");
+        when(secuboid.getLogger()).thenReturn(log);
 
         // Permissions Flags
-        PermissionsFlags permissionsFlags = new PermissionsFlags(secuboid);
+        final PermissionsFlags permissionsFlags = new PermissionsFlags(secuboid);
         when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
 
         // Types
-        Types types = new Types();
+        final Types types = new Types();
         when(secuboid.getTypes()).thenReturn(types);
 
         // Server
-        PluginManager pm = mock(PluginManager.class);
-        Server server = mock(Server.class);
+        final PluginManager pm = mock(PluginManager.class);
+        final Server server = mock(Server.class);
         when(server.getPluginManager()).thenReturn(pm);
         when(secuboid.getServer()).thenReturn(server);
 
@@ -78,7 +78,7 @@ public class InitLands {
         when(secuboid.getLands()).thenReturn(lands);
 
         // Outside areas
-        TreeMap<String, WorldLand> outsideArea = new TreeMap<String, WorldLand>();
+        final TreeMap<String, WorldLand> outsideArea = new TreeMap<>();
         worldLand = new WorldLand(secuboid, Config.GLOBAL);
         outsideArea.put(Config.GLOBAL, worldLand);
         Whitebox.setInternalState(lands, "outsideArea", outsideArea);
@@ -88,7 +88,7 @@ public class InitLands {
         Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
 
         // Storage
-        StorageThread storageThread = mock(StorageThread.class);
+        final StorageThread storageThread = mock(StorageThread.class);
         doNothing().when(storageThread).saveLand(any(RealLand.class));
         when(secuboid.getStorageThread()).thenReturn(storageThread);
     }

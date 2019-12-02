@@ -105,13 +105,13 @@ public class InventoryStorage {
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
 
@@ -126,7 +126,7 @@ public class InventoryStorage {
             File actFile = new File(file, "/" + player.getUniqueId().toString() + "." + gmName + "." + DEATH + ".9.yml");
             if (actFile.exists()) {
                 if (!actFile.delete()) {
-                    secuboid.getLog().severe("Impossible to delete the file " + actFile.getPath() + ".");
+                    secuboid.getLogger().severe("Impossible to delete the file " + actFile.getPath() + ".");
                 }
             }
             for (int t = 8; t >= 1; t--) {
@@ -135,7 +135,7 @@ public class InventoryStorage {
                 if (actFile.exists()) {
                     if (!actFile.renameTo(new File(file, "/"
                             + player.getUniqueId().toString() + "." + gmName + "." + DEATH + "." + (t + 1) + ".yml"))) {
-                        secuboid.getLog().severe("Impossible to rename the file " + actFile.getPath() + ".");
+                        secuboid.getLogger().severe("Impossible to rename the file " + actFile.getPath() + ".");
                     }
                 }
             }
@@ -210,7 +210,7 @@ public class InventoryStorage {
             configPlayerItemFile.save(playerItemFile);
 
         } catch (IOException ex) {
-            secuboid.getLog().severe("Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+            secuboid.getLogger().severe("Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath());
         }
     }
 
@@ -314,9 +314,9 @@ public class InventoryStorage {
                 }
 
             } catch (IOException ex) {
-                secuboid.getLog().severe("Error on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+                secuboid.getLogger().severe("Error on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
             } catch (InvalidConfigurationException ex) {
-                secuboid.getLog().severe("Invalid configuration on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+                secuboid.getLogger().severe("Invalid configuration on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
             }
         } else if (!fromDeath) {
 

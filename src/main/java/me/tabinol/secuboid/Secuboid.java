@@ -43,13 +43,12 @@ import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playerscache.PlayersCache;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
-import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
  * The Class Secuboid.
  */
-public class Secuboid extends JavaPlugin {
+public final class Secuboid extends JavaPlugin {
 
     /**
      * The Economy schedule interval.
@@ -79,7 +78,7 @@ public class Secuboid extends JavaPlugin {
     /**
      * The parameters.
      */
-    private PermissionsFlags PermissionsFlags;
+    private PermissionsFlags permissionsFlags;
 
     /**
      * The player conf.
@@ -117,11 +116,6 @@ public class Secuboid extends JavaPlugin {
     private CollisionsManagerThread collisionsManagerThread = null;
 
     /**
-     * The log.
-     */
-    private Log log;
-
-    /**
      * The conf.
      */
     private Config conf;
@@ -150,11 +144,10 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        log = new Log(getLogger());
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
-        PermissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
+        permissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
         types = new Types();
         conf = new Config(this);
 
@@ -232,7 +225,6 @@ public class Secuboid extends JavaPlugin {
         } else {
             playerMoney = null;
         }
-        log = new Log(getLogger());
         language.reloadConfig();
         lands = new Lands(this);
         storageThread.stopNextRun();
@@ -328,21 +320,12 @@ public class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Get log.
-     *
-     * @return the log
-     */
-    public Log getLog() {
-        return log;
-    }
-
-    /**
      * Gets permissions and flags instance.
      *
      * @return the permissions and flags instance
      */
     public PermissionsFlags getPermissionsFlags() {
-        return PermissionsFlags;
+        return permissionsFlags;
     }
 
     /**

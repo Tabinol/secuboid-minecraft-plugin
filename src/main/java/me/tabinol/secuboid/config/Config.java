@@ -513,7 +513,7 @@ public class Config {
         try {
             infoItem = Material.valueOf(infoItemS.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            secuboid.getLog().warning("Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
+            secuboid.getLogger().warning("Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
             infoItem = Material.BONE;
         }
 
@@ -521,7 +521,7 @@ public class Config {
         try {
             selectItem = Material.valueOf(selectItemS.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            secuboid.getLog().warning("Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
+            secuboid.getLogger().warning("Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
             selectItem = Material.ROTTEN_FLESH;
         }
 
@@ -551,7 +551,7 @@ public class Config {
             try {
                 defaultNonSelectedMaterials.add(Material.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLog().warning("Error in config.yml on Lands.DefaultNonSelectedMaterials : No " + value + " item found in Bukkit!");
+                secuboid.getLogger().warning("Error in config.yml on Lands.DefaultNonSelectedMaterials : No " + value + " item found in Bukkit!");
             }
         }
 
@@ -579,7 +579,7 @@ public class Config {
             try {
                 ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLog().warning("Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
+                secuboid.getLogger().warning("Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
             }
         }
 
@@ -593,7 +593,7 @@ public class Config {
             try {
                 creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
             } catch (IllegalArgumentException ex) {
-                secuboid.getLog().warning("Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + "item found in Bukkit!");
+                secuboid.getLogger().warning("Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + "item found in Bukkit!");
             }
         }
 

@@ -151,7 +151,7 @@ class CommonListener {
                     .isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
                 return loc;
             }
-            secuboid.getLog().warning(
+            secuboid.getLogger().warning(
                     "Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
             return null;
         }
@@ -167,7 +167,7 @@ class CommonListener {
             return world.getSpawnLocation();
         }
 
-        secuboid.getLog().warning("Teleportation requested and no world named \"" + worldName + "\"!");
+        secuboid.getLogger().warning("Teleportation requested and no world named \"" + worldName + "\"!");
         return null;
     }
 }

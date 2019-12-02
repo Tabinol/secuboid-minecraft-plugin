@@ -316,7 +316,7 @@ public final class PlayersCache extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLog().severe("Problem with Players Cache Thread. Possible data loss!");
+            secuboid.getLogger().severe("Problem with Players Cache Thread. Possible data loss!");
             return;
         }
         exitRequest = true;

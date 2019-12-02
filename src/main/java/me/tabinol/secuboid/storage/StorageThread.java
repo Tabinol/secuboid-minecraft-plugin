@@ -164,7 +164,7 @@ public class StorageThread extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLog().severe("Problem with save Thread. Possible data loss!");
+            secuboid.getLogger().severe("Problem with save Thread. Possible data loss!");
             return;
         }
         exitRequest = true;

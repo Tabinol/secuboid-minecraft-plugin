@@ -18,202 +18,257 @@
  */
 package me.tabinol.secuboid.config;
 
-import java.io.File;
-import java.util.Set;
-import java.util.TreeMap;
-
-import me.tabinol.secuboid.Secuboid;
-
 import static me.tabinol.secuboid.config.Config.GLOBAL;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.bukkit.configuration.ConfigurationSection;
+import org.yaml.snakeyaml.Yaml;
+
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.DefaultLand;
-import me.tabinol.secuboid.lands.WorldLand;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.WorldLand;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- * The Class WorldConfig. Started by Lands.Class. Loads world config and lands default.
+ * The Class WorldConfig. Started by Lands.Class. Loads world config and lands
+ * default.
  */
-public class WorldConfig {
+public final class WorldConfig {
 
+    private static final String FILENAME_LAND_DEFAULT = "landdefault.yml";
+    private static final String FILENAME_WORLD_CONFIG = "worldconfig.yml";
+
+    private static final String KEY_PERMISSIONS = "permissions";
+    private static final String KEY_FLAGS = "flags";
+    private static final String KEY_PLAYER_CONTAINERS = "playercontainers";
+    private static final String KEY_WORLDS = "worlds";
+    private static final String KEY_TYPES = "types";
+    private static final String KEY_VALUE = "value";
+    private static final String KEY_INHERITABLE = "inheritable";
+
+    private final Logger log;
     private final Secuboid secuboid;
-
-    /**
-     * The land default.
-     */
-    private final FileConfiguration landDefault;
-
-    /**
-     * The world config.
-     */
-    private final FileConfiguration worldConfig;
 
     /**
      * Default config (No Type or global)
      */
-    private final DefaultLand defaultConfNoType;
+    private DefaultLand defaultConfNoType;
 
     /**
      * Instantiates a new world config.
      *
      * @param secuboid secuboid instance
      */
-    public WorldConfig(Secuboid secuboid) {
-
+    public WorldConfig(final Secuboid secuboid) {
+        this.log = secuboid.getLogger();
         this.secuboid = secuboid;
-        File configFileFolder = secuboid.getDataFolder();
+    }
 
-        // Create files (if not exist) and load
-        if (!new File(configFileFolder, "landdefault.yml").exists()) {
-            secuboid.saveResource("landdefault.yml", false);
-        }
-        if (!new File(configFileFolder, "worldconfig.yml").exists()) {
-            secuboid.saveResource("worldconfig.yml", false);
-        }
-        landDefault = YamlConfiguration.loadConfiguration(new File(configFileFolder, "landdefault.yml"));
-        worldConfig = YamlConfiguration.loadConfiguration(new File(configFileFolder, "worldconfig.yml"));
+    public void loadResources() {
+        loadData(FILENAME_LAND_DEFAULT);
+        loadData(FILENAME_WORLD_CONFIG);
 
         // Create default (whitout type)
-        defaultConfNoType = getLandDefaultConf();
+        // defaultConfNoType = getLandDefaultConf();
     }
 
-    /**
-     * Gets the land outside area.
-     *
-     * @return the land outside area
-     */
-    public TreeMap<String, WorldLand> getLandOutsideArea() {
+    private void loadData(final String fileName) {
+        // Create files (if not exist) and load
+        final File configFileFolder = secuboid.getDataFolder();
+        if (!new File(configFileFolder, fileName).exists()) {
+            secuboid.saveResource(fileName, false);
+        }
 
-        TreeMap<String, WorldLand> landList = new TreeMap<String, WorldLand>();
-        Set<String> keys = worldConfig.getConfigurationSection("").getKeys(false);
+        // Load yaml
+        final Yaml yaml = new Yaml();
+        InputStream inputStream;
+        try {
+            inputStream = new FileInputStream(new File(configFileFolder, fileName));
+        } catch (final FileNotFoundException e) {
+            log.log(Level.SEVERE, String.format("Unable to load %s!", fileName), e);
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        final Map<String, Object> root = (Map<String, Object>) yaml.load(inputStream);
+        for (final Map.Entry<String, Object> entry : root.entrySet()) {
+            final String keyName = entry.getKey();
+            final Object valueObj = entry.getValue();
 
-        // We have to take _global_ first then others
-        for (String worldName : keys) {
-            if (worldName.equalsIgnoreCase(GLOBAL)) {
-                createConfForWorld(worldName, landList, false);
+            // Check if the key is a list
+            if ((keyName.equalsIgnoreCase(KEY_PERMISSIONS) || keyName.equalsIgnoreCase(KEY_FLAGS))
+                    && !(valueObj instanceof List)) {
+                log.severe(String.format("In file %s, key \"%s\" must be a list: - ...", fileName, keyName));
+                continue;
             }
-        }
 
-        // The none-global
-        for (String worldName : keys) {
-            if (!worldName.equalsIgnoreCase(GLOBAL)) {
-                createConfForWorld(worldName, landList, true);
+            // Load permissions and flags
+            if (keyName.equalsIgnoreCase(KEY_PERMISSIONS)) {
+                loadPermissions();
+            } else if (keyName.equalsIgnoreCase(KEY_FLAGS)) {
+                loadFlags();
+            } else {
+                log.severe(String.format("In file %s, invalid tag name: \"%s\"", fileName, keyName));
             }
+
         }
-
-        return landList;
     }
 
-    private void createConfForWorld(String worldName, TreeMap<String, WorldLand> landList, boolean copyFromGlobal) {
+    private void loadPermissions() {
 
-        String worldNameLower = worldName.toLowerCase();
-        WorldLand dl = new WorldLand(secuboid, worldName);
-        if (copyFromGlobal) {
-            landList.get(GLOBAL).getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
-        }
-        landModify(dl, worldConfig, worldName + ".ContainerPermissions", worldName + ".ContainerFlags");
-        landList.put(worldNameLower, dl);
     }
 
-    /**
-     * Gets the land default conf.
-     *
-     * @return the land default conf
-     */
-    private DefaultLand getLandDefaultConf() {
-        DefaultLand dl = new DefaultLand(secuboid);
-        landModify(dl, landDefault, "ContainerPermissions", "ContainerFlags");
-        return dl;
+    private void loadFlags() {
+
     }
 
-    /**
-     * Get the default configuration of a land without a Type.
-     *
-     * @return The land configuration (DummyLand)
-     */
-    public DefaultLand getDefaultconfNoType() {
-        return defaultConfNoType;
-    }
+    private FlagPermValues loadFlagPermValues(String fileName, String rootKey, final Map<String, Object> keyToValue,
+            ParameterType parameterType) {
+        final FlagPermValues flagPermValues = new FlagPermValues();
 
-    /**
-     * Gets the default conf for each type
-     *
-     * @return a TreeMap of default configuration
-     */
-    public TreeMap<Type, DefaultLand> getTypeDefaultConf() {
-        TreeMap<Type, DefaultLand> defaultConf = new TreeMap<Type, DefaultLand>();
-
-        for (Type type : secuboid.getTypes().getTypes()) {
-            ConfigurationSection typeConf = landDefault.getConfigurationSection(type.getName());
-            if (typeConf != null) {
-                DefaultLand dl = new DefaultLand(secuboid);
-                defaultConfNoType.getPermissionsFlags().copyPermsFlagsTo(dl.getPermissionsFlags());
-                landModify(dl, typeConf, "ContainerPermissions", "ContainerFlags");
-                defaultConf.put(type, dl);
-            }
-        }
-
-        return defaultConf;
-    }
-
-    private void landModify(Land dl, ConfigurationSection fc, String perms, String flags) {
-
-        ConfigurationSection csPerm = fc.getConfigurationSection(perms);
-        ConfigurationSection csFlags = fc.getConfigurationSection(flags);
-
-        // Add permissions
-        if (csPerm != null) {
-            for (String container : csPerm.getKeys(false)) {
-
-                PlayerContainerType pcType = PlayerContainerType.getFromString(container);
-
-                assert pcType != null;
-                if (pcType.hasParameter()) {
-                    for (String containerName : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
-                        for (String perm : fc.getConfigurationSection(perms + "." + container + "." + containerName).getKeys(false)) {
-                            // Remove _ if it is a Bukkit Permission
-                            String containerNameLower;
-                            if (pcType == PlayerContainerType.PERMISSION) {
-                                containerNameLower = containerName.toLowerCase().replaceAll("_", ".");
-                            } else {
-                                containerNameLower = containerName.toLowerCase();
-                            }
-
-                            assert secuboid != null;
-                            dl.getPermissionsFlags().addPermission(
-                                    secuboid.getNewInstance().createPlayerContainer(pcType, containerNameLower),
-                                    secuboid.getPermissionsFlags().newPermission(
-                                            secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
-                                            fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Value"),
-                                            fc.getBoolean(perms + "." + container + "." + containerName + "." + perm + ".Inheritable")));
-                        }
-                    }
+        for (final Map.Entry<String, Object> entry : keyToValue.entrySet()) {
+            final String keyName = entry.getKey();
+            final Object valueObj = entry.getValue();
+            switch (keyName.toLowerCase()) {
+            case KEY_PLAYER_CONTAINERS:
+                if (parameterType == ParameterType.PERMISSION) {
+                    flagPermValues.playerContainersNullable = loadStringList(valueObj);
                 } else {
-                    for (String perm : fc.getConfigurationSection(perms + "." + container).getKeys(false)) {
-                        dl.getPermissionsFlags().addPermission(
-                                secuboid.getNewInstance().createPlayerContainer(pcType, null),
-                                secuboid.getPermissionsFlags().newPermission(
-                                        secuboid.getPermissionsFlags().getPermissionTypeNoValid(perm.toUpperCase()),
-                                        fc.getBoolean(perms + "." + container + "." + perm + ".Value"),
-                                        fc.getBoolean(perms + "." + container + "." + perm + ".Inheritable")));
+                    loadFlagPermErrorMsg(fileName, keyName, rootKey);
+                }
+                break;
+
+            case KEY_PERMISSIONS:
+                if (parameterType == ParameterType.PERMISSION) {
+                    flagPermValues.permissionsNullable = loadStringList(valueObj);
+                } else {
+                    loadFlagPermErrorMsg(fileName, keyName, rootKey);
+                }
+                break;
+
+            case KEY_FLAGS:
+                if (parameterType == ParameterType.FLAG) {
+                    flagPermValues.flagsNullable = loadStringList(valueObj);
+                } else {
+                    loadFlagPermErrorMsg(fileName, keyName, rootKey);
+                }
+                break;
+
+            case KEY_WORLDS:
+                if (fileName == FILENAME_WORLD_CONFIG) {
+                    flagPermValues.worldsNullable = loadStringList(valueObj);
+                } else {
+                    loadFlagPermErrorMsg(fileName, keyName, rootKey);
+                }
+                break;
+
+            case KEY_TYPES:
+                if (fileName == FILENAME_LAND_DEFAULT) {
+                    flagPermValues.typesNullable = loadStringList(valueObj);
+                } else {
+                    loadFlagPermErrorMsg(fileName, keyName, rootKey);
+                }
+                break;
+
+            case KEY_VALUE:
+                flagPermValues.valueNullable = getBooleanNullable(valueObj);
+                if (flagPermValues.valueNullable == null) {
+                    if (parameterType == ParameterType.PERMISSION) {
+                        log.severe(String.format(
+                                "In file %s, the permission value must be true or false: \"%s: %s\" for root key \"%s\"",
+                                fileName, keyName, Objects.toString(valueObj), rootKey));
+                    } else {
+                        flagPermValues.valueNullable = valueObj;
                     }
                 }
-            }
-        }
+                break;
 
-        // add flags
-        if (csFlags != null) {
-            for (String flag : csFlags.getKeys(false)) {
-                FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(flag.toUpperCase());
-                dl.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags().newFlag(ft,
-                        secuboid.getNewInstance().getFlagValueFromFileFormat(fc.getString(flags + "." + flag + ".Value"), ft),
-                        fc.getBoolean(flags + "." + flag + ".Inheritable")));
+            case KEY_INHERITABLE:
+                flagPermValues.inheritableNullable = getBooleanNullable(valueObj);
+                if (flagPermValues.inheritableNullable == null) {
+                    log.severe(String.format(
+                            "In file %s, inheritable must be true or false: \"%s: %s\" for root key \"%s\"", fileName,
+                            keyName, Objects.toString(valueObj), rootKey));
+                }
+                break;
+
+            default:
+                log.severe(String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"", fileName, keyName,
+                        Objects.toString(valueObj), rootKey));
             }
         }
+        return flagPermValues;
+    }
+
+    private void loadFlagPermErrorMsg(String fileName, String keyName, String rootKey) {
+        log.severe(
+                String.format("In file %s, invalid tag name: \"%s\" for root key \"%s\"", fileName, keyName, rootKey));
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> loadStringList(Object stringListObj) {
+        if (stringListObj instanceof List) {
+            return (List<String>) stringListObj;
+        }
+        return Collections.singletonList(Objects.toString(stringListObj));
+    }
+
+    private Boolean getBooleanNullable(Object valueObj) {
+        if (valueObj instanceof Boolean) {
+            return (Boolean) valueObj;
+        }
+        final String valueStr = Objects.toString(valueObj);
+        if (valueStr != null) {
+            if (valueStr.matches("^(?i)(true|yes)$")) {
+                return true;
+            }
+            if (valueStr.matches("^(?i)(false|no)$")) {
+                return false;
+            }
+        }
+        return null;
+    }
+
+    private enum ParameterType {
+        PERMISSION, FLAG
+    }
+
+    private static class FlagPermValues {
+        List<String> playerContainersNullable = null;
+        List<String> permissionsNullable = null;
+        List<String> flagsNullable = null;
+        List<String> worldsNullable = null;
+        List<String> typesNullable = null;
+        Object valueNullable = null;
+        Boolean inheritableNullable = null;
+    }
+
+    public TreeMap<String, WorldLand> getLandOutsideArea() {
+        // TODO
+        return null;
+    }
+
+    public DefaultLand getDefaultconfNoType() {
+        // TODO
+        return null;
+    }
+
+    public TreeMap<Type, DefaultLand> getTypeDefaultConf() {
+        // TODO
+        return null;
     }
 }

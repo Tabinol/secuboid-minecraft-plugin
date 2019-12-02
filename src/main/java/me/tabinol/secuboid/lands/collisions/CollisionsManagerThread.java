@@ -140,7 +140,7 @@ public class CollisionsManagerThread extends Thread {
     public void stopNextRun() {
 
         if (!isAlive()) {
-            secuboid.getLog().severe("Problem with collisions manager Thread. Possible data loss!");
+            secuboid.getLogger().severe("Problem with collisions manager Thread. Possible data loss!");
             return;
         }
         exitRequest = true;

@@ -90,12 +90,12 @@ public class Lang {
     private void copyLang() {
         if (!langFile.exists()) {
             if (!langFile.getParentFile().exists() && !langFile.getParentFile().mkdirs()) {
-                secuboid.getLog().severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
+                secuboid.getLogger().severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
             }
             try {
                 FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
             } catch (IOException e) {
-                secuboid.getLog().severe("Unable to copy language file from jar.");
+                secuboid.getLogger().severe("Unable to copy language file from jar.");
             }
         }
     }
@@ -107,9 +107,9 @@ public class Lang {
         try {
             langconfig.load(langFile);
         } catch (IOException e) {
-            secuboid.getLog().severe("Error on language load: " + e.getLocalizedMessage());
+            secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
         } catch (InvalidConfigurationException e) {
-            secuboid.getLog().severe("Error on language load: " + e.getLocalizedMessage());
+            secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
         }
     }
 
@@ -125,10 +125,10 @@ public class Lang {
         // We must rename the file and activate the new file
         if (actualVersion != fileVersion) {
             if (!langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion))) {
-                secuboid.getLog().severe("Unable to rename the old language file.");
+                secuboid.getLogger().severe("Unable to rename the old language file.");
             }
             reloadConfig();
-            secuboid.getLog().info("There is a new language file. Your old language file was renamed \""
+            secuboid.getLogger().info("There is a new language file. Your old language file was renamed \""
                     + lang + ".yml.v" + fileVersion + "\".");
         }
     }

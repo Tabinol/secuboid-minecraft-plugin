@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -94,7 +95,7 @@ public class Lands {
     /**
      * The outside area in worlds.
      */
-    private final TreeMap<String, WorldLand> outsideArea;
+    private final Map<String, WorldLand> outsideArea;
 
     /**
      * Default configuration (Type not exist or Type null).
@@ -104,7 +105,7 @@ public class Lands {
     /**
      * The default configuration for a land.
      */
-    private final TreeMap<Type, DefaultLand> defaultConf;
+    private final Map<Type, DefaultLand> defaultConf;
 
     /**
      * The approve list.

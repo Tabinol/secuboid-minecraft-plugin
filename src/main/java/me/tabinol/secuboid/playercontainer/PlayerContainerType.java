@@ -19,7 +19,8 @@
 package me.tabinol.secuboid.playercontainer;
 
 /**
- * The Enum PlayerContainerType. This is the enum list of the possible player containers. <br>
+ * The Enum PlayerContainerType. This is the enum list of the possible player
+ * containers. <br>
  * Order is important here The first is the permission checked first
  */
 public enum PlayerContainerType {
@@ -27,44 +28,45 @@ public enum PlayerContainerType {
     /**
      * The land owner.
      */
-    OWNER("Owner", false),
+    OWNER("O", "Owner", false),
     /**
      * The player.
      */
-    PLAYER("Player", true),
+    PLAYER("P", "Player", true),
     /**
      * The land resident.
      */
-    RESIDENT("Resident", false),
+    RESIDENT("R", "Resident", false),
     /**
      * The land tenant.
      */
-    TENANT("Tenant", false),
+    TENANT("T", "Tenant", false),
     /**
      * The group from permision system.
      */
-    GROUP("Group", true),
+    GROUP("G", "Group", true),
     /**
      * The Bukkit permission.
      */
-    PERMISSION("Permission", true),
+    PERMISSION("B", "Permission", true),
     /**
      * Everybody.
      */
-    EVERYBODY("Everybody", false),
+    EVERYBODY("E", "Everybody", false),
     /**
      * Nobody.
      */
-    NOBODY("Nobody", false),
+    NOBODY("N", "Nobody", false),
     /**
      * Player Name, Only for UUID resolve and replace to a true player. (INTERNAL)
      */
-    PLAYERNAME("PlayerName", false);
+    PLAYERNAME("Z", "PlayerName", false);
 
     /**
      * The player container name.
      */
     private final String pcName;
+    private final String oneLetterCode;
 
     /**
      * Has parameter.
@@ -74,13 +76,15 @@ public enum PlayerContainerType {
     /**
      * Instantiates a new player container type.
      *
-     * @param pcName       the pc name
-     * @param hasParameter the has parameter
+     * @param pcName        the pc name
+     * @param hasParameter  the has parameter
+     * @param oneLetterCode One letter code
      */
-    PlayerContainerType(final String pcName, final boolean hasParameter) {
+    PlayerContainerType(String oneLetterCode, String pcName, boolean hasParameter) {
 
         this.pcName = pcName;
         this.hasParameter = hasParameter;
+        this.oneLetterCode = oneLetterCode;
     }
 
     /**
@@ -110,7 +114,7 @@ public enum PlayerContainerType {
     public static PlayerContainerType getFromString(String pcName) {
 
         for (PlayerContainerType pct : values()) {
-            if (pct.toString().equalsIgnoreCase(pcName)) {
+            if (pct.oneLetterCode.equalsIgnoreCase(pcName) || pct.toString().equalsIgnoreCase(pcName)) {
                 return pct;
             }
         }

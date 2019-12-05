@@ -19,7 +19,10 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -132,8 +135,10 @@ public final class CommandFlag extends CommandExec {
 
     private void importDisplayFlagsFrom(Land land, boolean onlyInherit) {
 
-        StringBuilder stSubList = new StringBuilder();
-        for (Flag flag : land.getPermissionsFlags().getFlags()) {
+        final StringBuilder stSubList = new StringBuilder();
+        final Collection<Flag> flagSet = land.getPermissionsFlags().getFlags();
+        final Set<Flag> flagSetSort = new TreeSet<>(flagSet);
+        for (Flag flag : flagSetSort) {
             if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
                 stSubList.append(" ");
             }

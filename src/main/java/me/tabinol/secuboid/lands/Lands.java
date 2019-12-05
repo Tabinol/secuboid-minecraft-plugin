@@ -139,11 +139,11 @@ public class Lands {
         WorldConfig worldConfig = new WorldConfig(secuboid);
 
         // Load World Config
-        this.outsideArea = worldConfig.getLandOutsideArea();
+        this.outsideArea = null; // TODO
 
         // Load Land default
-        this.defaultConf = worldConfig.getTypeDefaultConf();
-        this.defaultConfNoType = worldConfig.getDefaultconfNoType();
+        this.defaultConf = null; // TODO
+        this.defaultConfNoType = null; // TODO
 
         landList = new TreeMap<String, RealLand>();
         landUUIDList = new TreeMap<UUID, RealLand>();

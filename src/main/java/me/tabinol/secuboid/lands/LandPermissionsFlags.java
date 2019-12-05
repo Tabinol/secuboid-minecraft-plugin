@@ -19,9 +19,9 @@
 package me.tabinol.secuboid.lands;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
@@ -36,7 +36,7 @@ import org.bukkit.entity.Player;
  *
  * @author tabinol
  */
-public class LandPermissionsFlags {
+public final class LandPermissionsFlags {
 
     private final Secuboid secuboid;
     private final Land land;
@@ -45,27 +45,29 @@ public class LandPermissionsFlags {
     /**
      * The permissions.
      */
-    private TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>> permissions;
+    private final Map<PlayerContainer, Map<PermissionType, Permission>> permissions;
 
     /**
      * The flags.
      */
-    private TreeMap<FlagType, Flag> flags;
+    private final Map<FlagType, Flag> flags;
 
-    LandPermissionsFlags(Secuboid secuboid, Land land) {
+    public LandPermissionsFlags(Secuboid secuboid, Land land) {
         this.secuboid = secuboid;
         this.land = land;
         realLand = land.getLandType() == Land.LandType.REAL ? (RealLand) land : null;
-        permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-        flags = new TreeMap<FlagType, Flag>();
+        permissions = new HashMap<>();
+        flags = new HashMap<>();
     }
 
     /**
      * Sets the land default values. This method is called from RealLand and does not auto save.
      */
-    void setDefault() {
-        permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
-        flags = new TreeMap<FlagType, Flag>();
+    public void setDefault() {
+        // Remove all flags
+        flags.clear();
+        // Remove all permissions
+        permissions.clear();
     }
 
     private void doSave() {
@@ -82,9 +84,9 @@ public class LandPermissionsFlags {
     public void copyPermsFlagsTo(LandPermissionsFlags desPermissionsFlags) {
 
         // copy permissions
-        for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> pcEntry : permissions.entrySet()) {
+        for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> pcEntry : permissions.entrySet()) {
 
-            TreeMap<PermissionType, Permission> perms = new TreeMap<PermissionType, Permission>();
+            Map<PermissionType, Permission> perms = new HashMap<>();
             for (Map.Entry<PermissionType, Permission> permEntry : pcEntry.getValue().entrySet()) {
                 perms.put(permEntry.getKey(), permEntry.getValue().copyOf());
             }
@@ -139,10 +141,10 @@ public class LandPermissionsFlags {
      */
     public void addPermission(PlayerContainer pc, Permission perm) {
 
-        TreeMap<PermissionType, Permission> permPlayer;
+        Map<PermissionType, Permission> permPlayer;
 
         if (!permissions.containsKey(pc)) {
-            permPlayer = new TreeMap<PermissionType, Permission>();
+            permPlayer = new HashMap<>();
             permissions.put(pc, permPlayer);
         } else {
             permPlayer = permissions.get(pc);
@@ -175,7 +177,7 @@ public class LandPermissionsFlags {
     public boolean removePermission(PlayerContainer pc,
                                     PermissionType permType) {
 
-        TreeMap<PermissionType, Permission> permPlayer;
+        Map<PermissionType, Permission> permPlayer;
         Permission perm;
 
         if (!permissions.containsKey(pc)) {
@@ -282,7 +284,7 @@ public class LandPermissionsFlags {
                                   Land originLand) {
         Boolean result;
 
-        for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
+        for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
             result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originLand);
             if (result != null) {
                 return result;
@@ -292,7 +294,7 @@ public class LandPermissionsFlags {
         // Check default configuration
         DefaultLand defaultLand;
         if (realLand != null && (defaultLand = secuboid.getLands().getDefaultConf(realLand.getType())) != null) {
-            for (Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry :
+            for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry :
                     defaultLand.getPermissionsFlags().permissions.entrySet()) {
                 result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originLand);
                 if (result != null) {
@@ -305,7 +307,7 @@ public class LandPermissionsFlags {
     }
 
     private Boolean permissionSingleCheck(PlayerContainerType pcType,
-                                          Map.Entry<PlayerContainer, TreeMap<PermissionType, Permission>> permissionEntry,
+                                          Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry,
                                           Player player, PermissionType pt, boolean onlyInherit, Land originLand) {
         if (pcType != permissionEntry.getKey().getContainerType()) {
             return null;

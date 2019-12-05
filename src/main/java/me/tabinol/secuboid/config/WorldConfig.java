@@ -35,9 +35,7 @@ import java.util.logging.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.DefaultLand;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
-import me.tabinol.secuboid.lands.WorldLand;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -60,19 +58,24 @@ public final class WorldConfig {
     private static final String KEY_INHERITABLE = "inheritable";
 
     /**
-     * The outside area in worlds.
+     * The global permissions and flags.
      */
-    private final Map<String, WorldLand> outsideArea;
+    private final LandPermissionsFlags globalPermissionsFlags;
+
+    /**
+     * Per world permissions and flags.
+     */
+    private final Map<String, LandPermissionsFlags> worldNameToPermissionsFlags;
 
     /**
      * Default configuration (Type not exist or Type null).
      */
-    private final DefaultLand defaultConfNoType;
+    private final LandPermissionsFlags defaultPermissionsFlags;
 
     /**
      * The default configuration for a land.
      */
-    private final Map<Type, DefaultLand> typeToDefaultConf;
+    private final Map<Type, LandPermissionsFlags> typeToDefaultPermissionsFlags;
 
     private final Logger log;
     private final Secuboid secuboid;
@@ -85,20 +88,17 @@ public final class WorldConfig {
     public WorldConfig(final Secuboid secuboid) {
         this.log = secuboid.getLogger();
         this.secuboid = secuboid;
-        outsideArea = new HashMap<>();
-        defaultConfNoType = new DefaultLand(secuboid);
-        typeToDefaultConf = new HashMap<>();
+        globalPermissionsFlags = new LandPermissionsFlags(secuboid, null);
+        worldNameToPermissionsFlags = new HashMap<>();
+        defaultPermissionsFlags = new LandPermissionsFlags(secuboid, null);
+        typeToDefaultPermissionsFlags = new HashMap<>();
     }
 
     public void loadResources() {
-        outsideArea.clear();
-        final LandPermissionsFlags landPermissionsFlags = defaultConfNoType.getPermissionsFlags();
-        // Remove all flags
-        landPermissionsFlags.getFlags().forEach(flag -> landPermissionsFlags.removeFlag(flag.getFlagType()));
-        // Remove all permissions
-        landPermissionsFlags.getSetPCHavePermission().forEach(pc -> landPermissionsFlags.getPermissionsForPC(pc)
-                .forEach(perm -> landPermissionsFlags.removePermission(pc, perm.getPermType())));
-        typeToDefaultConf.clear();
+        globalPermissionsFlags.setDefault();
+        worldNameToPermissionsFlags.clear();
+        defaultPermissionsFlags.setDefault();
+        typeToDefaultPermissionsFlags.clear();
         Arrays.stream(FileType.values()).forEach(this::loadData);
     }
 
@@ -163,22 +163,22 @@ public final class WorldConfig {
                             fileType.fileName));
                     continue;
                 }
-                // TODO Load flag
+                loadFlags(fileType, flagPermValues);
             }
 
             if (parameterType == ParameterType.PERMISSION) {
                 if (flagPermValues.permissionsNullable == null || flagPermValues.permissionsNullable.isEmpty()
                         || flagPermValues.playerContainersNullable == null
-                        || flagPermValues.playerContainersNullable.isEmpty() || flagPermValues.valueNullable == null) {
+                        || flagPermValues.playerContainersNullable.isEmpty() || flagPermValues.valueNullable == null
+                        || !(flagPermValues.valueNullable instanceof Boolean)) {
                     log.severe(String.format(
                             "In file %s, a permission must have at least a player container, a permission name and a value (true/false)",
                             fileType.fileName));
                     continue;
                 }
-                // TODO Load permission
+                loadPermissions(fileType, flagPermValues);
             }
         }
-
     }
 
     private FlagPermValues loadFlagPermValues(FileType fileType, String rootKey, final Map<String, Object> keyToValue,
@@ -289,8 +289,51 @@ public final class WorldConfig {
         return null;
     }
 
-    private Map.Entry<PlayerContainer, Permission> createPcPermissionNullable(String fileName, String playerContainerName, String permissionName, boolean value, boolean inheritable) {
-        final PlayerContainer playerContainer = secuboid.getNewInstance().getPlayerContainerFromFileFormat(playerContainerName);
+    private final void loadPermissions(FileType fileType, FlagPermValues flagPermValues) {
+        for (String playerContainerName : flagPermValues.playerContainersNullable) {
+            for (String permissionName : flagPermValues.permissionsNullable) {
+                final Map.Entry<PlayerContainer, Permission> playerContainerToPermission = createPcPermissionNullable(
+                        fileType.fileName, playerContainerName, permissionName, (boolean) flagPermValues.valueNullable,
+                        flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : true);
+                if (playerContainerToPermission == null) {
+                    log.severe(String.format(
+                            "In file %s, unable to load permission \"%s\" with value \"%s\" for player container \"%s\"",
+                            fileType.fileName, permissionName, flagPermValues.valueNullable, playerContainerName));
+                    continue;
+                }
+                final PlayerContainer playerContainer = playerContainerToPermission.getKey();
+                final Permission permission = playerContainerToPermission.getValue();
+                if (fileType == FileType.LAND_DEFAULT) {
+                    if (flagPermValues.typesNullable == null || flagPermValues.typesNullable.isEmpty()) {
+                        defaultPermissionsFlags.addPermission(playerContainer, permission);
+                    } else {
+                        flagPermValues.typesNullable.forEach(typeName -> {
+                            final Type type = secuboid.getTypes().addOrGetType(typeName);
+                            typeToDefaultPermissionsFlags
+                                    .computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid, null))
+                                    .addPermission(playerContainer, permission);
+                        });
+                    }
+                } else {
+                    // World config
+                    if (flagPermValues.worldsNullable == null || flagPermValues.worldsNullable.isEmpty()) {
+                        globalPermissionsFlags.addPermission(playerContainer, permission);
+                    } else {
+                        flagPermValues.worldsNullable.forEach(worldName -> {
+                            worldNameToPermissionsFlags
+                                    .computeIfAbsent(worldName, k -> new LandPermissionsFlags(secuboid, null))
+                                    .addPermission(playerContainer, permission);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    private Map.Entry<PlayerContainer, Permission> createPcPermissionNullable(String fileName,
+            String playerContainerName, String permissionName, boolean value, boolean inheritable) {
+        final PlayerContainer playerContainer = secuboid.getNewInstance()
+                .getPlayerContainerFromFileFormat(playerContainerName);
         if (playerContainer == null) {
             log.severe(String.format("In file %s, invalid playercontainer: \"%s\"", fileName, playerContainerName));
             return null;
@@ -298,6 +341,40 @@ public final class WorldConfig {
         final PermissionType permissionType = secuboid.getPermissionsFlags().getPermissionType(permissionName);
         final Permission permission = secuboid.getPermissionsFlags().newPermission(permissionType, value, inheritable);
         return new AbstractMap.SimpleImmutableEntry<>(playerContainer, permission);
+    }
+
+    private final void loadFlags(FileType fileType, FlagPermValues flagPermValues) {
+        for (String flagName : flagPermValues.flagsNullable) {
+            final Flag flag = createFlagNullable(fileType.fileName, flagName, flagPermValues.valueNullable,
+                    flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : true);
+            if (flag == null) {
+                log.severe(String.format("In file %s, unable to load flag \"%s\" with value \"%s\"", fileType.fileName,
+                        flagName, flagPermValues.valueNullable));
+                continue;
+            }
+            if (fileType == FileType.LAND_DEFAULT) {
+                if (flagPermValues.typesNullable == null || flagPermValues.typesNullable.isEmpty()) {
+                    defaultPermissionsFlags.addFlag(flag);
+                } else {
+                    flagPermValues.typesNullable.forEach(typeName -> {
+                        final Type type = secuboid.getTypes().addOrGetType(typeName);
+                        typeToDefaultPermissionsFlags
+                                .computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid, null)).addFlag(flag);
+                    });
+                }
+            } else {
+                // World config
+                if (flagPermValues.worldsNullable == null || flagPermValues.worldsNullable.isEmpty()) {
+                    globalPermissionsFlags.addFlag(flag);
+                } else {
+                    flagPermValues.worldsNullable.forEach(worldName -> {
+                        worldNameToPermissionsFlags
+                                .computeIfAbsent(worldName, k -> new LandPermissionsFlags(secuboid, null))
+                                .addFlag(flag);
+                    });
+                }
+            }
+        }
     }
 
     private Flag createFlagNullable(String fileName, String flagName, Object value, boolean inheritable) {
@@ -310,13 +387,7 @@ public final class WorldConfig {
     }
 
     private enum ParameterType {
-        PERMISSION("permissions"), FLAG("flags");
-
-        final String parameterName;
-
-        private ParameterType(String parameterName) {
-            this.parameterName = parameterName;
-        }
+        PERMISSION, FLAG;
     }
 
     private enum FileType {
@@ -337,17 +408,5 @@ public final class WorldConfig {
         List<String> typesNullable = null;
         Object valueNullable = null;
         Boolean inheritableNullable = null;
-    }
-
-    public Map<String, WorldLand> getLandOutsideArea() {
-        return outsideArea;
-    }
-
-    public DefaultLand getDefaultconfNoType() {
-        return defaultConfNoType;
-    }
-
-    public Map<Type, DefaultLand> getTypeDefaultConf() {
-        return typeToDefaultConf;
     }
 }

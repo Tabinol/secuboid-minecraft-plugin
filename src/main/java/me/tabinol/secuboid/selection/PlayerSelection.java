@@ -23,7 +23,7 @@ import java.util.EnumMap;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
@@ -137,7 +137,7 @@ public class PlayerSelection {
      */
     public void refreshLand() {
 
-        RealLand land = getLand();
+        Land land = getLand();
 
         if (land != null) {
             removeSelection(SelectionType.LAND);
@@ -150,7 +150,7 @@ public class PlayerSelection {
      *
      * @return the land
      */
-    public RealLand getLand() {
+    public Land getLand() {
 
         LandSelection sel = (LandSelection) selectionList.get(SelectionType.LAND);
         if (sel != null) {

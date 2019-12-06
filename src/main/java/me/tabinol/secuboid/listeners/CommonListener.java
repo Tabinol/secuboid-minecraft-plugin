@@ -21,7 +21,7 @@ package me.tabinol.secuboid.listeners;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.utilities.StringChanges;
@@ -103,7 +103,7 @@ class CommonListener {
      * @param block the block
      * @return true if the sign is attached
      */
-    boolean hasEcoSign(RealLand land, Block block) {
+    boolean hasEcoSign(Land land, Block block) {
         return (land.getSaleSignLoc() != null && hasEcoSign(block, land.getSaleSignLoc()))
                 || (land.getRentSignLoc() != null && hasEcoSign(block, land.getRentSignLoc()));
     }
@@ -141,33 +141,36 @@ class CommonListener {
      * @param land the land
      * @return the location
      */
-    Location getLandSpawnPoint(Land land) {
+    Location getLandSpawnPoint(LandPermissionsFlags landPermissionsFlags) {
         String strLoc;
         Location loc;
 
         // Check for land spawn
-        if (land.getLandType() == Land.LandType.REAL) {
-            if (!(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString())
+        final Land landNullable = landPermissionsFlags.getLandNullable();
+        if (landNullable != null) {
+            if (!(strLoc = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString())
                     .isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
                 return loc;
             }
             secuboid.getLogger().warning(
-                    "Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
+                    "Teleportation requested and no spawn point for land \"" + landNullable.getName() + "\"!");
             return null;
         }
 
         // Check for world spawn (if land is world)
-        return getWorldSpawnPoint(land.getWorldName());
+        return getWorldSpawnPoint(landPermissionsFlags.getWorldNameNullable());
     }
 
-    Location getWorldSpawnPoint(String worldName) {
-        World world = Bukkit.getWorld(worldName);
-
-        if (world != null) {
-            return world.getSpawnLocation();
+    Location getWorldSpawnPoint(String worldNameNullable) {
+        
+        if (worldNameNullable != null) {
+            World world = Bukkit.getWorld(worldNameNullable);
+            if (world != null) {
+                return world.getSpawnLocation();
+            }
         }
 
-        secuboid.getLogger().warning("Teleportation requested and no world named \"" + worldName + "\"!");
+        secuboid.getLogger().warning("Teleportation requested and no world named \"" + worldNameNullable + "\"!");
         return null;
     }
 }

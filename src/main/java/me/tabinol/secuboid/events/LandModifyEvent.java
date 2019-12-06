@@ -17,13 +17,14 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.HandlerList;
+
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Class LandModifyEvent. When there is a change in a land.
  */
-public class LandModifyEvent extends LandEvent {
+public class LandModifyEvent extends LandInsideEvent {
 
     /**
      * The Enum LandModifyReason.
@@ -102,7 +103,7 @@ public class LandModifyEvent extends LandEvent {
      * @param landModifyReason the land modify reason
      * @param newObject        the new object
      */
-    public LandModifyEvent(final RealLand land, final LandModifyReason landModifyReason, final Object newObject) {
+    public LandModifyEvent(final Land land, final LandModifyReason landModifyReason, final Object newObject) {
 
         super(land);
         this.newObject = newObject;

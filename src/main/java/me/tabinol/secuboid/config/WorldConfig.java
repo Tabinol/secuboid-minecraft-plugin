@@ -102,6 +102,22 @@ public final class WorldConfig {
         Arrays.stream(FileType.values()).forEach(this::loadData);
     }
 
+    public LandPermissionsFlags getGlobalPermissionsFlags() {
+        return globalPermissionsFlags;
+    }
+
+    public Map<String, LandPermissionsFlags> getWorldNameToPermissionsFlags() {
+        return worldNameToPermissionsFlags;
+    }
+
+    public LandPermissionsFlags getDefaultPermissionsFlags() {
+        return defaultPermissionsFlags;
+    }
+
+    public Map<Type, LandPermissionsFlags> getTypeToDefaultPermissionsFlags() {
+        return typeToDefaultPermissionsFlags;
+    }
+
     @SuppressWarnings("unchecked")
     private void loadData(FileType fileType) {
         final String fileName = fileType.fileName;

@@ -19,7 +19,7 @@
 package me.tabinol.secuboid.lands.collisions;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
 
 /**
@@ -37,7 +37,7 @@ public class CollisionsEntry {
     /**
      * The land.
      */
-    private final RealLand land;
+    private final Land land;
 
     /**
      * The area id.
@@ -52,7 +52,7 @@ public class CollisionsEntry {
      * @param land the land
      * @param areaId the area id
      */
-    public CollisionsEntry(Secuboid secuboid, LandError error, RealLand land, int areaId) {
+    public CollisionsEntry(Secuboid secuboid, LandError error, Land land, int areaId) {
 
 	this.secuboid = secuboid;
 	this.error = error;
@@ -75,7 +75,7 @@ public class CollisionsEntry {
      *
      * @return the land
      */
-    public RealLand getLand() {
+    public Land getLand() {
 
 	return land;
     }

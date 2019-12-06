@@ -19,9 +19,9 @@
 package me.tabinol.secuboid.lands;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
@@ -31,6 +31,8 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.entity.Player;
 
+import de.myzelyam.supervanish.events.WorldChangeEvent;
+
 /**
  * The class for permissions and flags access from a land
  *
@@ -39,8 +41,8 @@ import org.bukkit.entity.Player;
 public final class LandPermissionsFlags {
 
     private final Secuboid secuboid;
-    private final Land land;
-    private final RealLand realLand;
+    private final Land landNullable;
+    private final String worldNameNullable;
 
     /**
      * The permissions.
@@ -52,16 +54,17 @@ public final class LandPermissionsFlags {
      */
     private final Map<FlagType, Flag> flags;
 
-    public LandPermissionsFlags(Secuboid secuboid, Land land) {
+    public LandPermissionsFlags(Secuboid secuboid, Land landNullable, String worldNameNullable) {
         this.secuboid = secuboid;
-        this.land = land;
-        realLand = land.getLandType() == Land.LandType.REAL ? (RealLand) land : null;
-        permissions = new HashMap<>();
-        flags = new HashMap<>();
+        this.landNullable = landNullable;
+        this.worldNameNullable = worldNameNullable;
+        // We use TreeMap because flags and permissions must be ordered.
+        permissions = new TreeMap<>();
+        flags = new TreeMap<>();
     }
 
     /**
-     * Sets the land default values. This method is called from RealLand and does not auto save.
+     * Sets the land default values. This method is called from land and does not auto save.
      */
     public void setDefault() {
         // Remove all flags
@@ -71,9 +74,25 @@ public final class LandPermissionsFlags {
     }
 
     private void doSave() {
-        if (realLand != null) {
-            realLand.doSave();
+        if (landNullable != null) {
+            landNullable.doSave();
         }
+    }
+
+    /**
+     * Gets the land associated to the permissions flags if exists.
+     * @return the land or null
+     */
+    public Land getLandNullable() {
+        return landNullable;
+    }
+
+    /**
+     * Gets the world name or null if this is a configuration not associated to a world.
+     * @return the world name
+     */
+    public String getWorldNameNullable() {
+        return worldNameNullable;
     }
 
     /**
@@ -86,7 +105,7 @@ public final class LandPermissionsFlags {
         // copy permissions
         for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> pcEntry : permissions.entrySet()) {
 
-            Map<PermissionType, Permission> perms = new HashMap<>();
+            Map<PermissionType, Permission> perms = new TreeMap<>();
             for (Map.Entry<PermissionType, Permission> permEntry : pcEntry.getValue().entrySet()) {
                 perms.put(permEntry.getKey(), permEntry.getValue().copyOf());
             }
@@ -107,7 +126,7 @@ public final class LandPermissionsFlags {
             return null;
         }
 
-        RealLand parent = null;
+        Land parent = null;
 
         // Return parent if exist
         if (land.getLandType() == Land.LandType.DEFAULT && originLand instanceof RealLand) {
@@ -144,7 +163,7 @@ public final class LandPermissionsFlags {
         Map<PermissionType, Permission> permPlayer;
 
         if (!permissions.containsKey(pc)) {
-            permPlayer = new HashMap<>();
+            permPlayer = new TreeMap<>();
             permissions.put(pc, permPlayer);
         } else {
             permPlayer = permissions.get(pc);
@@ -152,18 +171,18 @@ public final class LandPermissionsFlags {
         permPlayer.put(perm.getPermType(), perm);
         doSave();
 
-        if (realLand != null) {
+        if (landNullable != null) {
             if (perm.getPermType() == PermissionList.LAND_ENTER.getPermissionType()
                     && perm.getValue() != perm.getPermType().getDefaultValue()) {
 
                 // Start Event for kick
                 secuboid.getServer().getPluginManager().callEvent(
-                        new PlayerContainerAddNoEnterEvent(realLand, pc));
+                        new PlayerContainerAddNoEnterEvent(landNullable, pc));
             }
 
             // Start Event
             secuboid.getServer().getPluginManager().callEvent(
-                    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.PERMISSION_SET, perm));
+                    new LandModifyEvent(landNullable, LandModifyEvent.LandModifyReason.PERMISSION_SET, perm));
         }
     }
 
@@ -196,10 +215,10 @@ public final class LandPermissionsFlags {
 
         doSave();
 
-        if (realLand != null) {
+        if (landNullable != null) {
             // Start Event
             secuboid.getServer().getPluginManager().callEvent(
-                    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.PERMISSION_UNSET, perm));
+                    new LandModifyEvent(landNullable, LandModifyEvent.LandModifyReason.PERMISSION_UNSET, perm));
         }
 
         return true;
@@ -293,7 +312,7 @@ public final class LandPermissionsFlags {
 
         // Check default configuration
         DefaultLand defaultLand;
-        if (realLand != null && (defaultLand = secuboid.getLands().getDefaultConf(realLand.getType())) != null) {
+        if (landNullable != null && (defaultLand = secuboid.getLands().getDefaultConf(landNullable.getType())) != null) {
             for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry :
                     defaultLand.getPermissionsFlags().permissions.entrySet()) {
                 result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originLand);
@@ -347,10 +366,10 @@ public final class LandPermissionsFlags {
         flags.put(flag.getFlagType(), flag);
         doSave();
 
-        if (realLand != null) {
+        if (landNullable != null) {
             // Start Event
             secuboid.getServer().getPluginManager().callEvent(
-                    new LandModifyEvent(realLand, LandModifyEvent.LandModifyReason.FLAG_SET, flag));
+                    new LandModifyEvent(landNullable, LandModifyEvent.LandModifyReason.FLAG_SET, flag));
         }
     }
 
@@ -369,10 +388,10 @@ public final class LandPermissionsFlags {
         }
         doSave();
 
-        if (realLand != null) {
+        if (landNullable != null) {
             // Start Event
             secuboid.getServer().getPluginManager().callEvent(
-                    new LandModifyEvent((RealLand) land, LandModifyEvent.LandModifyReason.FLAG_UNSET, flag));
+                    new LandModifyEvent(landNullable, LandModifyEvent.LandModifyReason.FLAG_UNSET, flag));
         }
 
         return true;
@@ -454,7 +473,7 @@ public final class LandPermissionsFlags {
 
         // Check default configuration
         DefaultLand defaultLand;
-        if (realLand != null && (defaultLand = secuboid.getLands().getDefaultConf(realLand.getType())) != null) {
+        if (landNullable != null && (defaultLand = secuboid.getLands().getDefaultConf(landNullable.getType())) != null) {
             flag = defaultLand.getPermissionsFlags().flags.get(ft);
             if (flag != null) {
                 if (!onlyInherit || flag.isInheritable()) {

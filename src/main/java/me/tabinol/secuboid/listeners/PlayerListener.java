@@ -87,7 +87,6 @@ import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;

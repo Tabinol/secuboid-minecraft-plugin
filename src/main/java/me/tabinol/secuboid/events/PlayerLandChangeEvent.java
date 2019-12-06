@@ -18,16 +18,16 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+
 /**
- * The Class PlayerLandChangeEvent. This events is called every time a player moves from a land to an other, or to an
- * other world.
+ * The Class PlayerLandChangeEvent. This events is called every time a player
+ * moves from a land to an other, or to an other world.
  */
 public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
 
@@ -37,61 +37,51 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 
     /**
+     * The player.
+     */
+    private final Player player;
+
+    /**
+     * The from loc.
+     */
+    private final Location fromLoc;
+
+    /**
+     * The to loc.
+     */
+    private final Location toLoc;
+
+    /**
+     * The last land (or world) permissions flags.
+     */
+    private final LandPermissionsFlags lastLandPermissionsFlags;
+
+    /**
+     * The if this is a player teleport.
+     */
+    private final boolean isTp;
+
+    /**
      * The cancelled.
      */
     private boolean cancelled = false;
 
     /**
-     * The player.
-     */
-    private Player player;
-
-    /**
-     * The from loc.
-     */
-    private Location fromLoc;
-
-    /**
-     * The to loc.
-     */
-    private Location toLoc;
-
-    /**
-     * The last land.
-     */
-    private RealLand lastLand;
-
-    /**
-     * The last dummy land.
-     */
-    private Land lastDummyLand;
-
-    /**
-     * The if this is a player teleport.
-     */
-    private boolean isTp;
-
-    /**
      * Instantiates a new player land change events.
      *
-     * @param lastDummyLand the last dummy land
-     * @param dummyLand     the actual dummy land
-     * @param player        the player
-     * @param fromLoc       from location
-     * @param toLoc         the to location
-     * @param isTp          the is a player teleport
+     * @param lastlandPermissionsFlags the permissions and flags
+     * @param landPermissionsFlags     the actual permissions and flags
+     * @param player                   the player
+     * @param fromLoc                  from location
+     * @param toLoc                    the to location
+     * @param isTp                     the is a player teleport
      */
-    public PlayerLandChangeEvent(final Land lastDummyLand, final Land dummyLand, final Player player,
-                                 final Location fromLoc, final Location toLoc, final boolean isTp) {
+    public PlayerLandChangeEvent(final LandPermissionsFlags lastLandPermissionsFlags,
+            LandPermissionsFlags landPermissionsFlags, final Player player, final Location fromLoc,
+            final Location toLoc, final boolean isTp) {
 
-        super(dummyLand);
-        this.lastDummyLand = lastDummyLand;
-
-        if (lastDummyLand != null && lastDummyLand.getLandType() == Land.LandType.REAL) {
-            lastLand = (RealLand) lastDummyLand;
-        } else {
-            lastLand = null;
-        }
+        super(landPermissionsFlags);
+        this.lastLandPermissionsFlags = lastLandPermissionsFlags;
 
         this.player = player;
         this.fromLoc = fromLoc;
@@ -133,21 +123,12 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     }
 
     /**
-     * Gets the last land.
+     * Gets the last land or outside area (World) permissions flags.
      *
-     * @return the last land
+     * @return the last land or dummy land (World) permissions flags
      */
-    public RealLand getLastLand() {
-        return lastLand;
-    }
-
-    /**
-     * Gets the last land or outside area (World).
-     *
-     * @return the last land or dummy land (World)
-     */
-    public Land getLastLandOrOutside() {
-        return lastDummyLand;
+    public LandPermissionsFlags getLastLandPermissionsFlags() {
+        return lastLandPermissionsFlags;
     }
 
     /**

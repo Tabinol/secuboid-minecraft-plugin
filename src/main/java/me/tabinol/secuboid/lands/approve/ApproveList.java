@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;

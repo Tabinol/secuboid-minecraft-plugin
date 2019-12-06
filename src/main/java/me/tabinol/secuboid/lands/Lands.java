@@ -46,29 +46,15 @@ import org.bukkit.Location;
 /**
  * The Class Lands manager.
  */
-public class Lands {
+public final class Lands {
+
+    private final static int INDEX_X1 = 0;
+    private final static int INDEX_Z1 = 1;
+    private final static int INDEX_X2 = 2;
+    private final static int INDEX_Z2 = 3;
 
     private final Secuboid secuboid;
-
-    /**
-     * The Constant INDEX_X1.
-     */
-    private final static int INDEX_X1 = 0;
-
-    /**
-     * The Constant INDEX_Z1.
-     */
-    private final static int INDEX_Z1 = 1;
-
-    /**
-     * The Constant INDEX_X2.
-     */
-    private final static int INDEX_X2 = 2;
-
-    /**
-     * The Constant INDEX_Z2.
-     */
-    private final static int INDEX_Z2 = 3;
+    private final WorldConfig worldConfig;
 
     /**
      * Area list put in an area for finding lands.
@@ -93,21 +79,6 @@ public class Lands {
     private final TreeMap<String, RealLand> landList;
 
     /**
-     * The outside area in worlds.
-     */
-    private final Map<String, WorldLand> outsideArea;
-
-    /**
-     * Default configuration (Type not exist or Type null).
-     */
-    private final DefaultLand defaultConfNoType;
-
-    /**
-     * The default configuration for a land.
-     */
-    private final Map<Type, DefaultLand> defaultConf;
-
-    /**
      * The approve list.
      */
     private final ApproveList approveList;
@@ -127,23 +98,16 @@ public class Lands {
      *
      * @param secuboid secuboid instance
      */
-    public Lands(Secuboid secuboid) {
+    public Lands(Secuboid secuboid, WorldConfig worldConfig) {
 
         this.secuboid = secuboid;
+        this.worldConfig = worldConfig;
         areaList = new AreaMap[4];
 
         for (int i = 0; i < 4; i++) {
             areaList[i] = new AreaMap();
             areaList[i].areaMap = new TreeMap<String, TreeSet<AreaIndex>>();
         }
-        WorldConfig worldConfig = new WorldConfig(secuboid);
-
-        // Load World Config
-        this.outsideArea = null; // TODO
-
-        // Load Land default
-        this.defaultConf = null; // TODO
-        this.defaultConfNoType = null; // TODO
 
         landList = new TreeMap<String, RealLand>();
         landUUIDList = new TreeMap<UUID, RealLand>();

@@ -26,7 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandEconomyEvent;
 import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 
 /**
@@ -52,7 +52,7 @@ public class EcoScheduler extends BukkitRunnable {
         long now = System.currentTimeMillis();
 
         // Check for rent renew
-        for (RealLand land : secuboid.getLands().getForRent()) {
+        for (Land land : secuboid.getLands().getForRent()) {
 
             long nextPaymentTime = land.getLastPaymentTime() + (86400000L * land.getRentRenew());
 

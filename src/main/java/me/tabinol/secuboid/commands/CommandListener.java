@@ -35,7 +35,7 @@ import me.tabinol.secuboid.commands.executor.CommandExec;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
@@ -193,7 +193,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
     private List<String> listAreaLand(CommandSender sender) {
         final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
         if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
-            final RealLand land = playerConf.getSelection().getLand();
+            final Land land = playerConf.getSelection().getLand();
             final List<String> areasStrs = land.getAreas().stream().map(Object::toString).collect(Collectors.toList());
             return areasStrs;
         }
@@ -214,7 +214,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private List<String> listLand() {
         final List<String> argList = new ArrayList<>();
-        for (RealLand land : secuboid.getLands().getLands()) {
+        for (Land land : secuboid.getLands().getLands()) {
             argList.add(land.getName());
         }
         return argList;

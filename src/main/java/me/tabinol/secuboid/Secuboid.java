@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.InventoryConfig;
+import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
@@ -75,6 +76,11 @@ public final class Secuboid extends JavaPlugin {
      */
     private Lands lands;
 
+    /**
+     * The world config.
+     */
+    private WorldConfig worldConfig;
+    
     /**
      * The parameters.
      */
@@ -167,7 +173,9 @@ public final class Secuboid extends JavaPlugin {
         playerConf.addAll();
         language = new Lang(this);
         storageThread = new StorageThread(this);
-        lands = new Lands(this);
+        worldConfig = new WorldConfig(this);
+        worldConfig.loadResources();
+        lands = new Lands(this, worldConfig);
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
@@ -226,7 +234,8 @@ public final class Secuboid extends JavaPlugin {
             playerMoney = null;
         }
         language.reloadConfig();
-        lands = new Lands(this);
+        worldConfig.loadResources();
+        lands = new Lands(this, worldConfig);
         storageThread.stopNextRun();
         storageThread = new StorageThread(this);
         storageThread.loadAllAndStart();

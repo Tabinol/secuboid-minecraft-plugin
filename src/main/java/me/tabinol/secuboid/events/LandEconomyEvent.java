@@ -17,15 +17,16 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.event.HandlerList;
 
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+
 /**
- * The Class LandEconomyEvent. When a lend is rented/unrented or sel.
- * Created by Tabinol on 17-02-19.
+ * The Class LandEconomyEvent. When a lend is rented/unrented or sel. Created by
+ * Tabinol on 17-02-19.
  */
-public class LandEconomyEvent extends LandEvent {
+public class LandEconomyEvent extends LandInsideEvent {
 
     public enum LandEconomyReason {
         /**
@@ -55,8 +56,8 @@ public class LandEconomyEvent extends LandEvent {
     private final PlayerContainer fromPC;
     private final PlayerContainer toPC;
 
-    public LandEconomyEvent(final RealLand land, final LandEconomyReason landEconomyReason,
-                            final PlayerContainer fromPC, PlayerContainer toPC) {
+    public LandEconomyEvent(final Land land, final LandEconomyReason landEconomyReason, final PlayerContainer fromPC,
+            PlayerContainer toPC) {
         super(land);
         this.landEconomyReason = landEconomyReason;
         this.fromPC = fromPC;

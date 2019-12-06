@@ -19,10 +19,7 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -136,14 +133,10 @@ public final class CommandPermission extends CommandPlayerThreadExec {
 
         boolean addToList = false;
 
-        final Set<PlayerContainer> pcSet = land.getPermissionsFlags().getSetPCHavePermission();
-        final Set<PlayerContainer> pcSetSort = new TreeSet<>(pcSet);
-        for (PlayerContainer pc : pcSetSort) {
+        for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
             StringBuilder stSubList = new StringBuilder();
 
-            final Collection<Permission> permSet = land.getPermissionsFlags().getPermissionsForPC(pc);
-            final Set<Permission> permSetSort = new TreeSet<>(permSet);
-                for (Permission perm : permSetSort) {
+                for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
                 if ((!onlyInherit || perm.isInheritable()) && !permInList(pc, perm)) {
                     addToList = true;
                     stSubList.append(" ").append(perm.getPermType().getPrint()).append(":")

@@ -30,7 +30,7 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -148,11 +148,11 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
 
-            RealLand apprLand = secuboid.getLands().getLand(param);
+            Land apprLand = secuboid.getLands().getLand(param);
             Collisions.LandAction action = approve.getAction();
             int removeId = approve.getRemovedAreaId();
             Area newArea = approve.getNewArea();
-            RealLand parent = approve.getParent();
+            Land parent = approve.getParent();
             // Double price = approve.getPrice();
             PlayerContainer owner = approve.getOwner();
 

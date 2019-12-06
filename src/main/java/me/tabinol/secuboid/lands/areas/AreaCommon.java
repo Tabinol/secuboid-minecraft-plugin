@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -41,7 +41,7 @@ final class AreaCommon {
     /**
      * The land.
      */
-    private RealLand land = null;
+    private Land land = null;
 
     /**
      * The area.
@@ -91,7 +91,7 @@ final class AreaCommon {
      *
      * @param land the new land
      */
-    final void setLand(RealLand land) {
+    final void setLand(Land land) {
         this.land = land;
     }
 
@@ -100,7 +100,7 @@ final class AreaCommon {
      *
      * @return the land
      */
-    RealLand getLand() {
+    Land getLand() {
         return land;
     }
 

@@ -32,7 +32,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * Represent the economy sign.
@@ -50,7 +50,7 @@ public class EcoSign {
     /**
      * The land.
      */
-    private final RealLand land;
+    private final Land land;
 
     /**
      * The location.
@@ -80,7 +80,7 @@ public class EcoSign {
      * @param player   the player
      * @throws SignException the sign exception
      */
-    public EcoSign(Secuboid secuboid, RealLand land, Player player) throws SignException {
+    public EcoSign(Secuboid secuboid, Land land, Player player) throws SignException {
 
         this.secuboid = secuboid;
         Block targetBlock = player.getTargetBlock(null, 10);
@@ -134,7 +134,7 @@ public class EcoSign {
      * @param location the location
      * @throws SignException the sign exception
      */
-    public EcoSign(Secuboid secuboid, RealLand land, Location location) throws SignException {
+    public EcoSign(Secuboid secuboid, Land land, Location location) throws SignException {
 
         this.secuboid = secuboid;
         this.land = land;

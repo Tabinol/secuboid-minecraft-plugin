@@ -26,7 +26,6 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
@@ -57,7 +56,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
     int removeId = 0;
     Area newArea = null;
     PlayerContainer owner = null;
-    RealLand parent = null;
+    Land parent = null;
 
     private class CollisionThreadStatus extends BukkitRunnable {
 
@@ -121,8 +120,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param addForApprove the add for approve
      * @throws SecuboidCommandException the secuboid command exception
      */
-    final void checkCollision(String worldName, String landName, RealLand land, Type type, Collisions.LandAction action,
-            int removeId, Area newArea, RealLand parent, PlayerContainer owner, boolean addForApprove) {
+    final void checkCollision(String worldName, String landName, Land land, Type type, Collisions.LandAction action,
+            int removeId, Area newArea, Land parent, PlayerContainer owner, boolean addForApprove) {
 
         // allowApprove: false: The command can absolutely not be done if there is
         // error!

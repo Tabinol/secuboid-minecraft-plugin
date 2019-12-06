@@ -22,8 +22,8 @@ import java.util.*;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -107,7 +107,7 @@ public class Collisions {
     /**
      * The land.
      */
-    private final RealLand land;
+    private final Land land;
 
     /**
      * The action.
@@ -127,7 +127,7 @@ public class Collisions {
     /**
      * The parent.
      */
-    private final RealLand parent;
+    private final Land parent;
 
     /**
      * The owner
@@ -169,8 +169,8 @@ public class Collisions {
      * @param isFree           if the land is free or not
      * @param checkApproveList the check approve list
      */
-    public Collisions(Secuboid secuboid, String worldName, String landName, RealLand land, LandAction action, int removedAreaId,
-                      Area newArea, RealLand parent, PlayerContainer owner, boolean isFree, boolean checkApproveList) {
+    public Collisions(Secuboid secuboid, String worldName, String landName, Land land, LandAction action, int removedAreaId,
+                      Area newArea, Land parent, PlayerContainer owner, boolean isFree, boolean checkApproveList) {
 
         this.secuboid = secuboid;
         this.worldName = worldName;
@@ -280,7 +280,7 @@ public class Collisions {
             for (int z = newArea.getZ1(); z <= newArea.getZ2(); z++) {
                 if (newArea.isLocationInside(worldName, x, z)) {
                     for (Area area2 : lands.getAreas(worldName, x, z)) {
-                        RealLand land2 = area2.getLand();
+                        Land land2 = area2.getLand();
                         if (land != land2 && !isDescendants(land, land2) && !isDescendants(land2, parent)) {
                             landCollisionsList.add(area2);
                         }
@@ -308,7 +308,7 @@ public class Collisions {
      * @param land2 the land2
      * @return true, if is descendants
      */
-    private boolean isDescendants(RealLand land1, RealLand land2) {
+    private boolean isDescendants(Land land1, Land land2) {
         return !(land1 == null || land2 == null) && land1.isDescendants(land2);
     }
 
@@ -316,7 +316,7 @@ public class Collisions {
      * Check if children outside.
      */
     private void checkIfChildrenOutside() {
-        final HashSet<RealLand> childOutsideLand = new HashSet<RealLand>();
+        final HashSet<Land> childOutsideLand = new HashSet<>();
         HashSet<Area> areaList = new HashSet<Area>();
 
         if (action != LandAction.LAND_REMOVE) {
@@ -334,7 +334,7 @@ public class Collisions {
             for (int x = areaC.getX1(); x <= areaC.getX2(); x++) {
                 for (int z = areaC.getZ1(); z <= areaC.getZ2(); z++) {
                     if (areaC.isLocationInside(worldName, x, z)) {
-                        for (RealLand child : land.getChildren()) {
+                        for (Land child : land.getChildren()) {
                             if (!child.isLocationInside(worldName, x, z)) {
                                 childOutsideLand.add(child);
                             }
@@ -344,7 +344,7 @@ public class Collisions {
             }
         }
 
-        for (RealLand child : childOutsideLand) {
+        for (Land child : childOutsideLand) {
             collisionsEntries.add(new CollisionsEntry(secuboid, CHILD_OUT_OF_BORDER, child, 0));
         }
     }
@@ -353,7 +353,7 @@ public class Collisions {
      * Check if land has children.
      */
     private void checkIfLandHasChildren() {
-        for (RealLand child : land.getChildren()) {
+        for (Land child : land.getChildren()) {
             collisionsEntries.add(new CollisionsEntry(secuboid, LandError.HAS_CHILDREN, child, 0));
         }
     }

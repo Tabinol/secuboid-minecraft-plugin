@@ -18,28 +18,22 @@
  */
 package me.tabinol.secuboid.lands;
 
-import me.tabinol.secuboid.Secuboid;
+import static me.tabinol.secuboid.lands.InitLands.WORLD;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import static me.tabinol.secuboid.lands.InitLands.WORLD;
 
 /**
  * Tests for lands.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Secuboid.class)
-public class LandsTest {
+public final class LandsTest {
 
     private static final String TEST_CUBOID = "testcuboid";
     private static final String TEST_CYLINDER = "testcylinder";
@@ -63,7 +57,7 @@ public class LandsTest {
     @Test
     public void verifyCuboid() throws Exception {
 
-        RealLand land = lands.getLand(TEST_CUBOID);
+        final Land land = lands.getLand(TEST_CUBOID);
 
         // Volume check
         if (land.getArea(1).getVolume() != 100 * 256 * 100) {
@@ -84,7 +78,7 @@ public class LandsTest {
     @Test
     public void verifyCylinder() throws Exception {
 
-        RealLand land = lands.getLand(TEST_CYLINDER);
+        final Land land = lands.getLand(TEST_CYLINDER);
 
         // Volume check
         if (land.getArea(1).getVolume() != Math.round(Math.PI * 55.5 * 45.5 * 247)) {
@@ -110,7 +104,7 @@ public class LandsTest {
     @Test
     public void verifyRoad() throws Exception {
 
-        RealLand land = lands.getLand(TEST_ROAD);
+        final Land land = lands.getLand(TEST_ROAD);
 
         // Volume check
         if (land.getArea(1).getVolume() != 256 * 2) {

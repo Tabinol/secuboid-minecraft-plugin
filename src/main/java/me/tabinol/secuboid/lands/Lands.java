@@ -121,17 +121,17 @@ public final class Lands {
     /**
      * Gets the the default configuration for a land type.
      *
-     * @param type the land type
+     * @param type the land type nullable
      * @return the default land permissions flags configuration.
      */
-    public LandPermissionsFlags getDefaultConf(Type type) {
+    public LandPermissionsFlags getDefaultConf(Type typeNullable) {
         // No type? Return default config
-        if (type == null) {
+        if (typeNullable == null) {
             return worldConfig.getDefaultPermissionsFlags();
         }
 
         // Type not found? Return default config
-        final LandPermissionsFlags landPermissionsFlags = worldConfig.getTypeToDefaultPermissionsFlags().get(type);
+        final LandPermissionsFlags landPermissionsFlags = worldConfig.getTypeToDefaultPermissionsFlags().get(typeNullable);
         if (landPermissionsFlags == null) {
             return worldConfig.getDefaultPermissionsFlags();
         }
@@ -430,16 +430,19 @@ public final class Lands {
     }
 
     /**
-     * Gets the outside area permissions flags.
+     * Gets the outside area permissions flags (Global if null).
      *
      * @param worldName the world name
      * @return the outside area permissions flags
      */
-    public LandPermissionsFlags getOutsideLandPermissionsFlags(String worldName) {
-        final String worldNameLower = worldName.toLowerCase();
+    public LandPermissionsFlags getOutsideLandPermissionsFlags(String worldNameNullable) {
+        if (worldNameNullable == null) {
+            return worldConfig.getGlobalPermissionsFlags();
+        }
+        final String worldNameLower = worldNameNullable.toLowerCase();
         final LandPermissionsFlags worldPermissionsFlags = worldConfig.getWorldNameToPermissionsFlags()
                 .get(worldNameLower);
-        if (worldPermissionsFlags == null) {
+        if (worldPermissionsFlags != null) {
             // Found world specific
             return worldPermissionsFlags;
         }

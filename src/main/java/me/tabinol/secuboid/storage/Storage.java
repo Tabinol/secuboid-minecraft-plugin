@@ -20,7 +20,7 @@ package me.tabinol.secuboid.storage;
 
 import java.util.UUID;
 
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Interface Storage.
@@ -37,14 +37,14 @@ public interface Storage {
      *
      * @param land the land
      */
-    void saveLand(RealLand land);
+    void saveLand(Land land);
 
     /**
      * Removes the land.
      *
      * @param land the land
      */
-    void removeLand(RealLand land);
+    void removeLand(Land land);
 
     /**
      * Removes the land.

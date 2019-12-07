@@ -18,31 +18,31 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.economy.EcoSign;
-import me.tabinol.secuboid.events.LandEconomyEvent;
-import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.exceptions.SignException;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.permissionsflags.PermissionList;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.plugin.PluginManager;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.economy.EcoSign;
+import me.tabinol.secuboid.events.LandEconomyEvent;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.exceptions.SignException;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+
 /**
  * Represents an action on an economy sign.
  */
-public class CommandEcosign extends CommandExec {
+public final class CommandEcosign extends CommandExec {
 
     public enum SignType {
 
-        SALE,
-        RENT
+        SALE, RENT
     }
 
     private final Action action;
@@ -58,8 +58,8 @@ public class CommandEcosign extends CommandExec {
      * @param signType the sign type
      * @throws SecuboidCommandException wrong command execution
      */
-    public CommandEcosign(Secuboid secuboid, Player player, RealLand land, Action action,
-                          SignType signType) throws SecuboidCommandException {
+    public CommandEcosign(Secuboid secuboid, Player player, Land land, Action action, SignType signType)
+            throws SecuboidCommandException {
 
         super(secuboid, null, player, null);
         this.land = land;
@@ -70,30 +70,36 @@ public class CommandEcosign extends CommandExec {
     @Override
     public final void commandExecute() throws SecuboidCommandException {
 
-        PluginManager pm = secuboid.getServer().getPluginManager();
+        final PluginManager pm = secuboid.getServer().getPluginManager();
 
         // Economy activated in configuration?
         if (!secuboid.getConf().useEconomy()) {
-            throw new SecuboidCommandException(secuboid, "Economy not available.", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+            throw new SecuboidCommandException(secuboid, "Economy not available.", player,
+                    "COMMAND.ECONOMY.NOTAVAILABLE");
         }
 
         if (action == Action.RIGHT_CLICK_BLOCK) {
             if (signType == SignType.SALE) {
 
                 // Buy a land
-                if (!land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.ECO_LAND_BUY.getPermissionType())) {
-                    throw new SecuboidCommandException(secuboid, "No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
+                if (!land.getPermissionsFlags().checkPermissionAndInherit(player,
+                        PermissionList.ECO_LAND_BUY.getPermissionType())) {
+                    throw new SecuboidCommandException(secuboid, "No permission to do this action", player,
+                            "GENERAL.MISSINGPERMISSION");
                 }
                 if (secuboid.getPlayerMoney().getPlayerBalance(player, land.getWorldName()) < land.getSalePrice()) {
-                    throw new SecuboidCommandException(secuboid, "Not enough money to buy a land", player, "COMMAND.ECONOMY.NOTENOUGHMONEY");
+                    throw new SecuboidCommandException(secuboid, "Not enough money to buy a land", player,
+                            "COMMAND.ECONOMY.NOTENOUGHMONEY");
                 }
                 secuboid.getPlayerMoney().getFromPlayer(player, land.getWorldName(), land.getSalePrice());
                 if (land.getOwner().getContainerType() == PlayerContainerType.PLAYER) {
                     OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
                     secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
                     if (offlineOwner.isOnline()) {
-                        offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SALERECEIVE",
-                                String.valueOf(land.getRentPrice()), land.getName()));
+                        offlineOwner.getPlayer()
+                                .sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SALERECEIVE",
+                                                String.valueOf(land.getRentPrice()), land.getName()));
                     }
                 }
                 try {
@@ -105,65 +111,73 @@ public class CommandEcosign extends CommandExec {
                 land.setForSale(false, 0, null);
                 PlayerContainer oldOwner = land.getOwner();
                 land.setOwner(playerConf.getPlayerContainer());
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND",
-                        land.getName()));
-                secuboid.getLogger().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
-                        + " for land '" + land.getName() + "'.");
-                pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.SELL, oldOwner, playerConf.getPlayerContainer()));
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.BUYLAND", land.getName()));
+                secuboid.getLogger()
+                        .info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                                + " for land '" + land.getName() + "'.");
+                pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.SELL, oldOwner,
+                        playerConf.getPlayerContainer()));
             } else // Rent and unrent
-                if (land.isRented() && (land.getTenant().hasAccess(player, land, land) || land.getOwner().hasAccess(player, land, land)
-                        || playerConf.isAdminMode())) {
+            if (land.isRented() && (land.getTenant().hasAccess(player, land, land.getPermissionsFlags())
+                    || land.getOwner().hasAccess(player, land, land.getPermissionsFlags())
+                    || playerConf.isAdminMode())) {
 
-                    // Unrent
-                    land.unSetRented();
-                    try {
-                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(), land.getRentRenew(),
-                                land.getRentAutoRenew(), null);
-                    } catch (SignException e) {
-                        // Real Error
-                        secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
-                    }
-                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND",
-                            land.getName()));
-                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
-                            playerConf.getPlayerContainer()));
-
-                } else if (!land.isRented()) {
-
-                    // Rent
-                    if (!land.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.ECO_LAND_RENT.getPermissionType())) {
-                        throw new SecuboidCommandException(secuboid, "No permission to do this action", player, "GENERAL.MISSINGPERMISSION");
-                    }
-                    if (secuboid.getPlayerMoney().getPlayerBalance(player,
-                            land.getWorldName()) < land.getRentPrice()) {
-                        throw new SecuboidCommandException(secuboid, "Not enough money to rent a land", player, "COMMAND.ECONOMY.NOTENOUGHMONEY");
-                    }
-                    secuboid.getPlayerMoney().getFromPlayer(player,
-                            land.getWorldName(), land.getRentPrice());
-                    if (land.getOwner() instanceof PlayerContainerPlayer) {
-                        OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
-                        secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
-                        if (offlineOwner.isOnline()) {
-                            offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
-                                    secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
-                        }
-                    }
-                    land.setRented(playerConf.getPlayerContainer());
-                    try {
-                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(),
-                                land.getRentRenew(), land.getRentAutoRenew(), player.getName());
-                    } catch (SignException e) {
-                        // Real Error
-                        secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
-                    }
-                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND",
-                            land.getName()));
-                    secuboid.getLogger().info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
-                            + " for land '" + land.getName() + "'.");
-                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT, land.getOwner(),
-                            playerConf.getPlayerContainer()));
+                // Unrent
+                land.unSetRented();
+                try {
+                    new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(),
+                            land.getRentRenew(), land.getRentAutoRenew(), null);
+                } catch (SignException e) {
+                    // Real Error
+                    secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
-        } else if (land.getOwner().hasAccess(player, land, land) || playerConf.isAdminMode()) {
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNRENTLAND", land.getName()));
+                pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
+                        playerConf.getPlayerContainer()));
+
+            } else if (!land.isRented()) {
+
+                // Rent
+                if (!land.getPermissionsFlags().checkPermissionAndInherit(player,
+                        PermissionList.ECO_LAND_RENT.getPermissionType())) {
+                    throw new SecuboidCommandException(secuboid, "No permission to do this action", player,
+                            "GENERAL.MISSINGPERMISSION");
+                }
+                if (secuboid.getPlayerMoney().getPlayerBalance(player, land.getWorldName()) < land.getRentPrice()) {
+                    throw new SecuboidCommandException(secuboid, "Not enough money to rent a land", player,
+                            "COMMAND.ECONOMY.NOTENOUGHMONEY");
+                }
+                secuboid.getPlayerMoney().getFromPlayer(player, land.getWorldName(), land.getRentPrice());
+                if (land.getOwner() instanceof PlayerContainerPlayer) {
+                    OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
+                    secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
+                    if (offlineOwner.isOnline()) {
+                        offlineOwner.getPlayer()
+                                .sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
+                                                secuboid.getPlayerMoney().toFormat(land.getRentPrice()),
+                                                land.getName()));
+                    }
+                }
+                land.setRented(playerConf.getPlayerContainer());
+                try {
+                    new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(),
+                            land.getRentRenew(), land.getRentAutoRenew(), player.getName());
+                } catch (SignException e) {
+                    // Real Error
+                    secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
+                }
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.RENTLAND", land.getName()));
+                secuboid.getLogger()
+                        .info(player.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
+                                + " for land '" + land.getName() + "'.");
+                pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT, land.getOwner(),
+                        playerConf.getPlayerContainer()));
+            }
+        } else if (land.getOwner().hasAccess(player, land, land.getPermissionsFlags()) || playerConf.isAdminMode()) {
 
             // Left Click, destroy the sign
             if (signType == SignType.SALE) {
@@ -176,8 +190,8 @@ public class CommandEcosign extends CommandExec {
                     secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                 }
                 land.setForSale(false, 0, null);
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE",
-                        land.getName()));
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORSALE", land.getName()));
             } else {
 
                 // Destroy rent sign
@@ -194,8 +208,8 @@ public class CommandEcosign extends CommandExec {
                 }
                 land.unSetRented();
                 land.unSetForRent();
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORRENT",
-                        land.getName()));
+                player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.UNFORRENT", land.getName()));
                 if (wasRented) {
                     pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
                             tenant));

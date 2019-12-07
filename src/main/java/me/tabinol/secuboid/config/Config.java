@@ -40,11 +40,6 @@ public class Config {
     public static final String NEWLINE = System.getProperty("line.separator");
 
     /**
-     * The Constant GLOBAL.
-     */
-    public static final String GLOBAL = "_global_";
-
-    /**
      * The this plugin.
      */
     private final Secuboid secuboid;

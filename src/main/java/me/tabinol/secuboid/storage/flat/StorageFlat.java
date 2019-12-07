@@ -33,7 +33,7 @@ import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.permissionsflags.Flag;
@@ -70,7 +70,7 @@ public class StorageFlat implements Storage {
     /**
      * Represents lands with non resolved parents. In a second loop, we will try to resolve.
      */
-    private Map<RealLand, UUID> orphans;
+    private Map<Land, UUID> orphans;
 
     /**
      * Instantiates a new storage flat.
@@ -116,7 +116,7 @@ public class StorageFlat implements Storage {
      * @param land the land
      * @return the land file
      */
-    private File getLandFile(RealLand land) {
+    private File getLandFile(Land land) {
         return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
     }
 
@@ -135,7 +135,7 @@ public class StorageFlat implements Storage {
 
         File[] files = new File(landsDir).listFiles();
         int loadedlands = 0;
-        orphans = new HashMap<RealLand, UUID>();
+        orphans = new HashMap<>();
 
         assert files != null;
         if (files.length == 0) {
@@ -156,9 +156,9 @@ public class StorageFlat implements Storage {
         }
 
         // Pass 2: find parents
-        for (Map.Entry<RealLand, UUID> entry : orphans.entrySet()) {
-            RealLand land = entry.getKey();
-            RealLand parent = secuboid.getLands().getLand(entry.getValue());
+        for (Map.Entry<Land, UUID> entry : orphans.entrySet()) {
+            Land land = entry.getKey();
+            Land parent = secuboid.getLands().getLand(entry.getValue());
             if (parent != null) {
                 land.setParent(parent);
             } else {
@@ -182,7 +182,7 @@ public class StorageFlat implements Storage {
         UUID uuid;
         String landName;
         String type;
-        RealLand land = null;
+        Land land = null;
         Map<Integer, Area> areas = new TreeMap<Integer, Area>();
         boolean isLandCreated = false;
         PlayerContainer owner;
@@ -400,7 +400,7 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void saveLand(RealLand land) {
+    public void saveLand(Land land) {
         try {
             ArrayList<String> strs;
 
@@ -495,7 +495,7 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void removeLand(RealLand land) {
+    public void removeLand(Land land) {
         if (!getLandFile(land).delete()) {
             secuboid.getLogger().severe("Enable to delete the land " + land.getName());
         }

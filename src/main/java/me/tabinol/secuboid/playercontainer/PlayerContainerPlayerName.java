@@ -1,14 +1,16 @@
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * Represents a player from his name. Used only before UUID discover.
  *
  * @author tabinol
  */
-public class PlayerContainerPlayerName implements PlayerContainer {
+public final class PlayerContainerPlayerName implements PlayerContainer {
 
     private final String name;
 
@@ -17,7 +19,7 @@ public class PlayerContainerPlayerName implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
         return false;
     }
 

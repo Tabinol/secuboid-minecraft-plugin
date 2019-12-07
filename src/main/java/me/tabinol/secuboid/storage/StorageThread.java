@@ -27,7 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
 
 /**
@@ -130,15 +130,15 @@ public class StorageThread extends Thread {
                 while (!saveList.isEmpty()) {
 
                     Object saveEntry = saveList.remove(0);
-                    storage.saveLand((RealLand) saveEntry);
+                    storage.saveLand((Land) saveEntry);
                 }
 
                 // Remove Lands or Factions
                 while (!removeList.isEmpty()) {
 
                     Object removeEntry = removeList.remove(0);
-                    if (removeEntry instanceof RealLand) {
-                        storage.removeLand((RealLand) removeEntry);
+                    if (removeEntry instanceof Land) {
+                        storage.removeLand((Land) removeEntry);
                     } else if (removeEntry instanceof NameGenealogy) {
                         storage.removeLand(((NameGenealogy) removeEntry).landUUID,
                                 ((NameGenealogy) removeEntry).landGenealogy);
@@ -184,7 +184,7 @@ public class StorageThread extends Thread {
      *
      * @param land the land
      */
-    public void saveLand(RealLand land) {
+    public void saveLand(Land land) {
         if (!inLoad) {
             saveList.add(land);
             wakeUp();
@@ -196,7 +196,7 @@ public class StorageThread extends Thread {
      *
      * @param land the land
      */
-    public void removeLand(RealLand land) {
+    public void removeLand(Land land) {
         removeList.add(land);
         wakeUp();
     }

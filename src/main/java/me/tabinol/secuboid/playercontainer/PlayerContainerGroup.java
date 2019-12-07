@@ -18,17 +18,19 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * Represents a bukkit group.
  *
  * @author tabinol
  */
-public class PlayerContainerGroup implements PlayerContainer {
+public final class PlayerContainerGroup implements PlayerContainer {
 
     private final Secuboid secuboid;
     private final String groupName;
@@ -39,7 +41,7 @@ public class PlayerContainerGroup implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
         return player != null && secuboid.getDependPlugin().getVaultPermission().playerInGroup(player, groupName);
     }
 

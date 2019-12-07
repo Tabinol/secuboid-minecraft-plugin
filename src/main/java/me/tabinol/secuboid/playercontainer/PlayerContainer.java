@@ -19,6 +19,8 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+
 import org.bukkit.entity.Player;
 
 /**
@@ -38,12 +40,15 @@ public interface PlayerContainer extends Comparable<PlayerContainer> {
     /**
      * Return if the player has access from a land.
      *
-     * @param player   the player
-     * @param pcLand   The land where this player container come from, owner/resident/... of what land?
-     * @param testLand The land where we want to test the access or where the action is done
+     * @param player                   the player
+     * @param pcLandNullable           The land where this player container come
+     *                                 from, owner/resident/... of what land?
+     * @param testLandPermissionsFlags The permissions flags (associate to a land or
+     *                                 a world) where we want to test the access or
+     *                                 where the action is done
      * @return true if the player has access
      */
-    boolean hasAccess(Player player, Land pcLand, Land testLand);
+    boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags);
 
     /**
      * Gets the printable format

@@ -18,7 +18,22 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
-import java.util.*;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.CHILD_OUT_OF_BORDER;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.COLLISION;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.HAS_CHILDREN;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.IN_APPROVE_LIST;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_AREA_FOR_LAND;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_LAND_FOR_PLAYER;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MUST_HAVE_AT_LEAST_ONE_AREA;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NAME_IN_USE;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NOT_ENOUGH_MONEY;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.OUT_OF_PARENT;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
@@ -30,8 +45,6 @@ import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.*;
 
 /**
  * The Class Collisions. This class is created for async calculation and price
@@ -436,12 +449,10 @@ public class Collisions {
 
         FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
         if (land == null) {
-            priceFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
-                    .getFlagAndInherit(flagType).getValueDouble();
+            priceFlag = secuboid.getLands().getOutsideLandPermissionsFlags(newArea.getWorldName()).getFlagAndInherit(flagType).getValueDouble();
         } else {
             if (land.getParent() == null) {
-                priceFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
-                        .getFlagAndInherit(flagType).getValueDouble();
+                priceFlag = secuboid.getLands().getOutsideLandPermissionsFlags(newArea.getWorldName()).getFlagAndInherit(flagType).getValueDouble();
             } else {
                 priceFlag = land.getParent().getPermissionsFlags().getFlagAndInherit(flagType).getValueDouble();
             }

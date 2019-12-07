@@ -20,17 +20,18 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.Collection;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandList.
@@ -110,7 +111,7 @@ public final class CommandList extends CommandPlayerThreadExec {
         convertPcIfNeeded(playerCacheEntry);
 
         // Check if the player is AdminMode or send only owned lands
-        Collection<RealLand> lands;
+        Collection<Land> lands;
 
         if (playerConf.isAdminMode()) {
             lands = secuboid.getLands().getLands();
@@ -122,7 +123,7 @@ public final class CommandList extends CommandPlayerThreadExec {
         StringBuilder stList = new StringBuilder();
         stList.append(ChatColor.YELLOW);
 
-        for (RealLand land : lands) {
+        for (Land land : lands) {
             if (((worldName != null && worldName.equals(land.getWorldName()))
                     || (type != null && type == land.getType()) || (worldName == null && type == null))
                     && (pc == null || land.getOwner().equals(pc))) {

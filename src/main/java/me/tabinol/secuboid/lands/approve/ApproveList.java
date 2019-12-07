@@ -25,6 +25,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -34,15 +39,11 @@ import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * The Class ApproveList.
  */
-public class ApproveList {
+public final class ApproveList {
 
     private final Secuboid secuboid;
 
@@ -173,8 +174,9 @@ public class ApproveList {
         }
 
         String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        PlayerContainer pc = secuboid.getNewInstance().createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
-        RealLand parent = null;
+        PlayerContainer pc = secuboid.getNewInstance()
+                .createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        Land parent = null;
         Area newArea = null;
 
         if (section.contains("Parent")) {
@@ -200,9 +202,8 @@ public class ApproveList {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(section.getLong("DateTime"));
 
-        return new Approve(secuboid, landName, type, action,
-                section.getInt("RemovedAreaId"), newArea, pc,
-                parent, section.getDouble("Price"), cal);
+        return new Approve(secuboid, landName, type, action, section.getInt("RemovedAreaId"), newArea, pc, parent,
+                section.getDouble("Price"), cal);
     }
 
     /**

@@ -18,12 +18,17 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.lands.collisions.Collisions;
@@ -32,10 +37,6 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * The Class CommandSelect.
@@ -144,8 +145,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
     }
 
     private void doSelectLand(String curArg) throws SecuboidCommandException {
-
-        RealLand landtest;
+        Land landtest;
 
         // If land is already selected, select an area, not a land
         if (playerConf.getSelection().getLand() != null) {
@@ -164,7 +164,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         }
         PlayerContainer ownerLocal = landtest.getOwner();
 
-        if (!ownerLocal.hasAccess(player, land, land) && !playerConf.isAdminMode()
+        if (!ownerLocal.hasAccess(player, land, land.getPermissionsFlags()) && !playerConf.isAdminMode()
                 && !(landtest.getPermissionsFlags().checkPermissionAndInherit(player,
                         PermissionList.RESIDENT_MANAGER.getPermissionType())
                         && (landtest.isResident(player) || landtest.isOwner(player)))) {
@@ -184,7 +184,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
 
     private void doSelectArea(String curArg) throws SecuboidCommandException {
 
-        RealLand landtest = playerConf.getSelection().getLand();
+        Land landtest = playerConf.getSelection().getLand();
         Area areaSelect;
 
         if (landtest == null) {
@@ -193,7 +193,8 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
 
         PlayerContainer ownerLocal = landtest.getOwner();
 
-        if (!ownerLocal.hasAccess(player, land, land) && !playerConf.isAdminMode() && !landtest.isOwner(player)) {
+        if (!ownerLocal.hasAccess(player, land, land.getPermissionsFlags()) && !playerConf.isAdminMode()
+                && !landtest.isOwner(player)) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
         }
 
@@ -221,9 +222,8 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         }
     }
 
-    private RealLand doSelectHere() {
-
-        RealLand landtest;
+    private Land doSelectHere() {
+        Land landtest;
 
         // add select Here to select the the cuboid
         if (location != null) {
@@ -237,7 +237,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         return landtest;
     }
 
-    private Area doSelectAreaHere(RealLand landtest) {
+    private Area doSelectAreaHere(Land landtest) {
 
         Area areatest;
 
@@ -326,7 +326,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         LandSelection landSelection = (LandSelection) playerConf.getSelection().getSelection(SelectionType.LAND);
 
         if (landSelection != null) {
-            RealLand land = landSelection.getLand();
+            Land land = landSelection.getLand();
             Area originalArea = areaSelection.getVisualSelection().getOriginalArea();
             if (originalArea != null) {
                 // Area replace

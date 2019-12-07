@@ -21,6 +21,21 @@ package me.tabinol.secuboid.listeners;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.config.players.PlayerConfig;
@@ -35,20 +50,11 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Land listener
  */
-public class LandListener extends CommonListener implements Listener {
+public final class LandListener extends CommonListener implements Listener {
 
     /**
      * Number of times retry random tp
@@ -75,8 +81,10 @@ public class LandListener extends CommonListener implements Listener {
      */
     private class LandHeal extends BukkitRunnable {
 
-        /* (non-Javadoc)
-             * @see java.lang.Runnable#run()
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.Runnable#run()
          */
         @Override
         public void run() {
@@ -131,15 +139,13 @@ public class LandListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerQuit(PlayerQuitEvent event) {
-
-        Player player = event.getPlayer();
-
-        Land land = playerConf.get(player).getLastLand();
+        final Player player = event.getPlayer();
+        final LandPermissionsFlags landPermissionsFlags = playerConf.get(player).getLastLandPermissionsFlags();
+        final Land landNullable = landPermissionsFlags.getLandNullable();
 
         // Notify for quit
-        while (land != null && land.getLandType() == Land.LandType.REAL) {
-            notifyPlayers((RealLand) land, "ACTION.PLAYEREXIT", player);
-            land = ((RealLand) land).getParent();
+        while (landNullable != null) {
+            notifyPlayers(landNullable, "ACTION.PLAYEREXIT", player);
         }
 
         if (playerHeal.contains(player)) {
@@ -154,75 +160,80 @@ public class LandListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
-        Player player = event.getPlayer();
-        RealLand lastLand = event.getLastLand();
-        RealLand land = event.getLand();
-        Land dummyLand;
+        final Player player = event.getPlayer();
+        final Land lastLandNullable = event.getLastLandPermissionsFlags().getLandNullable();
+        final Land landNullable = event.getLandPermissionsFlags().getLandNullable();
+        LandPermissionsFlags permissionsFlags;
         String value;
 
-        if (lastLand != null) {
+        if (lastLandNullable != null) {
 
-            if (!(land != null && lastLand.isDescendants(land))) {
+            if (!(landNullable != null && lastLandNullable.isDescendants(landNullable))) {
 
-                //Notify players for exit
-                notifyPlayers(lastLand, "ACTION.PLAYEREXIT", player);
+                // Notify players for exit
+                notifyPlayers(lastLandNullable, "ACTION.PLAYEREXIT", player);
 
                 // Message quit
-                value = lastLand.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_EXIT.getFlagType()).getValueString();
+                value = lastLandNullable.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_EXIT.getFlagType())
+                        .getValueString();
                 if (!value.isEmpty()) {
-                    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + lastLand.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
+                    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + lastLandNullable.getName()
+                            + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
                 }
             }
         }
-        if (land != null) {
-            dummyLand = land;
+        if (landNullable != null) {
+            permissionsFlags = landNullable.getPermissionsFlags();
 
             if (!playerConf.get(player).isAdminMode()) {
                 // is banned or can enter
                 PermissionType permissionType = PermissionList.LAND_ENTER.getPermissionType();
-                if ((land.isBanned(player)
-                        || land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue())
-                        && !land.isOwner(player) && !player.hasPermission("secuboid.bypassban")) {
+                if ((landNullable.isBanned(player) || permissionsFlags.checkPermissionAndInherit(player,
+                        permissionType) != permissionType.getDefaultValue()) && !landNullable.isOwner(player)
+                        && !player.hasPermission("secuboid.bypassban")) {
                     String message;
-                    if (land.isBanned(player)) {
+                    if (landNullable.isBanned(player)) {
                         message = "ACTION.BANNED";
                     } else {
                         message = "ACTION.NOENTRY";
                     }
-                    if (land == lastLand || lastLand == null) {
-                        tpSpawn(player, land, message);
+                    if (landNullable == lastLandNullable || lastLandNullable == null) {
+                        tpSpawn(player, landNullable, message);
                         return;
                     } else {
-                        player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message, land.getName()));
+                        player.sendMessage(ChatColor.GRAY + "[Secuboid] "
+                                + secuboid.getLanguage().getMessage(message, landNullable.getName()));
                         event.setCancelled(true);
                         return;
                     }
                 }
             }
 
-            if (!(lastLand != null && land.isDescendants(lastLand))) {
+            if (!(lastLandNullable != null && landNullable.isDescendants(lastLandNullable))) {
 
-                //Notify players for Enter
-                RealLand landTest = land;
-                while (landTest != null && landTest != lastLand) {
+                // Notify players for Enter
+                Land landTest = landNullable;
+                while (landTest != null && landTest != lastLandNullable) {
                     notifyPlayers(landTest, "ACTION.PLAYERENTER", player);
                     landTest = landTest.getParent();
                 }
                 // Message join
-                value = land.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_ENTER.getFlagType()).getValueString();
+                value = landNullable.getPermissionsFlags().getFlagNoInherit(FlagList.MESSAGE_ENTER.getFlagType())
+                        .getValueString();
                 if (!value.isEmpty()) {
-                    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + land.getName() + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
+                    player.sendMessage(ChatColor.GRAY + "[Secuboid] (" + ChatColor.GREEN + landNullable.getName()
+                            + ChatColor.GRAY + "): " + ChatColor.WHITE + value);
                 }
             }
 
         } else {
-            dummyLand = secuboid.getLands().getOutsideArea(event.getToLoc());
+            permissionsFlags = secuboid.getLands().getOutsideLandPermissionsFlags(event.getToLoc());
         }
 
-        //Check for Healing
+        // Check for Healing
         PermissionType permissionType = PermissionList.AUTO_HEAL.getPermissionType();
 
-        if (dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
+        if (permissionsFlags.checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
             if (!playerHeal.contains(player)) {
                 playerHeal.add(player);
             }
@@ -230,11 +241,11 @@ public class LandListener extends CommonListener implements Listener {
             playerHeal.remove(player);
         }
 
-        //Death land
+        // Death land
         permissionType = PermissionList.LAND_DEATH.getPermissionType();
 
-        if (!playerConf.get(player).isAdminMode()
-                && dummyLand.getPermissionsFlags().checkPermissionAndInherit(player, permissionType) != permissionType.getDefaultValue()) {
+        if (!playerConf.get(player).isAdminMode() && permissionsFlags.checkPermissionAndInherit(player,
+                permissionType) != permissionType.getDefaultValue()) {
             player.setHealth(0);
         }
     }
@@ -246,47 +257,49 @@ public class LandListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerLandChangeTp(PlayerLandChangeEvent event) {
-        Player player = event.getPlayer();
-        RealLand land = event.getLand();
+        final Player player = event.getPlayer();
+        final Land landNullable = event.getLandPermissionsFlags().getLandNullable();
         PlayerConfEntry entry;
 
-        if (land == null || (entry = playerConf.get(player)) == null) {
+        if (landNullable == null || (entry = playerConf.get(player)) == null) {
             return;
         }
-        LandPermissionsFlags lpf = land.getPermissionsFlags();
+        LandPermissionsFlags lpf = landNullable.getPermissionsFlags();
         PermissionType permissionType = PermissionList.PORTAL_TP.getPermissionType();
 
         if (entry.isAdminMode() || lpf.checkPermissionAndInherit(player, permissionType)) {
             String targetTp;
-            RealLand targetLand;
+            Land targetLand;
             Location targetLoc;
             World world;
 
-            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_LAND.getFlagType()).getValueString()).isEmpty()
-                    && (targetLand = secuboid.getLands().getLand(targetTp)) != null
-                    && (targetLoc = getLandSpawnPoint(targetLand)) != null) {
+            if (!(targetTp = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_LAND.getFlagType())
+                    .getValueString()).isEmpty() && (targetLand = secuboid.getLands().getLand(targetTp)) != null
+                    && (targetLoc = getLandSpawnPoint(targetLand.getPermissionsFlags())) != null) {
                 player.teleport(targetLoc);
             }
 
-            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_LAND_RANDOM.getFlagType()).getValueString()).isEmpty()
+            if (!(targetTp = landNullable.getPermissionsFlags()
+                    .getFlagAndInherit(FlagList.PORTAL_LAND_RANDOM.getFlagType()).getValueString()).isEmpty()
                     && (targetLand = secuboid.getLands().getLand(targetTp)) != null) {
                 randomTp(player, targetLand.getWorld(), targetLand);
             }
 
-            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_WORLD.getFlagType()).getValueString()).isEmpty()
-                    && (targetLoc = getWorldSpawnPoint(targetTp)) != null) {
+            if (!(targetTp = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_WORLD.getFlagType())
+                    .getValueString()).isEmpty() && (targetLoc = getWorldSpawnPoint(targetTp)) != null) {
                 player.teleport(targetLoc);
             }
 
-            if (!(targetTp = land.getPermissionsFlags().getFlagAndInherit(FlagList.PORTAL_WORLD_RANDOM.getFlagType()).getValueString()).isEmpty()
+            if (!(targetTp = landNullable.getPermissionsFlags()
+                    .getFlagAndInherit(FlagList.PORTAL_WORLD_RANDOM.getFlagType()).getValueString()).isEmpty()
                     && (world = Bukkit.getWorld(targetTp)) != null) {
                 randomTp(player, world, null);
             }
         }
     }
 
-    private void randomTp(Player player, World world, RealLand land) {
-        Random r = new Random();
+    private void randomTp(Player player, World world, Land land) {
+        final Random r = new Random();
         double randomX;
         double randomZ;
         boolean tpOk;
@@ -294,16 +307,16 @@ public class LandListener extends CommonListener implements Listener {
         int floor;
 
         switch (world.getEnvironment()) {
-            case NETHER:
-                floor = 10;
-                break;
-            case THE_END:
-                floor = 45;
-                break;
-            case NORMAL:
-            default:
-                floor = 63;
-                break;
+        case NETHER:
+            floor = 10;
+            break;
+        case THE_END:
+            floor = 45;
+            break;
+        case NORMAL:
+        default:
+            floor = 63;
+            break;
         }
 
         Location loc;
@@ -359,7 +372,9 @@ public class LandListener extends CommonListener implements Listener {
             max = loc.getWorld().getMaxHeight();
         }
         while (loc.getBlockY() <= max) {
-            if (loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid() && loc.getBlock().getType() == Material.AIR && loc.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR) {
+            if (loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()
+                    && loc.getBlock().getType() == Material.AIR
+                    && loc.getBlock().getRelative(BlockFace.UP).getType() == Material.AIR) {
                 return true;
             }
             loc.add(0.0D, 1.0D, 0.0D);
@@ -375,7 +390,6 @@ public class LandListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerContainerLandBan(PlayerContainerLandBanEvent event) {
-
         checkForBannedPlayers(event.getLand(), event.getPlayerContainer(), "ACTION.BANNED");
     }
 
@@ -386,7 +400,6 @@ public class LandListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerContainerAddNoEnter(PlayerContainerAddNoEnterEvent event) {
-
         checkForBannedPlayers(event.getLand(), event.getPlayerContainer(), "ACTION.NOENTRY");
     }
 
@@ -397,8 +410,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param pc      the pc
      * @param message the message
      */
-    private void checkForBannedPlayers(RealLand land, PlayerContainer pc, String message) {
-
+    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message) {
         checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
     }
 
@@ -410,17 +422,15 @@ public class LandListener extends CommonListener implements Listener {
      * @param message     the message
      * @param kickPlayers the kicked players list
      */
-    private void checkForBannedPlayers(RealLand land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+        final Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix
+                                                                                      // ConcurrentModificationException
 
-        Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix ConcurrentModificationException
-
-        for (Player players : playersArray) {
-            if (pc.hasAccess(players, land, land)
-                    && !land.isOwner(players)
-                    && !playerConf.get(players).isAdminMode()
-                    && !players.hasPermission("secuboid.bypassban")
-                    && (!land.getPermissionsFlags().checkPermissionAndInherit(players, PermissionList.LAND_ENTER.getPermissionType())
-                    || land.isBanned(players))
+        for (final Player players : playersArray) {
+            if (pc.hasAccess(players, land, land.getPermissionsFlags()) && !land.isOwner(players)
+                    && !playerConf.get(players).isAdminMode() && !players.hasPermission("secuboid.bypassban")
+                    && (!land.getPermissionsFlags().checkPermissionAndInherit(players,
+                            PermissionList.LAND_ENTER.getPermissionType()) || land.isBanned(players))
                     && !kickPlayers.contains(players)) {
                 tpSpawn(players, land, message);
                 kickPlayers.add(players);
@@ -428,7 +438,7 @@ public class LandListener extends CommonListener implements Listener {
         }
 
         // check for children
-        for (RealLand children : land.getChildren()) {
+        for (final Land children : land.getChildren()) {
             checkForBannedPlayers(children, pc, message);
         }
     }
@@ -442,19 +452,15 @@ public class LandListener extends CommonListener implements Listener {
      * @param message  the message
      * @param playerIn the player in
      */
-    private void notifyPlayers(RealLand land, String message, Player playerIn) {
-
-        Player player;
-
+    private void notifyPlayers(Land land, String message, Player playerIn) {
         for (PlayerContainerPlayer playerC : land.getPlayersNotify()) {
-
-            player = playerC.getPlayer();
+            final Player player = playerC.getPlayer();
 
             if (player != null && player != playerIn
-                    // Only adminmode can see vanish
+            // Only adminmode can see vanish
                     && (!playerConf.isVanished(playerIn) || playerConf.get(player).isAdminMode())) {
-                player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(
-                        message, playerIn.getDisplayName(), land.getName() + ChatColor.GRAY));
+                player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message,
+                        playerIn.getDisplayName(), land.getName() + ChatColor.GRAY));
             }
         }
     }
@@ -466,8 +472,7 @@ public class LandListener extends CommonListener implements Listener {
      * @param land    the land
      * @param message the message
      */
-    private void tpSpawn(Player player, RealLand land, String message) {
-
+    private void tpSpawn(Player player, Land land, String message) {
         player.teleport(player.getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message, land.getName()));
     }

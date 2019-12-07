@@ -18,14 +18,15 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.LocalMath;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandPriority.
@@ -62,14 +63,16 @@ public final class CommandPriority extends CommandExec {
         try {
             newPrio = Short.parseShort(curArg);
         } catch (NumberFormatException ex) {
-            throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
+            throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID",
+                    Land.MINIM_PRIORITY + "", Land.MAXIM_PRIORITY + "");
         }
-        if (!LocalMath.isInInterval(newPrio, RealLand.MINIM_PRIORITY, RealLand.MAXIM_PRIORITY)) {
-            throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID", RealLand.MINIM_PRIORITY + "", RealLand.MAXIM_PRIORITY + "");
+        if (!LocalMath.isInInterval(newPrio, Land.MINIM_PRIORITY, Land.MAXIM_PRIORITY)) {
+            throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID",
+                    Land.MINIM_PRIORITY + "", Land.MAXIM_PRIORITY + "");
         }
         land.setPriority(newPrio);
 
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
-                "COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                + secuboid.getLanguage().getMessage("COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
     }
 }

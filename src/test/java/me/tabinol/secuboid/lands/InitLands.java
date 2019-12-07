@@ -24,16 +24,16 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.config.WorldConfig;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.storage.StorageThread;
@@ -41,18 +41,15 @@ import me.tabinol.secuboid.storage.StorageThread;
 /**
  * Init lands database and methods.
  */
-public class InitLands {
+public final class InitLands {
 
     public static final String WORLD = "world";
 
     private final Secuboid secuboid;
     private final Lands lands;
-    private final DefaultLand defaultConfNoType;
-    private final WorldLand worldLand;
 
     public InitLands() {
         // Prepare Mock
-        PowerMockito.mockStatic(Secuboid.class);
         secuboid = mock(Secuboid.class);
 
         // log
@@ -73,23 +70,27 @@ public class InitLands {
         when(server.getPluginManager()).thenReturn(pm);
         when(secuboid.getServer()).thenReturn(server);
 
+        // WorldConfig
+
+        
+        // WorldConfig
+        final WorldConfig worldConfig = mock(WorldConfig.class);
+        final Map<String, LandPermissionsFlags> worldNameToPermissionsFlags = new HashMap<>();
+        final LandPermissionsFlags globalPermissionsFlags = new LandPermissionsFlags(secuboid, null);
+        final Map<Type, LandPermissionsFlags> typeToDefaultPermissionsFlags = new HashMap<>();
+        final LandPermissionsFlags defaultPermissionsFlags = new LandPermissionsFlags(secuboid);
+        when(worldConfig.getWorldNameToPermissionsFlags()).thenReturn(worldNameToPermissionsFlags);
+        when(worldConfig.getGlobalPermissionsFlags()).thenReturn(globalPermissionsFlags);
+        when(worldConfig.getTypeToDefaultPermissionsFlags()).thenReturn(typeToDefaultPermissionsFlags);
+        when(worldConfig.getDefaultPermissionsFlags()).thenReturn(defaultPermissionsFlags);
+
         // Lands
-        lands = spy(new Lands(secuboid));
+        lands = spy(new Lands(secuboid, worldConfig));
         when(secuboid.getLands()).thenReturn(lands);
-
-        // Outside areas
-        final TreeMap<String, WorldLand> outsideArea = new TreeMap<>();
-        worldLand = new WorldLand(secuboid, Config.GLOBAL);
-        outsideArea.put(Config.GLOBAL, worldLand);
-        Whitebox.setInternalState(lands, "outsideArea", outsideArea);
-
-        // defaultConfNoType
-        defaultConfNoType = new DefaultLand(secuboid);
-        Whitebox.setInternalState(lands, "defaultConfNoType", defaultConfNoType);
 
         // Storage
         final StorageThread storageThread = mock(StorageThread.class);
-        doNothing().when(storageThread).saveLand(any(RealLand.class));
+        doNothing().when(storageThread).saveLand(any(Land.class));
         when(secuboid.getStorageThread()).thenReturn(storageThread);
     }
 
@@ -99,13 +100,5 @@ public class InitLands {
 
     public Lands getLands() {
         return lands;
-    }
-
-    public DefaultLand getDefaultConfNoType() {
-        return defaultConfNoType;
-    }
-
-    public WorldLand getWorldLand() {
-        return worldLand;
     }
 }

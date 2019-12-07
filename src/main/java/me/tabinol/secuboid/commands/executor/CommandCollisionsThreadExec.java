@@ -20,12 +20,20 @@ package me.tabinol.secuboid.commands.executor;
 
 import java.util.Calendar;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
@@ -34,12 +42,6 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
 import me.tabinol.secuboid.selection.region.AreaSelection;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Can create a command and calculate the collisions in a thread.
@@ -195,7 +197,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * create/check.
      */
     final class LandCheckValues {
-        Land localParent;
+        LandPermissionsFlags localPermissionsFlagsParent;
         Land realLocalParent;
         PlayerContainer localOwner;
         Type localType;
@@ -218,26 +220,25 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
             if (curString.equalsIgnoreCase("noparent")) {
 
-                landCheckValues.localParent = null;
+                landCheckValues.localPermissionsFlagsParent = null;
             } else {
-
-                landCheckValues.localParent = secuboid.getLands().getLand(curString);
-
-                if (landCheckValues.localParent == null) {
+                final Land localParent = secuboid.getLands().getLand(curString);
+                if (localParent == null) {
                     throw new SecuboidCommandException(secuboid, "CommandCreate", player,
                             "COMMAND.CREATE.PARENTNOTEXIST");
                 }
+                landCheckValues.localPermissionsFlagsParent = localParent.getPermissionsFlags();
             }
         } else {
 
             // Autodetect parent
-            landCheckValues.localParent = select.getVisualSelection().getParentDetected();
+            landCheckValues.localPermissionsFlagsParent = select.getVisualSelection().getParentPermsFlagsDetected();
         }
 
         // Not complicated! The player must be AdminMode, or access to create (in world)
         // or access to create in parent if it is a subland.
         if (!playerConf.isAdminMode()
-                && (landCheckValues.localParent == null || !landCheckValues.localParent.getPermissionsFlags()
+                && (landCheckValues.localPermissionsFlagsParent == null || !landCheckValues.localPermissionsFlagsParent
                         .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
             throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
         }
@@ -250,8 +251,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
             landCheckValues.localOwner = playerConf.getPlayerContainer();
             landCheckValues.localType = secuboid.getConf().getTypeNoneAdminMode();
         }
-        if (landCheckValues.localParent.getLandType() == Land.LandType.REAL) {
-            landCheckValues.realLocalParent = (RealLand) landCheckValues.localParent;
+        if (landCheckValues.localPermissionsFlagsParent.getLandNullable() != null) {
+            landCheckValues.realLocalParent = landCheckValues.localPermissionsFlagsParent.getLandNullable();
         } else {
             landCheckValues.realLocalParent = null;
         }

@@ -64,6 +64,7 @@ public final class LandPermissionsFlags {
 
     /**
      * Constructor for land default values
+     * 
      * @param secuboid
      */
     public LandPermissionsFlags(Secuboid secuboid) {
@@ -77,6 +78,7 @@ public final class LandPermissionsFlags {
 
     /**
      * Constructor for world configuration
+     * 
      * @param secuboid
      * @param worldNameNullable
      */
@@ -91,6 +93,7 @@ public final class LandPermissionsFlags {
 
     /**
      * Constructor for land permissions flags
+     * 
      * @param secuboid
      * @param worldName
      */
@@ -141,6 +144,19 @@ public final class LandPermissionsFlags {
      */
     public String getWorldNameNullable() {
         return worldNameNullable;
+    }
+
+    /**
+     * Checks if is banned. Check with the land, or false if it is outside.
+     *
+     * @param player the player
+     * @return true, if is banned
+     */
+    public boolean isBanned(Player player) {
+        if (landNullable != null) {
+            return landNullable.isBanned(player);
+        }
+        return false;
     }
 
     /**
@@ -309,11 +325,11 @@ public final class LandPermissionsFlags {
     /**
      * Check land permission and inherit.
      *
-     * @param pcType      the player container to check
-     * @param player      the player
-     * @param pt          the pt
-     * @param onlyInherit the only inherit
-     * @param originPermissionsFlags  the origin land (or ...) permissions flags
+     * @param pcType                 the player container to check
+     * @param player                 the player
+     * @param pt                     the pt
+     * @param onlyInherit            the only inherit
+     * @param originPermissionsFlags the origin land (or ...) permissions flags
      * @return the boolean
      */
     private Boolean checkPermissionAndInherit(PlayerContainerType pcType, Player player, PermissionType pt,
@@ -335,15 +351,15 @@ public final class LandPermissionsFlags {
     /**
      * Gets the permission.
      *
-     * @param pcType      the player container to check
-     * @param player      the player
-     * @param pt          the pt
-     * @param onlyInherit the only inherit
-     * @param originPermissionsFlags  the origin land (or ...) permissions flags
+     * @param pcType                 the player container to check
+     * @param player                 the player
+     * @param pt                     the pt
+     * @param onlyInherit            the only inherit
+     * @param originPermissionsFlags the origin land (or ...) permissions flags
      * @return the permission
      */
     private Boolean getPermission(PlayerContainerType pcType, Player player, PermissionType pt, boolean onlyInherit,
-    LandPermissionsFlags originPermissionsFlags) {
+            LandPermissionsFlags originPermissionsFlags) {
         Boolean result;
 
         for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
@@ -357,8 +373,10 @@ public final class LandPermissionsFlags {
         LandPermissionsFlags defaultPermissionsFlags;
         if (landNullable != null
                 && (defaultPermissionsFlags = secuboid.getLands().getDefaultConf(landNullable.getType())) != null) {
-            for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : defaultPermissionsFlags.permissions.entrySet()) {
-                result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originPermissionsFlags);
+            for (Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : defaultPermissionsFlags.permissions
+                    .entrySet()) {
+                result = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit,
+                        originPermissionsFlags);
                 if (result != null) {
                     return result;
                 }
@@ -450,9 +468,9 @@ public final class LandPermissionsFlags {
     /**
      * Gets the land flag and inherit.
      *
-     * @param ft          the ft
-     * @param onlyInherit the only inherit
-     * @param originPermissionsFlags  the origin permissions flags
+     * @param ft                     the ft
+     * @param onlyInherit            the only inherit
+     * @param originPermissionsFlags the origin permissions flags
      * @return the land flag value
      */
     private FlagValue getFlagAndInherit(FlagType ft, boolean onlyInherit, LandPermissionsFlags originPermissionsFlags) {

@@ -18,12 +18,6 @@
  */
 package me.tabinol.secuboid.flycreative;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.events.PlayerLandChangeEvent;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.listeners.FlyCreativeListener;
-import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,10 +30,17 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.listeners.FlyCreativeListener;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
+
 /**
  * The creative class.
  */
-public class Creative {
+public final class Creative {
 
     public final static String CREATIVE_IGNORE_PERM = "secuboid.flycreative.ignorecreative";
     public final static String OVERRIDE_NODROP_PERM = "secuboid.flycreative.override.nodrop";
@@ -69,10 +70,10 @@ public class Creative {
         this.flyCreativeListener = flyCreativeListener;
     }
 
-    public boolean creative(Event event, Player player, Land land) {
+    public boolean isCreative(Event event, Player player, LandPermissionsFlags landPermissionsFlags) {
 
         if (!player.hasPermission(CREATIVE_IGNORE_PERM)) {
-            if (askCreativeFlag(player, land)) {
+            if (askCreativeFlag(player, landPermissionsFlags)) {
                 if (player.getGameMode() != GameMode.CREATIVE) {
                     flyCreativeListener.addIgnoredGMPlayers(player);
                     player.setGameMode(GameMode.CREATIVE);
@@ -101,20 +102,17 @@ public class Creative {
     }
 
     public boolean dropItem(Player player) {
-        return conf.isCreativeNoDrop()
-                && !player.hasPermission(OVERRIDE_NODROP_PERM);
+        return conf.isCreativeNoDrop() && !player.hasPermission(OVERRIDE_NODROP_PERM);
     }
 
     public void invOpen(InventoryOpenEvent event, HumanEntity player) {
 
-        if (conf.isCreativeNoOpenChest()
-                && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
+        if (conf.isCreativeNoOpenChest() && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
 
-            InventoryType it = event.getView().getType();
+            final InventoryType it = event.getView().getType();
 
-            if (it == InventoryType.CHEST || it == InventoryType.DISPENSER
-                    || it == InventoryType.DROPPER || it == InventoryType.ENDER_CHEST
-                    || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
+            if (it == InventoryType.CHEST || it == InventoryType.DISPENSER || it == InventoryType.DROPPER
+                    || it == InventoryType.ENDER_CHEST || it == InventoryType.FURNACE || it == InventoryType.HOPPER) {
 
                 event.setCancelled(true);
             }
@@ -132,15 +130,14 @@ public class Creative {
 
         Location blockLoc;
 
-        if (conf.isCreativeNoBuildOutside()
-                && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
+        if (conf.isCreativeNoBuildOutside() && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
 
             if (event instanceof BlockBreakEvent) {
                 blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
             } else {
                 blockLoc = ((BlockPlaceEvent) event).getBlockPlaced().getLocation();
             }
-            if (!askCreativeFlag(player, secuboid.getLands().getLandOrOutsideArea(blockLoc))) {
+            if (!askCreativeFlag(player, secuboid.getLands().getPermissionsFlags(blockLoc))) {
 
                 return true;
             }
@@ -158,8 +155,7 @@ public class Creative {
         }
     }
 
-    private boolean askCreativeFlag(Player player, Land land) {
-
-        return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
+    private boolean askCreativeFlag(Player player, LandPermissionsFlags landPermissionsFlags) {
+        return landPermissionsFlags.checkPermissionAndInherit(player, permissionType);
     }
 }

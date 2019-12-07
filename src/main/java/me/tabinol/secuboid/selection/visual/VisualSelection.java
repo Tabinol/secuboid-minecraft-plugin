@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 
@@ -29,12 +29,14 @@ public interface VisualSelection {
 
     /**
      * Gets the area.
+     * 
      * @return the area
      */
     Area getArea();
 
     /**
      * Gets the origin area to modify if exist.
+     * 
      * @return the origine area
      */
     Area getOriginalArea();
@@ -69,9 +71,10 @@ public interface VisualSelection {
     void removeSelection();
 
     /**
-     * Gets if the parent is detected. The parent can be the world if there is no parent.
+     * Gets if the parent is detected. The parent can be the world if there is no
+     * parent.
      *
-     * @return the detected parent
+     * @return the detected land permissions flags
      */
-    Land getParentDetected();
+    LandPermissionsFlags getParentPermsFlagsDetected();
 }

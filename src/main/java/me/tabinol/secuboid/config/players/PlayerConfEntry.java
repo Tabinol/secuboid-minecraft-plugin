@@ -18,20 +18,21 @@
  */
 package me.tabinol.secuboid.config.players;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.selection.PlayerSelection;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ChatPage;
+import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.selection.PlayerSelection;
+
 /**
  * The Class PlayerConfEntry. Entries for each players.
  */
-public class PlayerConfEntry {
+public final class PlayerConfEntry {
 
     private final Secuboid secuboid;
 
@@ -73,7 +74,7 @@ public class PlayerConfEntry {
     /**
      * Last Land for player
      */
-    private Land lastLand = null;
+    private LandPermissionsFlags lastLandPermissionsFlags = null;
 
     /**
      * Present location
@@ -250,21 +251,21 @@ public class PlayerConfEntry {
     }
 
     /**
-     * Gets the last land.
+     * Gets the last land permissions flags.
      *
-     * @return the last land
+     * @return the last land permissions flags
      */
-    public Land getLastLand() {
-        return lastLand;
+    public LandPermissionsFlags getLastLandPermissionsFlags() {
+        return lastLandPermissionsFlags;
     }
 
     /**
-     * Sets the last land.
+     * Sets the last land permissions flags.
      *
-     * @param land the new last land
+     * @param land the new last land permissions flags
      */
-    public void setLastLand(Land land) {
-        lastLand = land;
+    public void setLastLandPermissionsFlags(LandPermissionsFlags landPermissionsFlags) {
+        lastLandPermissionsFlags = landPermissionsFlags;
     }
 
     /**

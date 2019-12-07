@@ -196,7 +196,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      */
     final class LandCheckValues {
         Land localParent;
-        RealLand realLocalParent;
+        Land realLocalParent;
         PlayerContainer localOwner;
         Type localType;
     }

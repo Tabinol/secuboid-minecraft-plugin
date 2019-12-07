@@ -90,16 +90,21 @@ public final class WorldConfig {
         this.secuboid = secuboid;
         globalPermissionsFlags = new LandPermissionsFlags(secuboid, null);
         worldNameToPermissionsFlags = new HashMap<>();
-        defaultPermissionsFlags = new LandPermissionsFlags(secuboid, null);
+        defaultPermissionsFlags = new LandPermissionsFlags(secuboid);
         typeToDefaultPermissionsFlags = new HashMap<>();
     }
 
     public void loadResources() {
+        // Load resources
         globalPermissionsFlags.setDefault();
         worldNameToPermissionsFlags.clear();
         defaultPermissionsFlags.setDefault();
         typeToDefaultPermissionsFlags.clear();
         Arrays.stream(FileType.values()).forEach(this::loadData);
+
+        // Copy global permissions whitout override existing
+        worldNameToPermissionsFlags.forEach((k, v) -> globalPermissionsFlags.copyPermsFlagsToWithoutOverride(v));
+        typeToDefaultPermissionsFlags.forEach((k, v) -> defaultPermissionsFlags.copyPermsFlagsToWithoutOverride(v));
     }
 
     public LandPermissionsFlags getGlobalPermissionsFlags() {
@@ -324,9 +329,9 @@ public final class WorldConfig {
                         defaultPermissionsFlags.addPermission(playerContainer, permission);
                     } else {
                         flagPermValues.typesNullable.forEach(typeName -> {
-                            final Type type = secuboid.getTypes().addOrGetType(typeName);
-                            typeToDefaultPermissionsFlags
-                                    .computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid, null))
+                            final String typeNameLower = typeName.toLowerCase();
+                            final Type type = secuboid.getTypes().addOrGetType(typeNameLower);
+                            typeToDefaultPermissionsFlags.computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid))
                                     .addPermission(playerContainer, permission);
                         });
                     }
@@ -336,8 +341,10 @@ public final class WorldConfig {
                         globalPermissionsFlags.addPermission(playerContainer, permission);
                     } else {
                         flagPermValues.worldsNullable.forEach(worldName -> {
+                            final String worldNameLower = worldName.toLowerCase();
                             worldNameToPermissionsFlags
-                                    .computeIfAbsent(worldName, k -> new LandPermissionsFlags(secuboid, null))
+                                    .computeIfAbsent(worldNameLower,
+                                            k -> new LandPermissionsFlags(secuboid, worldNameLower))
                                     .addPermission(playerContainer, permission);
                         });
                     }
@@ -373,9 +380,10 @@ public final class WorldConfig {
                     defaultPermissionsFlags.addFlag(flag);
                 } else {
                     flagPermValues.typesNullable.forEach(typeName -> {
-                        final Type type = secuboid.getTypes().addOrGetType(typeName);
-                        typeToDefaultPermissionsFlags
-                                .computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid, null)).addFlag(flag);
+                        final String typeNameLower = typeName.toLowerCase();
+                        final Type type = secuboid.getTypes().addOrGetType(typeNameLower);
+                        typeToDefaultPermissionsFlags.computeIfAbsent(type, k -> new LandPermissionsFlags(secuboid))
+                                .addFlag(flag);
                     });
                 }
             } else {
@@ -384,9 +392,9 @@ public final class WorldConfig {
                     globalPermissionsFlags.addFlag(flag);
                 } else {
                     flagPermValues.worldsNullable.forEach(worldName -> {
-                        worldNameToPermissionsFlags
-                                .computeIfAbsent(worldName, k -> new LandPermissionsFlags(secuboid, null))
-                                .addFlag(flag);
+                        final String worldNameLower = worldName.toLowerCase();
+                        worldNameToPermissionsFlags.computeIfAbsent(worldNameLower,
+                                k -> new LandPermissionsFlags(secuboid, worldNameLower)).addFlag(flag);
                     });
                 }
             }

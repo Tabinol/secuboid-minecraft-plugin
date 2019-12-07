@@ -18,16 +18,18 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * Represents a bukkit permission.
  *
  * @author tabinol
  */
-public class PlayerContainerPermission implements PlayerContainer {
+public final class PlayerContainerPermission implements PlayerContainer {
 
     /**
      * The permission: Must be a String, not a new Permission() or Bukkit (sometimes) will not be able to compare.
@@ -39,7 +41,7 @@ public class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
         return player.hasPermission(perm);
     }
 

@@ -231,8 +231,8 @@ public final class Land {
         }
         this.owner = owner;
         this.genealogy = genealogy;
-        landPermissionsFlags = new LandPermissionsFlags(secuboid, this);
         worldName = area.getWorldName();
+        landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
         addArea(area, areaId);
     }
 
@@ -555,7 +555,7 @@ public final class Land {
      * @return true, if is owner
      */
     public boolean isOwner(Player player) {
-        return owner.hasAccess(player, this, this);
+        return owner.hasAccess(player, this, landPermissionsFlags);
     }
 
     /**
@@ -623,7 +623,7 @@ public final class Land {
      */
     public boolean isResident(Player player) {
         for (PlayerContainer resident : residents) {
-            if (resident.hasAccess(player, this, this)) {
+            if (resident.hasAccess(player, this, landPermissionsFlags)) {
                 return true;
             }
         }
@@ -675,7 +675,7 @@ public final class Land {
      */
     public boolean isBanned(Player player) {
         for (PlayerContainer banned : banneds) {
-            if (banned.hasAccess(player, this, this)) {
+            if (banned.hasAccess(player, this, landPermissionsFlags)) {
                 return true;
             }
         }
@@ -1235,7 +1235,7 @@ public final class Land {
      * @return true, if is tenant
      */
     public boolean isTenant(Player player) {
-        return rented && tenant.hasAccess(player, this, this);
+        return rented && tenant.hasAccess(player, this, landPermissionsFlags);
     }
 
     /**

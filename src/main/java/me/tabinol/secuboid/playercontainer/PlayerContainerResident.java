@@ -18,33 +18,34 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.permissionsflags.FlagList;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 
 /**
  * Represents a land resident.
  *
  * @author tabinol
  */
-public class PlayerContainerResident implements PlayerContainer {
+public final class PlayerContainerResident implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
-        if (!(pcLand instanceof RealLand) && !(testLand instanceof RealLand) && pcLand != testLand) {
+    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+        final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
+        if (pcLandNullable == null || testLandNullable == null) {
             return false;
         }
 
-        RealLand realPCLand = (RealLand) pcLand;
-        boolean value = realPCLand.isResident(player);
-        RealLand actual = realPCLand;
-        RealLand parent;
+        boolean value = pcLandNullable.isResident(player);
+        Land actual = pcLandNullable;
+        Land parentNullable;
 
-        while (!value && (parent = actual.getParent()) != null
+        while (!value && (parentNullable = actual.getParent()) != null
                 && actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()) {
-            value = parent.isResident(player);
-            actual = parent;
+            value = parentNullable.isResident(player);
+            actual = parentNullable;
         }
 
         return value;

@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Represents a gride of point for roads.
  */
-public class RegionMatrix {
+public final class RegionMatrix {
 
     /**
      * points is represented: RegionX: RegionZ: chunkMatrix
@@ -34,7 +34,7 @@ public class RegionMatrix {
      * Creates a new region matrix for roads.
      */
     public RegionMatrix() {
-        points = new HashMap<Integer, Map<Integer, ChunkMatrix>>();
+        points = new HashMap<>();
     }
 
     /**
@@ -77,15 +77,15 @@ public class RegionMatrix {
      */
     private void addRemovePoint(boolean isAdd, int x, int z) {
         // From region X
-        int chunkX = (int) Math.floor(x / 16);
+        final int chunkX = (int) Math.floor(x / 16d);
         Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
         if (pRegionZ == null) {
-            pRegionZ = new HashMap<Integer, ChunkMatrix>();
+            pRegionZ = new HashMap<>();
             points.put(chunkX, pRegionZ);
         }
 
         // From region Z
-        int chunkZ = (int) Math.floor(z / 16);
+        final int chunkZ = (int) Math.floor(z / 16d);
         ChunkMatrix matrix = pRegionZ.get(chunkZ);
         if (matrix == null) {
             matrix = new ChunkMatrix();
@@ -93,8 +93,8 @@ public class RegionMatrix {
         }
 
         // Add to matrix
-        byte posX = getChunkPos(x);
-        byte posZ = getChunkPos(z);
+        final byte posX = getChunkPos(x);
+        final byte posZ = getChunkPos(z);
         if (isAdd) {
             matrix.addPoint(posX, posZ);
         } else {
@@ -118,22 +118,22 @@ public class RegionMatrix {
     boolean getPoint(int x, int z) {
 
         // From region X
-        int chunkX = (int) Math.floor(x / 16);
-        Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
+        final int chunkX = (int) Math.floor(x / 16d);
+        final Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
         if (pRegionZ == null) {
             return false;
         }
 
         // From region Z
-        int chunkZ = (int) Math.floor(z / 16);
-        ChunkMatrix matrix = pRegionZ.get(chunkZ);
+        final int chunkZ = (int) Math.floor(z / 16d);
+        final ChunkMatrix matrix = pRegionZ.get(chunkZ);
         if (matrix == null) {
             return false;
         }
 
         // Add to matrix
-        byte posX = getChunkPos(x);
-        byte posZ = getChunkPos(z);
+        final byte posX = getChunkPos(x);
+        final byte posZ = getChunkPos(z);
         return matrix.getPoint(posX, posZ);
     }
 
@@ -144,7 +144,7 @@ public class RegionMatrix {
      * @return the position (0-16)
      */
     private byte getChunkPos(int value) {
-        int modul = value % 16;
+        final int modul = value % 16;
         if (modul < 0) {
             return (byte) (16 + modul);
         } else {
@@ -168,8 +168,8 @@ public class RegionMatrix {
      */
     public long countPoints() {
         long nbPoints = 0;
-        for (Map<Integer, ChunkMatrix> pRegionZ : points.values()) {
-            for (ChunkMatrix matrix : pRegionZ.values()) {
+        for (final Map<Integer, ChunkMatrix> pRegionZ : points.values()) {
+            for (final ChunkMatrix matrix : pRegionZ.values()) {
                 nbPoints += matrix.countPoints();
             }
         }
@@ -178,8 +178,8 @@ public class RegionMatrix {
 
     public String toFileFormat() {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
-            for (Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
+        for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
+            for (final Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
                 sb.append(':').append(entryX.getKey()).append(':').append(entryZ.getKey()).append(':')
                         .append(entryZ.getValue().toFileFormat());
             }
@@ -188,10 +188,10 @@ public class RegionMatrix {
     }
 
     public RegionMatrix copyOf() {
-        Map<Integer, Map<Integer, ChunkMatrix>> newPoints = new HashMap<Integer, Map<Integer, ChunkMatrix>>();
-        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
-            Map<Integer, ChunkMatrix> newPointsZ = new HashMap<Integer, ChunkMatrix>();
-            for (Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
+        final Map<Integer, Map<Integer, ChunkMatrix>> newPoints = new HashMap<>();
+        for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
+            final Map<Integer, ChunkMatrix> newPointsZ = new HashMap<>();
+            for (final Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
                 if (!entryZ.getValue().isEmpty()) {
                     newPointsZ.put(entryZ.getKey(), entryZ.getValue().copyOf());
                 }

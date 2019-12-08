@@ -69,7 +69,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
     /**
      * Instantiates a new player land change events.
      *
-     * @param lastlandPermissionsFlags the permissions and flags
+     * @param lastLandPermissionsFlags the permissions and flags
      * @param landPermissionsFlags     the actual permissions and flags
      * @param player                   the player
      * @param fromLoc                  from location
@@ -77,7 +77,7 @@ public class PlayerLandChangeEvent extends LandEvent implements Cancellable {
      * @param isTp                     the is a player teleport
      */
     public PlayerLandChangeEvent(final LandPermissionsFlags lastLandPermissionsFlags,
-            LandPermissionsFlags landPermissionsFlags, final Player player, final Location fromLoc,
+            final LandPermissionsFlags landPermissionsFlags, final Player player, final Location fromLoc,
             final Location toLoc, final boolean isTp) {
 
         super(landPermissionsFlags);

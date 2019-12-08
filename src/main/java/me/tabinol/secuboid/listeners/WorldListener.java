@@ -83,11 +83,6 @@ public final class WorldListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onExplosionPrime(ExplosionPrimeEvent event) {
-
-        if (event.getEntity() == null) {
-            return;
-        }
-
         final Location loc = event.getEntity().getLocation();
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
         final EntityType entityType = event.getEntityType();
@@ -117,11 +112,6 @@ public final class WorldListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
-
-        if (event.getEntity() == null) {
-            return;
-        }
-
         if (conf.isOverrideExplosions()) {
 
             float power;

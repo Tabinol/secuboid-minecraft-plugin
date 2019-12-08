@@ -168,7 +168,7 @@ public final class CuboidArea implements Area {
 
     @Override
     public long getArea() {
-        return (getX2() - getX1() + 1) * (getZ2() - getZ1() + 1);
+        return (getX2() - getX1() + 1l) * (getZ2() - getZ1() + 1l);
     }
 
     @Override

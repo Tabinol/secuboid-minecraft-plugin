@@ -117,7 +117,7 @@ public final class PlayerConfEntry {
      * @param secuboid secuboid instance
      * @param sender   the sender
      */
-    PlayerConfEntry(Secuboid secuboid, CommandSender sender) {
+    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender) {
 
         this.secuboid = secuboid;
         this.sender = sender;
@@ -192,7 +192,7 @@ public final class PlayerConfEntry {
      *
      * @param value the new admin mod
      */
-    public void setAdminMode(boolean value) {
+    public void setAdminMode(final boolean value) {
         adminMode = value;
     }
 
@@ -210,7 +210,7 @@ public final class PlayerConfEntry {
      *
      * @param entry the new confirm
      */
-    public void setConfirm(ConfirmEntry entry) {
+    public void setConfirm(final ConfirmEntry entry) {
         confirm = entry;
     }
 
@@ -228,7 +228,7 @@ public final class PlayerConfEntry {
      *
      * @param page the new chat page
      */
-    public void setChatPage(ChatPage page) {
+    public void setChatPage(final ChatPage page) {
         chatPage = page;
     }
 
@@ -246,7 +246,7 @@ public final class PlayerConfEntry {
      *
      * @param lastMove the new last move update
      */
-    public void setLastMoveUpdate(Long lastMove) {
+    public void setLastMoveUpdate(final Long lastMove) {
         lastMoveUpdate = lastMove;
     }
 
@@ -262,9 +262,9 @@ public final class PlayerConfEntry {
     /**
      * Sets the last land permissions flags.
      *
-     * @param land the new last land permissions flags
+     * @param landPermissionsFlags the new last land permissions flags
      */
-    public void setLastLandPermissionsFlags(LandPermissionsFlags landPermissionsFlags) {
+    public void setLastLandPermissionsFlags(final LandPermissionsFlags landPermissionsFlags) {
         lastLandPermissionsFlags = landPermissionsFlags;
     }
 
@@ -282,7 +282,7 @@ public final class PlayerConfEntry {
      *
      * @param loc the new last location
      */
-    public void setLastLoc(Location loc) {
+    public void setLastLoc(final Location loc) {
         lastLoc = loc;
     }
 
@@ -300,7 +300,7 @@ public final class PlayerConfEntry {
      *
      * @param tpCancel the new tp cancel
      */
-    public void setTpCancel(boolean tpCancel) {
+    public void setTpCancel(final boolean tpCancel) {
         this.tpCancel = tpCancel;
     }
 
@@ -309,9 +309,9 @@ public final class PlayerConfEntry {
      *
      * @param value the new auto cancel select
      */
-    public void setAutoCancelSelect(boolean value) {
+    public void setAutoCancelSelect(final boolean value) {
 
-        Long timeTick = secuboid.getConf().getSelectAutoCancel();
+        final Long timeTick = secuboid.getConf().getSelectAutoCancel();
 
         if (timeTick == 0) {
             return;
@@ -350,7 +350,7 @@ public final class PlayerConfEntry {
      *
      * @param selectionTop the top selection
      */
-    public void setSelectionTop(int selectionTop) {
+    public void setSelectionTop(final int selectionTop) {
         this.selectionTop = selectionTop;
     }
 
@@ -368,7 +368,7 @@ public final class PlayerConfEntry {
      *
      * @param selectionBottom the bottom selection
      */
-    public void setSelectionBottom(int selectionBottom) {
+    public void setSelectionBottom(final int selectionBottom) {
         this.selectionBottom = selectionBottom;
     }
 
@@ -386,7 +386,7 @@ public final class PlayerConfEntry {
      *
      * @param selectionRadius the radius selection
      */
-    public void setSelectionRadius(int selectionRadius) {
+    public void setSelectionRadius(final int selectionRadius) {
         this.selectionRadius = selectionRadius;
     }
 }

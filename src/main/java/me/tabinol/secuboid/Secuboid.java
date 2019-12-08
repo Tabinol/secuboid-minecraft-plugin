@@ -30,6 +30,7 @@ import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
@@ -81,6 +82,11 @@ public final class Secuboid extends JavaPlugin {
      */
     private WorldConfig worldConfig;
     
+    /**
+     * The approve list.
+     */
+    private ApproveList approveList;
+
     /**
      * The parameters.
      */
@@ -175,20 +181,22 @@ public final class Secuboid extends JavaPlugin {
         storageThread = new StorageThread(this);
         worldConfig = new WorldConfig(this);
         worldConfig.loadResources();
-        lands = new Lands(this, worldConfig);
+        approveList = new ApproveList(this);
+        approveList.loadResources();
+        lands = new Lands(this, worldConfig, approveList);
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
-        WorldListener worldListener = new WorldListener(this);
-        PlayerListener playerListener = new PlayerListener(this);
-        PvpListener pvpListener = new PvpListener(this);
-        LandListener landListener = new LandListener(this);
-        ChatListener chatListener = new ChatListener(this);
+        final WorldListener worldListener = new WorldListener(this);
+        final PlayerListener playerListener = new PlayerListener(this);
+        final PvpListener pvpListener = new PvpListener(this);
+        final LandListener landListener = new LandListener(this);
+        final ChatListener chatListener = new ChatListener(this);
         commandListener = new CommandListener(this);
         approveNotif = new ApproveNotif(this);
         approveNotif.runApproveNotifLater();
         if (dependPlugin.getVaultEconomy() != null) {
-            EcoScheduler ecoScheduler = new EcoScheduler(this);
+            final EcoScheduler ecoScheduler = new EcoScheduler(this);
             ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         }
         playersCache = new PlayersCache(this);
@@ -235,7 +243,8 @@ public final class Secuboid extends JavaPlugin {
         }
         language.reloadConfig();
         worldConfig.loadResources();
-        lands = new Lands(this, worldConfig);
+        approveList.loadResources();
+        lands = new Lands(this, worldConfig, approveList);
         storageThread.stopNextRun();
         storageThread = new StorageThread(this);
         storageThread.loadAllAndStart();

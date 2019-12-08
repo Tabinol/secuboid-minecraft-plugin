@@ -146,7 +146,7 @@ public final class Land {
     /**
      * The players in land.
      */
-    private final Set<Player> playersInLand = new HashSet<Player>();
+    private final Set<Player> playersInLand = new HashSet<>();
     // Economy
     /**
      * The for sale.
@@ -218,8 +218,8 @@ public final class Land {
      * @param areaId    the area id
      * @param type      the type
      */
-    public Land(Secuboid secuboid, String landName, UUID uuid, PlayerContainer owner, Area area, int genealogy,
-            Land parent, int areaId, Type type) {
+    public Land(final Secuboid secuboid, final String landName, final UUID uuid, final PlayerContainer owner,
+            final Area area, final int genealogy, final Land parent, final int areaId, final Type type) {
 
         this.secuboid = secuboid;
         this.uuid = uuid;
@@ -256,14 +256,14 @@ public final class Land {
      *
      * @param area the area
      */
-    public void addArea(Area area) {
+    public void addArea(final Area area) {
 
         int nextKey = 0;
 
         if (areas.isEmpty()) {
             nextKey = 1;
         } else {
-            for (int key : areas.keySet()) {
+            for (final int key : areas.keySet()) {
 
                 if (nextKey < key) {
                     nextKey = key;
@@ -281,7 +281,7 @@ public final class Land {
      * @param area  the area
      * @param price the price
      */
-    public void addArea(Area area, double price) {
+    public void addArea(final Area area, final double price) {
 
         if (price > 0) {
             secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
@@ -295,7 +295,7 @@ public final class Land {
      * @param area the area
      * @param key  the key
      */
-    public void addArea(Area area, int key) {
+    public void addArea(final Area area, final int key) {
 
         area.setLand(this);
         areas.put(key, area);
@@ -315,7 +315,7 @@ public final class Land {
      * @param key the key
      * @return true, if successful
      */
-    public boolean removeArea(int key) {
+    public boolean removeArea(final int key) {
 
         Area area;
 
@@ -339,8 +339,8 @@ public final class Land {
      * @param area the area
      * @return true, if successful
      */
-    public boolean removeArea(Area area) {
-        Integer key = getAreaKey(area);
+    public boolean removeArea(final Area area) {
+        final Integer key = getAreaKey(area);
         return key != null && removeArea(key);
     }
 
@@ -352,7 +352,7 @@ public final class Land {
      * @param price   the price
      * @return true, if successful
      */
-    public boolean replaceArea(int key, Area newArea, double price) {
+    public boolean replaceArea(final int key, final Area newArea, final double price) {
 
         if (price > 0) {
             secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
@@ -368,7 +368,7 @@ public final class Land {
      * @param newArea the new area
      * @return true, if successful
      */
-    public boolean replaceArea(int key, Area newArea) {
+    public boolean replaceArea(final int key, final Area newArea) {
         Area area;
 
         if ((area = areas.remove(key)) != null) {
@@ -394,7 +394,7 @@ public final class Land {
      * @param key the key
      * @return the area
      */
-    public Area getArea(int key) {
+    public Area getArea(final int key) {
         return areas.get(key);
     }
 
@@ -404,8 +404,8 @@ public final class Land {
      * @param area the area
      * @return the area key
      */
-    public Integer getAreaKey(Area area) {
-        for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
+    public Integer getAreaKey(final Area area) {
+        for (final Map.Entry<Integer, Area> entry : areas.entrySet()) {
             if (entry.getValue() == area) {
                 return entry.getKey();
             }
@@ -468,8 +468,8 @@ public final class Land {
      * @param z     the z
      * @return true if inside the land
      */
-    public boolean isLocationInside(String world, int x, int z) {
-        for (Area area1 : areas.values()) {
+    public boolean isLocationInside(final String world, final int x, final int z) {
+        for (final Area area1 : areas.values()) {
             if (area1.isLocationInside(world, x, z)) {
                 return true;
             }
@@ -484,7 +484,7 @@ public final class Land {
      * @param loc the location
      * @return true if inside the land
      */
-    public boolean isLocationInside(Location loc) {
+    public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
@@ -497,8 +497,8 @@ public final class Land {
      * @param z     the z
      * @return true if inside the land
      */
-    public boolean isLocationInside(String world, int x, int y, int z) {
-        for (Area area1 : areas.values()) {
+    public boolean isLocationInside(final String world, final int x, final int y, final int z) {
+        for (final Area area1 : areas.values()) {
             if (area1.isLocationInside(world, x, y, z)) {
                 return true;
             }
@@ -530,7 +530,7 @@ public final class Land {
      *
      * @param newName the new name
      */
-    protected void setName(String newName) {
+    protected void setName(final String newName) {
         this.name = newName;
         doSave();
 
@@ -554,7 +554,7 @@ public final class Land {
      * @param player the player
      * @return true, if is owner
      */
-    public boolean isOwner(Player player) {
+    public boolean isOwner(final Player player) {
         return owner.hasAccess(player, this, landPermissionsFlags);
     }
 
@@ -563,7 +563,7 @@ public final class Land {
      *
      * @param owner the new owner
      */
-    public void setOwner(PlayerContainer owner) {
+    public void setOwner(final PlayerContainer owner) {
         this.owner = owner;
         doSave();
 
@@ -577,7 +577,7 @@ public final class Land {
      *
      * @param resident the resident
      */
-    public void addResident(PlayerContainer resident) {
+    public void addResident(final PlayerContainer resident) {
         residents.add(resident);
         doSave();
 
@@ -592,7 +592,7 @@ public final class Land {
      * @param resident the resident
      * @return true, if successful
      */
-    public boolean removeResident(PlayerContainer resident) {
+    public boolean removeResident(final PlayerContainer resident) {
         if (residents.remove(resident)) {
             doSave();
 
@@ -621,8 +621,8 @@ public final class Land {
      * @param player the player
      * @return true, if is resident
      */
-    public boolean isResident(Player player) {
-        for (PlayerContainer resident : residents) {
+    public boolean isResident(final Player player) {
+        for (final PlayerContainer resident : residents) {
             if (resident.hasAccess(player, this, landPermissionsFlags)) {
                 return true;
             }
@@ -635,7 +635,7 @@ public final class Land {
      *
      * @param banned the banned
      */
-    public void addBanned(PlayerContainer banned) {
+    public void addBanned(final PlayerContainer banned) {
         banneds.add(banned);
         doSave();
 
@@ -649,7 +649,7 @@ public final class Land {
      * @param banned the banned
      * @return true, if successful
      */
-    public boolean removeBanned(PlayerContainer banned) {
+    public boolean removeBanned(final PlayerContainer banned) {
         if (banneds.remove(banned)) {
             doSave();
             return true;
@@ -673,8 +673,8 @@ public final class Land {
      * @param player the player
      * @return true, if is banned
      */
-    public boolean isBanned(Player player) {
-        for (PlayerContainer banned : banneds) {
+    public boolean isBanned(final Player player) {
+        for (final PlayerContainer banned : banneds) {
             if (banned.hasAccess(player, this, landPermissionsFlags)) {
                 return true;
             }
@@ -709,7 +709,7 @@ public final class Land {
      *
      * @param priority the new priority
      */
-    public void setPriority(short priority) {
+    public void setPriority(final short priority) {
         this.priority = priority;
         doSave();
     }
@@ -728,7 +728,7 @@ public final class Land {
      *
      * @param newParent the land parent
      */
-    public void setParent(Land newParent) {
+    public void setParent(final Land newParent) {
         // Remove files
         removeChildFiles();
 
@@ -755,7 +755,7 @@ public final class Land {
     }
 
     private void removeChildFiles() {
-        for (Land child : children.values()) {
+        for (final Land child : children.values()) {
             child.setAutoSave(false);
             secuboid.getStorageThread().removeLand(child);
             child.removeChildFiles();
@@ -763,7 +763,7 @@ public final class Land {
     }
 
     private void saveChildFiles() {
-        for (Land child : children.values()) {
+        for (final Land child : children.values()) {
             child.setPriority(priority);
             child.genealogy = genealogy + 1;
             child.setAutoSave(true);
@@ -778,7 +778,7 @@ public final class Land {
      * @param gen the genealogy
      * @return the ancestor
      */
-    public Land getAncestor(int gen) { // 1 parent, 2 grand-parent, 3 ...
+    public Land getAncestor(final int gen) { // 1 parent, 2 grand-parent, 3 ...
         Land ancestor = this;
 
         for (int t = 0; t < gen; t++) {
@@ -794,13 +794,13 @@ public final class Land {
      * @param land the land
      * @return true, if is descendants
      */
-    public boolean isDescendants(Land land) {
+    public boolean isDescendants(final Land land) {
 
         if (land == this) {
             return true;
         }
 
-        for (Land landT : children.values()) {
+        for (final Land landT : children.values()) {
             if (landT.isDescendants(land)) {
                 return true;
             }
@@ -814,7 +814,7 @@ public final class Land {
      *
      * @param land the land
      */
-    private void addChild(Land land) {
+    private void addChild(final Land land) {
         children.put(land.uuid, land);
         doSave();
     }
@@ -824,7 +824,7 @@ public final class Land {
      *
      * @param uuid the uuid
      */
-    void removeChild(UUID uuid) {
+    void removeChild(final UUID uuid) {
         children.remove(uuid);
         doSave();
     }
@@ -835,7 +835,7 @@ public final class Land {
      * @param uuid the uuid
      * @return the child
      */
-    public Land getChild(UUID uuid) {
+    public Land getChild(final UUID uuid) {
         return children.get(uuid);
     }
 
@@ -853,7 +853,7 @@ public final class Land {
      *
      * @param autoSave the new auto save
      */
-    private void setAutoSave(boolean autoSave) {
+    private void setAutoSave(final boolean autoSave) {
         this.autoSave = autoSave;
     }
 
@@ -875,7 +875,7 @@ public final class Land {
      *
      * @param money the money
      */
-    public void addMoney(double money) {
+    public void addMoney(final double money) {
         this.money += money;
         doSave();
     }
@@ -885,7 +885,7 @@ public final class Land {
      *
      * @param money the money
      */
-    public void subtractMoney(double money) {
+    public void subtractMoney(final double money) {
         this.money -= money;
         doSave();
     }
@@ -904,7 +904,7 @@ public final class Land {
      *
      * @param player the player
      */
-    public void addPlayerNotify(PlayerContainerPlayer player) {
+    public void addPlayerNotify(final PlayerContainerPlayer player) {
         playerNotify.add(player);
         doSave();
     }
@@ -915,8 +915,8 @@ public final class Land {
      * @param player the player
      * @return true, if successful
      */
-    public boolean removePlayerNotify(PlayerContainerPlayer player) {
-        boolean ret = playerNotify.remove(player);
+    public boolean removePlayerNotify(final PlayerContainerPlayer player) {
+        final boolean ret = playerNotify.remove(player);
         doSave();
 
         return ret;
@@ -928,7 +928,7 @@ public final class Land {
      * @param player the player
      * @return true, if is player notify
      */
-    public boolean isPlayerNotify(PlayerContainerPlayer player) {
+    public boolean isPlayerNotify(final PlayerContainerPlayer player) {
         return playerNotify.contains(player);
     }
 
@@ -946,7 +946,7 @@ public final class Land {
      *
      * @param player the player
      */
-    public void addPlayerInLand(Player player) {
+    public void addPlayerInLand(final Player player) {
         playersInLand.add(player);
     }
 
@@ -956,7 +956,7 @@ public final class Land {
      * @param player the player
      * @return true, if successful
      */
-    public boolean removePlayerInLand(Player player) {
+    public boolean removePlayerInLand(final Player player) {
         return playersInLand.remove(player);
     }
 
@@ -966,7 +966,7 @@ public final class Land {
      * @param player the player
      * @return true, if is player in land
      */
-    public boolean isPlayerInLand(Player player) {
+    public boolean isPlayerInLand(final Player player) {
         return playersInLand.contains(player);
     }
 
@@ -977,7 +977,7 @@ public final class Land {
      * @param fromPlayer the from player
      * @return true, if is playerin land no vanish
      */
-    public boolean isPlayerinLandNoVanish(Player player, Player fromPlayer) {
+    public boolean isPlayerinLandNoVanish(final Player player, final Player fromPlayer) {
 
         if (playersInLand.contains(player) && (!secuboid.getPlayerConf().isVanished(player)
                 || secuboid.getPlayerConf().get(fromPlayer).isAdminMode())) {
@@ -985,7 +985,7 @@ public final class Land {
         }
 
         // Check Chidren
-        for (Land landChild : children.values()) {
+        for (final Land landChild : children.values()) {
             if (landChild.isPlayerinLandNoVanish(player, fromPlayer)) {
                 return true;
             }
@@ -1009,11 +1009,11 @@ public final class Land {
      * @return the players in land and children
      */
     public Set<Player> getPlayersInLandAndChildren() {
-        Set<Player> playLandChild = new HashSet<Player>();
+        final Set<Player> playLandChild = new HashSet<>();
 
         playLandChild.addAll(playersInLand);
 
-        for (Land child : children.values()) {
+        for (final Land child : children.values()) {
             playLandChild.addAll(child.getPlayersInLandAndChildren());
         }
 
@@ -1026,16 +1026,16 @@ public final class Land {
      * @param fromPlayer the from player
      * @return the players in land no vanish
      */
-    public Set<Player> getPlayersInLandNoVanish(Player fromPlayer) {
-        Set<Player> playerList = new HashSet<Player>();
+    public Set<Player> getPlayersInLandNoVanish(final Player fromPlayer) {
+        final Set<Player> playerList = new HashSet<>();
 
-        for (Player player : playersInLand) {
+        for (final Player player : playersInLand) {
             if (!secuboid.getPlayerConf().isVanished(player)
                     || secuboid.getPlayerConf().get(fromPlayer).isAdminMode()) {
                 playerList.add(player);
             }
         }
-        for (Land landChild : children.values()) {
+        for (final Land landChild : children.values()) {
             playerList.addAll(landChild.getPlayersInLandNoVanish(fromPlayer));
         }
 
@@ -1058,7 +1058,7 @@ public final class Land {
      * @param salePrice the sale price
      * @param signLoc   the sign location
      */
-    public void setForSale(boolean isForSale, double salePrice, Location signLoc) {
+    public void setForSale(final boolean isForSale, final double salePrice, final Location signLoc) {
         forSale = isForSale;
         if (forSale) {
             this.salePrice = salePrice;
@@ -1086,7 +1086,7 @@ public final class Land {
      *
      * @param forSaleSignLoc the sale sign location
      */
-    public void setSaleSignLoc(Location forSaleSignLoc) {
+    public void setSaleSignLoc(final Location forSaleSignLoc) {
         this.forSaleSignLoc = forSaleSignLoc;
         doSave();
     }
@@ -1117,7 +1117,8 @@ public final class Land {
      * @param rentAutoRenew the rent auto renew
      * @param signLoc       the sign location
      */
-    public void setForRent(double rentPrice, int rentRenew, boolean rentAutoRenew, Location signLoc) {
+    public void setForRent(final double rentPrice, final int rentRenew, final boolean rentAutoRenew,
+            final Location signLoc) {
         forRent = true;
         this.rentPrice = rentPrice;
         this.rentRenew = rentRenew;
@@ -1141,7 +1142,7 @@ public final class Land {
      *
      * @param forRentSignLoc the rent sign location
      */
-    public void setRentSignLoc(Location forRentSignLoc) {
+    public void setRentSignLoc(final Location forRentSignLoc) {
         this.forRentSignLoc = forRentSignLoc;
         doSave();
     }
@@ -1201,7 +1202,7 @@ public final class Land {
      *
      * @param tenant the new rented
      */
-    public void setRented(PlayerContainerPlayer tenant) {
+    public void setRented(final PlayerContainerPlayer tenant) {
         rented = true;
         this.tenant = tenant;
         lastPayment = System.currentTimeMillis();
@@ -1234,7 +1235,7 @@ public final class Land {
      * @param player the player
      * @return true, if is tenant
      */
-    public boolean isTenant(Player player) {
+    public boolean isTenant(final Player player) {
         return rented && tenant.hasAccess(player, this, landPermissionsFlags);
     }
 
@@ -1243,7 +1244,7 @@ public final class Land {
      *
      * @param lastPayment the new last payment time
      */
-    public void setLastPaymentTime(long lastPayment) {
+    public void setLastPaymentTime(final long lastPayment) {
         this.lastPayment = lastPayment;
         doSave();
     }
@@ -1271,7 +1272,7 @@ public final class Land {
      *
      * @param arg0 the land type
      */
-    public void setType(Type arg0) {
+    public void setType(final Type arg0) {
         type = arg0;
         doSave();
     }

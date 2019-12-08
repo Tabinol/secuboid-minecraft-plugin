@@ -131,7 +131,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      *
      * @param secuboid secuboid instance
      */
-    public PlayerListener(Secuboid secuboid) {
+    public PlayerListener(final Secuboid secuboid) {
 
         super(secuboid);
         conf = secuboid.getConf();
@@ -146,15 +146,15 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(final PlayerJoinEvent event) {
 
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
 
         // Update players cache
         secuboid.getPlayersCache().updatePlayer(player.getUniqueId(), player.getName());
 
         // Create a new static config
-        PlayerConfEntry entry = playerConf.add(player);
+        final PlayerConfEntry entry = playerConf.add(player);
 
         updatePosInfo(event, entry, player.getLocation(), true);
 
@@ -172,7 +172,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(final PlayerQuitEvent event) {
 
         final Player player = event.getPlayer();
 
@@ -193,7 +193,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
+    public void onPlayerTeleport(final PlayerTeleportEvent event) {
 
         final Location loc = event.getTo();
         final Player player = event.getPlayer();
@@ -226,16 +226,16 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(final PlayerMoveEvent event) {
 
-        Player player = event.getPlayer();
-        PlayerConfEntry entry = playerConf.get(player);
+        final Player player = event.getPlayer();
+        final PlayerConfEntry entry = playerConf.get(player);
 
         if (player == null || entry == null) {
             return;
         }
-        long last = entry.getLastMoveUpdate();
-        long now = System.currentTimeMillis();
+        final long last = entry.getLastMoveUpdate();
+        final long now = System.currentTimeMillis();
         if (now - last < timeCheck) {
             return;
         }
@@ -254,7 +254,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(final PlayerInteractEvent event) {
 
         final Material ml = event.getClickedBlock().getType();
         final Player player = event.getPlayer();
@@ -268,9 +268,9 @@ public final class PlayerListener extends CommonListener implements Listener {
         if (itemInMainHand != null && action == Action.LEFT_CLICK_BLOCK
                 && itemInMainHand.getType() == conf.getInfoItem()) {
             try {
-                Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
+                final Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
-            } catch (SecuboidCommandException ex) {
+            } catch (final SecuboidCommandException ex) {
                 ex.printStackTrace();
             }
             event.setCancelled(true);
@@ -282,7 +282,7 @@ public final class PlayerListener extends CommonListener implements Listener {
             try {
                 new CommandSelect(secuboid, player, new ArgList(secuboid, new String[] { "here" }, player),
                         event.getClickedBlock().getLocation()).commandExecute();
-            } catch (SecuboidCommandException ex) {
+            } catch (final SecuboidCommandException ex) {
                 // Empty, message is sent by the catch
             }
 
@@ -295,7 +295,7 @@ public final class PlayerListener extends CommonListener implements Listener {
 
             try {
                 new CommandCancel(secuboid, null, player, null).commandExecute();
-            } catch (SecuboidCommandException ex) {
+            } catch (final SecuboidCommandException ex) {
                 // Empty, message is sent by the catch
             }
 
@@ -305,7 +305,7 @@ public final class PlayerListener extends CommonListener implements Listener {
         } else if (conf.useEconomy() && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
                 && Sign.class.isAssignableFrom(ml.data)) {
 
-            Land trueLand = secuboid.getLands().getLand(loc);
+            final Land trueLand = secuboid.getLands().getLand(loc);
 
             if (trueLand != null) {
                 try {
@@ -319,14 +319,14 @@ public final class PlayerListener extends CommonListener implements Listener {
                         event.setCancelled(true);
                         new CommandEcosign(secuboid, player, trueLand, action, SignType.RENT).commandExecute();
                     }
-                } catch (SecuboidCommandException ex) {
+                } catch (final SecuboidCommandException ex) {
                     // Empty, message is sent by the catch
                 }
             }
 
             // Citizen bug, check if entry exist before
         } else if ((entry = playerConf.get(player)) != null && !entry.isAdminMode()) {
-            LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
+            final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
             if (landPermissionsFlags.isBanned(player)
                     || (action == Action.RIGHT_CLICK_BLOCK && isDoor(ml)
                             && !checkPermission(landPermissionsFlags, player,
@@ -423,7 +423,7 @@ public final class PlayerListener extends CommonListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+    public void onPlayerInteractAtEntity(final PlayerInteractAtEntityEvent event) {
 
         final EntityType et = event.getRightClicked().getType();
         final Player player = event.getPlayer();
@@ -454,7 +454,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockPlace(BlockPlaceEvent event) {
+    public void onBlockPlace(final BlockPlaceEvent event) {
 
         // Check for fire init
         final Player player = event.getPlayer();
@@ -494,13 +494,13 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onHangingPlace(HangingPlaceEvent event) {
+    public void onHangingPlace(final HangingPlaceEvent event) {
 
         if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
-            LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
+            final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                     .getPermissionsFlags(event.getEntity().getLocation());
-            Player player = event.getPlayer();
+            final Player player = event.getPlayer();
 
             if (landPermissionsFlags.isBanned(player)
                     || !checkPermission(landPermissionsFlags, player, PermissionList.BUILD_PLACE.getPermissionType())) {
@@ -517,7 +517,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
         if (playerConf.get(event.getPlayer()).isAdminMode()) {
             return;
@@ -547,7 +547,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockBreak(final BlockBreakEvent event) {
 
         final Player player = event.getPlayer();
 
@@ -584,7 +584,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+    public void onHangingBreakByEntity(final HangingBreakByEntityEvent event) {
 
         Player player;
 
@@ -608,7 +608,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
+    public void onPlayerDropItem(final PlayerDropItemEvent event) {
 
         final Player player = event.getPlayer();
         final PlayerConfEntry entry = playerConf.get(player);
@@ -630,7 +630,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityPickupItem(EntityPickupItemEvent event) {
+    public void onEntityPickupItem(final EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
             final Player player = (Player) event.getEntity();
 
@@ -652,7 +652,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerBedEnter(PlayerBedEnterEvent event) {
+    public void onPlayerBedEnter(final PlayerBedEnterEvent event) {
 
         if (!playerConf.get(event.getPlayer()).isAdminMode()) {
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
@@ -672,7 +672,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
 
         final PlayerConfEntry entry;
         final Player player = getSourcePlayer(event.getDamager());
@@ -718,7 +718,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+    public void onPlayerBucketFill(final PlayerBucketFillEvent event) {
 
         if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
@@ -743,7 +743,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+    public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event) {
 
         if (!playerConf.get(event.getPlayer()).isAdminMode()) {
             final Block block = event.getBlockClicked().getRelative(event.getBlockFace());
@@ -768,7 +768,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityBlockForm(EntityBlockFormEvent event) {
+    public void onEntityBlockForm(final EntityBlockFormEvent event) {
 
         // Crop trample
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
@@ -792,7 +792,7 @@ public final class PlayerListener extends CommonListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     // Must be after Essentials
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
+    public void onPlayerRespawn(final PlayerRespawnEvent event) {
 
         final Player player = event.getPlayer();
         final PlayerConfEntry entry = playerConf.get(player);
@@ -814,7 +814,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     // For land listener
-    public void onPlayerRespawn2(PlayerRespawnEvent event) {
+    public void onPlayerRespawn2(final PlayerRespawnEvent event) {
 
         final Player player = event.getPlayer();
         final PlayerConfEntry entry = playerConf.get(player);
@@ -829,7 +829,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockIgnite(BlockIgniteEvent event) {
+    public void onBlockIgnite(final BlockIgniteEvent event) {
 
         if (checkForPutFire(event, event.getPlayer())) {
             event.setCancelled(true);
@@ -842,7 +842,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPotionSplash(PotionSplashEvent event) {
+    public void onPotionSplash(final PotionSplashEvent event) {
 
         if (event.getEntity() != null && event.getEntity().getShooter() instanceof Player) {
 
@@ -865,7 +865,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+    public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
 
         final Entity entity = event.getEntity();
         Player player;
@@ -890,7 +890,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+    public void onPlayerItemConsume(final PlayerItemConsumeEvent event) {
 
         final Player player = event.getPlayer();
         PlayerConfEntry entry;
@@ -915,9 +915,9 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
 
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
 
         if (!playerConf.get(event.getPlayer()).isAdminMode()) {
 
@@ -927,9 +927,9 @@ public final class PlayerListener extends CommonListener implements Listener {
                     .getFlagAndInherit(FlagList.EXCLUDE_COMMANDS.getFlagType()).getValueStringList();
 
             if (excludedCommands.length > 0) {
-                String commandTyped = event.getMessage().substring(1).split(" ")[0];
+                final String commandTyped = event.getMessage().substring(1).split(" ")[0];
 
-                for (String commandTest : excludedCommands) {
+                for (final String commandTest : excludedCommands) {
 
                     if (commandTest.equalsIgnoreCase(commandTyped)) {
                         event.setCancelled(true);
@@ -943,7 +943,7 @@ public final class PlayerListener extends CommonListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void onEntityDamage(final EntityDamageEvent event) {
 
         if (event.getEntityType() != EntityType.PLAYER) {
             return;
@@ -963,7 +963,7 @@ public final class PlayerListener extends CommonListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerPortal(PlayerPortalEvent event) {
+    public void onPlayerPortal(final PlayerPortalEvent event) {
 
         final Player player = (Player) event.getPlayer();
         final PlayerConfEntry entry;
@@ -971,8 +971,8 @@ public final class PlayerListener extends CommonListener implements Listener {
         if ((entry = playerConf.get(player)) != null && !entry.isAdminMode()) {
 
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(event.getFrom());
-            World.Environment worldEnvFrom = event.getFrom().getWorld().getEnvironment();
-            World.Environment worldEnvTo = event.getTo().getWorld().getEnvironment();
+            final World.Environment worldEnvFrom = event.getFrom().getWorld().getEnvironment();
+            final World.Environment worldEnvTo = event.getTo().getWorld().getEnvironment();
 
             if (((worldEnvFrom == World.Environment.NETHER || worldEnvTo == World.Environment.NETHER)
                     && !checkPermission(landPermissionsFlags, player,
@@ -992,7 +992,7 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param player the player
      * @return if the events must be cancelled
      */
-    private boolean checkForPutFire(BlockEvent event, Player player) {
+    private boolean checkForPutFire(final BlockEvent event, final Player player) {
 
         if (player != null && !playerConf.get(player).isAdminMode()) {
 
@@ -1017,7 +1017,8 @@ public final class PlayerListener extends CommonListener implements Listener {
      * @param loc       the loc
      * @param newPlayer the new player
      */
-    private void updatePosInfo(Event event, PlayerConfEntry entry, Location loc, boolean newPlayer) {
+    private void updatePosInfo(final Event event, final PlayerConfEntry entry, final Location loc,
+            final boolean newPlayer) {
 
         final LandPermissionsFlags landPermissionsFlags;
         final LandPermissionsFlags oldPermissionsFlags;
@@ -1048,7 +1049,7 @@ public final class PlayerListener extends CommonListener implements Listener {
                 if (landPermissionsFlags == oldPermissionsFlags) {
                     player.teleport(player.getWorld().getSpawnLocation());
                 } else {
-                    Location retLoc = entry.getLastLoc();
+                    final Location retLoc = entry.getLastLoc();
                     player.teleport(new Location(retLoc.getWorld(), retLoc.getX(), retLoc.getBlockY(), retLoc.getZ(),
                             loc.getYaw(), loc.getPitch()));
                 }
@@ -1062,16 +1063,16 @@ public final class PlayerListener extends CommonListener implements Listener {
             if (oldLandNullable != null && oldPermissionsFlags != landPermissionsFlags) {
                 oldLandNullable.removePlayerInLand(player);
             }
-            final Land LandNullable = landPermissionsFlags.getLandNullable();
-            if (LandNullable != null) {
-                LandNullable.addPlayerInLand(player);
+            final Land landNullable = landPermissionsFlags.getLandNullable();
+            if (landNullable != null) {
+                landNullable.addPlayerInLand(player);
             }
         }
         entry.setLastLoc(loc);
 
         // Update visual selection
         if (entry.getSelection().hasSelection()) {
-            for (RegionSelection sel : entry.getSelection().getSelections()) {
+            for (final RegionSelection sel : entry.getSelection().getSelections()) {
                 if (sel instanceof AreaSelection && ((AreaSelection) sel).getMoveType() != MoveType.PASSIVE) {
                     ((AreaSelection) sel).playerMove();
                 }

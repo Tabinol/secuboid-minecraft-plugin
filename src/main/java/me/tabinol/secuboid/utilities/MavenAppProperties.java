@@ -39,7 +39,7 @@ public final class MavenAppProperties {
     /**
      * The properties.
      */
-    private Properties properties;
+    private final Properties properties;
 
     /**
      * Instantiates a new maven app properties.
@@ -59,7 +59,6 @@ public final class MavenAppProperties {
                 final JarEntry entry = jar.getJarEntry("app.properties");
                 try (final InputStream resource = jar.getInputStream(entry)) {
                     properties.load(resource);
-                    resource.close();
                 }
             }
         } catch (URISyntaxException | IOException ex) {
@@ -73,7 +72,7 @@ public final class MavenAppProperties {
      * @param path the path
      * @return the property string
      */
-    public String getPropertyString(String path) {
+    public String getPropertyString(final String path) {
         return properties.getProperty(path);
     }
 
@@ -83,7 +82,7 @@ public final class MavenAppProperties {
      * @param path the path
      * @return the property int
      */
-    public int getPropertyInt(String path) {
+    public int getPropertyInt(final String path) {
         return Integer.parseInt(properties.getProperty(path));
     }
 }

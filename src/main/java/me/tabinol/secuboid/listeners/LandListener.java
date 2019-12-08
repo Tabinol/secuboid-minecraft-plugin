@@ -61,6 +61,8 @@ public final class LandListener extends CommonListener implements Listener {
      */
     private static final int MAX_TP_PASS = 32;
 
+    private final Random random;
+
     /**
      * The player heal.
      */
@@ -123,13 +125,12 @@ public final class LandListener extends CommonListener implements Listener {
      * @param secuboid secuboid instance
      */
     public LandListener(Secuboid secuboid) {
-
         super(secuboid);
+        random = new Random();
         playerConf = secuboid.getPlayerConf();
-        playerHeal = new ArrayList<Player>();
+        playerHeal = new ArrayList<>();
         landHeal = new LandHeal();
         landHeal.runTaskTimer(secuboid, 20, 20);
-
     }
 
     /**
@@ -299,7 +300,6 @@ public final class LandListener extends CommonListener implements Listener {
     }
 
     private void randomTp(Player player, World world, Land land) {
-        final Random r = new Random();
         double randomX;
         double randomZ;
         boolean tpOk;
@@ -326,9 +326,9 @@ public final class LandListener extends CommonListener implements Listener {
             if (land != null) {
                 // tp to land
                 Area[] areas = land.getAreas().toArray(new Area[0]);
-                Area area = areas[r.nextInt(areas.length)];
-                randomX = area.getX1() + (area.getX2() - area.getX1()) * r.nextDouble();
-                randomZ = area.getZ1() + (area.getZ2() - area.getZ1()) * r.nextDouble();
+                Area area = areas[random.nextInt(areas.length)];
+                randomX = area.getX1() + (area.getX2() - area.getX1()) * random.nextDouble();
+                randomZ = area.getZ1() + (area.getZ2() - area.getZ1()) * random.nextDouble();
             } else {
                 // tp to world
                 WorldBorder worldBorder = world.getWorldBorder();
@@ -336,8 +336,8 @@ public final class LandListener extends CommonListener implements Listener {
                 double size = worldBorder.getSize();
                 int warningDistance = worldBorder.getWarningDistance();
                 double radius = (size - warningDistance) / 2;
-                randomX = center.getX() - radius + radius * 2.0D * r.nextDouble();
-                randomZ = center.getZ() - radius + radius * 2.0D * r.nextDouble();
+                randomX = center.getX() - radius + radius * 2.0D * random.nextDouble();
+                randomZ = center.getZ() - radius + radius * 2.0D * random.nextDouble();
             }
             loc = new Location(world, randomX, floor, randomZ);
 

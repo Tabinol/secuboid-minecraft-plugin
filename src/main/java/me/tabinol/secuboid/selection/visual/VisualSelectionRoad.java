@@ -154,7 +154,7 @@ public final class VisualSelectionRoad implements VisualSelection {
     private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive,
             LandPermissionsFlags outsidePermsFlags, boolean canCreate) {
 
-        final Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1,
+        final Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d,
                 posZ);
         final boolean isLocationInside = area.isLocationInside(newloc);
         if (isLastActive) {
@@ -277,7 +277,7 @@ public final class VisualSelectionRoad implements VisualSelection {
 
     private boolean checkForPoint(boolean isAdd, int x, int z) {
         final EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
-        final Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
+        final Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1d, z);
 
         if (isAdd) {
             // Add point

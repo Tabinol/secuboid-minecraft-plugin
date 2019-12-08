@@ -20,6 +20,7 @@ package me.tabinol.secuboid.lands;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -306,14 +307,11 @@ public final class LandPermissionsFlags {
      *
      * @param player the player
      * @param pt     the pt
-     * @return the boolean
+     * @return the optional boolean
      */
     public boolean checkPermissionAndInherit(final Player player, final PermissionType pt) {
-        final Boolean resultNullable = checkPermissionAndInheritNullable(player, pt, false, this);
-        if (resultNullable != null) {
-            return resultNullable;
-        }
-        return pt.getDefaultValue();
+        final Optional<Boolean> resultOpt = checkPermissionAndInherit(player, pt, false, this);
+        return resultOpt.orElse(pt.getDefaultValue());
     }
 
     /**
@@ -323,24 +321,24 @@ public final class LandPermissionsFlags {
      * @param pt                     the pt
      * @param onlyInherit            the only inherit
      * @param originPermissionsFlags the origin land (or ...) permissions flags
-     * @return the boolean
+     * @return the optional boolean
      */
-    private Boolean checkPermissionAndInheritNullable(final Player player, final PermissionType pt, final boolean onlyInherit,
-            final LandPermissionsFlags originPermissionsFlags) {
-        Boolean permValueNullable;
+    private Optional<Boolean> checkPermissionAndInherit(final Player player, final PermissionType pt, final boolean onlyInherit,
+        final LandPermissionsFlags originPermissionsFlags) {
 
         for (final PlayerContainerType pcType : PlayerContainerType.values()) {
-            if ((permValueNullable = getPermissionNullable(pcType, player, pt, onlyInherit, originPermissionsFlags)) != null) {
-                return permValueNullable;
+            final Optional<Boolean> permValueOpt = getPermission(pcType, player, pt, onlyInherit, originPermissionsFlags);
+            if (permValueOpt.isPresent()) {
+                return permValueOpt;
             }
         }
 
         final LandPermissionsFlags permsFlagsParentNullable = getPermsFlagsParentNullable(originPermissionsFlags);
         if (permsFlagsParentNullable != null) {
-            return permsFlagsParentNullable.checkPermissionAndInheritNullable(player, pt, true, originPermissionsFlags);
+            return permsFlagsParentNullable.checkPermissionAndInherit(player, pt, true, originPermissionsFlags);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -351,16 +349,16 @@ public final class LandPermissionsFlags {
      * @param pt                     the pt
      * @param onlyInherit            the only inherit
      * @param originPermissionsFlags the origin land (or ...) permissions flags
-     * @return the permission
+     * @return the optional boolean
      */
-    private Boolean getPermissionNullable(final PlayerContainerType pcType, final Player player, final PermissionType pt, final boolean onlyInherit,
-            final LandPermissionsFlags originPermissionsFlags) {
-        Boolean result;
+    private Optional<Boolean> getPermission(final PlayerContainerType pcType, final Player player, final PermissionType pt, final boolean onlyInherit,
+        final LandPermissionsFlags originPermissionsFlags) {
+        Optional<Boolean> resultOpt;
 
         for (final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : permissions.entrySet()) {
-            result = permissionSingleCheckNullable(pcType, permissionEntry, player, pt, onlyInherit, originPermissionsFlags);
-            if (result != null) {
-                return result;
+            resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originPermissionsFlags);
+            if (resultOpt.isPresent()) {
+                return resultOpt;
             }
         }
 
@@ -370,22 +368,22 @@ public final class LandPermissionsFlags {
                 && (defaultPermissionsFlags = secuboid.getLands().getDefaultConf(landNullable.getType())) != null) {
             for (final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : defaultPermissionsFlags.permissions
                     .entrySet()) {
-                result = permissionSingleCheckNullable(pcType, permissionEntry, player, pt, onlyInherit,
+                resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit,
                         originPermissionsFlags);
-                if (result != null) {
-                    return result;
+                if (resultOpt.isPresent()) {
+                    return resultOpt;
                 }
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    private Boolean permissionSingleCheckNullable(final PlayerContainerType pcType,
+    private Optional<Boolean> permissionSingleCheck(final PlayerContainerType pcType,
             final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry, final Player player,
             final PermissionType pt, final boolean onlyInherit, final LandPermissionsFlags originPermissionsFlags) {
         if (pcType != permissionEntry.getKey().getContainerType()) {
-            return null;
+            return Optional.empty();
         }
 
         boolean value;
@@ -399,11 +397,11 @@ public final class LandPermissionsFlags {
             }
 
             if (perm != null && (!onlyInherit || perm.isInheritable())) {
-                return perm.getValue();
+                return Optional.of(perm.getValue());
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -454,7 +452,6 @@ public final class LandPermissionsFlags {
      * @return the land flag value
      */
     public FlagValue getFlagAndInherit(final FlagType ft) {
-
         return getFlagAndInherit(ft, false, this);
     }
 

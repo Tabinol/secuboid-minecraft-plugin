@@ -29,16 +29,16 @@ import org.reflections.Reflections;
 /**
  * Test for commands annotations
  */
-public class CommandsTest {
+public final class CommandsTest {
 
 	@Test
-	public void AnnotationsTest() throws IOException, URISyntaxException {
+	public void annotationsTest() throws IOException, URISyntaxException {
 
-		Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
-		Set<Class<?>> classes = reflections.getTypesAnnotatedWith(InfoCommand.class);
+		final Reflections reflections = new Reflections("me.tabinol.secuboid.commands.executor");
+		final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(InfoCommand.class);
 
 		// Test if annoted classes are in CommandClassList
-		for (Class<?> classUnit : classes) {
+		for (final Class<?> classUnit : classes) {
 			boolean found = false;
 			for (CommandClassList commandList : CommandClassList.values()) {
 				if (commandList.getCommandClass().equals(classUnit)) {

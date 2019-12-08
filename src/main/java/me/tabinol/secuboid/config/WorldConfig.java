@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -252,7 +253,7 @@ public final class WorldConfig {
                 break;
 
             case KEY_VALUE:
-                flagPermValues.valueNullable = getBooleanNullable(valueObj);
+                flagPermValues.valueNullable = getBoolean(valueObj);
                 if (flagPermValues.valueNullable == null) {
                     if (parameterType == ParameterType.PERMISSION) {
                         log.severe(String.format(
@@ -265,8 +266,8 @@ public final class WorldConfig {
                 break;
 
             case KEY_INHERITABLE:
-                flagPermValues.inheritableNullable = getBooleanNullable(valueObj);
-                if (flagPermValues.inheritableNullable == null) {
+                flagPermValues.inheritableOpt = getBoolean(valueObj);
+                if (!flagPermValues.inheritableOpt.isPresent()) {
                     log.severe(String.format(
                             "In file %s, inheritable must be true or false: \"%s: %s\" for root key \"%s\"", fileName,
                             keyName, Objects.toString(valueObj), rootKey));
@@ -294,20 +295,20 @@ public final class WorldConfig {
         return Collections.singletonList(Objects.toString(stringListObj));
     }
 
-    private Boolean getBooleanNullable(Object valueObj) {
+    private Optional<Boolean> getBoolean(Object valueObj) {
         if (valueObj instanceof Boolean) {
-            return (Boolean) valueObj;
+            return Optional.of((Boolean) valueObj);
         }
         final String valueStr = Objects.toString(valueObj);
         if (valueStr != null) {
             if (valueStr.matches("^(?i)(true|yes)$")) {
-                return true;
+                return Optional.of(Boolean.TRUE);
             }
             if (valueStr.matches("^(?i)(false|no)$")) {
-                return false;
+                return Optional.of(Boolean.FALSE);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private final void loadPermissions(FileType fileType, FlagPermValues flagPermValues) {
@@ -315,7 +316,7 @@ public final class WorldConfig {
             for (String permissionName : flagPermValues.permissionsNullable) {
                 final Map.Entry<PlayerContainer, Permission> playerContainerToPermission = createPcPermissionNullable(
                         fileType.fileName, playerContainerName, permissionName, (boolean) flagPermValues.valueNullable,
-                        flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : true);
+                        flagPermValues.inheritableOpt.orElse(Boolean.TRUE));
                 if (playerContainerToPermission == null) {
                     log.severe(String.format(
                             "In file %s, unable to load permission \"%s\" with value \"%s\" for player container \"%s\"",
@@ -369,7 +370,7 @@ public final class WorldConfig {
     private final void loadFlags(FileType fileType, FlagPermValues flagPermValues) {
         for (String flagName : flagPermValues.flagsNullable) {
             final Flag flag = createFlagNullable(fileType.fileName, flagName, flagPermValues.valueNullable,
-                    flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : true);
+                    flagPermValues.inheritableOpt.orElse(Boolean.TRUE));
             if (flag == null) {
                 log.severe(String.format("In file %s, unable to load flag \"%s\" with value \"%s\"", fileType.fileName,
                         flagName, flagPermValues.valueNullable));
@@ -431,6 +432,6 @@ public final class WorldConfig {
         List<String> worldsNullable = null;
         List<String> typesNullable = null;
         Object valueNullable = null;
-        Boolean inheritableNullable = null;
+        Optional<Boolean> inheritableOpt = Optional.empty();
     }
 }

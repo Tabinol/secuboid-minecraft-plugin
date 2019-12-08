@@ -47,11 +47,11 @@ public final class LandPermissionsFlagsTest {
         private static final String LAND_PARENT = "parent";
         private static final String LAND_CHILD = "child";
 
-        private static Secuboid secuboid;
-        private static Lands lands;
-        private static Land parent;
-        private static Land child;
-        private static Player fakePlayer;
+        private Secuboid secuboid;
+        private Lands lands;
+        private Land parent;
+        private Land child;
+        private Player fakePlayer;
 
         @Before
         public void initLands() throws SecuboidLandException {

@@ -37,8 +37,8 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
  */
 public final class CollisionsTest {
 
-    private static Secuboid secuboid;
-    private static Lands lands;
+    private Secuboid secuboid;
+    private Lands lands;
 
     @Before
     public void initCollisions() throws SecuboidLandException {

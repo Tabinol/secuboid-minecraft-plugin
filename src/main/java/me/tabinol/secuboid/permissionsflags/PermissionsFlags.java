@@ -89,9 +89,9 @@ public final class PermissionsFlags {
     public PermissionsFlags(Secuboid secuboid) {
 
         this.secuboid = secuboid;
-        permissions = new TreeMap<String, PermissionType>();
-        flags = new TreeMap<String, FlagType>();
-        unRegisteredFlags = new ArrayList<Flag>();
+        permissions = new TreeMap<>();
+        flags = new TreeMap<>();
+        unRegisteredFlags = new ArrayList<>();
 
         // Add flags and permissions
         for (PermissionList permissionList : PermissionList.values()) {
@@ -108,10 +108,10 @@ public final class PermissionsFlags {
         }
         // Add special permissions (PLACE_XXX and DESTROY_XXX, NOPLACE_XXX,
         // NODESTROY_XXX)
-        specialPermMap = new EnumMap<SpecialPermPrefix, Map<Material, PermissionType>>(SpecialPermPrefix.class);
+        specialPermMap = new EnumMap<>(SpecialPermPrefix.class);
 
         for (SpecialPermPrefix pref : SpecialPermPrefix.values()) {
-            Map<Material, PermissionType> matPerms = new EnumMap<Material, PermissionType>(Material.class);
+            Map<Material, PermissionType> matPerms = new EnumMap<>(Material.class);
             for (Material mat : Material.values()) {
                 matPerms.put(mat, registerPermissionType(pref.name() + "_" + mat.name(), false));
             }
@@ -141,7 +141,7 @@ public final class PermissionsFlags {
      */
     public Flag newFlag(final FlagType flagType, final Object value, final boolean inheritable) {
 
-        Flag flag = new Flag(flagType, value, inheritable);
+        final Flag flag = new Flag(flagType, value, inheritable);
         if (!flagType.isRegistered()) {
             unRegisteredFlags.add(flag);
         }
@@ -223,7 +223,7 @@ public final class PermissionsFlags {
      */
     public PermissionType getPermissionType(String permissionName) {
 
-        PermissionType pt = permissions.get(permissionName);
+        final PermissionType pt = permissions.get(permissionName);
 
         if (pt != null && pt.isRegistered()) {
             return pt;
@@ -249,7 +249,7 @@ public final class PermissionsFlags {
      */
     public FlagType getFlagType(String flagName) {
 
-        FlagType ft = flags.get(flagName);
+        final FlagType ft = flags.get(flagName);
 
         if (ft != null && ft.isRegistered()) {
             return ft;
@@ -323,7 +323,7 @@ public final class PermissionsFlags {
      */
     public PermissionType getSpecialPermission(SpecialPermPrefix prefix, Material mat) {
 
-        Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);
+        final Map<Material, PermissionType> matPerms = specialPermMap.get(prefix);
 
         if (matPerms == null) {
             return null;

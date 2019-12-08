@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.lands;
 
 import static me.tabinol.secuboid.lands.InitLands.WORLD;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public final class LandsTest {
     private static final String TEST_CYLINDER = "testcylinder";
     private static final String TEST_ROAD = "road";
 
-    private static Lands lands;
+    private Lands lands;
 
     @Before
     public void initLands() throws SecuboidLandException {
@@ -55,75 +56,75 @@ public final class LandsTest {
     }
 
     @Test
-    public void verifyCuboid() throws Exception {
+    public void verifyCuboid() {
 
         final Land land = lands.getLand(TEST_CUBOID);
 
         // Volume check
         if (land.getArea(1).getVolume() != 100 * 256 * 100) {
-            throw new Exception("Volume error");
+            fail("Volume error");
         }
 
         // Inside point check
         if (!land.isLocationInside(WORLD, 1, 1, 1)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
 
         // Outside point check
         if (land.isLocationInside(WORLD, 100, 1, 100)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
     }
 
     @Test
-    public void verifyCylinder() throws Exception {
+    public void verifyCylinder() {
 
         final Land land = lands.getLand(TEST_CYLINDER);
 
         // Volume check
         if (land.getArea(1).getVolume() != Math.round(Math.PI * 55.5 * 45.5 * 247)) {
-            throw new Exception("Volume error");
+            fail("Volume error");
         }
 
         // Inside point check
         if (!land.isLocationInside(WORLD, 10, 30, 55)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
 
         // Just a little bit outside
         if (land.isLocationInside(WORLD, 64, 30, 102)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
 
         // Outside point check
         if (land.isLocationInside(WORLD, 120, 40, 100)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
     }
 
     @Test
-    public void verifyRoad() throws Exception {
+    public void verifyRoad() {
 
         final Land land = lands.getLand(TEST_ROAD);
 
         // Volume check
         if (land.getArea(1).getVolume() != 256 * 2) {
-            throw new Exception("Volume error");
+            fail("Volume error");
         }
 
         // Inside point check
         if (!land.isLocationInside(WORLD, 200, 30, 200)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
 
         // Inside negative point check
         if (!land.isLocationInside(WORLD, -200, 30, -200)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
 
         // Just a little bit outside
         if (land.isLocationInside(WORLD, 201, 30, 200)) {
-            throw new Exception("Location error");
+            fail("Location error");
         }
     }
 }

@@ -50,10 +50,10 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerType;
  */
 public final class Lands {
 
-    private final static int INDEX_X1 = 0;
-    private final static int INDEX_Z1 = 1;
-    private final static int INDEX_X2 = 2;
-    private final static int INDEX_Z2 = 3;
+    private static final int INDEX_X1 = 0;
+    private static final int INDEX_Z1 = 1;
+    private static final int INDEX_X2 = 2;
+    private static final int INDEX_Z2 = 3;
 
     private final Secuboid secuboid;
     private final WorldConfig worldConfig;
@@ -62,7 +62,7 @@ public final class Lands {
      * Area list put in an area for finding lands.
      */
     private class AreaMap {
-        TreeMap<String, TreeSet<AreaIndex>> areaMap;
+        TreeMap<String, TreeSet<AreaIndex>> worldToAreaIndex;
     }
 
     /**
@@ -108,7 +108,7 @@ public final class Lands {
 
         for (int i = 0; i < 4; i++) {
             areaList[i] = new AreaMap();
-            areaList[i].areaMap = new TreeMap<String, TreeSet<AreaIndex>>();
+            areaList[i].worldToAreaIndex = new TreeMap<>();
         }
 
         landList = new TreeMap<>();
@@ -565,10 +565,10 @@ public final class Lands {
 
     private List<Area> getAreas(String worldName, int x, int y, int z, boolean isY) {
 
-        final List<Area> areas = new ArrayList<Area>();
-        final int SearchIndex;
+        final List<Area> areas = new ArrayList<>();
+        final int searchIndex;
         final int nbToFind;
-        final boolean ForwardSearch;
+        final boolean forwardSearch;
         final TreeSet<AreaIndex> ais;
         final Iterator<AreaIndex> it;
         AreaIndex ai;
@@ -577,36 +577,36 @@ public final class Lands {
         if (Math.abs(x) > Math.abs(z)) {
             nbToFind = x;
             if (x < 0) {
-                SearchIndex = INDEX_X1;
-                ForwardSearch = true;
+                searchIndex = INDEX_X1;
+                forwardSearch = true;
             } else {
-                SearchIndex = INDEX_X2;
-                ForwardSearch = false;
+                searchIndex = INDEX_X2;
+                forwardSearch = false;
             }
         } else {
             nbToFind = z;
             if (z < 0) {
-                SearchIndex = INDEX_Z1;
-                ForwardSearch = true;
+                searchIndex = INDEX_Z1;
+                forwardSearch = true;
             } else {
-                SearchIndex = INDEX_Z2;
-                ForwardSearch = false;
+                searchIndex = INDEX_Z2;
+                forwardSearch = false;
             }
         }
 
         // Now check for area in location
-        ais = areaList[SearchIndex].areaMap.get(worldName);
+        ais = areaList[searchIndex].worldToAreaIndex.get(worldName);
         if (ais == null || ais.isEmpty()) {
             return areas;
         }
-        if (ForwardSearch) {
+        if (forwardSearch) {
             it = ais.iterator();
         } else {
             it = ais.descendingIterator();
         }
 
         // Adds all areas to the list
-        while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, SearchIndex)) {
+        while (it.hasNext() && checkContinueSearch((ai = it.next()).getArea(), nbToFind, searchIndex)) {
 
             if (isY ? ai.getArea().isLocationInside(worldName, x, y, z) : ai.getArea().isLocationInsideSquare(x, z)) {
                 areas.add(ai.getArea());
@@ -662,12 +662,12 @@ public final class Lands {
      *
      * @param area        the area
      * @param nbToFind    the nb to find
-     * @param SearchIndex the search index
+     * @param searchIndex the search index
      * @return true, if successful
      */
-    private boolean checkContinueSearch(Area area, int nbToFind, int SearchIndex) {
+    private boolean checkContinueSearch(Area area, int nbToFind, int searchIndex) {
 
-        switch (SearchIndex) {
+        switch (searchIndex) {
         case INDEX_X1:
             return nbToFind >= area.getX1();
         case INDEX_X2:
@@ -688,15 +688,15 @@ public final class Lands {
      */
     void addAreaToList(Area area) {
 
-        if (!areaList[0].areaMap.containsKey(area.getWorldName())) {
+        if (!areaList[0].worldToAreaIndex.containsKey(area.getWorldName())) {
             for (int t = 0; t < 4; t++) {
-                areaList[t].areaMap.put(area.getWorldName(), new TreeSet<AreaIndex>());
+                areaList[t].worldToAreaIndex.put(area.getWorldName(), new TreeSet<AreaIndex>());
             }
         }
-        areaList[INDEX_X1].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getX1(), area));
-        areaList[INDEX_Z1].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getZ1(), area));
-        areaList[INDEX_X2].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getX2(), area));
-        areaList[INDEX_Z2].areaMap.get(area.getWorldName()).add(new AreaIndex(area.getZ2(), area));
+        areaList[INDEX_X1].worldToAreaIndex.get(area.getWorldName()).add(new AreaIndex(area.getX1(), area));
+        areaList[INDEX_Z1].worldToAreaIndex.get(area.getWorldName()).add(new AreaIndex(area.getZ1(), area));
+        areaList[INDEX_X2].worldToAreaIndex.get(area.getWorldName()).add(new AreaIndex(area.getX2(), area));
+        areaList[INDEX_Z2].worldToAreaIndex.get(area.getWorldName()).add(new AreaIndex(area.getZ2(), area));
     }
 
     /**
@@ -705,10 +705,10 @@ public final class Lands {
      * @param area the area
      */
     void removeAreaFromList(Area area) {
-        areaList[INDEX_X1].areaMap.get(area.getWorldName()).remove(new AreaIndex(area.getX1(), area));
-        areaList[INDEX_Z1].areaMap.get(area.getWorldName()).remove(new AreaIndex(area.getZ1(), area));
-        areaList[INDEX_X2].areaMap.get(area.getWorldName()).remove(new AreaIndex(area.getX2(), area));
-        areaList[INDEX_Z2].areaMap.get(area.getWorldName()).remove(new AreaIndex(area.getZ2(), area));
+        areaList[INDEX_X1].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getX1(), area));
+        areaList[INDEX_Z1].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getZ1(), area));
+        areaList[INDEX_X2].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getX2(), area));
+        areaList[INDEX_Z2].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getZ2(), area));
     }
 
     /**

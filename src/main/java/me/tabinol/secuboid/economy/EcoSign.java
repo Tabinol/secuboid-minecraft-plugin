@@ -39,7 +39,7 @@ import me.tabinol.secuboid.lands.Land;
  *
  * @author Tabinol
  */
-public class EcoSign {
+public final class EcoSign {
 
     private static final String OAK_PREFIX = "OAK";
     private static final String SIGN_SUFFIX = "_SIGN";
@@ -83,7 +83,7 @@ public class EcoSign {
     public EcoSign(Secuboid secuboid, Land land, Player player) throws SignException {
 
         this.secuboid = secuboid;
-        Block targetBlock = player.getTargetBlock(null, 10);
+        final Block targetBlock = player.getTargetBlock(null, 10);
         Block testBlock;
         this.land = land;
         final String materialInHandName = player.getEquipment().getItemInMainHand().getType().name();
@@ -93,10 +93,6 @@ public class EcoSign {
         } else {
             // No sign in hand (admin)
             signPrefix = OAK_PREFIX;
-        }
-
-        if (targetBlock == null) {
-            throw new SignException();
         }
 
         testBlock = targetBlock.getRelative(BlockFace.UP);
@@ -144,7 +140,7 @@ public class EcoSign {
         location.getChunk().load();
 
         // Get Sign parameter
-        Block blockPlace = location.getBlock();
+        final Block blockPlace = location.getBlock();
 
         final String materialName = blockPlace.getType().name();
         if (materialName.endsWith(WALL_SIGN_SUFFIX)) {
@@ -180,7 +176,7 @@ public class EcoSign {
      */
     public void createSignForSale(double price) throws SignException {
 
-        String[] lines = new String[4];
+        final String[] lines = new String[4];
         lines[0] = ChatColor.GREEN + secuboid.getLanguage().getMessage("SIGN.SALE.FORSALE");
         lines[1] = ChatColor.GREEN + land.getName();
         lines[2] = "";
@@ -200,7 +196,7 @@ public class EcoSign {
      */
     public void createSignForRent(double price, int renew, boolean autoRenew, String tenantName) throws SignException {
 
-        String[] lines = new String[4];
+        final String[] lines = new String[4];
 
         if (tenantName != null) {
             lines[0] = ChatColor.RED + secuboid.getLanguage().getMessage("SIGN.RENT.RENTED");
@@ -229,7 +225,7 @@ public class EcoSign {
      */
     public void createSign(String[] lines) throws SignException {
 
-        Block blockPlace = location.getBlock();
+        final Block blockPlace = location.getBlock();
 
         // Impossible to create the sign here
         if (secuboid.getLands().getLand(location) != land) {
@@ -295,7 +291,7 @@ public class EcoSign {
 
         block.getChunk().load();
 
-        // Remove only if it is a sign;
+        // Remove only if it is a sign
         if (blockData instanceof org.bukkit.block.data.type.Sign) {
             block.setType(Material.AIR);
 
@@ -312,48 +308,44 @@ public class EcoSign {
      * @return the block face
      */
     private BlockFace signFacing(float yaw) {
+        final BlockFace newFacing;
+        final float newYaw = yaw < 0 ? yaw + 360f : yaw;
 
-        BlockFace facing;
-
-        if (yaw < 0) {
-            yaw += 360;
-        }
-
-        if (yaw > 360 - 11.25 || yaw <= 11.25) {
-            facing = BlockFace.NORTH;
-        } else if (yaw <= (360 / 16 * 2) - 11.25) {
-            facing = BlockFace.NORTH_NORTH_EAST;
-        } else if (yaw <= (360 / 16 * 3) - 11.25) {
-            facing = BlockFace.NORTH_EAST;
-        } else if (yaw <= (360 / 16 * 4) - 11.25) {
-            facing = BlockFace.EAST_NORTH_EAST;
-        } else if (yaw <= (360 / 16 * 5) - 11.25) {
-            facing = BlockFace.EAST;
-        } else if (yaw <= (360 / 16 * 6) - 11.25) {
-            facing = BlockFace.EAST_SOUTH_EAST;
-        } else if (yaw <= (360 / 16 * 7) - 11.25) {
-            facing = BlockFace.SOUTH_EAST;
-        } else if (yaw <= (360 / 16 * 8) - 11.25) {
-            facing = BlockFace.SOUTH_SOUTH_EAST;
-        } else if (yaw <= (360 / 16 * 9) - 11.25) {
-            facing = BlockFace.SOUTH;
-        } else if (yaw <= (360 / 16 * 10) - 11.25) {
-            facing = BlockFace.SOUTH_SOUTH_WEST;
-        } else if (yaw <= (360 / 16 * 11) - 11.25) {
-            facing = BlockFace.SOUTH_WEST;
-        } else if (yaw <= (360 / 16 * 12) - 11.25) {
-            facing = BlockFace.WEST_SOUTH_WEST;
-        } else if (yaw <= (360 / 16 * 13) - 11.25) {
-            facing = BlockFace.WEST;
-        } else if (yaw <= (360 / 16 * 14) - 11.25) {
-            facing = BlockFace.WEST_NORTH_WEST;
-        } else if (yaw <= (360 / 16 * 15) - 11.25) {
-            facing = BlockFace.NORTH_WEST;
+        if (newYaw > 360f - 11.25f || newYaw <= 11.25f) {
+            newFacing = BlockFace.NORTH;
+        } else if (newYaw <= (360f / 16f * 2f) - 11.25f) {
+            newFacing = BlockFace.NORTH_NORTH_EAST;
+        } else if (newYaw <= (360f / 16f * 3f) - 11.25f) {
+            newFacing = BlockFace.NORTH_EAST;
+        } else if (newYaw <= (360f / 16f * 4f) - 11.25f) {
+            newFacing = BlockFace.EAST_NORTH_EAST;
+        } else if (newYaw <= (360f / 16f * 5f) - 11.25f) {
+            newFacing = BlockFace.EAST;
+        } else if (newYaw <= (360f / 16f * 6f) - 11.25f) {
+            newFacing = BlockFace.EAST_SOUTH_EAST;
+        } else if (newYaw <= (360f / 16f * 7f) - 11.25f) {
+            newFacing = BlockFace.SOUTH_EAST;
+        } else if (newYaw <= (360f / 16f * 8f) - 11.25f) {
+            newFacing = BlockFace.SOUTH_SOUTH_EAST;
+        } else if (newYaw <= (360f / 16f * 9f) - 11.25f) {
+            newFacing = BlockFace.SOUTH;
+        } else if (newYaw <= (360f / 16f * 10f) - 11.25f) {
+            newFacing = BlockFace.SOUTH_SOUTH_WEST;
+        } else if (newYaw <= (360f / 16f * 11f) - 11.25f) {
+            newFacing = BlockFace.SOUTH_WEST;
+        } else if (newYaw <= (360f / 16f * 12f) - 11.25f) {
+            newFacing = BlockFace.WEST_SOUTH_WEST;
+        } else if (newYaw <= (360f / 16f * 13f) - 11.25f) {
+            newFacing = BlockFace.WEST;
+        } else if (newYaw <= (360f / 16f * 14f) - 11.25f) {
+            newFacing = BlockFace.WEST_NORTH_WEST;
+        } else if (newYaw <= (360f / 16f * 15f) - 11.25f) {
+            newFacing = BlockFace.NORTH_WEST;
         } else {
-            facing = BlockFace.NORTH_NORTH_WEST;
+            newFacing = BlockFace.NORTH_NORTH_WEST;
         }
 
-        return facing;
+        return newFacing;
     }
 
     /**
@@ -363,23 +355,19 @@ public class EcoSign {
      * @return the block face
      */
     private BlockFace wallFacing(float yaw) {
+        final BlockFace newFacing;
+        final float newYaw = yaw < 0 ? yaw + 360f : yaw;
 
-        BlockFace facing;
-
-        if (yaw < 0) {
-            yaw += 360;
-        }
-
-        if (yaw > 315 || yaw <= 45) {
-            facing = BlockFace.NORTH;
-        } else if (yaw <= 135) {
-            facing = BlockFace.EAST;
-        } else if (yaw <= 225) {
-            facing = BlockFace.SOUTH;
+        if (newYaw > 315f || newYaw <= 45f) {
+            newFacing = BlockFace.NORTH;
+        } else if (newYaw <= 135f) {
+            newFacing = BlockFace.EAST;
+        } else if (newYaw <= 225f) {
+            newFacing = BlockFace.SOUTH;
         } else {
-            facing = BlockFace.WEST;
+            newFacing = BlockFace.WEST;
         }
 
-        return facing;
+        return newFacing;
     }
 }

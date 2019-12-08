@@ -98,12 +98,15 @@ public final class Lands {
     /**
      * Instantiates a new lands manager.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
+     * @param worldConfig the world config
+     * @param approveList the approve list
      */
-    public Lands(Secuboid secuboid, WorldConfig worldConfig) {
+    public Lands(final Secuboid secuboid, final WorldConfig worldConfig, final ApproveList approveList) {
 
         this.secuboid = secuboid;
         this.worldConfig = worldConfig;
+        this.approveList = approveList;
         areaList = new AreaMap[4];
 
         for (int i = 0; i < 4; i++) {
@@ -113,7 +116,6 @@ public final class Lands {
 
         landList = new TreeMap<>();
         landUUIDList = new TreeMap<>();
-        approveList = new ApproveList(secuboid);
         forSale = new HashSet<>();
         forRent = new HashSet<>();
     }
@@ -121,17 +123,18 @@ public final class Lands {
     /**
      * Gets the the default configuration for a land type.
      *
-     * @param type the land type nullable
-     * @return the default land permissions flags configuration.
+     * @param typeNullable the land type nullable
+     * @return the default land permissions flags configuration
      */
-    public LandPermissionsFlags getDefaultConf(Type typeNullable) {
+    public LandPermissionsFlags getDefaultConf(final Type typeNullable) {
         // No type? Return default config
         if (typeNullable == null) {
             return worldConfig.getDefaultPermissionsFlags();
         }
 
         // Type not found? Return default config
-        final LandPermissionsFlags landPermissionsFlags = worldConfig.getTypeToDefaultPermissionsFlags().get(typeNullable);
+        final LandPermissionsFlags landPermissionsFlags = worldConfig.getTypeToDefaultPermissionsFlags()
+                .get(typeNullable);
         if (landPermissionsFlags == null) {
             return worldConfig.getDefaultPermissionsFlags();
         }
@@ -157,7 +160,8 @@ public final class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area) throws SecuboidLandException {
+    public Land createLand(final String landName, final PlayerContainer owner, final Area area)
+            throws SecuboidLandException {
         return createLand(landName, owner, area, null, 1, null);
     }
 
@@ -171,7 +175,7 @@ public final class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent)
+    public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent)
             throws SecuboidLandException {
         return createLand(landName, owner, area, parent, 1, null);
     }
@@ -188,8 +192,8 @@ public final class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent, double price, Type type)
-            throws SecuboidLandException {
+    public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent,
+            final double price, final Type type) throws SecuboidLandException {
         getPriceFromPlayer(area.getWorldName(), owner, price);
         return createLand(landName, owner, area, parent, 1, null, type);
     }
@@ -207,8 +211,8 @@ public final class Lands {
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(String landName, PlayerContainer owner, Area area, Land parent, int areaId, UUID uuid,
-            Type type) throws SecuboidLandException {
+    public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent,
+            final int areaId, final UUID uuid, final Type type) throws SecuboidLandException {
 
         final String landNameLower = landName.toLowerCase();
         final Land land;
@@ -241,7 +245,7 @@ public final class Lands {
      * @param landName the land name
      * @return true, if is name exist
      */
-    public boolean isNameExist(String landName) {
+    public boolean isNameExist(final String landName) {
         return landList.containsKey(landName.toLowerCase());
     }
 
@@ -252,13 +256,13 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(Land land) throws SecuboidLandException {
+    public boolean removeLand(final Land land) throws SecuboidLandException {
 
         if (land == null) {
             return false;
         }
 
-        LandDeleteEvent landEvent = new LandDeleteEvent(land);
+        final LandDeleteEvent landEvent = new LandDeleteEvent(land);
 
         if (!landList.containsKey(land.getName())) {
             return false;
@@ -293,7 +297,7 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(String landName) throws SecuboidLandException {
+    public boolean removeLand(final String landName) throws SecuboidLandException {
         return removeLand(landList.get(landName.toLowerCase()));
     }
 
@@ -304,7 +308,7 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean removeLand(UUID uuid) throws SecuboidLandException {
+    public boolean removeLand(final UUID uuid) throws SecuboidLandException {
         return removeLand(landUUIDList.get(uuid));
     }
 
@@ -316,8 +320,8 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(String landName, String newName) throws SecuboidLandException {
-        Land land = getLand(landName);
+    public boolean renameLand(final String landName, final String newName) throws SecuboidLandException {
+        final Land land = getLand(landName);
         return land != null && renameLand(land, newName);
     }
 
@@ -329,7 +333,7 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(UUID uuid, String newName) throws SecuboidLandException {
+    public boolean renameLand(final UUID uuid, final String newName) throws SecuboidLandException {
         final Land land = getLand(uuid);
         return land != null && renameLand(land, newName);
     }
@@ -342,7 +346,7 @@ public final class Lands {
      * @return true, if successful
      * @throws SecuboidLandException the secuboid land exception
      */
-    public boolean renameLand(Land land, String newName) throws SecuboidLandException {
+    public boolean renameLand(final Land land, final String newName) throws SecuboidLandException {
         final String oldNameLower = land.getName();
         final String newNameLower = newName.toLowerCase();
 
@@ -365,7 +369,7 @@ public final class Lands {
      * @param landName the land name
      * @return the land
      */
-    public Land getLand(String landName) {
+    public Land getLand(final String landName) {
         return landList.get(landName.toLowerCase());
     }
 
@@ -375,7 +379,7 @@ public final class Lands {
      * @param uuid the uuid
      * @return the land
      */
-    public Land getLand(UUID uuid) {
+    public Land getLand(final UUID uuid) {
         return landUUIDList.get(uuid);
     }
 
@@ -385,7 +389,7 @@ public final class Lands {
      * @param loc the loc
      * @return the land
      */
-    public Land getLand(Location loc) {
+    public Land getLand(final Location loc) {
         final Area ca;
 
         if ((ca = getArea(loc)) == null) {
@@ -409,7 +413,7 @@ public final class Lands {
      * @param loc the loc
      * @return the land or outside area
      */
-    public LandPermissionsFlags getPermissionsFlags(Location loc) {
+    public LandPermissionsFlags getPermissionsFlags(final Location loc) {
         final Land land;
 
         if ((land = getLand(loc)) != null) {
@@ -425,17 +429,17 @@ public final class Lands {
      * @param loc the loc
      * @return the outside area permissions flags
      */
-    public LandPermissionsFlags getOutsideLandPermissionsFlags(Location loc) {
+    public LandPermissionsFlags getOutsideLandPermissionsFlags(final Location loc) {
         return getOutsideLandPermissionsFlags(loc.getWorld().getName());
     }
 
     /**
      * Gets the outside area permissions flags (Global if null).
      *
-     * @param worldName the world name
+     * @param worldNameNullable the world name
      * @return the outside area permissions flags
      */
-    public LandPermissionsFlags getOutsideLandPermissionsFlags(String worldNameNullable) {
+    public LandPermissionsFlags getOutsideLandPermissionsFlags(final String worldNameNullable) {
         if (worldNameNullable == null) {
             return worldConfig.getGlobalPermissionsFlags();
         }
@@ -458,12 +462,12 @@ public final class Lands {
      * @param z         the z
      * @return the lands
      */
-    public Set<Land> getLands(String worldName, int x, int z) {
+    public Set<Land> getLands(final String worldName, final int x, final int z) {
 
         final List<Area> areas = getAreas(worldName, x, z);
         final Set<Land> lands = new HashSet<>();
 
-        for (Area area : areas) {
+        for (final Area area : areas) {
             lands.add(area.getLand());
         }
 
@@ -476,12 +480,12 @@ public final class Lands {
      * @param loc the loc
      * @return the lands
      */
-    public Set<Land> getLands(Location loc) {
+    public Set<Land> getLands(final Location loc) {
 
         final List<Area> areas = getAreas(loc);
         final Set<Land> lands = new HashSet<>();
 
-        for (Area area : areas) {
+        for (final Area area : areas) {
             lands.add(area.getLand());
         }
 
@@ -494,11 +498,11 @@ public final class Lands {
      * @param owner the owner
      * @return the lands
      */
-    public Set<Land> getLands(PlayerContainer owner) {
+    public Set<Land> getLands(final PlayerContainer owner) {
 
         final Set<Land> lands = new HashSet<>();
 
-        for (Land land : landList.values()) {
+        for (final Land land : landList.values()) {
             if (land.getOwner().equals(owner)) {
                 lands.add(land);
             }
@@ -513,11 +517,11 @@ public final class Lands {
      * @param type the type
      * @return the lands
      */
-    public Set<Land> getLands(Type type) {
+    public Set<Land> getLands(final Type type) {
 
         final Set<Land> lands = new HashSet<>();
 
-        for (Land land : landList.values()) {
+        for (final Land land : landList.values()) {
             if (land.getType() == type) {
                 lands.add(land);
             }
@@ -534,7 +538,7 @@ public final class Lands {
      * @param price     the price
      * @return the price from player
      */
-    boolean getPriceFromPlayer(String worldName, PlayerContainer pc, double price) {
+    boolean getPriceFromPlayer(final String worldName, final PlayerContainer pc, final double price) {
 
         return !(pc.getContainerType() == PlayerContainerType.PLAYER && price > 0) || secuboid.getPlayerMoney()
                 .getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName, price);
@@ -549,7 +553,7 @@ public final class Lands {
      * @param z         the z
      * @return the cuboid areas
      */
-    public List<Area> getAreas(String worldName, int x, int z) {
+    public List<Area> getAreas(final String worldName, final int x, final int z) {
         return getAreas(worldName, x, 0, z, false);
     }
 
@@ -559,11 +563,11 @@ public final class Lands {
      * @param loc the loc
      * @return the cuboid areas
      */
-    public List<Area> getAreas(Location loc) {
+    public List<Area> getAreas(final Location loc) {
         return getAreas(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), true);
     }
 
-    private List<Area> getAreas(String worldName, int x, int y, int z, boolean isY) {
+    private List<Area> getAreas(final String worldName, final int x, final int y, final int z, final boolean isY) {
 
         final List<Area> areas = new ArrayList<>();
         final int searchIndex;
@@ -621,7 +625,7 @@ public final class Lands {
      * @param loc the loc
      * @return the cuboid area
      */
-    public Area getArea(Location loc) {
+    public Area getArea(final Location loc) {
 
         int actualPrio = Short.MIN_VALUE;
         int curPrio;
@@ -633,17 +637,17 @@ public final class Lands {
         // Give the position from the sky to underbedrock if the Y is greater than 255
         // or lower than 0
         if (loc.getBlockY() >= loc.getWorld().getMaxHeight()) {
-            resLoc = new Location(loc.getWorld(), loc.getX(), loc.getWorld().getMaxHeight() - 1, loc.getZ());
+            resLoc = new Location(loc.getWorld(), loc.getX(), loc.getWorld().getMaxHeight() - 1d, loc.getZ());
         } else if (loc.getBlockY() < 0) {
             resLoc = new Location(loc.getWorld(), loc.getX(), 0, loc.getZ());
         } else {
             resLoc = loc;
         }
 
-        Collection<Area> areas = getAreas(resLoc);
+        final Collection<Area> areas = getAreas(resLoc);
 
         // Compare priorities of parents (or main)
-        for (Area area : areas) {
+        for (final Area area : areas) {
             curPrio = area.getLand().getPriority();
             curGen = area.getLand().getGenealogy();
 
@@ -665,7 +669,7 @@ public final class Lands {
      * @param searchIndex the search index
      * @return true, if successful
      */
-    private boolean checkContinueSearch(Area area, int nbToFind, int searchIndex) {
+    private boolean checkContinueSearch(final Area area, final int nbToFind, final int searchIndex) {
 
         switch (searchIndex) {
         case INDEX_X1:
@@ -686,7 +690,7 @@ public final class Lands {
      *
      * @param area the area
      */
-    void addAreaToList(Area area) {
+    void addAreaToList(final Area area) {
 
         if (!areaList[0].worldToAreaIndex.containsKey(area.getWorldName())) {
             for (int t = 0; t < 4; t++) {
@@ -704,7 +708,7 @@ public final class Lands {
      *
      * @param area the area
      */
-    void removeAreaFromList(Area area) {
+    void removeAreaFromList(final Area area) {
         areaList[INDEX_X1].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getX1(), area));
         areaList[INDEX_Z1].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getZ1(), area));
         areaList[INDEX_X2].worldToAreaIndex.get(area.getWorldName()).remove(new AreaIndex(area.getX2(), area));
@@ -716,7 +720,7 @@ public final class Lands {
      *
      * @param land the land
      */
-    private void addLandToList(Land land) {
+    private void addLandToList(final Land land) {
         landList.put(land.getName(), land);
         landUUIDList.put(land.getUUID(), land);
     }
@@ -726,10 +730,10 @@ public final class Lands {
      *
      * @param land the land
      */
-    private void removeLandFromList(Land land) {
+    private void removeLandFromList(final Land land) {
         landList.remove(land.getName());
         landUUIDList.remove(land.getUUID());
-        for (Area area : land.getAreas()) {
+        for (final Area area : land.getAreas()) {
             removeAreaFromList(area);
         }
     }
@@ -739,7 +743,7 @@ public final class Lands {
      *
      * @param land the land
      */
-    void addForSale(Land land) {
+    void addForSale(final Land land) {
         forSale.add(land);
     }
 
@@ -748,7 +752,7 @@ public final class Lands {
      *
      * @param land the land
      */
-    void removeForSale(Land land) {
+    void removeForSale(final Land land) {
         forSale.remove(land);
     }
 
@@ -766,7 +770,7 @@ public final class Lands {
      *
      * @param land the land
      */
-    void addForRent(Land land) {
+    void addForRent(final Land land) {
         forRent.add(land);
     }
 
@@ -775,7 +779,7 @@ public final class Lands {
      *
      * @param land the land
      */
-    void removeForRent(Land land) {
+    void removeForRent(final Land land) {
         forRent.remove(land);
     }
 

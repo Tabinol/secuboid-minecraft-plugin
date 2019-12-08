@@ -52,7 +52,7 @@ public final class PvpListener extends CommonListener implements Listener {
     /**
      * The Constant FIRE_EXPIRE.
      */
-    public final static long FIRE_EXPIRE = 20 * 30;
+    public static final long FIRE_EXPIRE = 20l * 30l;
 
     /**
      * The player conf.
@@ -73,7 +73,7 @@ public final class PvpListener extends CommonListener implements Listener {
 
         super(secuboid);
         playerConf = secuboid.getPlayerConf();
-        playerFireLocation = new ExpirableHashMap<Location, PlayerContainerPlayer>(secuboid, FIRE_EXPIRE);
+        playerFireLocation = new ExpirableHashMap<>(secuboid, FIRE_EXPIRE);
     }
 
     /**
@@ -201,8 +201,7 @@ public final class PvpListener extends CommonListener implements Listener {
             final Location loc = event.getBlock().getLocation();
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
 
-            if (!landPermissionsFlags.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean()
-                    || !landPermissionsFlags.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean()) {
+            if (!landPermissionsFlags.getFlagAndInherit(FlagList.FULL_PVP.getFlagType()).getValueBoolean()) {
 
                 // Add fire for pvp listen
                 playerFireLocation.put(loc, entry.getPlayerContainer());

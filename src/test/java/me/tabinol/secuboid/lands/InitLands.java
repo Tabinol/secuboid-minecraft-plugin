@@ -21,7 +21,6 @@ package me.tabinol.secuboid.lands;
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import org.bukkit.plugin.PluginManager;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.WorldConfig;
+import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
@@ -84,8 +84,11 @@ public final class InitLands {
         when(worldConfig.getTypeToDefaultPermissionsFlags()).thenReturn(typeToDefaultPermissionsFlags);
         when(worldConfig.getDefaultPermissionsFlags()).thenReturn(defaultPermissionsFlags);
 
+        // ApproveList
+        final ApproveList approveList = mock(ApproveList.class);
+
         // Lands
-        lands = spy(new Lands(secuboid, worldConfig));
+        lands = new Lands(secuboid, worldConfig, approveList);
         when(secuboid.getLands()).thenReturn(lands);
 
         // Storage

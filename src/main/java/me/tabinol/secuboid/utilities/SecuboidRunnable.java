@@ -18,10 +18,11 @@
  */
 package me.tabinol.secuboid.utilities;
 
-import me.tabinol.secuboid.Secuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import me.tabinol.secuboid.Secuboid;
 
 /**
  * Schedule task in Secuboid.
@@ -43,7 +44,6 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      * @param secuboid the secuboid instance
      */
     public SecuboidRunnable(Secuboid secuboid) {
-
         super();
         this.secuboid = secuboid;
         taskId = null;
@@ -55,16 +55,9 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      * @param tick     the tick
      * @param multiple the multiple
      */
-    public void runLater(Long tick, boolean multiple) {
-
+    public final void runLater(Long tick, boolean multiple) {
         stopNextRun();
-
-        if (multiple) {
-            taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
-
-        } else {
-            taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
-        }
+        taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
     }
 
     /**
@@ -72,23 +65,23 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      *
      * @return true, if is active
      */
-    public boolean isActive() {
+    public final boolean isActive() {
         return taskId != null;
     }
 
     /**
-     * Sets the one time done. IF IT IS NOT MULTIPLE RUN, YOU NEED TO SET DONE IN RUN() METHOD
+     * Sets the one time done. IF IT IS NOT MULTIPLE RUN, YOU NEED TO SET DONE IN
+     * RUN() METHOD
      */
-    protected void setOneTimeDone() {
+    protected final void setOneTimeDone() {
         taskId = null;
     }
 
     /**
      * Stop next run.
      */
-    public void stopNextRun() {
+    public final void stopNextRun() {
         if (taskId != null) {
-
             taskId.cancel();
             taskId = null;
         }

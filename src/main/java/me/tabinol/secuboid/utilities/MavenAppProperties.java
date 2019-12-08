@@ -18,8 +18,6 @@
  */
 package me.tabinol.secuboid.utilities;
 
-import org.bukkit.Bukkit;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +27,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+
 /**
  * Load app.properties from Maven properties
  *
  * @author Tabinol
  */
-public class MavenAppProperties {
+public final class MavenAppProperties {
 
     /**
      * The properties.
@@ -52,20 +52,17 @@ public class MavenAppProperties {
      * Load properties.
      */
     public void loadProperties() {
-
         try {
-
-            File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getCanonicalFile();
-            JarFile jar = new JarFile(jarloc);
-            JarEntry entry = jar.getJarEntry("app.properties");
-            InputStream resource = jar.getInputStream(entry);
-            properties.load(resource);
-            resource.close();
-            jar.close();
-
-        } catch (URISyntaxException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+            final File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                    .getCanonicalFile();
+            try (JarFile jar = new JarFile(jarloc)) {
+                final JarEntry entry = jar.getJarEntry("app.properties");
+                try (final InputStream resource = jar.getInputStream(entry)) {
+                    properties.load(resource);
+                    resource.close();
+                }
+            }
+        } catch (URISyntaxException | IOException ex) {
             Bukkit.getLogger().log(Level.SEVERE, null, ex);
         }
     }
@@ -77,7 +74,6 @@ public class MavenAppProperties {
      * @return the property string
      */
     public String getPropertyString(String path) {
-
         return properties.getProperty(path);
     }
 
@@ -88,7 +84,6 @@ public class MavenAppProperties {
      * @return the property int
      */
     public int getPropertyInt(String path) {
-
         return Integer.parseInt(properties.getProperty(path));
     }
 }

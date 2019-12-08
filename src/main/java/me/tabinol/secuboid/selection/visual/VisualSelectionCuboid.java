@@ -181,7 +181,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
                 if (posX == area.getX1() || posX == area.getX2() || posZ == area.getZ1() || posZ == area.getZ2()) {
 
                     final Location newloc = new Location(area.getWord(), posX,
-                            PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+                            PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d, posZ);
 
                     if (isActive) {
                         // Active Selection

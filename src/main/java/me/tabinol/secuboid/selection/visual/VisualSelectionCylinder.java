@@ -164,7 +164,7 @@ public final class VisualSelectionCylinder implements VisualSelection {
                         || posX == area.getXNegFromZ(posZ) || posX == area.getXPosFromZ(posZ)) {
 
                     final Location newloc = new Location(area.getWord(), posX,
-                            PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
+                            PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d, posZ);
 
                     if (isActive) {
 

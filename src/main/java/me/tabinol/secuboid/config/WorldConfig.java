@@ -124,7 +124,6 @@ public final class WorldConfig {
         return typeToDefaultPermissionsFlags;
     }
 
-    @SuppressWarnings("unchecked")
     private void loadData(final FileType fileType) {
         final String fileName = fileType.fileName;
 
@@ -134,16 +133,25 @@ public final class WorldConfig {
             secuboid.saveResource(fileName, false);
         }
 
-        // Load yaml
-        final Yaml yaml = new Yaml();
-        InputStream inputStream;
         try {
-            inputStream = new FileInputStream(new File(configFileFolder, fileName));
+            final InputStream inputStream = new FileInputStream(new File(configFileFolder, fileName));
+            loadDataYml(inputStream, fileType);
         } catch (final FileNotFoundException e) {
             log.log(Level.SEVERE, String.format("Unable to load %s!", fileName), e);
             return;
         }
-        final Map<String, Object> root = (Map<String, Object>) yaml.load(inputStream);
+    }
+
+    @SuppressWarnings("unchecked")
+    void loadDataYml(final InputStream inputStream, final FileType fileType) {
+        final String fileName = fileType.fileName;
+        final Yaml yaml = new Yaml();
+        final Object rootObj = yaml.load(inputStream);
+        if (!(rootObj instanceof Map)) {
+            log.log(Level.SEVERE, () -> String.format("The file format is incorrect: %s", fileName));
+            return;
+        }
+        final Map<String, Object> root = (Map<String, Object>) rootObj;
         for (final Map.Entry<String, Object> entry : root.entrySet()) {
             try {
                 final String keyName = entry.getKey();
@@ -159,7 +167,7 @@ public final class WorldConfig {
                 // Load permissions and flags
                 loadFlagPerm(fileType, parameterType, keyName, (List<Object>) valueObj);
             } catch (final WorldConfigException ex) {
-                log.severe(ex.getMessage());
+                log.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -168,7 +176,7 @@ public final class WorldConfig {
             throws WorldConfigException {
         final ParameterType parameterType;
         try {
-            parameterType = ParameterType.valueOf(keyName.toLowerCase());
+            parameterType = ParameterType.valueOf(keyName.toUpperCase());
         } catch (final IllegalArgumentException e) {
             throw new WorldConfigException(String.format("In file %s, invalid tag name: \"%s\"", fileName, keyName), e);
         }
@@ -182,7 +190,8 @@ public final class WorldConfig {
             if (keyToValueObj instanceof Map) {
                 loadFlagPermFromKey(fileType, parameterType, rootKey, (Map<String, Object>) keyToValueObj);
             } else {
-                log.severe(String.format("In file %s, invalid format for permissions", fileType.fileName));
+                log.log(Level.SEVERE,
+                        () -> String.format("In file %s, invalid format for permissions", fileType.fileName));
             }
         }
     }
@@ -192,18 +201,18 @@ public final class WorldConfig {
         // Load flags/perms list
         final FlagPermValues flagPermValues = loadFlagPermValues(fileType, rootKey, keyToValue, parameterType);
 
-        if (parameterType == ParameterType.FLAG) {
+        if (parameterType == ParameterType.FLAGS) {
             if (!flagPermValues.verifyForFlags()) {
-                log.severe(String.format("In file %s, a flag must have at least a flag name and a value",
-                        fileType.fileName));
+                log.log(Level.SEVERE, () -> String
+                        .format("In file %s, a flag must have at least a flag name and a value", fileType.fileName));
                 return;
             }
             loadFlags(fileType, flagPermValues);
         }
 
-        if (parameterType == ParameterType.PERMISSION) {
-            if (!flagPermValues.verifyForPermissions()) {
-                log.severe(String.format(
+        if (parameterType == ParameterType.PERMISSIONS) {
+            if (!flagPermValues.verifyForPermissions() || !flagPermValues.verifyForPermissionsNotEmpty()) {
+                log.log(Level.SEVERE, () -> String.format(
                         "In file %s, a permission must have at least a player container, a permission name and a value (true/false)",
                         fileType.fileName));
                 return;
@@ -229,76 +238,120 @@ public final class WorldConfig {
         final String fileName = fileType.fileName;
         switch (keyName.toLowerCase()) {
         case KEY_PLAYER_CONTAINERS:
-            if (parameterType == ParameterType.PERMISSION) {
-                flagPermValues.playerContainersNullable = loadStringList(valueObj);
-            } else {
-                loadFlagPermErrorMsg(fileName, keyName, rootKey);
-            }
+            casePlayerContainers(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
             break;
 
         case KEY_PERMISSIONS:
-            if (parameterType == ParameterType.PERMISSION) {
-                flagPermValues.permissionsNullable = loadStringList(valueObj);
-            } else {
-                loadFlagPermErrorMsg(fileName, keyName, rootKey);
-            }
+            casePermissions(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
             break;
 
         case KEY_FLAGS:
-            if (parameterType == ParameterType.FLAG) {
-                flagPermValues.flagsNullable = loadStringList(valueObj);
-            } else {
-                loadFlagPermErrorMsg(fileName, keyName, rootKey);
-            }
+            caseFlags(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
             break;
 
         case KEY_WORLDS:
-            if (fileType == FileType.WORLD_CONFIG) {
-                flagPermValues.worldsNullable = loadStringList(valueObj);
-            } else {
-                loadFlagPermErrorMsg(fileName, keyName, rootKey);
-            }
+            caseWorlds(flagPermValues, fileType, rootKey, keyName, valueObj);
             break;
 
         case KEY_TYPES:
-            if (fileType == FileType.LAND_DEFAULT) {
-                flagPermValues.typesNullable = loadStringList(valueObj);
-            } else {
-                loadFlagPermErrorMsg(fileName, keyName, rootKey);
-            }
+            caseTypes(flagPermValues, fileType, rootKey, keyName, valueObj);
             break;
 
         case KEY_VALUE:
-            flagPermValues.valueNullable = getBoolean(valueObj);
-            if (flagPermValues.valueNullable == null) {
-                if (parameterType == ParameterType.PERMISSION) {
-                    log.severe(String.format(
-                            "In file %s, the permission value must be true or false: \"%s: %s\" for root key \"%s\"",
-                            fileName, keyName, Objects.toString(valueObj), rootKey));
-                } else {
-                    flagPermValues.valueNullable = valueObj;
-                }
-            }
+            caseValue(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
             break;
 
         case KEY_INHERITABLE:
-            flagPermValues.inheritableOpt = getBoolean(valueObj);
-            if (!flagPermValues.inheritableOpt.isPresent()) {
-                log.severe(
-                        String.format("In file %s, inheritable must be true or false: \"%s: %s\" for root key \"%s\"",
-                                fileName, keyName, Objects.toString(valueObj), rootKey));
-            }
+            caseInheritable(flagPermValues, fileType, rootKey, keyName, valueObj);
             break;
 
         default:
-            log.severe(String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"", fileName, keyName,
-                    Objects.toString(valueObj), rootKey));
+            log.log(Level.SEVERE, () -> String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"",
+                    fileName, keyName, Objects.toString(valueObj), rootKey));
+        }
+    }
+
+    private void casePlayerContainers(final FlagPermValues flagPermValues, final FileType fileType,
+            final String rootKey, final ParameterType parameterType, final String keyName, final Object valueObj) {
+        if (parameterType == ParameterType.PERMISSIONS) {
+            flagPermValues.playerContainersNullable = loadStringList(valueObj);
+        } else {
+            loadFlagPermErrorMsg(fileType.fileName, keyName, rootKey);
+        }
+    }
+
+    private void casePermissions(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final ParameterType parameterType, final String keyName, final Object valueObj) {
+        if (parameterType == ParameterType.PERMISSIONS) {
+            flagPermValues.permissionsNullable = loadStringList(valueObj);
+        } else {
+            loadFlagPermErrorMsg(fileType.fileName, keyName, rootKey);
+        }
+    }
+
+    private void caseFlags(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final ParameterType parameterType, final String keyName, final Object valueObj) {
+        if (parameterType == ParameterType.FLAGS) {
+            flagPermValues.flagsNullable = loadStringList(valueObj);
+        } else {
+            loadFlagPermErrorMsg(fileType.fileName, keyName, rootKey);
+        }
+    }
+
+    private void caseWorlds(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final String keyName, final Object valueObj) {
+        if (fileType == FileType.WORLD_CONFIG) {
+            flagPermValues.worldsNullable = loadStringList(valueObj);
+        } else {
+            loadFlagPermErrorMsg(fileType.fileName, keyName, rootKey);
+        }
+    }
+
+    private void caseTypes(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final String keyName, final Object valueObj) {
+        if (fileType == FileType.LAND_DEFAULT) {
+            flagPermValues.typesNullable = loadStringList(valueObj);
+        } else {
+            loadFlagPermErrorMsg(fileType.fileName, keyName, rootKey);
+        }
+    }
+
+    private void caseValue(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final ParameterType parameterType, final String keyName, final Object valueObj) {
+        flagPermValues.valueNullable = getBoolean(valueObj).orElse(null);
+        if (flagPermValues.valueNullable != null) {
+            return;
+        }
+        if (parameterType == ParameterType.PERMISSIONS) {
+            log.log(Level.SEVERE,
+                    () -> String.format(
+                            "In file %s, the permission value must be true or false: \"%s: %s\" for root key \"%s\"",
+                            fileType.fileName, keyName, Objects.toString(valueObj), rootKey));
+        }
+        flagPermValues.valueNullable = getDouble(valueObj).orElse(null);
+        if (flagPermValues.valueNullable != null) {
+            return;
+        }
+        flagPermValues.valueNullable = getStringArray(valueObj).orElse(null);
+        if (flagPermValues.valueNullable != null) {
+            return;
+        }
+        flagPermValues.valueNullable = Objects.toString(valueObj);
+    }
+
+    private void caseInheritable(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
+            final String keyName, final Object valueObj) {
+        flagPermValues.inheritableOpt = getBoolean(valueObj);
+        if (!flagPermValues.inheritableOpt.isPresent()) {
+            log.log(Level.SEVERE,
+                    () -> String.format("In file %s, inheritable must be true or false: \"%s: %s\" for root key \"%s\"",
+                            fileType.fileName, keyName, Objects.toString(valueObj), rootKey));
         }
     }
 
     private void loadFlagPermErrorMsg(final String fileName, final String keyName, final String rootKey) {
-        log.severe(
-                String.format("In file %s, invalid tag name: \"%s\" for root key \"%s\"", fileName, keyName, rootKey));
+        log.log(Level.SEVERE, () -> String.format("In file %s, invalid tag name: \"%s\" for root key \"%s\"", fileName,
+                keyName, rootKey));
     }
 
     @SuppressWarnings("unchecked")
@@ -325,14 +378,29 @@ public final class WorldConfig {
         return Optional.empty();
     }
 
+    @SuppressWarnings("unchecked")
+    private Optional<String[]> getStringArray(final Object valueObj) {
+        if (valueObj instanceof List) {
+            return Optional.of(((List<String>) valueObj).toArray(new String[0]));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Double> getDouble(final Object valueObj) {
+        try {
+            return Optional.of(Double.parseDouble(Objects.toString(valueObj)));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
+
     private final void loadPermissions(final FileType fileType, final FlagPermValues flagPermValues) {
         for (final String playerContainerName : flagPermValues.playerContainersNullable) {
             for (final String permissionName : flagPermValues.permissionsNullable) {
                 try {
                     loadPermission(fileType, flagPermValues, playerContainerName, permissionName);
                 } catch (final WorldConfigException e) {
-                    log.severe(e.getMessage());
-
+                    log.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }
@@ -389,7 +457,7 @@ public final class WorldConfig {
             throw new WorldConfigException(
                     String.format("In file %s, invalid playercontainer: \"%s\"", fileName, playerContainerName));
         }
-        final PermissionType permissionType = secuboid.getPermissionsFlags().getPermissionType(permissionName);
+        final PermissionType permissionType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(permissionName);
         final Permission permission = secuboid.getPermissionsFlags().newPermission(permissionType, value, inheritable);
         return new AbstractMap.SimpleImmutableEntry<>(playerContainer, permission);
     }
@@ -410,7 +478,7 @@ public final class WorldConfig {
                     loadFlagWorldConfig(flagPermValues, flag);
                 }
             } catch (final WorldConfigException e) {
-                log.severe(e.getMessage());
+                log.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -443,19 +511,23 @@ public final class WorldConfig {
 
     private Flag createFlagNullable(final String fileName, final String flagName, final Object value,
             final boolean inheritable) throws WorldConfigException {
-        final FlagType flagType = secuboid.getPermissionsFlags().getFlagType(flagName);
-        if (!flagType.getDefaultValue().getClass().isInstance(value)) {
-            throw new WorldConfigException(
-                    String.format("In file %s, invalid value \"%s\" for flag: \"%s\"", fileName, value, flagName));
+        FlagType flagType = secuboid.getPermissionsFlags().getFlagType(flagName);
+        if (flagType != null) {
+            if (!flagType.getDefaultValue().getValue().getClass().isInstance(value)) {
+                throw new WorldConfigException(
+                        String.format("In file %s, invalid value \"%s\" for flag: \"%s\"", fileName, value, flagName));
+            }
+            return secuboid.getPermissionsFlags().newFlag(flagType, value, inheritable);
         }
+        flagType = secuboid.getPermissionsFlags().getFlagTypeNoValid(flagName);
         return secuboid.getPermissionsFlags().newFlag(flagType, value, inheritable);
     }
 
     private enum ParameterType {
-        PERMISSION, FLAG;
+        PERMISSIONS, FLAGS;
     }
 
-    private enum FileType {
+    enum FileType {
         LAND_DEFAULT("landdefault.yml"), WORLD_CONFIG("worldconfig.yml");
 
         final String fileName;
@@ -483,6 +555,10 @@ public final class WorldConfig {
             if (permissionsNullable == null || playerContainersNullable == null || valueNullable == null) {
                 return false;
             }
+            return true;
+        }
+
+        boolean verifyForPermissionsNotEmpty() {
             if (permissionsNullable.isEmpty() || playerContainersNullable.isEmpty()
                     || !(valueNullable instanceof Boolean)) {
                 return false;

@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -236,6 +237,11 @@ public final class WorldConfigTest {
         assertTrue(permissionValueCheck(new PlayerContainerEverybody(), "BUILD", false));
         assertTrue(permissionValueCheck(new PlayerContainerGroup(secuboid, "new"), "OPEN", false));
         assertTrue(permissionValueCheck(new PlayerContainerEverybody(), "OPEN", false));
+    }
+
+    @After
+    public void end() {
+        logger.removeHandler(logHandler);
     }
 
     private boolean permissionValueCheck(PlayerContainer pc, String permName, boolean value) {

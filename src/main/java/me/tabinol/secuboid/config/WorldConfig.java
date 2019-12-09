@@ -58,6 +58,8 @@ public final class WorldConfig {
     private static final String KEY_VALUE = "value";
     private static final String KEY_INHERITABLE = "inheritable";
 
+    private static final String[] OLD_KEYS = new String[] { "_Global_", "ContainerPermissions", "ContainerFlags" };
+
     /**
      * The global permissions and flags.
      */
@@ -80,6 +82,7 @@ public final class WorldConfig {
 
     private final Logger log;
     private final Secuboid secuboid;
+    private boolean isOldVersion;
 
     /**
      * Instantiates a new world config.
@@ -97,11 +100,17 @@ public final class WorldConfig {
 
     public void loadResources() {
         // Load resources
+        isOldVersion = false;
         globalPermissionsFlags.setDefault();
         worldNameToPermissionsFlags.clear();
         defaultPermissionsFlags.setDefault();
         typeToDefaultPermissionsFlags.clear();
         Arrays.stream(FileType.values()).forEach(this::loadData);
+
+        if (isOldVersion) {
+            log.warning("You are using the old unsupported version of worldconfig.yml and landdefault.yml.");
+            log.warning("Rename those files and restart the server to create the new configuration.");
+        }
 
         // Copy global permissions whitout override existing
         worldNameToPermissionsFlags.forEach((k, v) -> globalPermissionsFlags.copyPermsFlagsToWithoutOverride(v));
@@ -178,6 +187,9 @@ public final class WorldConfig {
         try {
             parameterType = ParameterType.valueOf(keyName.toUpperCase());
         } catch (final IllegalArgumentException e) {
+            if (Arrays.stream(OLD_KEYS).anyMatch(keyName::equalsIgnoreCase)) {
+                isOldVersion = true;
+            }
             throw new WorldConfigException(String.format("In file %s, invalid tag name: \"%s\"", fileName, keyName), e);
         }
         return parameterType;

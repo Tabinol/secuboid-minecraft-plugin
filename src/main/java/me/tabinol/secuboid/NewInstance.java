@@ -52,7 +52,7 @@ public class NewInstance {
 
     private final Secuboid secuboid;
 
-    NewInstance(Secuboid secuboid) {
+    public NewInstance(Secuboid secuboid) {
         this.secuboid = secuboid;
     }
 

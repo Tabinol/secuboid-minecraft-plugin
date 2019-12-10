@@ -146,7 +146,7 @@ public final class WorldConfig {
             final InputStream inputStream = new FileInputStream(new File(configFileFolder, fileName));
             loadDataYml(inputStream, fileType);
         } catch (final FileNotFoundException e) {
-            log.log(Level.SEVERE, String.format("Unable to load %s!", fileName), e);
+            log.log(Level.SEVERE, String.format("Unable to load %s!", fileName));
             return;
         }
     }
@@ -176,7 +176,7 @@ public final class WorldConfig {
                 // Load permissions and flags
                 loadFlagPerm(fileType, parameterType, keyName, (List<Object>) valueObj);
             } catch (final WorldConfigException ex) {
-                log.log(Level.SEVERE, ex.getMessage(), ex);
+                log.log(Level.SEVERE, ex.getMessage());
             }
         }
     }
@@ -412,7 +412,7 @@ public final class WorldConfig {
                 try {
                     loadPermission(fileType, flagPermValues, playerContainerName, permissionName);
                 } catch (final WorldConfigException e) {
-                    log.log(Level.SEVERE, e.getMessage(), e);
+                    log.log(Level.SEVERE, e.getMessage());
                 }
             }
         }
@@ -490,7 +490,7 @@ public final class WorldConfig {
                     loadFlagWorldConfig(flagPermValues, flag);
                 }
             } catch (final WorldConfigException e) {
-                log.log(Level.SEVERE, e.getMessage(), e);
+                log.log(Level.SEVERE, e.getMessage());
             }
         }
     }

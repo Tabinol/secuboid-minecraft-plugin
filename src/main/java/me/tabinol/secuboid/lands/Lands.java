@@ -408,7 +408,7 @@ public final class Lands {
     }
 
     /**
-     * Gets the land or outside area permissions flags.
+     * Gets the land or world permissions flags.
      *
      * @param loc the loc
      * @return the land or outside area
@@ -420,7 +420,7 @@ public final class Lands {
             return land.getPermissionsFlags();
         }
 
-        return getPermissionsFlags(loc);
+        return getOutsideLandPermissionsFlags(loc);
     }
 
     /**

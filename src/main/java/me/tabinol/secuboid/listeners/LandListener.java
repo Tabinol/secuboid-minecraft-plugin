@@ -95,7 +95,7 @@ public final class LandListener extends CommonListener implements Listener {
             double health;
             double maxHealth;
 
-            for (Player player : playerHeal) {
+            for (final Player player : playerHeal) {
                 if (!player.isDead()) {
                     foodLevel = player.getFoodLevel();
                     if (foodLevel < 20) {
@@ -124,7 +124,7 @@ public final class LandListener extends CommonListener implements Listener {
      *
      * @param secuboid secuboid instance
      */
-    public LandListener(Secuboid secuboid) {
+    public LandListener(final Secuboid secuboid) {
         super(secuboid);
         random = new Random();
         playerConf = secuboid.getPlayerConf();
@@ -139,7 +139,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final LandPermissionsFlags landPermissionsFlags = playerConf.get(player).getLastLandPermissionsFlags();
         final Land landNullable = landPermissionsFlags.getLandNullable();
@@ -160,9 +160,12 @@ public final class LandListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerLandChange(PlayerLandChangeEvent event) {
+    public void onPlayerLandChange(final PlayerLandChangeEvent event) {
         final Player player = event.getPlayer();
-        final Land lastLandNullable = event.getLastLandPermissionsFlags().getLandNullable();
+        final LandPermissionsFlags lastLandPermissionsFlagsNullable = event.getLastLandPermissionsFlags();
+        final Land lastLandNullable = lastLandPermissionsFlagsNullable != null
+                ? lastLandPermissionsFlagsNullable.getLandNullable()
+                : null;
         final Land landNullable = event.getLandPermissionsFlags().getLandNullable();
         LandPermissionsFlags permissionsFlags;
         String value;
@@ -188,7 +191,7 @@ public final class LandListener extends CommonListener implements Listener {
 
             if (!playerConf.get(player).isAdminMode()) {
                 // is banned or can enter
-                PermissionType permissionType = PermissionList.LAND_ENTER.getPermissionType();
+                final PermissionType permissionType = PermissionList.LAND_ENTER.getPermissionType();
                 if ((landNullable.isBanned(player) || permissionsFlags.checkPermissionAndInherit(player,
                         permissionType) != permissionType.getDefaultValue()) && !landNullable.isOwner(player)
                         && !player.hasPermission("secuboid.bypassban")) {
@@ -257,7 +260,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerLandChangeTp(PlayerLandChangeEvent event) {
+    public void onPlayerLandChangeTp(final PlayerLandChangeEvent event) {
         final Player player = event.getPlayer();
         final Land landNullable = event.getLandPermissionsFlags().getLandNullable();
         PlayerConfEntry entry;
@@ -265,8 +268,8 @@ public final class LandListener extends CommonListener implements Listener {
         if (landNullable == null || (entry = playerConf.get(player)) == null) {
             return;
         }
-        LandPermissionsFlags lpf = landNullable.getPermissionsFlags();
-        PermissionType permissionType = PermissionList.PORTAL_TP.getPermissionType();
+        final LandPermissionsFlags lpf = landNullable.getPermissionsFlags();
+        final PermissionType permissionType = PermissionList.PORTAL_TP.getPermissionType();
 
         if (entry.isAdminMode() || lpf.checkPermissionAndInherit(player, permissionType)) {
             String targetTp;
@@ -299,7 +302,7 @@ public final class LandListener extends CommonListener implements Listener {
         }
     }
 
-    private void randomTp(Player player, World world, Land land) {
+    private void randomTp(final Player player, final World world, final Land land) {
         double randomX;
         double randomZ;
         boolean tpOk;
@@ -325,17 +328,17 @@ public final class LandListener extends CommonListener implements Listener {
             ++pass;
             if (land != null) {
                 // tp to land
-                Area[] areas = land.getAreas().toArray(new Area[0]);
-                Area area = areas[random.nextInt(areas.length)];
+                final Area[] areas = land.getAreas().toArray(new Area[0]);
+                final Area area = areas[random.nextInt(areas.length)];
                 randomX = area.getX1() + (area.getX2() - area.getX1()) * random.nextDouble();
                 randomZ = area.getZ1() + (area.getZ2() - area.getZ1()) * random.nextDouble();
             } else {
                 // tp to world
-                WorldBorder worldBorder = world.getWorldBorder();
-                Location center = worldBorder.getCenter();
-                double size = worldBorder.getSize();
-                int warningDistance = worldBorder.getWarningDistance();
-                double radius = (size - warningDistance) / 2;
+                final WorldBorder worldBorder = world.getWorldBorder();
+                final Location center = worldBorder.getCenter();
+                final double size = worldBorder.getSize();
+                final int warningDistance = worldBorder.getWarningDistance();
+                final double radius = (size - warningDistance) / 2;
                 randomX = center.getX() - radius + radius * 2.0D * random.nextDouble();
                 randomZ = center.getZ() - radius + radius * 2.0D * random.nextDouble();
             }
@@ -364,7 +367,7 @@ public final class LandListener extends CommonListener implements Listener {
         }
     }
 
-    private boolean locSafe(Location loc) {
+    private boolean locSafe(final Location loc) {
         int max;
         if (loc.getWorld().getEnvironment() == World.Environment.NETHER) {
             max = 125;
@@ -389,7 +392,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerContainerLandBan(PlayerContainerLandBanEvent event) {
+    public void onPlayerContainerLandBan(final PlayerContainerLandBanEvent event) {
         checkForBannedPlayers(event.getLand(), event.getPlayerContainer(), "ACTION.BANNED");
     }
 
@@ -399,7 +402,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerContainerAddNoEnter(PlayerContainerAddNoEnterEvent event) {
+    public void onPlayerContainerAddNoEnter(final PlayerContainerAddNoEnterEvent event) {
         checkForBannedPlayers(event.getLand(), event.getPlayerContainer(), "ACTION.NOENTRY");
     }
 
@@ -410,7 +413,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param pc      the pc
      * @param message the message
      */
-    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message) {
+    private void checkForBannedPlayers(final Land land, final PlayerContainer pc, final String message) {
         checkForBannedPlayers(land, pc, message, new ArrayList<Player>());
     }
 
@@ -422,7 +425,8 @@ public final class LandListener extends CommonListener implements Listener {
      * @param message     the message
      * @param kickPlayers the kicked players list
      */
-    private void checkForBannedPlayers(Land land, PlayerContainer pc, String message, ArrayList<Player> kickPlayers) {
+    private void checkForBannedPlayers(final Land land, final PlayerContainer pc, final String message,
+            final ArrayList<Player> kickPlayers) {
         final Player[] playersArray = land.getPlayersInLand().toArray(new Player[0]); // Fix
                                                                                       // ConcurrentModificationException
 
@@ -452,8 +456,8 @@ public final class LandListener extends CommonListener implements Listener {
      * @param message  the message
      * @param playerIn the player in
      */
-    private void notifyPlayers(Land land, String message, Player playerIn) {
-        for (PlayerContainerPlayer playerC : land.getPlayersNotify()) {
+    private void notifyPlayers(final Land land, final String message, final Player playerIn) {
+        for (final PlayerContainerPlayer playerC : land.getPlayersNotify()) {
             final Player player = playerC.getPlayer();
 
             if (player != null && player != playerIn
@@ -472,7 +476,7 @@ public final class LandListener extends CommonListener implements Listener {
      * @param land    the land
      * @param message the message
      */
-    private void tpSpawn(Player player, Land land, String message) {
+    private void tpSpawn(final Player player, final Land land, final String message) {
         player.teleport(player.getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage(message, land.getName()));
     }

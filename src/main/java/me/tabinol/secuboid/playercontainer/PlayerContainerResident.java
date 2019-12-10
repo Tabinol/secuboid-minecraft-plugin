@@ -31,8 +31,15 @@ import me.tabinol.secuboid.permissionsflags.FlagList;
  */
 public final class PlayerContainerResident implements PlayerContainer {
 
+    final Land land;
+
+    public PlayerContainerResident(final Land land) {
+        this.land = land;
+    }
+
     @Override
-    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final Land pcLandNullable,
+            final LandPermissionsFlags testLandPermissionsFlags) {
         final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
         if (pcLandNullable == null || testLandNullable == null) {
             return false;
@@ -42,8 +49,8 @@ public final class PlayerContainerResident implements PlayerContainer {
         Land actual = pcLandNullable;
         Land parentNullable;
 
-        while (!value && (parentNullable = actual.getParent()) != null
-                && actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()) {
+        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
+                .getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()) {
             value = parentNullable.isResident(player);
             actual = parentNullable;
         }
@@ -72,7 +79,7 @@ public final class PlayerContainerResident implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
+    public int compareTo(final PlayerContainer t) {
         return PlayerContainerType.RESIDENT.compareTo(t.getContainerType());
     }
 }

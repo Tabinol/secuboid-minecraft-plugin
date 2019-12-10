@@ -73,7 +73,7 @@ public abstract class CommandExec {
     /**
      * The land.
      */
-    protected Land land;
+    protected Land land = null;
 
     /**
      * The is executable.

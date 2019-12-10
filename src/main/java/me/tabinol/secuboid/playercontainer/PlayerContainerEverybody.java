@@ -31,7 +31,8 @@ import me.tabinol.secuboid.lands.LandPermissionsFlags;
 public final class PlayerContainerEverybody implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final Land pcLandNullable,
+            final LandPermissionsFlags testLandPermissionsFlags) {
         return true;
     }
 
@@ -46,7 +47,7 @@ public final class PlayerContainerEverybody implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
+    public int compareTo(final PlayerContainer t) {
         return PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
     }
 

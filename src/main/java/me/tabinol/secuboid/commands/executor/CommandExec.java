@@ -18,15 +18,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ArgList;
-import me.tabinol.secuboid.commands.InfoCommand;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.permissionsflags.PermissionType;
-import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -34,6 +25,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
+import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
+import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 
 /**
  * The Class CommandExec.
@@ -71,9 +72,9 @@ public abstract class CommandExec {
     final PlayerConfEntry playerConf;
 
     /**
-     * The land.
+     * The selected land.
      */
-    protected Land land = null;
+    protected Land landSelectNullable;
 
     /**
      * The is executable.
@@ -116,7 +117,9 @@ public abstract class CommandExec {
 
         if (player != null) {
             // get the land Selected or null
-            land = playerConf.getSelection().getLand();
+            landSelectNullable = playerConf.getSelection().getLand();
+        } else {
+            landSelectNullable = null;
         }
 
         if (infoCommand != null) {
@@ -164,7 +167,7 @@ public abstract class CommandExec {
 
         if (mustBeSelectMode != null) {
             // Pasted to variable land, can take direcly
-            checkSelection(land != null, mustBeSelectMode, "GENERAL.JOIN.SELECTMODE",
+            checkSelection(landSelectNullable != null, mustBeSelectMode, "GENERAL.JOIN.SELECTMODE",
                     playerConf.getSelection().getLand() != null);
         }
         if (mustBeAreaSelected != null) {
@@ -182,8 +185,8 @@ public abstract class CommandExec {
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
-    private final void checkSelection(boolean result, boolean neededResult, String messageFalse, boolean startSelectCancel)
-            throws SecuboidCommandException {
+    private final void checkSelection(boolean result, boolean neededResult, String messageFalse,
+            boolean startSelectCancel) throws SecuboidCommandException {
 
         if (result != neededResult) {
             if (!result) {
@@ -212,12 +215,17 @@ public abstract class CommandExec {
             String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
+        final LandPermissionsFlags landPermissionsFlagsSelectNullable = landSelectNullable != null
+                ? landSelectNullable.getPermissionsFlags()
+                : null;
 
         if (mustBeAdminMode && playerConf.isAdminMode()) {
             canDo = true;
-        } else if (mustBeOwner && (land == null || new PlayerContainerOwner().hasAccess(player, land, land.getPermissionsFlags()))) {
+        } else if (mustBeOwner && (landSelectNullable == null || new PlayerContainerOwner().hasAccess(player,
+                landSelectNullable, landPermissionsFlagsSelectNullable))) {
             canDo = true;
-        } else if (neededPerm != null && land.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
+        } else if (neededPerm != null
+                && landSelectNullable.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
             canDo = true;
         } else if (bukkitPermission != null && sender.hasPermission(bukkitPermission)) {
             canDo = true;
@@ -237,8 +245,8 @@ public abstract class CommandExec {
      */
     final void getLandFromCommandIfNoLandSelected() {
 
-        if (land == null && !argList.isLast()) {
-            land = secuboid.getLands().getLand(argList.getNext());
+        if (landSelectNullable == null && !argList.isLast()) {
+            landSelectNullable = secuboid.getLands().getLand(argList.getNext());
         }
     }
 

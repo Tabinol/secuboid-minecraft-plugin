@@ -58,7 +58,7 @@ abstract class CommonListener {
     /**
      * Check permission.
      *
-     * @param land   the land
+     * @param landSelectNullable   the land
      * @param player the player
      * @param pt     the pt
      * @return true, if successful
@@ -143,7 +143,7 @@ abstract class CommonListener {
     /**
      * Gets the spawn point for a land and transform it to location
      *
-     * @param land the land
+     * @param landSelectNullable the land
      * @return the location
      */
     final Location getLandSpawnPoint(LandPermissionsFlags landPermissionsFlags) {

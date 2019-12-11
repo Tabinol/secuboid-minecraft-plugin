@@ -31,12 +31,6 @@ import me.tabinol.secuboid.permissionsflags.FlagList;
  */
 public final class PlayerContainerTenant implements PlayerContainer {
 
-    final Land land;
-
-    public PlayerContainerTenant(final Land land) {
-        this.land = land;
-    }
-
     @Override
     public boolean hasAccess(final Player player, final Land pcLandNullable,
             final LandPermissionsFlags testLandPermissionsFlags) {

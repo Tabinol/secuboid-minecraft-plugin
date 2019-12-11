@@ -85,17 +85,17 @@ public final class CommandSale extends CommandExec {
 
         // If 'recreate'
         if (curArg.equalsIgnoreCase("recreate")) {
-            if (!land.isForSale()) {
+            if (!landSelectNullable.isForSale()) {
                 throw new SecuboidCommandException(secuboid, "The land is not for sale", player,
                         "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
             try {
-                ecoSign = new EcoSign(secuboid, land, player);
-                ecoSign.createSignForSale(land.getSalePrice());
+                ecoSign = new EcoSign(secuboid, landSelectNullable, player);
+                ecoSign.createSignForSale(landSelectNullable.getSalePrice());
                 removeSignFromHand();
-                if (!ecoSign.getLocation().getBlock().equals(land.getSaleSignLoc().getBlock())) {
-                    ecoSign.removeSign(land.getSaleSignLoc());
-                    land.setSaleSignLoc(ecoSign.getLocation());
+                if (!ecoSign.getLocation().getBlock().equals(landSelectNullable.getSaleSignLoc().getBlock())) {
+                    ecoSign.removeSign(landSelectNullable.getSaleSignLoc());
+                    landSelectNullable.setSaleSignLoc(ecoSign.getLocation());
                 }
             } catch (SignException e) {
                 throw new SecuboidCommandException(secuboid, "Error in the command", player,
@@ -116,21 +116,21 @@ public final class CommandSale extends CommandExec {
         }
 
         // Land already for sale?
-        if (land.isForSale()) {
+        if (landSelectNullable.isForSale()) {
             throw new SecuboidCommandException(secuboid, "Land already for sale", player,
                     "COMMAND.ECONOMY.ALREADYSALE");
         }
 
         // Create Sign
         try {
-            ecoSign = new EcoSign(secuboid, land, player);
+            ecoSign = new EcoSign(secuboid, landSelectNullable, player);
             ecoSign.createSignForSale(salePrice);
             removeSignFromHand();
         } catch (SignException e) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player,
                     "COMMAND.ECONOMY.ERRORCREATESIGN");
         }
-        land.setForSale(true, salePrice, ecoSign.getLocation());
+        landSelectNullable.setForSale(true, salePrice, ecoSign.getLocation());
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
     }

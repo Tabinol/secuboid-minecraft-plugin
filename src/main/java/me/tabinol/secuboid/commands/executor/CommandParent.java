@@ -71,14 +71,14 @@ public final class CommandParent extends CommandCollisionsThreadExec {
             }
 
             // Check if the land is a children
-            if (land.isDescendants(parent)) {
+            if (landSelectNullable.isDescendants(parent)) {
                 throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.NOTCHILD");
             }
         }
 
         // Check for collision
-        checkCollision(land.getWorldName(), land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
-                land.getOwner(), true);
+        checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.LAND_PARENT, 0, null, parent,
+                landSelectNullable.getOwner(), true);
     }
 
     @Override
@@ -90,7 +90,7 @@ public final class CommandParent extends CommandCollisionsThreadExec {
         }
 
         // Set parent
-        land.setParent(parent);
+        landSelectNullable.setParent(parent);
         if (parent == null) {
             player.sendMessage(
                     ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));

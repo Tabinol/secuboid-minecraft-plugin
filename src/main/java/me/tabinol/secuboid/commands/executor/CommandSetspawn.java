@@ -61,7 +61,7 @@ public final class CommandSetspawn extends CommandExec {
         Location loc = player.getLocation();
 
         // If the player is not inside the land
-        if (!land.isLocationInside(loc)) {
+        if (!landSelectNullable.isLocationInside(loc)) {
             throw new SecuboidCommandException(secuboid, "On land tp create", player, "COMMAND.TP.OUTSIDE");
         }
 
@@ -70,7 +70,7 @@ public final class CommandSetspawn extends CommandExec {
 
         // Set flag
         Flag flag = secuboid.getPermissionsFlags().newFlag(FlagList.SPAWN.getFlagType(), posStr, true);
-        land.getPermissionsFlags().addFlag(flag);
+        landSelectNullable.getPermissionsFlags().addFlag(flag);
 
         player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TP.CREATED"));
     }

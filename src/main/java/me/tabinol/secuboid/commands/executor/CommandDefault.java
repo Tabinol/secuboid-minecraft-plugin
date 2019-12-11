@@ -53,7 +53,7 @@ public final class CommandDefault extends CommandExec {
         checkSelections(true, null);
         checkPermission(true, true, null, null);
 
-        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, land, 0));
+        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, landSelectNullable, 0));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

@@ -57,7 +57,7 @@ public final class CommandPriority extends CommandExec {
         String curArg = argList.getNext();
         short newPrio;
 
-        if (land.getParent() != null) {
+        if (landSelectNullable.getParent() != null) {
             throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.NOTCHILD");
         }
         try {
@@ -70,9 +70,9 @@ public final class CommandPriority extends CommandExec {
             throw new SecuboidCommandException(secuboid, "Priority", player, "COMMAND.PRIORITY.INVALID",
                     Land.MINIM_PRIORITY + "", Land.MAXIM_PRIORITY + "");
         }
-        land.setPriority(newPrio);
+        landSelectNullable.setPriority(newPrio);
 
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                + secuboid.getLanguage().getMessage("COMMAND.PRIORITY.DONE", land.getName(), land.getPriority() + ""));
+                + secuboid.getLanguage().getMessage("COMMAND.PRIORITY.DONE", landSelectNullable.getName(), landSelectNullable.getPriority() + ""));
     }
 }

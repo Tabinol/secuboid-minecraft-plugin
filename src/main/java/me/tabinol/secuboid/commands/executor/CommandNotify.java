@@ -58,14 +58,14 @@ public final class CommandNotify extends CommandExec {
         checkSelections(true, null);
         checkPermission(true, true, PermissionList.LAND_NOTIFY.getPermissionType(), null);
 
-        if (land.isPlayerNotify(playerConf.getPlayerContainer())) {
-            land.removePlayerNotify(playerConf.getPlayerContainer());
+        if (landSelectNullable.isPlayerNotify(playerConf.getPlayerContainer())) {
+            landSelectNullable.removePlayerNotify(playerConf.getPlayerContainer());
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.QUIT", landSelectNullable.getName()));
         } else {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", land.getName()));
-            land.addPlayerNotify(playerConf.getPlayerContainer());
+                    + secuboid.getLanguage().getMessage("COMMAND.NOTIFY.JOIN", landSelectNullable.getName()));
+            landSelectNullable.addPlayerNotify(playerConf.getPlayerContainer());
         }
     }
 }

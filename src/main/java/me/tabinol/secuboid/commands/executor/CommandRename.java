@@ -61,8 +61,8 @@ public final class CommandRename extends CommandCollisionsThreadExec {
         }
 
         // Check for collision
-        checkCollision(land.getWorldName(), curArg, land, null, Collisions.LandAction.LAND_RENAME, 0,
-                null, land.getParent(), land.getOwner(), true);
+        checkCollision(landSelectNullable.getWorldName(), curArg, landSelectNullable, null, Collisions.LandAction.LAND_RENAME, 0,
+                null, landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class CommandRename extends CommandCollisionsThreadExec {
             return;
         }
 
-        String oldName = land.getName();
+        String oldName = landSelectNullable.getName();
         String newName = collisions.getLandName();
 
         try {

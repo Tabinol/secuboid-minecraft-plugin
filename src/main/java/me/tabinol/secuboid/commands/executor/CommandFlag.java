@@ -74,21 +74,21 @@ public final class CommandFlag extends CommandExec {
         if (curArg.equalsIgnoreCase("add")) {
 
             // Permission check is on getFlagFromArg
-            Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), land.isOwner(player));
+            Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
 
             if (!landFlag.getFlagType().isRegistered()) {
                 throw new SecuboidCommandException(secuboid, "Flag not registered", player, "COMMAND.FLAGS.FLAGNULL");
             }
 
-            land.getPermissionsFlags().addFlag(landFlag);
+            landSelectNullable.getPermissionsFlags().addFlag(landFlag);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE",
                             landFlag.getFlagType().toString(), landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
 
         } else if (curArg.equalsIgnoreCase("remove")) {
 
-            FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
-            if (!land.getPermissionsFlags().removeFlag(flagType)) {
+            FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            if (!landSelectNullable.getPermissionsFlags().removeFlag(flagType)) {
                 throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
@@ -100,18 +100,18 @@ public final class CommandFlag extends CommandExec {
             stList = new StringBuilder();
 
             // For the actual land
-            importDisplayFlagsFrom(land.getPermissionsFlags(), false);
+            importDisplayFlagsFrom(landSelectNullable.getPermissionsFlags(), false);
 
             // For default Type
-            if (land.getType() != null) {
+            if (landSelectNullable.getType() != null) {
                 stList.append(ChatColor.DARK_GRAY)
-                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", land.getType().getName()))
+                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", landSelectNullable.getType().getName()))
                         .append(Config.NEWLINE);
-                importDisplayFlagsFrom(secuboid.getLands().getDefaultConf(land.getType()), false);
+                importDisplayFlagsFrom(secuboid.getLands().getDefaultConf(landSelectNullable.getType()), false);
             }
 
             // For parent (if exist)
-            Land parLand = land;
+            Land parLand = landSelectNullable;
             while ((parLand = parLand.getParent()) != null) {
                 stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMPARENT",
                         ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
@@ -120,11 +120,11 @@ public final class CommandFlag extends CommandExec {
 
             // For world
             stList.append(ChatColor.DARK_GRAY)
-                    .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", land.getWorldName()))
+                    .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", landSelectNullable.getWorldName()))
                     .append(Config.NEWLINE);
-            importDisplayFlagsFrom(secuboid.getLands().getOutsideLandPermissionsFlags(land.getWorldName()), true);
+            importDisplayFlagsFrom(secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
 
-            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
 
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");

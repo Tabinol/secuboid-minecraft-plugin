@@ -18,6 +18,9 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.lands.Land;
@@ -39,15 +42,14 @@ public final class PlayerContainerOwner implements PlayerContainer {
             return false;
         }
 
-        boolean value;
-        Land parent;
+        boolean value = pcLandNullable.getOwner().hasAccess(player, pcLandNullable, testLandPermissionsFlags);
+        Land actual = pcLandNullable;
+        Land parentNullable;
 
-        value = pcLandNullable.getOwner().hasAccess(player, pcLandNullable, testLandPermissionsFlags);
-
-        if (!value && (parent = pcLandNullable.getParent()) != null && pcLandNullable.getPermissionsFlags()
+        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
                 .getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
-
-            return parent.getOwner().hasAccess(player, pcLandNullable, testLandPermissionsFlags);
+            value = parentNullable.isOwner(player);
+            actual = parentNullable;
         }
 
         return value;

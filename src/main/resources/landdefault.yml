@@ -1,108 +1,105 @@
-# Default for land type (/secuboid type) at the end of this file
+# Default flags and permissions for a land
 
-                               # Default configuration when a land is created (all lands)
-ContainerPermissions:          # Permissions
-  everybody:
-    BUCKET_WATER:
-      Value: false
-      Inheritable: true
-    BUCKET_LAVA:
-      Value: false
-      Inheritable: true
-    BUILD:
-      Value: false
-      Inheritable: true
-    OPEN:
-      Value: false
-      Inheritable: true
-    USE:
-      Value: false
-      Inheritable: true
-    ANIMAL_KILL:
-      Value: false
-      Inheritable: true
-    FIRE:
-      Value: false
-      Inheritable: true
-  owner:
-    RESIDENT_MANAGER:
-      Value: true
-      Inheritable: false
-    LAND_CREATE:
-      Value: true
-      Inheritable: false
-    LAND_REMOVE:
-      Value: true
-      Inheritable: false
-    LAND_KICK:
-      Value: true
-      Inheritable: false
-    LAND_BAN:
-      Value: true
-      Inheritable: false
-    LAND_WHO:
-      Value: true
-      Inheritable: false
-    LAND_NOTIFY:
-      Value: true
-      Inheritable: false
-    MONEY_DEPOSIT:
-      Value: true
-      Inheritable: false
-    MONEY_WITHDRAW:
-      Value: true
-      Inheritable: false
-    BUCKET_WATER:
-      Value: true
-      Inheritable: true
-    BUCKET_LAVA:
-      Value: true
-      Inheritable: true
-    BUILD:
-      Value: true
-      Inheritable: true
-    OPEN:
-      Value: true
-      Inheritable: true
-    USE:
-      Value: true
-      Inheritable: true
-    ANIMAL_KILL:
-      Value: true
-      Inheritable: true
-    FIRE:
-      Value: true
-      Inheritable: true
-  resident:
-    BUILD:
-      Value: true
-      Inheritable: false
-    OPEN:
-      Value: true
-      Inheritable: false
-    USE:
-      Value: true
-      Inheritable: true
-    ANIMAL_KILL:
-      Value: true
-      Inheritable: true
-    LAND_WHO:
-      Value: true
-      Inheritable: false
-    LAND_NOTIFY:
-      Value: true
-      Inheritable: false
-ContainerFlags:                # Flags
-  CREEPER_DAMAGE:
-    Value: false
-    Inheritable: true
+# Permissions section
+# ===================
+# playercontainers (list)      : List the players/groups who need the
+#                                permission
+#   Everybody: Everybody
+#   Owner    : The land owner
+#   Resident : The land resident
+#   Tenant   : The land tenant
+#   g:mygroup: Permission system group
+#   b:my.perm: Players who have the Bukkit permission
+# permissions (list)           : A Land permission list (See the wiki)
+# value (bool)                 : true or false
+# inheritable (bool, optional) : If the value is inheritable (default true)
+# type (string, optional)      : Land type affected (default all)
+permissions:
 
-# Here is the configuration for specific types in config.yml
-admin:                         # The name of the type
-  ContainerPermissions:
-    resident:
-      BUILD:
-        Value: false
-        Inheritable: false
-  ContainerFlags:
-      
+  # Permissions for Everybody
+  - playercontainers: 
+      - Everybody
+    permissions:     
+      - USE_REPEATER
+      - USE_COMPARATOR
+      - USE_NOTEBLOCK
+      - BUCKET_WATER
+      - BUCKET_LAVA
+      - BUILD
+      - OPEN
+      - USE
+      - TRADE
+      - ANIMAL_KILL
+      - FIRE
+      - PLACE_END_CRYSTAL
+      - FROST_WALKER
+      - CROP_TRAMPLE
+      - TAME
+    value: false
+  # Permissions for owners
+  - playercontainers: 
+      - Owner
+    permissions:
+      # Admin
+      - RESIDENT_MANAGER
+      - LAND_CREATE
+      - LAND_REMOVE
+      - LAND_KICK
+      - LAND_BAN
+      - LAND_WHO
+      - LAND_NOTIFY
+      - MONEY_BALANCE
+      - MONEY_DEPOSIT
+      - MONEY_WITHDRAW
+      # Override Everybody
+      - USE_REPEATER
+      - USE_COMPARATOR
+      - USE_NOTEBLOCK
+      - BUCKET_WATER
+      - BUCKET_LAVA
+      - BUILD
+      - OPEN
+      - USE
+      - TRADE
+      - ANIMAL_KILL
+      - FIRE
+      - PLACE_END_CRYSTAL
+      - FROST_WALKER
+      - CROP_TRAMPLE
+      - TAME
+    value: true
+  # Permissions for residents
+  - playercontainers: 
+      - Resident
+    permissions:
+      # Override Everybody
+      - USE_REPEATER
+      - USE_COMPARATOR
+      - USE_NOTEBLOCK
+      - BUCKET_WATER
+      - BUCKET_LAVA
+      - BUILD
+      - OPEN
+      - USE
+      - TRADE
+      - ANIMAL_KILL
+      - FIRE
+      - PLACE_END_CRYSTAL
+      - FROST_WALKER
+      - CROP_TRAMPLE
+      - TAME
+    value: true
+
+# Flags section
+# =============
+# flags (list)                 : A Land permission list (See the wiki)
+# value (bool, str, list, num) : See the wiki for available values
+# inheritable (bool, optional) : If the value is inheritable (default true)
+# type (string, optional)      : Land type affected (default all)
+flags:
+#  - flags:
+#      - CREEPER_DAMAGE
+#      - TNT_DAMAGE
+#    value: false
+#  - flags: ECO_BLOCK_PRICE
+#    value: 1.00

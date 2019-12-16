@@ -58,10 +58,10 @@ public final class CommandTp extends CommandExec {
     public void commandExecute() throws SecuboidCommandException {
 
         String curArg = argList.getNext();
-        land = secuboid.getLands().getLand(curArg);
+        landSelectNullable = secuboid.getLands().getLand(curArg);
 
         // Land not found
-        if (land == null) {
+        if (landSelectNullable == null) {
             throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.LANDNOTFOUND");
         }
 
@@ -69,7 +69,7 @@ public final class CommandTp extends CommandExec {
         checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
         // Try to get Location
-        FlagValue value = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
+        FlagValue value = landSelectNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
 
         if (value.getValueString().isEmpty()) {
             throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.NOSPAWN");

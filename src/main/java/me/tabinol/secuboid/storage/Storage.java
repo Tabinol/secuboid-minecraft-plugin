@@ -18,9 +18,7 @@
  */
 package me.tabinol.secuboid.storage;
 
-import java.util.UUID;
-
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Interface Storage.
@@ -37,22 +35,14 @@ public interface Storage {
      *
      * @param land the land
      */
-    void saveLand(RealLand land);
+    void saveLand(Land land);
 
     /**
      * Removes the land.
      *
      * @param land the land
      */
-    void removeLand(RealLand land);
-
-    /**
-     * Removes the land.
-     *
-     * @param landUUID      the land name uuid
-     * @param landGenealogy The land genealogy
-     */
-    void removeLand(UUID landUUID, int landGenealogy);
+    void removeLand(Land land);
 
     /**
      * Load lands.

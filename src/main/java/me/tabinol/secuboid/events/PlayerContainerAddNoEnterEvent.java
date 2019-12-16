@@ -18,15 +18,16 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import org.bukkit.event.HandlerList;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
 
 /**
  * The Class PlayerContainerAddNoEnterEvent. This events is called when a player container is added to a disallow inside
  * a land.
  */
-public class PlayerContainerAddNoEnterEvent extends LandEvent {
+public class PlayerContainerAddNoEnterEvent extends LandInsideEvent {
 
     /**
      * The Constant handlers.
@@ -44,7 +45,7 @@ public class PlayerContainerAddNoEnterEvent extends LandEvent {
      * @param land            the land
      * @param playerContainer the player container
      */
-    public PlayerContainerAddNoEnterEvent(final RealLand land, final PlayerContainer playerContainer) {
+    public PlayerContainerAddNoEnterEvent(final Land land, final PlayerContainer playerContainer) {
         super(land);
         this.playerContainer = playerContainer;
     }

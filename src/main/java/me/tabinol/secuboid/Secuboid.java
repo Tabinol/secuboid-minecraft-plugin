@@ -24,11 +24,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.InventoryConfig;
+import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
+import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
@@ -43,13 +45,12 @@ import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playerscache.PlayersCache;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
-import me.tabinol.secuboid.utilities.Log;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
  * The Class Secuboid.
  */
-public class Secuboid extends JavaPlugin {
+public final class Secuboid extends JavaPlugin {
 
     /**
      * The Economy schedule interval.
@@ -77,9 +78,19 @@ public class Secuboid extends JavaPlugin {
     private Lands lands;
 
     /**
+     * The world config.
+     */
+    private WorldConfig worldConfig;
+    
+    /**
+     * The approve list.
+     */
+    private ApproveList approveList;
+
+    /**
      * The parameters.
      */
-    private PermissionsFlags PermissionsFlags;
+    private PermissionsFlags permissionsFlags;
 
     /**
      * The player conf.
@@ -117,11 +128,6 @@ public class Secuboid extends JavaPlugin {
     private CollisionsManagerThread collisionsManagerThread = null;
 
     /**
-     * The log.
-     */
-    private Log log;
-
-    /**
      * The conf.
      */
     private Config conf;
@@ -150,11 +156,10 @@ public class Secuboid extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        log = new Log(getLogger());
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
-        PermissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
+        permissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
         types = new Types();
         conf = new Config(this);
 
@@ -174,20 +179,24 @@ public class Secuboid extends JavaPlugin {
         playerConf.addAll();
         language = new Lang(this);
         storageThread = new StorageThread(this);
-        lands = new Lands(this);
+        worldConfig = new WorldConfig(this);
+        worldConfig.loadResources();
+        approveList = new ApproveList(this);
+        approveList.loadResources();
+        lands = new Lands(this, worldConfig, approveList);
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
-        WorldListener worldListener = new WorldListener(this);
-        PlayerListener playerListener = new PlayerListener(this);
-        PvpListener pvpListener = new PvpListener(this);
-        LandListener landListener = new LandListener(this);
-        ChatListener chatListener = new ChatListener(this);
+        final WorldListener worldListener = new WorldListener(this);
+        final PlayerListener playerListener = new PlayerListener(this);
+        final PvpListener pvpListener = new PvpListener(this);
+        final LandListener landListener = new LandListener(this);
+        final ChatListener chatListener = new ChatListener(this);
         commandListener = new CommandListener(this);
         approveNotif = new ApproveNotif(this);
         approveNotif.runApproveNotifLater();
         if (dependPlugin.getVaultEconomy() != null) {
-            EcoScheduler ecoScheduler = new EcoScheduler(this);
+            final EcoScheduler ecoScheduler = new EcoScheduler(this);
             ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         }
         playersCache = new PlayersCache(this);
@@ -232,9 +241,10 @@ public class Secuboid extends JavaPlugin {
         } else {
             playerMoney = null;
         }
-        log = new Log(getLogger());
         language.reloadConfig();
-        lands = new Lands(this);
+        worldConfig.loadResources();
+        approveList.loadResources();
+        lands = new Lands(this, worldConfig, approveList);
         storageThread.stopNextRun();
         storageThread = new StorageThread(this);
         storageThread.loadAllAndStart();
@@ -328,21 +338,12 @@ public class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Get log.
-     *
-     * @return the log
-     */
-    public Log getLog() {
-        return log;
-    }
-
-    /**
      * Gets permissions and flags instance.
      *
      * @return the permissions and flags instance
      */
     public PermissionsFlags getPermissionsFlags() {
-        return PermissionsFlags;
+        return permissionsFlags;
     }
 
     /**

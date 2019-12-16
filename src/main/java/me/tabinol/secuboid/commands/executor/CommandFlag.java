@@ -21,6 +21,9 @@ package me.tabinol.secuboid.commands.executor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
@@ -29,11 +32,9 @@ import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandFlag.
@@ -46,7 +47,7 @@ import org.bukkit.command.CommandSender;
         })
 public final class CommandFlag extends CommandExec {
 
-    private List<Land> precDL; // Listed Precedent lands (no duplicates)
+    private List<LandPermissionsFlags> precDL; // Listed Precedent lands (no duplicates)
     private StringBuilder stList;
 
     /**
@@ -73,21 +74,21 @@ public final class CommandFlag extends CommandExec {
         if (curArg.equalsIgnoreCase("add")) {
 
             // Permission check is on getFlagFromArg
-            Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), land.isOwner(player));
+            Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
 
             if (!landFlag.getFlagType().isRegistered()) {
                 throw new SecuboidCommandException(secuboid, "Flag not registered", player, "COMMAND.FLAGS.FLAGNULL");
             }
 
-            land.getPermissionsFlags().addFlag(landFlag);
+            landSelectNullable.getPermissionsFlags().addFlag(landFlag);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.FLAGS.ISDONE",
                             landFlag.getFlagType().toString(), landFlag.getValue().getValuePrint() + ChatColor.YELLOW));
 
         } else if (curArg.equalsIgnoreCase("remove")) {
 
-            FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), land.isOwner(player));
-            if (!land.getPermissionsFlags().removeFlag(flagType)) {
+            FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            if (!landSelectNullable.getPermissionsFlags().removeFlag(flagType)) {
                 throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
@@ -95,45 +96,45 @@ public final class CommandFlag extends CommandExec {
 
         } else if (curArg.equalsIgnoreCase("list")) {
 
-            precDL = new ArrayList<Land>();
+            precDL = new ArrayList<>();
             stList = new StringBuilder();
 
             // For the actual land
-            importDisplayFlagsFrom(land, false);
+            importDisplayFlagsFrom(landSelectNullable.getPermissionsFlags(), false);
 
             // For default Type
-            if (land.getType() != null) {
+            if (landSelectNullable.getType() != null) {
                 stList.append(ChatColor.DARK_GRAY)
-                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", land.getType().getName()))
+                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", landSelectNullable.getType().getName()))
                         .append(Config.NEWLINE);
-                importDisplayFlagsFrom((secuboid.getLands()).getDefaultConf(land.getType()), false);
+                importDisplayFlagsFrom(secuboid.getLands().getDefaultConf(landSelectNullable.getType()), false);
             }
 
             // For parent (if exist)
-            RealLand parLand = land;
+            Land parLand = landSelectNullable;
             while ((parLand = parLand.getParent()) != null) {
                 stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMPARENT",
                         ChatColor.GREEN + parLand.getName() + ChatColor.DARK_GRAY)).append(Config.NEWLINE);
-                importDisplayFlagsFrom(parLand, true);
+                importDisplayFlagsFrom(parLand.getPermissionsFlags(), true);
             }
 
             // For world
             stList.append(ChatColor.DARK_GRAY)
-                    .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", land.getWorldName()))
+                    .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", landSelectNullable.getWorldName()))
                     .append(Config.NEWLINE);
-            importDisplayFlagsFrom((secuboid.getLands()).getOutsideArea(land.getWorldName()), true);
+            importDisplayFlagsFrom(secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
 
-            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
 
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
         }
     }
 
-    private void importDisplayFlagsFrom(Land land, boolean onlyInherit) {
+    private void importDisplayFlagsFrom(LandPermissionsFlags landPermissionsFlags, boolean onlyInherit) {
 
-        StringBuilder stSubList = new StringBuilder();
-        for (Flag flag : land.getPermissionsFlags().getFlags()) {
+        final StringBuilder stSubList = new StringBuilder();
+        for (Flag flag : landPermissionsFlags.getFlags()) {
             if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
                 stSubList.append(" ");
             }
@@ -144,14 +145,14 @@ public final class CommandFlag extends CommandExec {
 
         if (stSubList.length() > 0) {
             stList.append(stSubList).append(Config.NEWLINE);
-            precDL.add(land);
+            precDL.add(landPermissionsFlags);
         }
     }
 
     private boolean flagInList(Flag flag) {
 
-        for (Land listLand : precDL) {
-            for (Flag listFlag : listLand.getPermissionsFlags().getFlags()) {
+        for (LandPermissionsFlags listLandPermissionsFlags : precDL) {
+            for (Flag listFlag : listLandPermissionsFlags.getFlags()) {
                 if (flag.getFlagType() == listFlag.getFlagType()) {
                     return true;
                 }

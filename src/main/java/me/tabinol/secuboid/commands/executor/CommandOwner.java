@@ -69,9 +69,9 @@ public final class CommandOwner extends CommandPlayerThreadExec {
 
         convertPcIfNeeded(playerCacheEntry);
 
-        land.setOwner(pc);
+        landSelectNullable.setOwner(pc);
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), land.getName()));
+                + secuboid.getLanguage().getMessage("COMMAND.OWNER.ISDONE", pc.getPrint(), landSelectNullable.getName()));
 
         // Cancel the selection
         new CommandCancel(secuboid, null, sender, argList).commandExecute();

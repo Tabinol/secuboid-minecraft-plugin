@@ -109,7 +109,7 @@ public final class CommandInv extends CommandExec {
                     + invSpec.getInventoryName() + "/" + InventoryStorage.DEFAULT_INV + ".yml";
             final boolean isFileRemoved = new File(fileName).delete();
             if (!isFileRemoved) {
-                secuboid.getLog().severe("Unable to remove this file: " + fileName);
+                secuboid.getLogger().severe("Unable to remove this file: " + fileName);
             }
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));

@@ -22,7 +22,7 @@ import java.util.Calendar;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.types.Type;
@@ -68,7 +68,7 @@ public class Approve {
     /**
      * The parent.
      */
-    private final RealLand parent;
+    private final Land parent;
 
     /**
      * The price.
@@ -95,7 +95,7 @@ public class Approve {
      * @param dateTime      the date time
      */
     public Approve(Secuboid secuboid, String landName, Type type, LandAction action, int removedAreaId,
-                   Area newArea, PlayerContainer owner, RealLand parent, double price,
+                   Area newArea, PlayerContainer owner, Land parent, double price,
                    Calendar dateTime) {
 
         this.secuboid = secuboid;
@@ -169,7 +169,7 @@ public class Approve {
      *
      * @return the parent
      */
-    public RealLand getParent() {
+    public Land getParent() {
         return parent;
     }
 

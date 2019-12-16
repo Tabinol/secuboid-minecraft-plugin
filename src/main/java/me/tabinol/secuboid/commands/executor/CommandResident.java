@@ -67,7 +67,7 @@ public final class CommandResident extends CommandPlayerThreadExec {
         checkPermission(true, true, PermissionList.RESIDENT_MANAGER.getPermissionType(), null);
 
         // Double check: The player must be resident, owner or adminmode
-        if (!playerConf.isAdminMode() && !land.isResident(player) && !land.isOwner(player)) {
+        if (!playerConf.isAdminMode() && !landSelectNullable.isResident(player) && !landSelectNullable.isOwner(player)) {
             throw new SecuboidCommandException(secuboid, "No permission to do this action", player,
                     "GENERAL.MISSINGPERMISSION");
         }
@@ -88,8 +88,8 @@ public final class CommandResident extends CommandPlayerThreadExec {
         } else if (fonction.equalsIgnoreCase("list")) {
 
             StringBuilder stList = new StringBuilder();
-            if (!land.getResidents().isEmpty()) {
-                for (PlayerContainer pc : land.getResidents()) {
+            if (!landSelectNullable.getResidents().isEmpty()) {
+                for (PlayerContainer pc : landSelectNullable.getResidents()) {
                     if (stList.length() != 0) {
                         stList.append(" ");
                     }
@@ -100,7 +100,7 @@ public final class CommandResident extends CommandPlayerThreadExec {
                 player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
                         + secuboid.getLanguage().getMessage("COMMAND.RESIDENT.LISTROWNULL"));
             }
-            new ChatPage(secuboid, "COMMAND.RESIDENT.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.RESIDENT.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
 
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
@@ -114,17 +114,17 @@ public final class CommandResident extends CommandPlayerThreadExec {
 
         if (fonction.equalsIgnoreCase("add")) {
 
-            land.addResident(pc);
+            landSelectNullable.addResident(pc);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.RESIDENT.ISDONE", pc.getPrint(), land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.RESIDENT.ISDONE", pc.getPrint(), landSelectNullable.getName()));
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
-            if (!land.removeResident(pc)) {
+            if (!landSelectNullable.removeResident(pc)) {
                 throw new SecuboidCommandException(secuboid, "Resident", player, "COMMAND.RESIDENT.REMOVENOTEXIST");
             }
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                    .getMessage("COMMAND.RESIDENT.REMOVEISDONE", pc.getPrint(), land.getName()));
+                    .getMessage("COMMAND.RESIDENT.REMOVEISDONE", pc.getPrint(), landSelectNullable.getName()));
         }
     }
 }

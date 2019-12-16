@@ -21,10 +21,10 @@ package me.tabinol.secuboid.storage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
@@ -55,12 +55,12 @@ public class StorageThread extends Thread {
     /**
      * The land save list request.
      */
-    private final List<Object> saveList;
+    private final List<Land> saveList;
 
     /**
-     * The land save list request.
+     * The land delete list request.
      */
-    private final List<Object> removeList;
+    private final List<Land> removeList;
 
     /**
      * The lock.
@@ -78,25 +78,16 @@ public class StorageThread extends Thread {
     private final Condition notSaved = lock.newCondition();
 
     /**
-     * Class internally used to store landName et LandGenealogy in a list
-     */
-    private class NameGenealogy {
-
-        UUID landUUID;
-        int landGenealogy;
-    }
-
-    /**
      * Instantiates a new storage thread.
      *
      * @param secuboid secuboid instance
      */
-    public StorageThread(Secuboid secuboid) {
+    public StorageThread(final Secuboid secuboid) {
         this.secuboid = secuboid;
         this.setName("Secuboid Storage");
         storage = new StorageFlat(secuboid);
-        saveList = Collections.synchronizedList(new ArrayList<Object>());
-        removeList = Collections.synchronizedList(new ArrayList<Object>());
+        saveList = Collections.synchronizedList(new ArrayList<>());
+        removeList = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -129,26 +120,35 @@ public class StorageThread extends Thread {
                 // Save Lands or Factions
                 while (!saveList.isEmpty()) {
 
-                    Object saveEntry = saveList.remove(0);
-                    storage.saveLand((Land) saveEntry);
+                    final Land saveEntry = saveList.remove(0);
+                    try {
+                        storage.saveLand(saveEntry);
+                    } catch (final Exception e) {
+                        secuboid.getLogger().log(Level.SEVERE,
+                                String.format("Unable to save land \"%s\" on disk, UUID \"%s\". Possible data loss!",
+                                        saveEntry.getName(), saveEntry.getUUID()),
+                                e);
+                    }
                 }
 
                 // Remove Lands or Factions
                 while (!removeList.isEmpty()) {
 
-                    Object removeEntry = removeList.remove(0);
-                    if (removeEntry instanceof Land) {
-                        storage.removeLand((Land) removeEntry);
-                    } else if (removeEntry instanceof NameGenealogy) {
-                        storage.removeLand(((NameGenealogy) removeEntry).landUUID,
-                                ((NameGenealogy) removeEntry).landGenealogy);
+                    final Land removeEntry = removeList.remove(0);
+                    try {
+                        storage.removeLand(removeEntry);
+                    } catch (final Exception e) {
+                        secuboid.getLogger().log(Level.SEVERE,
+                                String.format("Unable to delete land \"%s\" on disk, UUID \"%s\". Possible data loss!",
+                                        removeEntry.getName(), removeEntry.getUUID()),
+                                e);
                     }
                 }
 
                 // wait!
                 try {
                     commandRequest.await();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -172,7 +172,7 @@ public class StorageThread extends Thread {
         commandRequest.signal();
         try {
             notSaved.await();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
@@ -184,7 +184,7 @@ public class StorageThread extends Thread {
      *
      * @param land the land
      */
-    public void saveLand(Land land) {
+    public void saveLand(final Land land) {
         if (!inLoad) {
             saveList.add(land);
             wakeUp();
@@ -196,7 +196,7 @@ public class StorageThread extends Thread {
      *
      * @param land the land
      */
-    public void removeLand(Land land) {
+    public void removeLand(final Land land) {
         removeList.add(land);
         wakeUp();
     }

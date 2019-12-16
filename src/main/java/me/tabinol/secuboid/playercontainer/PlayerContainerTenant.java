@@ -41,12 +41,12 @@ public final class PlayerContainerTenant implements PlayerContainer {
 
         boolean value = pcLandNullable.isTenant(player);
         Land actual = pcLandNullable;
-        Land parent;
+        Land parentNullable;
 
-        while (!value && (parent = actual.getParent()) != null && actual.getPermissionsFlags()
+        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
                 .getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean()) {
-            value = parent.isTenant(player);
-            actual = parent;
+            value = parentNullable.isTenant(player);
+            actual = parentNullable;
         }
 
         return value;

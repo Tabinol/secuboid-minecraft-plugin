@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
@@ -68,7 +69,8 @@ public class StorageFlat implements Storage {
     private String landsDir;
 
     /**
-     * Represents lands with non resolved parents. In a second loop, we will try to resolve.
+     * Represents lands with non resolved parents. In a second loop, we will try to
+     * resolve.
      */
     private Map<Land, UUID> orphans;
 
@@ -120,16 +122,6 @@ public class StorageFlat implements Storage {
         return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
     }
 
-    /**
-     * Gets the land file.
-     *
-     * @param landUUID the land uuid
-     * @return the land file
-     */
-    private File getLandFile(UUID landUUID) {
-        return new File(landsDir + "/" + landUUID + EXT_CONF);
-    }
-
     @Override
     public void loadLands() {
 
@@ -160,10 +152,16 @@ public class StorageFlat implements Storage {
             Land land = entry.getKey();
             Land parent = secuboid.getLands().getLand(entry.getValue());
             if (parent != null) {
+                if (parent.isDescendants(land)) {
+                    secuboid.getLogger().log(Level.SEVERE,
+                            () -> String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUuid=%s]",
+                                    land.getName(), land.getUUID(), entry.getValue()));
+                    continue;
+                }
                 land.setParent(parent);
             } else {
-                secuboid.getLogger().severe("Error: The parent is not found! [name=" + land.getName() 
-                    + ", uuid=" + land.getUUID() + ", parentUuid=" + entry.getValue() + "]");
+                secuboid.getLogger().severe("Error: The parent is not found! [name=" + land.getName() + ", uuid="
+                        + land.getUUID() + ", parentUuid=" + entry.getValue() + "]");
             }
         }
         secuboid.getLogger().info(loadedlands + " land(s) loaded.");
@@ -189,8 +187,7 @@ public class StorageFlat implements Storage {
         String parentUUID;
         Set<PlayerContainer> residents = new TreeSet<PlayerContainer>();
         Set<PlayerContainer> banneds = new TreeSet<PlayerContainer>();
-        Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions
-                = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
+        Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions = new TreeMap<PlayerContainer, TreeMap<PermissionType, Permission>>();
         Set<Flag> flags = new HashSet<Flag>();
         short priority;
         double money;
@@ -237,24 +234,25 @@ public class StorageFlat implements Storage {
                 areas.put(Integer.parseInt(multiStr[0]), AreaUtil.getFromFileFormat(multiStr[1]));
             }
             if (areas.isEmpty()) {
-                throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "No areas in the list.");
+                throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(),
+                        "No areas in the list.");
             }
 
             cf.readParam();
 
-            //Residents
+            // Residents
             while ((str = cf.getNextString()) != null) {
                 residents.add(newInstance.getPlayerContainerFromFileFormat(str));
             }
             cf.readParam();
 
-            //Banneds
+            // Banneds
             while ((str = cf.getNextString()) != null) {
                 banneds.add(newInstance.getPlayerContainerFromFileFormat(str));
             }
             cf.readParam();
 
-            //Create permissions
+            // Create permissions
             while ((str = cf.getNextString()) != null) {
                 String[] multiStr = str.split(":");
                 TreeMap<PermissionType, Permission> permPlayer;
@@ -271,21 +269,21 @@ public class StorageFlat implements Storage {
             }
             cf.readParam();
 
-            //Create flags
+            // Create flags
             while ((str = cf.getNextString()) != null) {
                 flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
             }
             cf.readParam();
 
-            //Set Priority
+            // Set Priority
             priority = cf.getValueShort();
             cf.readParam();
 
-            //Money
+            // Money
             money = cf.getValueDouble();
             cf.readParam();
 
-            //Players Notify
+            // Players Notify
             while ((str = cf.getNextString()) != null) {
                 pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
             }
@@ -325,8 +323,7 @@ public class StorageFlat implements Storage {
             // Catch errors here
         } catch (NullPointerException ex) {
             try {
-                throw new FileLoadException(secuboid, file.getName(),
-                        cf != null ? cf.getLine() : "-NOT FOUND-",
+                throw new FileLoadException(secuboid, file.getName(), cf != null ? cf.getLine() : "-NOT FOUND-",
                         cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
             } catch (FileLoadException ex2) {
                 // Catch load
@@ -341,8 +338,8 @@ public class StorageFlat implements Storage {
         for (Map.Entry<Integer, Area> entry : areas.entrySet()) {
             if (!isLandCreated) {
                 try {
-                    land = secuboid.getLands().createLand(landName, owner, entry.getValue(),
-                            null, entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
+                    land = secuboid.getLands().createLand(landName, owner, entry.getValue(), null, entry.getKey(), uuid,
+                            secuboid.getTypes().addOrGetType(type));
                     if (parentUUID != null) {
                         orphans.put(land, UUID.fromString(parentUUID));
                     }
@@ -412,35 +409,35 @@ public class StorageFlat implements Storage {
             cb.writeParam("Type", land.getType() != null ? land.getType().getName() : null);
             cb.writeParam("Owner", land.getOwner().toFileFormat());
 
-            //Parent
+            // Parent
             if (land.getParent() == null) {
                 cb.writeParam("Parent", (String) null);
             } else {
                 cb.writeParam("Parent", land.getParent().getUUID().toString());
             }
 
-            //CuboidAreas
+            // CuboidAreas
             strs = new ArrayList<String>();
             for (int index : land.getAreasKey()) {
                 strs.add(index + ":" + land.getArea(index).toFileFormat());
             }
             cb.writeParam("CuboidAreas", strs.toArray(new String[strs.size()]));
 
-            //Residents
+            // Residents
             strs = new ArrayList<String>();
             for (PlayerContainer pc : land.getResidents()) {
                 strs.add(pc.toFileFormat());
             }
             cb.writeParam("Residents", strs.toArray(new String[strs.size()]));
 
-            //Banneds
+            // Banneds
             strs = new ArrayList<String>();
             for (PlayerContainer pc : land.getBanneds()) {
                 strs.add(pc.toFileFormat());
             }
             cb.writeParam("Banneds", strs.toArray(new String[strs.size()]));
 
-            //Permissions
+            // Permissions
             strs = new ArrayList<String>();
             for (PlayerContainer pc : land.getPermissionsFlags().getSetPCHavePermission()) {
                 for (Permission perm : land.getPermissionsFlags().getPermissionsForPC(pc)) {
@@ -449,7 +446,7 @@ public class StorageFlat implements Storage {
             }
             cb.writeParam("Permissions", strs.toArray(new String[strs.size()]));
 
-            //Flags
+            // Flags
             strs = new ArrayList<String>();
             for (Flag flag : land.getPermissionsFlags().getFlags()) {
                 strs.add(flag.toFileFormat());
@@ -498,13 +495,6 @@ public class StorageFlat implements Storage {
     public void removeLand(Land land) {
         if (!getLandFile(land).delete()) {
             secuboid.getLogger().severe("Enable to delete the land " + land.getName());
-        }
-    }
-
-    @Override
-    public void removeLand(UUID landUUID, int landGenealogy) {
-        if (!getLandFile(landUUID).delete()) {
-            secuboid.getLogger().severe("Enable to delete the land " + landUUID);
         }
     }
 }

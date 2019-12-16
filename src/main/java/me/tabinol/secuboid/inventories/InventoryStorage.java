@@ -36,12 +36,12 @@ import org.bukkit.potion.PotionEffectType;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.InventoryConfig;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * The inventory storage class.
  */
-public class InventoryStorage {
+public final class InventoryStorage {
 
     public final static String INV_DIR = "inventories";
     public final static String DEFAULT_INV = "DEFAULTINV";
@@ -56,18 +56,14 @@ public class InventoryStorage {
      * Player Join, Quit, Change
      */
     public enum PlayerAction {
-        JOIN,
-        QUIT,
-        CHANGE,
-        DEATH
+        JOIN, QUIT, CHANGE, DEATH
     }
 
     /**
      * Get a name of Game Mode Inventory type
      */
     private enum InventoryType {
-        CREATIVE,
-        SURVIVAL;
+        CREATIVE, SURVIVAL;
 
         public static InventoryType getFromBoolean(boolean isCreative) {
             if (isCreative) {
@@ -90,8 +86,8 @@ public class InventoryStorage {
         playerInvList = new HashMap<Player, PlayerInvEntry>();
     }
 
-    public void saveInventory(Player player, String invName, boolean isCreative,
-                              boolean isDeath, boolean isSaveAllowed, boolean isDefaultInv, boolean enderChestOnly) {
+    public void saveInventory(Player player, String invName, boolean isCreative, boolean isDeath, boolean isSaveAllowed,
+            boolean isDefaultInv, boolean enderChestOnly) {
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
         if (!isSaveAllowed) {
@@ -105,37 +101,38 @@ public class InventoryStorage {
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
         file = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
         if (!file.exists()) {
             if (!file.mkdir()) {
-                secuboid.getLog().severe("Impossible to create the directory " + file.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to create the directory " + file.getPath() + ".");
             }
         }
 
         // Get the suffix name
-        String gmName = InventoryType.getFromBoolean(isCreative).name();
+        final String gmName = InventoryType.getFromBoolean(isCreative).name();
 
         if (isDeath) {
 
             filePreName = player.getUniqueId().toString() + "." + gmName + "." + DEATH + ".1";
 
             // Death rename
-            File actFile = new File(file, "/" + player.getUniqueId().toString() + "." + gmName + "." + DEATH + ".9.yml");
+            File actFile = new File(file,
+                    "/" + player.getUniqueId().toString() + "." + gmName + "." + DEATH + ".9.yml");
             if (actFile.exists()) {
                 if (!actFile.delete()) {
-                    secuboid.getLog().severe("Impossible to delete the file " + actFile.getPath() + ".");
+                    secuboid.getLogger().severe("Impossible to delete the file " + actFile.getPath() + ".");
                 }
             }
             for (int t = 8; t >= 1; t--) {
-                actFile = new File(file, "/"
-                        + player.getUniqueId().toString() + "." + gmName + "." + DEATH + "." + t + ".yml");
+                actFile = new File(file,
+                        "/" + player.getUniqueId().toString() + "." + gmName + "." + DEATH + "." + t + ".yml");
                 if (actFile.exists()) {
-                    if (!actFile.renameTo(new File(file, "/"
-                            + player.getUniqueId().toString() + "." + gmName + "." + DEATH + "." + (t + 1) + ".yml"))) {
-                        secuboid.getLog().severe("Impossible to rename the file " + actFile.getPath() + ".");
+                    if (!actFile.renameTo(new File(file, "/" + player.getUniqueId().toString() + "." + gmName + "."
+                            + DEATH + "." + (t + 1) + ".yml"))) {
+                        secuboid.getLogger().severe("Impossible to rename the file " + actFile.getPath() + ".");
                     }
                 }
             }
@@ -152,8 +149,8 @@ public class InventoryStorage {
         }
 
         // Save Inventory
-        YamlConfiguration configPlayerItemFile = new YamlConfiguration();
-        File playerItemFile = new File(file, "/" + filePreName + ".yml");
+        final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
+        final File playerItemFile = new File(file, "/" + filePreName + ".yml");
 
         try {
 
@@ -210,7 +207,8 @@ public class InventoryStorage {
             configPlayerItemFile.save(playerItemFile);
 
         } catch (IOException ex) {
-            secuboid.getLog().severe("Error on inventory save for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+            secuboid.getLogger().severe("Error on inventory save for player " + player.getName() + ", filename: "
+                    + playerItemFile.getPath());
         }
     }
 
@@ -224,8 +222,8 @@ public class InventoryStorage {
      * @param deathVersion the death version
      * @return true is the inventory exist
      */
-    public boolean loadInventory(Player player, String invName,
-                                 boolean isCreative, boolean fromDeath, int deathVersion) {
+    public boolean loadInventory(Player player, String invName, boolean isCreative, boolean fromDeath,
+            int deathVersion) {
 
         boolean invExist = false;
         String suffixName;
@@ -241,14 +239,14 @@ public class InventoryStorage {
         YamlConfiguration ConfigPlayerItemFile = new YamlConfiguration();
 
         // player item file
-        File playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/"
-                + invName + "/" + player.getUniqueId().toString() + "." + suffixName + ".yml");
+        File playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName + "/"
+                + player.getUniqueId().toString() + "." + suffixName + ".yml");
 
         if (!fromDeath && !playerItemFile.exists()) {
 
             // Check for default inventory file
-            playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/"
-                    + invName + "/" + DEFAULT_INV + ".yml");
+            playerItemFile = new File(
+                    secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName + "/" + DEFAULT_INV + ".yml");
         }
 
         if (playerItemFile.exists()) {
@@ -268,7 +266,7 @@ public class InventoryStorage {
                 player.setExp((float) ConfigPlayerItemFile.getDouble("Exp"));
 
                 if (!fromDeath) {
-                    double healt = ConfigPlayerItemFile.getDouble("Health");
+                    final double healt = ConfigPlayerItemFile.getDouble("Health");
                     if (healt > 0) {
                         player.setHealth(healt);
                         player.setFoodLevel(ConfigPlayerItemFile.getInt("FoodLevel"));
@@ -289,7 +287,8 @@ public class InventoryStorage {
                     itemArmorLoad[t] = ConfigPlayerItemFile.getItemStack("Armor." + t, new ItemStack(Material.AIR));
                 }
                 for (int t = 0; t < itemEnderChest.length; t++) {
-                    itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t, new ItemStack(Material.AIR));
+                    itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t,
+                            new ItemStack(Material.AIR));
                 }
                 ItemStack itemOffhand = ConfigPlayerItemFile.getItemStack("OffHand.0", new ItemStack(Material.AIR));
 
@@ -304,19 +303,21 @@ public class InventoryStorage {
                 if (effectSection != null) {
                     for (Map.Entry<String, Object> effectEntry : effectSection.getValues(false).entrySet()) {
 
-                        PotionEffectType type = PotionEffectType.getByName(effectEntry.getKey());
-                        ConfigurationSection effectSubSection = (ConfigurationSection) effectEntry.getValue();
-                        int duration = effectSubSection.getInt("Duration");
-                        int amplifier = effectSubSection.getInt("Amplifier");
-                        boolean ambient = effectSubSection.getBoolean("Ambient");
+                        final PotionEffectType type = PotionEffectType.getByName(effectEntry.getKey());
+                        final ConfigurationSection effectSubSection = (ConfigurationSection) effectEntry.getValue();
+                        final int duration = effectSubSection.getInt("Duration");
+                        final int amplifier = effectSubSection.getInt("Amplifier");
+                        final boolean ambient = effectSubSection.getBoolean("Ambient");
                         player.addPotionEffect(new PotionEffect(type, duration, amplifier, ambient), true);
                     }
                 }
 
             } catch (IOException ex) {
-                secuboid.getLog().severe("Error on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+                secuboid.getLogger().severe("Error on inventory load for player " + player.getName() + ", filename: "
+                        + playerItemFile.getPath());
             } catch (InvalidConfigurationException ex) {
-                secuboid.getLog().severe("Invalid configuration on inventory load for player " + player.getName() + ", filename: " + playerItemFile.getPath());
+                secuboid.getLogger().severe("Invalid configuration on inventory load for player " + player.getName()
+                        + ", filename: " + playerItemFile.getPath());
             }
         } else if (!fromDeath) {
 
@@ -344,7 +345,8 @@ public class InventoryStorage {
         }
     }
 
-    public void switchInventory(Player player, Land land, boolean toIsCreative, PlayerAction playerAction) {
+    public void switchInventory(Player player, LandPermissionsFlags landPermissionsFlags, boolean toIsCreative,
+            PlayerAction playerAction) {
 
         PlayerInvEntry invEntry = null;
         boolean fromIsCreative = false;
@@ -363,7 +365,7 @@ public class InventoryStorage {
         }
 
         // Get new inventory
-        toInv = secuboid.getInventoryConf().getInvSpec(land);
+        toInv = secuboid.getInventoryConf().getInvSpec(landPermissionsFlags);
 
         // check if we have to do this action
         if (player.hasPermission(InventoryConfig.PERM_IGNORE_INV)) {
@@ -375,8 +377,7 @@ public class InventoryStorage {
                 || (fromInv != null && !fromInv.isCreativeChange())) {
             fromIsCreative = false;
         }
-        if (player.hasPermission(InventoryConfig.PERM_IGNORE_CREATIVE_INV)
-                || !toInv.isCreativeChange()) {
+        if (player.hasPermission(InventoryConfig.PERM_IGNORE_CREATIVE_INV) || !toInv.isCreativeChange()) {
             toIsCreative = false;
         }
 
@@ -386,22 +387,21 @@ public class InventoryStorage {
         }
 
         // Return if the inventory will be exacly the same
-        if (playerAction != PlayerAction.DEATH && playerAction != PlayerAction.QUIT
-                && (fromInv != null && fromInv.getInventoryName().equals(toInv.getInventoryName())
-                && fromIsCreative == toIsCreative)) {
+        if (playerAction != PlayerAction.DEATH && playerAction != PlayerAction.QUIT && (fromInv != null
+                && fromInv.getInventoryName().equals(toInv.getInventoryName()) && fromIsCreative == toIsCreative)) {
             return;
         }
 
         // If the player is death, save a renamed file
         if (playerAction == PlayerAction.DEATH && fromInv != null) {
-            saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
-                    true, fromInv.isSaveInventory(), false, false);
+            saveInventory(player, fromInv.getInventoryName(), fromIsCreative, true, fromInv.isSaveInventory(), false,
+                    false);
         }
 
         // Save last inventory (only EnderChest if death)
         if (playerAction != PlayerAction.JOIN && fromInv != null) {
-            saveInventory(player, fromInv.getInventoryName(), fromIsCreative,
-                    false, fromInv.isSaveInventory(), false, playerAction == PlayerAction.DEATH);
+            saveInventory(player, fromInv.getInventoryName(), fromIsCreative, false, fromInv.isSaveInventory(), false,
+                    playerAction == PlayerAction.DEATH);
         }
 
         // Don't load a new inventory if the player quit

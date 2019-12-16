@@ -82,13 +82,13 @@ public final class CommandInfo extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        land = null;
+        landSelectNullable = null;
 
         // Get the land name from arg
         if (argList != null && !argList.isLast()) {
-            land = secuboid.getLands().getLand(argList.getNext());
+            landSelectNullable = secuboid.getLands().getLand(argList.getNext());
 
-            if (land == null) {
+            if (landSelectNullable == null) {
                 throw new SecuboidCommandException(secuboid, "CommandInfo", player, "COMMAND.INFO.NOTEXIST");
             }
 
@@ -97,49 +97,49 @@ public final class CommandInfo extends CommandExec {
         }
 
         // get the Land from area
-        if (land == null && area != null) {
-            land = area.getLand();
+        if (landSelectNullable == null && area != null) {
+            landSelectNullable = area.getLand();
         }
 
         // Show the land
-        if (land != null) {
+        if (landSelectNullable != null) {
             // Create list
             StringBuilder stList = new StringBuilder();
             stList.append(ChatColor.YELLOW)
                     .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
-                            ChatColor.GREEN + land.getName() + ChatColor.YELLOW,
-                            ChatColor.GREEN + land.getUUID().toString() + ChatColor.YELLOW));
+                            ChatColor.GREEN + landSelectNullable.getName() + ChatColor.YELLOW,
+                            ChatColor.GREEN + landSelectNullable.getUUID().toString() + ChatColor.YELLOW));
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW)
-                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", land.getPriority() + ""));
-            if (land.isForSale()) {
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", landSelectNullable.getPriority() + ""));
+            if (landSelectNullable.isForSale()) {
                 stList.append(ChatColor.RED).append(" ")
                         .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORSALE"));
             }
-            if (land.isForRent() && !land.isRented()) {
+            if (landSelectNullable.isForRent() && !landSelectNullable.isRented()) {
                 stList.append(ChatColor.RED).append(" ")
                         .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.FORRENT"));
             }
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TYPE",
-                    land.getType() != null ? land.getType().getName() : "-null-"));
-            if (land.getParent() != null) {
+                    landSelectNullable.getType() != null ? landSelectNullable.getType().getName() : "-null-"));
+            if (landSelectNullable.getParent() != null) {
                 stList.append(ChatColor.YELLOW).append(
-                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", land.getParent().getName()));
+                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PARENT", landSelectNullable.getParent().getName()));
             }
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW)
-                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", land.getOwner().getPrint()));
-            if (land.isRented()) {
+                    .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.OWNER", landSelectNullable.getOwner().getPrint()));
+            if (landSelectNullable.isRented()) {
                 stList.append(ChatColor.YELLOW).append(
-                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", land.getTenant().getPrint()));
+                        secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.TENANT", landSelectNullable.getTenant().getPrint()));
             }
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW)
                     .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.MAINPERMISSION",
-                            getPermissionInColForPl(land, PermissionList.BUILD.getPermissionType()) + " "
-                                    + getPermissionInColForPl(land, PermissionList.USE.getPermissionType()) + " "
-                                    + getPermissionInColForPl(land, PermissionList.OPEN.getPermissionType())));
+                            getPermissionInColForPl(landSelectNullable, PermissionList.BUILD.getPermissionType()) + " "
+                                    + getPermissionInColForPl(landSelectNullable, PermissionList.USE.getPermissionType()) + " "
+                                    + getPermissionInColForPl(landSelectNullable, PermissionList.OPEN.getPermissionType())));
             stList.append(NEWLINE);
             if (area != null) {
                 stList.append(ChatColor.YELLOW).append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.ACTIVEAREA",
@@ -147,7 +147,7 @@ public final class CommandInfo extends CommandExec {
                 stList.append(NEWLINE);
             }
             // Create the multiple page
-            new ChatPage(secuboid, "COMMAND.INFO.LAND.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.INFO.LAND.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
 
         } else {
             player.sendMessage(

@@ -29,7 +29,10 @@ import java.util.Scanner;
 /**
  * The Class FileCopy.
  */
-public class FileCopy {
+public final class FileCopy {
+
+    private FileCopy() {
+    }
 
     /**
      * Copy text from jar.
@@ -39,17 +42,16 @@ public class FileCopy {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static void copyTextFromJav(InputStream in, File fileTo) throws IOException {
-
-        Scanner scan = new Scanner(in, "UTF8");
-        OutputStream out = new FileOutputStream(fileTo);
-        BufferedWriter outbw = new BufferedWriter(new OutputStreamWriter(out));
-
-        while (scan.hasNext()) {
-            outbw.write(scan.nextLine());
-            outbw.newLine();
+        final Scanner scan = new Scanner(in, "UTF8");
+        final OutputStream out = new FileOutputStream(fileTo);
+        try (final BufferedWriter outbw = new BufferedWriter(new OutputStreamWriter(out))) {
+            while (scan.hasNext()) {
+                outbw.write(scan.nextLine());
+                outbw.newLine();
+            }
+        } finally {
+            out.close();
+            scan.close();
         }
-
-        outbw.close();
-        scan.close();
     }
 }

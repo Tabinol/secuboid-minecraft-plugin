@@ -80,8 +80,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             Area area = playerConf.getSelection().getArea();
 
             // Check for collision
-            checkCollision(area.getWorldName(), land.getName(), land, null, LandAction.AREA_ADD, 0, area,
-                    land.getParent(), land.getOwner(), true);
+            checkCollision(area.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.AREA_ADD, 0, area,
+                    landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
 
         } else if (fonction.equalsIgnoreCase("remove") || fonction.equalsIgnoreCase("replace")) {
 
@@ -98,8 +98,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             }
 
             // set area to the only one if there is only one area
-            if (land.getAreas().size() == 1 && areaNbStr == null && areaNb == 0) {
-                areaNb = land.getAreas().iterator().next().getKey();
+            if (landSelectNullable.getAreas().size() == 1 && areaNbStr == null && areaNb == 0) {
+                areaNb = landSelectNullable.getAreas().iterator().next().getKey();
             }
 
             // 0 is same has not set
@@ -112,7 +112,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 } catch (NumberFormatException ex) {
                     throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
                 }
-                if (land.getArea(areaNb) == null) {
+                if (landSelectNullable.getArea(areaNb) == null) {
                     throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
                 }
             }
@@ -121,8 +121,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             if (fonction.equalsIgnoreCase("remove")) {
 
                 // Check for collision
-                checkCollision(land.getWorldName(), fonction, land, null, LandAction.AREA_REMOVE, areaNb, null,
-                        land.getParent(), land.getOwner(), true);
+                checkCollision(landSelectNullable.getWorldName(), fonction, landSelectNullable, null, LandAction.AREA_REMOVE, areaNb, null,
+                        landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
 
             } else {
 
@@ -132,19 +132,19 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 Area area = playerConf.getSelection().getArea();
 
                 // Check for collision
-                checkCollision(land.getWorldName(), land.getName(), land, null, LandAction.AREA_MODIFY, areaNb, area,
-                        land.getParent(), land.getOwner(), true);
+                checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.AREA_MODIFY, areaNb, area,
+                        landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
             }
 
         } else if (fonction.equalsIgnoreCase("list")) {
 
             checkSelections(true, null);
             StringBuilder stList = new StringBuilder();
-            for (Map.Entry<Integer, Area> entry : land.getIdsAndAreas().entrySet()) {
+            for (Map.Entry<Integer, Area> entry : landSelectNullable.getIdsAndAreas().entrySet()) {
                 stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint())
                         .append(Config.NEWLINE);
             }
-            new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, landSelectNullable.getName()).getPage(1);
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
         }
@@ -160,29 +160,29 @@ public final class CommandArea extends CommandCollisionsThreadExec {
         if (fonction.equalsIgnoreCase("add")) {
 
             // Add Area
-            land.addArea(newArea, collisions.getPrice());
+            landSelectNullable.addArea(newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", landSelectNullable.getName()));
             new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         } else if (fonction.equalsIgnoreCase("remove")) {
 
             // Check if exist
-            if (land.getArea(removeId) == null) {
+            if (landSelectNullable.getArea(removeId) == null) {
                 throw new SecuboidCommandException(secuboid, "Area", sender, "COMMAND.REMOVE.AREA.INVALID");
             }
 
-            playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, land, removeId));
+            playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, landSelectNullable, removeId));
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
 
         } else if (fonction.equalsIgnoreCase("replace")) {
 
             // Replace Area
-            land.replaceArea(removeId, newArea, collisions.getPrice());
+            landSelectNullable.replaceArea(removeId, newArea, collisions.getPrice());
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.CREATE.AREA.ISDONE", landSelectNullable.getName()));
             new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         }

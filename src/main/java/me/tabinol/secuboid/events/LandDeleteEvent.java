@@ -18,14 +18,15 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+
+import me.tabinol.secuboid.lands.Land;
 
 /**
  * The Class LandDeleteEvent. This events is called when a land is deleted.
  */
-public class LandDeleteEvent extends LandEvent implements Cancellable {
+public class LandDeleteEvent extends LandInsideEvent implements Cancellable {
 
     /**
      * The Constant handlers.
@@ -42,7 +43,7 @@ public class LandDeleteEvent extends LandEvent implements Cancellable {
      *
      * @param deletedLand the deleted land
      */
-    public LandDeleteEvent(final RealLand deletedLand) {
+    public LandDeleteEvent(final Land deletedLand) {
         super(deletedLand);
     }
 

@@ -53,8 +53,8 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
         checkPermission(true, true, null, null);
 
         // Check for collision
-        checkCollision(land.getWorldName(), land.getName(), land, null, Collisions.LandAction.LAND_REMOVE,
-                0, null, land.getParent(), land.getOwner(), true);
+        checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, Collisions.LandAction.LAND_REMOVE,
+                0, null, landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
     }
 
     @Override
@@ -66,7 +66,7 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
         }
 
         new CommandCancel(secuboid, null, sender, argList).commandExecute();
-        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, land, 0));
+        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, landSelectNullable, 0));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

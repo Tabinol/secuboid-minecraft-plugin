@@ -74,9 +74,9 @@ public final class CommandType extends CommandExec {
 
         } else if (curArg.equals("remove")) {
 
-            land.setType(null);
+            landSelectNullable.setType(null);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.REMOVEISDONE", landSelectNullable.getName()));
 
         } else { // Type change
 
@@ -86,9 +86,9 @@ public final class CommandType extends CommandExec {
                 throw new SecuboidCommandException(secuboid, "Land Types", player, "COMMAND.TYPES.INVALID");
             }
 
-            land.setType(type);
+            landSelectNullable.setType(type);
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.TYPES.ISDONE", type.getName(), landSelectNullable.getName()));
         }
     }
 }

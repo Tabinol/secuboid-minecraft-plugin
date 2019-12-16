@@ -52,7 +52,7 @@ class PlayerAutoCancelSelect extends SecuboidRunnable {
         try {
             new CommandCancel(secuboid, null, entry.getSender(), null).commandExecute();
         } catch (SecuboidCommandException ex) {
-            secuboid.getLog().severe("Can not cancel the command:" + ex.getLocalizedMessage());
+            secuboid.getLogger().severe("Can not cancel the command:" + ex.getLocalizedMessage());
         }
     }
 }

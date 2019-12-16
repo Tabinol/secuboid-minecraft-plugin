@@ -63,15 +63,15 @@ public final class CommandWho extends CommandExec {
 
         // Create list
         StringBuilder stList = new StringBuilder();
-        for (Player playerListed : land.getPlayersInLandNoVanish(player)) {
+        for (Player playerListed : landSelectNullable.getPlayersInLandNoVanish(player)) {
             stList.append(playerListed.getDisplayName()).append(Config.NEWLINE);
         }
 
         if (stList.length() != 0) {
-            new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, land.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.WHO.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
         } else {
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                    + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", land.getName()));
+                    + secuboid.getLanguage().getMessage("COMMAND.WHO.LISTNULL", landSelectNullable.getName()));
         }
     }
 }

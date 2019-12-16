@@ -18,15 +18,15 @@
  */
 package me.tabinol.secuboid.events;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * The Class LandEvent. Just for inheritance
  */
-public class LandEvent extends Event {
+public abstract class LandEvent extends Event {
 
     /**
      * The Constant handlers.
@@ -34,29 +34,17 @@ public class LandEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     /**
-     * The dummy land.
+     * The permissions land permissions flags (or world).
      */
-    private final Land dummyLand;
-
-    /**
-     * The land.
-     */
-    private final RealLand land;
+    private final LandPermissionsFlags landPermissionsFlags;
 
     /**
      * Instantiates a new land events.
      *
-     * @param dummyLand the dummy land
+     * @param landPermissionsFlags the land or world permissions flags
      */
-    public LandEvent(Land dummyLand) {
-
-        this.dummyLand = dummyLand;
-
-        if (dummyLand.getLandType() == Land.LandType.REAL) {
-            land = (RealLand) dummyLand;
-        } else {
-            land = null;
-        }
+    public LandEvent(LandPermissionsFlags landPermissionsFlags) {
+        this.landPermissionsFlags = landPermissionsFlags;
     }
 
     @Override
@@ -74,20 +62,12 @@ public class LandEvent extends Event {
     }
 
     /**
-     * Gets the land.
+     * Gets the land or outside area permissions flags.
      *
-     * @return the land or null if the events is outside a land
+     * @return the land or a "Dummy Land Word" permissions flags if the events is
+     *         outside a land
      */
-    public RealLand getLand() {
-        return land;
-    }
-
-    /**
-     * Gets the land or outside area.
-     *
-     * @return the land or a "Dummy Land Word" if the events is outside a land
-     */
-    public Land getLandOrOutside() {
-        return dummyLand;
+    public LandPermissionsFlags getLandPermissionsFlags() {
+        return landPermissionsFlags;
     }
 }

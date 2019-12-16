@@ -18,18 +18,21 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * Represents every players.
  *
  * @author tabinol
  */
-public class PlayerContainerEverybody implements PlayerContainer {
+public final class PlayerContainerEverybody implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
+    public boolean hasAccess(final Player player, final Land pcLandNullable,
+            final LandPermissionsFlags testLandPermissionsFlags) {
         return true;
     }
 
@@ -44,7 +47,7 @@ public class PlayerContainerEverybody implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
+    public int compareTo(final PlayerContainer t) {
         return PlayerContainerType.EVERYBODY.compareTo(t.getContainerType());
     }
 

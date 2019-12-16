@@ -91,7 +91,7 @@ public final class CommandMoney extends CommandExec {
 
         checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDBALANCE", land.getName(), playerMoney.toFormat(land.getMoney())));
+                .getMessage("COMMAND.ECONOMY.LANDBALANCE", landSelectNullable.getName(), playerMoney.toFormat(landSelectNullable.getMoney())));
     }
 
     /**
@@ -106,15 +106,15 @@ public final class CommandMoney extends CommandExec {
         double amount = getAmountFromCommandLine();
 
         // Amount is valid?
-        if (amount > playerMoney.getPlayerBalance(player.getPlayer(), land.getWorldName())) {
+        if (amount > playerMoney.getPlayerBalance(player.getPlayer(), landSelectNullable.getWorldName())) {
             throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
         }
 
         // Land Deposit
-        playerMoney.getFromPlayer(player.getPlayer(), land.getWorldName(), amount);
-        land.addMoney(amount);
+        playerMoney.getFromPlayer(player.getPlayer(), landSelectNullable.getWorldName(), amount);
+        landSelectNullable.addMoney(amount);
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDDEPOSIT", playerMoney.toFormat(land.getMoney()), land.getName()));
+                .getMessage("COMMAND.ECONOMY.LANDDEPOSIT", playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
     }
 
     /**
@@ -129,15 +129,15 @@ public final class CommandMoney extends CommandExec {
         double amount = getAmountFromCommandLine();
 
         // Amount is valid?
-        if (amount > land.getMoney()) {
+        if (amount > landSelectNullable.getMoney()) {
             throw new SecuboidCommandException(secuboid, "Invalid amount", player, "COMMAND.ECONOMY.INVALIDAMOUNT");
         }
 
         // Land Deposit
-        land.subtractMoney(amount);
-        playerMoney.giveToPlayer(player.getPlayer(), land.getWorldName(), amount);
+        landSelectNullable.subtractMoney(amount);
+        playerMoney.giveToPlayer(player.getPlayer(), landSelectNullable.getWorldName(), amount);
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDWITHDRAW", playerMoney.toFormat(land.getMoney()), land.getName()));
+                .getMessage("COMMAND.ECONOMY.LANDWITHDRAW", playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
     }
 
     /**

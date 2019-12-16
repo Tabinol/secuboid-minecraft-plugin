@@ -19,19 +19,22 @@
 package me.tabinol.secuboid.playercontainer;
 
 import java.util.UUID;
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
  * Represents a player.
  *
  * @author tabinol
  */
-public class PlayerContainerPlayer implements PlayerContainer {
+public final class PlayerContainerPlayer implements PlayerContainer {
 
 	private final Secuboid secuboid;
 	private final UUID minecraftUUID;
@@ -44,7 +47,7 @@ public class PlayerContainerPlayer implements PlayerContainer {
 	}
 
 	@Override
-	public boolean hasAccess(Player player, Land PCLand, Land testLand) {
+	public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
 		return player != null && minecraftUUID.equals(player.getUniqueId());
 	}
 

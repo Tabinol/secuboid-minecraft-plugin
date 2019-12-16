@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.parser.ParserException;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
@@ -146,7 +147,7 @@ public final class WorldConfig {
             final InputStream inputStream = new FileInputStream(new File(configFileFolder, fileName));
             loadDataYml(inputStream, fileType);
         } catch (final FileNotFoundException e) {
-            log.log(Level.SEVERE, String.format("Unable to load %s!", fileName));
+            log.log(Level.SEVERE, String.format("Unable to load %s!", fileName), e);
             return;
         }
     }
@@ -155,7 +156,13 @@ public final class WorldConfig {
     void loadDataYml(final InputStream inputStream, final FileType fileType) {
         final String fileName = fileType.fileName;
         final Yaml yaml = new Yaml();
-        final Object rootObj = yaml.load(inputStream);
+        final Object rootObj;
+        try {
+            rootObj = yaml.load(inputStream);
+        } catch (ParserException e) {
+            log.log(Level.SEVERE, String.format("Yaml error in %s", fileName), e);
+            return;
+        }
         if (!(rootObj instanceof Map)) {
             log.log(Level.SEVERE, () -> String.format("The file format is incorrect: %s", fileName));
             return;
@@ -168,7 +175,7 @@ public final class WorldConfig {
                 final ParameterType parameterType = getParameterTypeFromString(fileName, keyName);
 
                 // Check if the key is a list
-                if (!(valueObj instanceof List)) {
+                if (valueObj != null && !(valueObj instanceof List)) {
                     throw new WorldConfigException(
                             String.format("In file %s, key \"%s\" must be a list: - ...", fileName, keyName));
                 }
@@ -176,7 +183,7 @@ public final class WorldConfig {
                 // Load permissions and flags
                 loadFlagPerm(fileType, parameterType, keyName, (List<Object>) valueObj);
             } catch (final WorldConfigException ex) {
-                log.log(Level.SEVERE, ex.getMessage());
+                log.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -198,6 +205,10 @@ public final class WorldConfig {
     @SuppressWarnings("unchecked")
     private void loadFlagPerm(final FileType fileType, final ParameterType parameterType, final String rootKey,
             final List<Object> objects) {
+        if (objects == null || objects.isEmpty()) {
+            // Do not load anything if empty
+            return;
+        }
         for (final Object keyToValueObj : objects) {
             if (keyToValueObj instanceof Map) {
                 loadFlagPermFromKey(fileType, parameterType, rootKey, (Map<String, Object>) keyToValueObj);
@@ -412,7 +423,7 @@ public final class WorldConfig {
                 try {
                     loadPermission(fileType, flagPermValues, playerContainerName, permissionName);
                 } catch (final WorldConfigException e) {
-                    log.log(Level.SEVERE, e.getMessage());
+                    log.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }
@@ -490,7 +501,7 @@ public final class WorldConfig {
                     loadFlagWorldConfig(flagPermValues, flag);
                 }
             } catch (final WorldConfigException e) {
-                log.log(Level.SEVERE, e.getMessage());
+                log.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }

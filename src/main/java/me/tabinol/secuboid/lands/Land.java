@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -796,7 +797,7 @@ public final class Land {
      */
     public boolean isDescendants(final Land land) {
 
-        if (land == this) {
+        if (land.equals(this)) {
             return true;
         }
 
@@ -1275,5 +1276,21 @@ public final class Land {
     public void setType(final Type arg0) {
         type = arg0;
         doSave();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Land)) {
+            return false;
+        }
+        Land land = (Land) o;
+        return Objects.equals(uuid, land.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(uuid);
     }
 }

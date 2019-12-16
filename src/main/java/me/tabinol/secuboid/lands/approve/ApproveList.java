@@ -25,8 +25,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaUtil;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -34,15 +39,11 @@ import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * The Class ApproveList.
  */
-public class ApproveList {
+public final class ApproveList {
 
     private final Secuboid secuboid;
 
@@ -52,32 +53,29 @@ public class ApproveList {
     private final File approveFile;
 
     /**
-     * The approve config.
-     */
-    private FileConfiguration approveConfig;
-
-    /**
      * The land names.
      */
     private final TreeSet<String> landNames;
+
+    /**
+     * The approve config.
+     */
+    private FileConfiguration approveConfig;
 
     /**
      * Instantiates a new approve list.
      *
      * @param secuboid secuboid instance
      */
-    public ApproveList(Secuboid secuboid) {
+    public ApproveList(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
-        approveConfig = new YamlConfiguration();
-        landNames = new TreeSet<String>();
-        if (secuboid.getDataFolder() != null) {
-            approveFile = new File(secuboid.getDataFolder() + "/approvelist.yml");
-            loadFile();
-        } else {
-            // Unit tests
-            approveFile = null;
-        }
+        landNames = new TreeSet<>();
+        approveFile = new File(secuboid.getDataFolder() + "/approvelist.yml");
+    }
+
+    public void loadResources() {
+        loadFile();
     }
 
     /**
@@ -85,10 +83,10 @@ public class ApproveList {
      *
      * @param approve the approve
      */
-    public void addApprove(Approve approve) {
+    public void addApprove(final Approve approve) {
 
         landNames.add(approve.getLandName());
-        ConfigurationSection section = approveConfig.createSection(approve.getLandName());
+        final ConfigurationSection section = approveConfig.createSection(approve.getLandName());
         if (approve.getType() != null) {
             section.set("Type", approve.getType().getName());
         }
@@ -112,15 +110,15 @@ public class ApproveList {
      *
      * @return the approve list
      */
-    public TreeMap<String, Approve> getApproveList() {
+    public Map<String, Approve> getApproveList() {
 
-        TreeMap<String, Approve> approves = new TreeMap<String, Approve>();
-        TreeMap<String, Approve> approvesToRemove = new TreeMap<String, Approve>();
+        final TreeMap<String, Approve> approves = new TreeMap<>();
+        final TreeMap<String, Approve> approvesToRemove = new TreeMap<>();
 
         // Check if land names are ok
-        for (String landName : landNames) {
+        for (final String landName : landNames) {
 
-            Approve app = getApprove(landName);
+            final Approve app = getApprove(landName);
 
             if (app != null) {
 
@@ -134,7 +132,7 @@ public class ApproveList {
         }
 
         // Remove wrong approves
-        for (Map.Entry<String, Approve> appEntry : approvesToRemove.entrySet()) {
+        for (final Map.Entry<String, Approve> appEntry : approvesToRemove.entrySet()) {
 
             removeApprove(appEntry.getKey());
         }
@@ -148,7 +146,7 @@ public class ApproveList {
      * @param landName the land name
      * @return true, if is in approve
      */
-    public boolean isInApprove(String landName) {
+    public boolean isInApprove(final String landName) {
         return landNames.contains(landName.toLowerCase());
     }
 
@@ -158,23 +156,24 @@ public class ApproveList {
      * @param landName the land name
      * @return the approve
      */
-    public Approve getApprove(String landName) {
+    public Approve getApprove(final String landName) {
 
-        ConfigurationSection section = approveConfig.getConfigurationSection(landName);
+        final ConfigurationSection section = approveConfig.getConfigurationSection(landName);
 
         if (section == null) {
             return null;
         }
 
-        String typeName = section.getString("Type");
+        final String typeName = section.getString("Type");
         Type type = null;
         if (typeName != null) {
             type = secuboid.getTypes().addOrGetType(typeName);
         }
 
-        String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        PlayerContainer pc = secuboid.getNewInstance().createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
-        RealLand parent = null;
+        final String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
+        final PlayerContainer pc = secuboid.getNewInstance()
+                .createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        Land parent = null;
         Area newArea = null;
 
         if (section.contains("Parent")) {
@@ -190,19 +189,18 @@ public class ApproveList {
             newArea = AreaUtil.getFromFileFormat(section.getString("NewArea"));
         }
 
-        LandAction action = LandAction.valueOf(section.getString("Action"));
+        final LandAction action = LandAction.valueOf(section.getString("Action"));
 
         // If the land was deleted
         if (action != LandAction.LAND_ADD && secuboid.getLands().getLand(landName) == null) {
             return null;
         }
 
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(section.getLong("DateTime"));
 
-        return new Approve(secuboid, landName, type, action,
-                section.getInt("RemovedAreaId"), newArea, pc,
-                parent, section.getDouble("Price"), cal);
+        return new Approve(secuboid, landName, type, action, section.getInt("RemovedAreaId"), newArea, pc, parent,
+                section.getDouble("Price"), cal);
     }
 
     /**
@@ -210,7 +208,7 @@ public class ApproveList {
      *
      * @param approve the approve
      */
-    public void removeApprove(Approve approve) {
+    public void removeApprove(final Approve approve) {
         removeApprove(approve.getLandName());
     }
 
@@ -219,7 +217,7 @@ public class ApproveList {
      *
      * @param landName the land name
      */
-    private void removeApprove(String landName) {
+    private void removeApprove(final String landName) {
         approveConfig.set(landName, null);
         landNames.remove(landName);
         saveFile();
@@ -233,13 +231,9 @@ public class ApproveList {
         // Delete file
         if (approveFile.exists()) {
             if (!approveFile.delete()) {
-                secuboid.getLog().severe("Impossible to delete the file " + approveFile.getPath() + ".");
+                secuboid.getLogger().severe("Impossible to delete the file " + approveFile.getPath() + ".");
             }
         }
-
-        // Delete list
-        landNames.clear();
-        approveConfig = new YamlConfiguration();
 
         // Reload file
         loadFile();
@@ -249,26 +243,29 @@ public class ApproveList {
      * Load file.
      */
     private void loadFile() {
+        // Delete list in memory
+        landNames.clear();
+        approveConfig = new YamlConfiguration();
 
         if (!approveFile.exists()) {
             try {
                 if (!approveFile.createNewFile()) {
                     throw new IOException("Impossible to create the file " + approveFile.getPath() + ".");
                 }
-            } catch (IOException ex) {
-                secuboid.getLog().severe("Error on approve file creation: " + ex.getLocalizedMessage());
+            } catch (final IOException ex) {
+                secuboid.getLogger().severe("Error on approve file creation: " + ex.getLocalizedMessage());
             }
         }
         try {
             approveConfig.load(approveFile);
-        } catch (IOException ex) {
-            secuboid.getLog().severe("Error on approve file load: " + ex.getLocalizedMessage());
-        } catch (InvalidConfigurationException ex) {
-            secuboid.getLog().severe("Error on approve file load" + ex.getLocalizedMessage());
+        } catch (final IOException ex) {
+            secuboid.getLogger().severe("Error on approve file load: " + ex.getLocalizedMessage());
+        } catch (final InvalidConfigurationException ex) {
+            secuboid.getLogger().severe("Error on approve file load" + ex.getLocalizedMessage());
         }
 
         // add land names to list
-        for (String landName : approveConfig.getKeys(false)) {
+        for (final String landName : approveConfig.getKeys(false)) {
             landNames.add(landName);
         }
     }
@@ -279,8 +276,8 @@ public class ApproveList {
     private void saveFile() {
         try {
             approveConfig.save(approveFile);
-        } catch (IOException ex) {
-            secuboid.getLog().severe("Error on approve file save: " + ex.getLocalizedMessage());
+        } catch (final IOException ex) {
+            secuboid.getLogger().severe("Error on approve file save: " + ex.getLocalizedMessage());
         }
     }
 }

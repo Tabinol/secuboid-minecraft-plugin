@@ -23,7 +23,7 @@ import me.tabinol.secuboid.commands.*;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -84,7 +84,7 @@ public final class CommandCreate extends CommandCollisionsThreadExec {
 
         // Create Land
         try {
-            RealLand cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
+            Land cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
 
             player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
 

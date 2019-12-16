@@ -18,20 +18,21 @@
  */
 package me.tabinol.secuboid.flycreative;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.events.PlayerLandChangeEvent;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.permissionsflags.PermissionType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
+
 /**
  * The fly class.
  */
-public class Fly {
+public final class Fly {
 
     public final static String FLY_IGNORE_PERM = "secuboid.flycreative.ignorefly";
 
@@ -46,16 +47,16 @@ public class Fly {
         permissionType = secuboid.getPermissionsFlags().registerPermissionType("FLY", false);
     }
 
-    public void fly(Event event, Player player, Land land) {
+    public void isFly(Event event, Player player, LandPermissionsFlags landPermissionsFlags) {
 
         if (!player.hasPermission(FLY_IGNORE_PERM)) {
-            if (askFlyFlag(player, land)) {
+            if (askFlyFlag(player, landPermissionsFlags)) {
                 if (!player.getAllowFlight()) {
                     player.setAllowFlight(true);
 
                     // Bug fix : Prevent player fall
-                    Location loc = player.getLocation().clone();
-                    Block block = loc.subtract(0, 1, 0).getBlock();
+                    final Location loc = player.getLocation().clone();
+                    final Block block = loc.subtract(0, 1, 0).getBlock();
                     if (block.isLiquid() || block.getType() == Material.AIR) {
                         player.setFlying(true);
                     }
@@ -70,7 +71,7 @@ public class Fly {
         }
     }
 
-    private boolean askFlyFlag(Player player, Land land) {
-        return land.getPermissionsFlags().checkPermissionAndInherit(player, permissionType);
+    private boolean askFlyFlag(Player player, LandPermissionsFlags landPermissionsFlags) {
+        return landPermissionsFlags.checkPermissionAndInherit(player, permissionType);
     }
 }

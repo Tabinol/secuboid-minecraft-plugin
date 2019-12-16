@@ -6,7 +6,7 @@ import java.util.Set;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.players.PlayerConfig;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.ColoredConsole;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,7 +58,7 @@ public class ChatListener extends CommonListener implements Listener {
 
             event.setCancelled(true);
 
-            RealLand land = secuboid.getLands().getLand(player.getLocation());
+            Land land = secuboid.getLands().getLand(player.getLocation());
 
             // The player is not in a land
             if (land == null) {

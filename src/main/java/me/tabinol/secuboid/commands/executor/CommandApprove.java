@@ -23,6 +23,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
@@ -30,14 +33,13 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandApprove.
@@ -62,8 +64,8 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandApprove(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandApprove(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
         approveList = secuboid.getLands().getApproveList();
@@ -77,9 +79,12 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = argList.getNext();
-        boolean isApprover = sender.hasPermission("secuboid.collisionapprove");
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        final String curArg = argList.getNext();
+        final boolean isApprover = sender.hasPermission("secuboid.collisionapprove");
+        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        final LandPermissionsFlags landPermissionsFlagsSelectNullable = landSelectNullable != null
+                ? landSelectNullable.getPermissionsFlags()
+                : null;
 
         if (curArg.equalsIgnoreCase("clear")) {
 
@@ -93,19 +98,20 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
         } else if (curArg.equalsIgnoreCase("list")) {
 
             // List of Approve
-            StringBuilder stList = new StringBuilder();
+            final StringBuilder stList = new StringBuilder();
             int t = 0;
-            TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
+            final TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
 
             // create list (short by date/time)
-            for (Approve app : approveList.getApproveList().values()) {
+            for (final Approve app : approveList.getApproveList().values()) {
                 approveTree.put(app.getDateTime().getTime(), app);
             }
 
             // show Approve List
-            for (Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
-                Approve app = approveEntry.getValue();
-                if (app != null && (isApprover || app.getOwner().hasAccess(player, land, land))) {
+            for (final Map.Entry<Date, Approve> approveEntry : approveTree.descendingMap().entrySet()) {
+                final Approve app = approveEntry.getValue();
+                if (app != null && (isApprover
+                        || app.getOwner().hasAccess(player, landSelectNullable, landPermissionsFlagsSelectNullable))) {
                     stList.append(ChatColor.WHITE)
                             .append(secuboid.getLanguage().getMessage("COLLISION.SHOW.LIST",
                                     ChatColor.BLUE + df.format(app.getDateTime().getTime()) + ChatColor.WHITE,
@@ -129,7 +135,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
         } else if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")
                 || curArg.equalsIgnoreCase("cancel")) {
 
-            String param = argList.getNext();
+            final String param = argList.getNext();
 
             if (param == null) {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "COLLISION.SHOW.PARAMNULL");
@@ -144,17 +150,18 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
             // Check permission
             if ((curArg.equalsIgnoreCase("confirm") && !isApprover)
                     || ((curArg.equalsIgnoreCase("cancel") || curArg.equalsIgnoreCase("info"))
-                            && !(isApprover || approve.getOwner().hasAccess(player, land, land)))) {
+                            && !(isApprover || approve.getOwner().hasAccess(player, landSelectNullable,
+                                    landPermissionsFlagsSelectNullable)))) {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
 
-            RealLand apprLand = secuboid.getLands().getLand(param);
-            Collisions.LandAction action = approve.getAction();
-            int removeId = approve.getRemovedAreaId();
-            Area newArea = approve.getNewArea();
-            RealLand parent = approve.getParent();
+            final Land apprLand = secuboid.getLands().getLand(param);
+            final Collisions.LandAction action = approve.getAction();
+            final int removeId = approve.getRemovedAreaId();
+            final Area newArea = approve.getNewArea();
+            final Land parent = approve.getParent();
             // Double price = approve.getPrice();
-            PlayerContainer owner = approve.getOwner();
+            final PlayerContainer owner = approve.getOwner();
 
             if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
                 String worldName;
@@ -164,7 +171,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                     worldName = newArea.getWorldName();
                     sender.sendMessage(newArea.getPrint());
                 } else {
-                    worldName = land.getWorldName();
+                    worldName = landSelectNullable.getWorldName();
                 }
 
                 if (curArg.equalsIgnoreCase("confirm")) {
@@ -189,7 +196,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
     }
 
     @Override
-    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+    public void commandThreadExecute(final Collisions collisions) throws SecuboidCommandException {
 
         if (confirm) {
 

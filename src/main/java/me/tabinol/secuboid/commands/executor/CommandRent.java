@@ -86,18 +86,18 @@ public final class CommandRent extends CommandExec {
 
         // If 'recreate'
         if (curArg.equalsIgnoreCase("recreate")) {
-            if (!land.isForRent()) {
+            if (!landSelectNullable.isForRent()) {
                 throw new SecuboidCommandException(secuboid, "The land is not for rent", player,
                         "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
             try {
-                ecoSign = new EcoSign(secuboid, land, player);
-                ecoSign.createSignForRent(land.getRentPrice(), land.getRentRenew(), land.getRentAutoRenew(),
-                        land.isRented() ? land.getTenant().getPlayerName() : null); // Tenant name if the land is rented
+                ecoSign = new EcoSign(secuboid, landSelectNullable, player);
+                ecoSign.createSignForRent(landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(), landSelectNullable.getRentAutoRenew(),
+                        landSelectNullable.isRented() ? landSelectNullable.getTenant().getPlayerName() : null); // Tenant name if the land is rented
                 removeSignFromHand();
-                if (!ecoSign.getLocation().getBlock().equals(land.getRentSignLoc().getBlock())) {
-                    ecoSign.removeSign(land.getRentSignLoc());
-                    land.setRentSignLoc(ecoSign.getLocation());
+                if (!ecoSign.getLocation().getBlock().equals(landSelectNullable.getRentSignLoc().getBlock())) {
+                    ecoSign.removeSign(landSelectNullable.getRentSignLoc());
+                    landSelectNullable.setRentSignLoc(ecoSign.getLocation());
                 }
             } catch (SignException e) {
                 throw new SecuboidCommandException(secuboid, "Error in the command", player,
@@ -137,21 +137,21 @@ public final class CommandRent extends CommandExec {
         }
 
         // Land already for rent?
-        if (land.isForRent()) {
+        if (landSelectNullable.isForRent()) {
             throw new SecuboidCommandException(secuboid, "Land already for rent", player,
                     "COMMAND.ECONOMY.ALREADYRENT");
         }
 
         // Create Sign
         try {
-            ecoSign = new EcoSign(secuboid, land, player);
+            ecoSign = new EcoSign(secuboid, landSelectNullable, player);
             ecoSign.createSignForRent(rentPrice, rentRenew, rentAutoRenew, null);
             removeSignFromHand();
         } catch (SignException e) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player,
                     "COMMAND.ECONOMY.ERRORCREATESIGN");
         }
-        land.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
+        landSelectNullable.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
     }

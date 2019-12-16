@@ -18,7 +18,7 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -317,12 +317,12 @@ public final class CylinderArea implements Area {
     }
 
     @Override
-    public void setLand(RealLand land) {
+    public void setLand(Land land) {
         areaCommon.setLand(land);
     }
 
     @Override
-    public RealLand getLand() {
+    public Land getLand() {
         return areaCommon.getLand();
     }
 

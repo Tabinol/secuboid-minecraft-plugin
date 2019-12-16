@@ -18,12 +18,27 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
-import java.util.*;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.CHILD_OUT_OF_BORDER;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.COLLISION;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.HAS_CHILDREN;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.IN_APPROVE_LIST;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_AREA_FOR_LAND;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_LAND_FOR_PLAYER;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MUST_HAVE_AT_LEAST_ONE_AREA;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NAME_IN_USE;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NOT_ENOUGH_MONEY;
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.OUT_OF_PARENT;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.RealLand;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -31,26 +46,17 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.*;
-
 /**
  * The Class Collisions. This class is created for async calculation and price
  */
-public class Collisions {
+public final class Collisions {
 
     /**
      * The Enum LandError.
      */
     public enum LandError {
-        COLLISION(true),
-        NAME_IN_USE(false),
-        HAS_CHILDREN(false),
-        CHILD_OUT_OF_BORDER(true),
-        OUT_OF_PARENT(true),
-        IN_APPROVE_LIST(false),
-        NOT_ENOUGH_MONEY(false),
-        MAX_AREA_FOR_LAND(true),
-        MAX_LAND_FOR_PLAYER(true),
+        COLLISION(true), NAME_IN_USE(false), HAS_CHILDREN(false), CHILD_OUT_OF_BORDER(true), OUT_OF_PARENT(true),
+        IN_APPROVE_LIST(false), NOT_ENOUGH_MONEY(false), MAX_AREA_FOR_LAND(true), MAX_LAND_FOR_PLAYER(true),
         MUST_HAVE_AT_LEAST_ONE_AREA(false);
 
         /**
@@ -72,9 +78,9 @@ public class Collisions {
      * The Enum LandAction.
      */
     public enum LandAction {
-        LAND_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NAME_IN_USE, NOT_ENOUGH_MONEY, MAX_LAND_FOR_PLAYER)),
-        LAND_RENAME(EnumSet.of(IN_APPROVE_LIST, NAME_IN_USE)),
-        LAND_REMOVE(EnumSet.of(IN_APPROVE_LIST, HAS_CHILDREN)),
+        LAND_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NAME_IN_USE, NOT_ENOUGH_MONEY,
+                MAX_LAND_FOR_PLAYER)),
+        LAND_RENAME(EnumSet.of(IN_APPROVE_LIST, NAME_IN_USE)), LAND_REMOVE(EnumSet.of(IN_APPROVE_LIST, HAS_CHILDREN)),
         LAND_PARENT(EnumSet.of(IN_APPROVE_LIST, OUT_OF_PARENT)),
         AREA_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NOT_ENOUGH_MONEY, MAX_AREA_FOR_LAND)),
         AREA_REMOVE(EnumSet.of(IN_APPROVE_LIST, CHILD_OUT_OF_BORDER, MUST_HAVE_AT_LEAST_ONE_AREA)),
@@ -107,7 +113,7 @@ public class Collisions {
     /**
      * The land.
      */
-    private final RealLand land;
+    private final Land land;
 
     /**
      * The action.
@@ -127,7 +133,7 @@ public class Collisions {
     /**
      * The parent.
      */
-    private final RealLand parent;
+    private final Land parent;
 
     /**
      * The owner
@@ -169,12 +175,13 @@ public class Collisions {
      * @param isFree           if the land is free or not
      * @param checkApproveList the check approve list
      */
-    public Collisions(Secuboid secuboid, String worldName, String landName, RealLand land, LandAction action, int removedAreaId,
-                      Area newArea, RealLand parent, PlayerContainer owner, boolean isFree, boolean checkApproveList) {
+    public Collisions(Secuboid secuboid, String worldName, String landName, Land land, LandAction action,
+            int removedAreaId, Area newArea, Land parent, PlayerContainer owner, boolean isFree,
+            boolean checkApproveList) {
 
         this.secuboid = secuboid;
         this.worldName = worldName;
-        collisionsEntries = new ArrayList<CollisionsEntry>();
+        collisionsEntries = new ArrayList<>();
         lands = secuboid.getLands();
         this.landName = landName;
         this.land = land;
@@ -199,8 +206,7 @@ public class Collisions {
         percentDone = 20;
 
         // Pass 3 check if children are not out of land
-        if (action.errorsToCheck.contains(CHILD_OUT_OF_BORDER)
-                && !land.getChildren().isEmpty()) {
+        if (action.errorsToCheck.contains(CHILD_OUT_OF_BORDER) && !land.getChildren().isEmpty()) {
             checkIfChildrenOutside();
         }
         percentDone = 30;
@@ -255,7 +261,8 @@ public class Collisions {
 
         // Pass 10 check if the area to remove is the only one
         if (action.errorsToCheck.contains(MUST_HAVE_AT_LEAST_ONE_AREA) && land != null && land.getAreas().size() == 1) {
-            collisionsEntries.add(new CollisionsEntry(secuboid, LandError.MUST_HAVE_AT_LEAST_ONE_AREA, land, removedAreaId));
+            collisionsEntries
+                    .add(new CollisionsEntry(secuboid, LandError.MUST_HAVE_AT_LEAST_ONE_AREA, land, removedAreaId));
         }
         percentDone = 100;
 
@@ -273,14 +280,14 @@ public class Collisions {
      * Check collisions.
      */
     private void checkCollisionsAndInsideParent() {
-        HashSet<Area> landCollisionsList = new HashSet<Area>();
+        final HashSet<Area> landCollisionsList = new HashSet<>();
         boolean outsideParent = false;
 
         for (int x = newArea.getX1(); x <= newArea.getX2(); x++) {
             for (int z = newArea.getZ1(); z <= newArea.getZ2(); z++) {
                 if (newArea.isLocationInside(worldName, x, z)) {
-                    for (Area area2 : lands.getAreas(worldName, x, z)) {
-                        RealLand land2 = area2.getLand();
+                    for (final Area area2 : lands.getAreas(worldName, x, z)) {
+                        final Land land2 = area2.getLand();
                         if (land != land2 && !isDescendants(land, land2) && !isDescendants(land2, parent)) {
                             landCollisionsList.add(area2);
                         }
@@ -308,7 +315,7 @@ public class Collisions {
      * @param land2 the land2
      * @return true, if is descendants
      */
-    private boolean isDescendants(RealLand land1, RealLand land2) {
+    private boolean isDescendants(Land land1, Land land2) {
         return !(land1 == null || land2 == null) && land1.isDescendants(land2);
     }
 
@@ -316,8 +323,8 @@ public class Collisions {
      * Check if children outside.
      */
     private void checkIfChildrenOutside() {
-        final HashSet<RealLand> childOutsideLand = new HashSet<RealLand>();
-        HashSet<Area> areaList = new HashSet<Area>();
+        final HashSet<Land> childOutsideLand = new HashSet<>();
+        final HashSet<Area> areaList = new HashSet<>();
 
         if (action != LandAction.LAND_REMOVE) {
             for (Area area : land.getAreas()) {
@@ -330,11 +337,11 @@ public class Collisions {
             areaList.add(newArea);
         }
 
-        for (Area areaC : areaList) {
+        for (final Area areaC : areaList) {
             for (int x = areaC.getX1(); x <= areaC.getX2(); x++) {
                 for (int z = areaC.getZ1(); z <= areaC.getZ2(); z++) {
                     if (areaC.isLocationInside(worldName, x, z)) {
-                        for (RealLand child : land.getChildren()) {
+                        for (final Land child : land.getChildren()) {
                             if (!child.isLocationInside(worldName, x, z)) {
                                 childOutsideLand.add(child);
                             }
@@ -344,7 +351,7 @@ public class Collisions {
             }
         }
 
-        for (RealLand child : childOutsideLand) {
+        for (Land child : childOutsideLand) {
             collisionsEntries.add(new CollisionsEntry(secuboid, CHILD_OUT_OF_BORDER, child, 0));
         }
     }
@@ -353,7 +360,7 @@ public class Collisions {
      * Check if land has children.
      */
     private void checkIfLandHasChildren() {
-        for (RealLand child : land.getChildren()) {
+        for (final Land child : land.getChildren()) {
             collisionsEntries.add(new CollisionsEntry(secuboid, LandError.HAS_CHILDREN, child, 0));
         }
     }
@@ -375,7 +382,7 @@ public class Collisions {
     public String getPrints() {
         StringBuilder str = new StringBuilder();
 
-        for (CollisionsEntry ce : collisionsEntries) {
+        for (final CollisionsEntry ce : collisionsEntries) {
             str.append(ce.getPrint()).append(Config.NEWLINE);
         }
         return str.toString();
@@ -387,7 +394,7 @@ public class Collisions {
      * @return true, if successful
      */
     public boolean hasCollisions() {
-        return collisionsEntries.size() > 0;
+        return !collisionsEntries.isEmpty();
     }
 
     /**
@@ -436,11 +443,11 @@ public class Collisions {
 
         FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
         if (land == null) {
-            priceFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
+            priceFlag = secuboid.getLands().getOutsideLandPermissionsFlags(newArea.getWorldName())
                     .getFlagAndInherit(flagType).getValueDouble();
         } else {
             if (land.getParent() == null) {
-                priceFlag = secuboid.getLands().getOutsideArea(newArea.getWorldName()).getPermissionsFlags()
+                priceFlag = secuboid.getLands().getOutsideLandPermissionsFlags(newArea.getWorldName())
                         .getFlagAndInherit(flagType).getValueDouble();
             } else {
                 priceFlag = land.getParent().getPermissionsFlags().getFlagAndInherit(flagType).getValueDouble();
@@ -448,7 +455,7 @@ public class Collisions {
         }
 
         price = priceFlag * newArea.getArea();
-        if (removedAreaId != 0) {
+        if (removedAreaId != 0 && land != null) {
             price -= land.getArea(removedAreaId).getArea();
         }
 

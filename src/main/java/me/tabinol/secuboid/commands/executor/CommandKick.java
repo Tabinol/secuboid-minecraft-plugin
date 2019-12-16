@@ -72,7 +72,7 @@ public class CommandKick extends CommandExec {
         Player playerKick = secuboid.getServer().getPlayer(playerKickName);
 
         // Player not in land?
-        if (playerKick == null || !land.isPlayerinLandNoVanish(playerKick, player)
+        if (playerKick == null || !landSelectNullable.isPlayerinLandNoVanish(playerKick, player)
                 || secuboid.getPlayerConf().get(playerKick).isAdminMode()
                 || playerKick.hasPermission("secuboid.bypassban")) {
             throw new SecuboidCommandException(secuboid, "Kicked", player, "COMMAND.KICK.NOTINLAND");
@@ -81,8 +81,8 @@ public class CommandKick extends CommandExec {
         // Kick the player
         playerKick.teleport(playerKick.getLocation().getWorld().getSpawnLocation());
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, land.getName()));
+                + secuboid.getLanguage().getMessage("COMMAND.KICK.DONE", playerKickName, landSelectNullable.getName()));
         playerKick.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", land.getName()));
+                + secuboid.getLanguage().getMessage("COMMAND.KICK.KICKED", landSelectNullable.getName()));
     }
 }

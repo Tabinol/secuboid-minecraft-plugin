@@ -18,33 +18,38 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.permissionsflags.FlagList;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 
 /**
  * Represents the land owner.
  *
  * @author tabinol
  */
-public class PlayerContainerOwner implements PlayerContainer {
+public final class PlayerContainerOwner implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
-        if (!(pcLand instanceof RealLand) && !(testLand instanceof RealLand) && pcLand != testLand) {
+    public boolean hasAccess(final Player player, final Land pcLandNullable,
+            final LandPermissionsFlags testLandPermissionsFlags) {
+        final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
+        if (pcLandNullable == null || testLandNullable == null) {
             return false;
         }
 
-        boolean value;
-        RealLand parent;
+        boolean value = pcLandNullable.getOwner().hasAccess(player, pcLandNullable, testLandPermissionsFlags);
+        Land actual = pcLandNullable;
+        Land parentNullable;
 
-        value = ((RealLand) pcLand).getOwner().hasAccess(player, pcLand, testLand);
-
-        if (!value && (parent = ((RealLand) pcLand).getParent()) != null
-                && pcLand.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
-
-            return parent.getOwner().hasAccess(player, pcLand, testLand);
+        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
+                .getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
+            value = parentNullable.isOwner(player);
+            actual = parentNullable;
         }
 
         return value;
@@ -71,7 +76,7 @@ public class PlayerContainerOwner implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
+    public int compareTo(final PlayerContainer t) {
         return PlayerContainerType.OWNER.compareTo(t.getContainerType());
     }
 }

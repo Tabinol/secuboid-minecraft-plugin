@@ -18,14 +18,11 @@
  */
 package me.tabinol.secuboid.listeners;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.economy.EcoSign;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.permissionsflags.FlagList;
-import me.tabinol.secuboid.permissionsflags.PermissionType;
-import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
@@ -36,10 +33,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.economy.EcoSign;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.PermissionType;
+import me.tabinol.secuboid.utilities.StringChanges;
+
 /**
  * Common methods for Listeners
  */
-class CommonListener {
+abstract class CommonListener {
 
     static final String BUTTON_SUFFIX = "_BUTTON";
     static final String PRESSURE_PLATE_SUFFIX = "_PRESSURE_PLATE";
@@ -53,13 +58,13 @@ class CommonListener {
     /**
      * Check permission.
      *
-     * @param land   the land
+     * @param landSelectNullable   the land
      * @param player the player
      * @param pt     the pt
      * @return true, if successful
      */
-    boolean checkPermission(Land land, Player player, PermissionType pt) {
-        return land.getPermissionsFlags().checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
+    final boolean checkPermission(LandPermissionsFlags landPermissionsFlags, Player player, PermissionType pt) {
+        return landPermissionsFlags.checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
     }
 
     /**
@@ -67,7 +72,7 @@ class CommonListener {
      *
      * @param player the player
      */
-    void messagePermission(Player player) {
+    final void messagePermission(Player player) {
         player.sendMessage(
                 ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
     }
@@ -78,7 +83,7 @@ class CommonListener {
      * @param entity the entity
      * @return the source player
      */
-    Player getSourcePlayer(Entity entity) {
+    final Player getSourcePlayer(Entity entity) {
 
         Projectile damagerProjectile;
 
@@ -103,7 +108,7 @@ class CommonListener {
      * @param block the block
      * @return true if the sign is attached
      */
-    boolean hasEcoSign(RealLand land, Block block) {
+    final boolean hasEcoSign(Land land, Block block) {
         return (land.getSaleSignLoc() != null && hasEcoSign(block, land.getSaleSignLoc()))
                 || (land.getRentSignLoc() != null && hasEcoSign(block, land.getRentSignLoc()));
     }
@@ -131,43 +136,46 @@ class CommonListener {
                 && ((Directional) checkBlock.getState().getData()).getFacing() == face;
     }
 
-    boolean isDoor(Material material) {
+    final boolean isDoor(Material material) {
         return Openable.class.isAssignableFrom(material.data);
     }
 
     /**
      * Gets the spawn point for a land and transform it to location
      *
-     * @param land the land
+     * @param landSelectNullable the land
      * @return the location
      */
-    Location getLandSpawnPoint(Land land) {
+    final Location getLandSpawnPoint(LandPermissionsFlags landPermissionsFlags) {
         String strLoc;
         Location loc;
 
         // Check for land spawn
-        if (land.getLandType() == Land.LandType.REAL) {
-            if (!(strLoc = land.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType()).getValueString())
-                    .isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+        final Land landNullable = landPermissionsFlags.getLandNullable();
+        if (landNullable != null) {
+            if (!(strLoc = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType())
+                    .getValueString()).isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
                 return loc;
             }
-            secuboid.getLog().warning(
-                    "Teleportation requested and no spawn point for land \"" + ((RealLand) land).getName() + "\"!");
+            secuboid.getLogger()
+                    .warning("Teleportation requested and no spawn point for land \"" + landNullable.getName() + "\"!");
             return null;
         }
 
         // Check for world spawn (if land is world)
-        return getWorldSpawnPoint(land.getWorldName());
+        return getWorldSpawnPoint(landPermissionsFlags.getWorldNameNullable());
     }
 
-    Location getWorldSpawnPoint(String worldName) {
-        World world = Bukkit.getWorld(worldName);
+    final Location getWorldSpawnPoint(String worldNameNullable) {
 
-        if (world != null) {
-            return world.getSpawnLocation();
+        if (worldNameNullable != null) {
+            World world = Bukkit.getWorld(worldNameNullable);
+            if (world != null) {
+                return world.getSpawnLocation();
+            }
         }
 
-        secuboid.getLog().warning("Teleportation requested and no world named \"" + worldName + "\"!");
+        secuboid.getLogger().warning("Teleportation requested and no world named \"" + worldNameNullable + "\"!");
         return null;
     }
 }

@@ -18,33 +18,35 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.RealLand;
-import me.tabinol.secuboid.permissionsflags.FlagList;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.permissionsflags.FlagList;
 
 /**
  * Represents a land tenant.
  *
  * @author tabinol
  */
-public class PlayerContainerTenant implements PlayerContainer {
+public final class PlayerContainerTenant implements PlayerContainer {
 
     @Override
-    public boolean hasAccess(Player player, Land pcLand, Land testLand) {
-        if (!(pcLand instanceof RealLand) && !(testLand instanceof RealLand) && pcLand != testLand) {
+    public boolean hasAccess(final Player player, final Land pcLandNullable,
+            final LandPermissionsFlags testLandPermissionsFlags) {
+        final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
+        if (pcLandNullable == null || testLandNullable == null) {
             return false;
         }
 
-        RealLand realPCLand = (RealLand) pcLand;
-        boolean value = realPCLand.isTenant(player);
-        RealLand actual = realPCLand;
-        RealLand parent;
+        boolean value = pcLandNullable.isTenant(player);
+        Land actual = pcLandNullable;
+        Land parentNullable;
 
-        while (!value && (parent = actual.getParent()) != null
-                && actual.getPermissionsFlags().getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean()) {
-            value = parent.isTenant(player);
-            actual = parent;
+        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
+                .getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean()) {
+            value = parentNullable.isTenant(player);
+            actual = parentNullable;
         }
 
         return value;
@@ -71,7 +73,7 @@ public class PlayerContainerTenant implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
+    public int compareTo(final PlayerContainer t) {
         return PlayerContainerType.TENANT.compareTo(t.getContainerType());
     }
 }

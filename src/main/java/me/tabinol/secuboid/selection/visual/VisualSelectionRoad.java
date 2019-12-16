@@ -18,24 +18,24 @@
  */
 package me.tabinol.secuboid.selection.visual;
 
+import java.util.EnumSet;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.WorldLand;
-import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.utilities.PlayersUtil;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-
-import java.util.EnumSet;
 
 /**
  * The visual selection cuboid class. Parent is not detected.
  */
-public class VisualSelectionRoad implements VisualSelection {
+public final class VisualSelectionRoad implements VisualSelection {
 
     private final Secuboid secuboid;
     private final VisualCommon visualCommon;
@@ -66,15 +66,16 @@ public class VisualSelectionRoad implements VisualSelection {
      */
     private boolean isAreaChange = false;
 
-    public VisualSelectionRoad(Secuboid secuboid, RoadArea area, RoadArea originalArea, boolean isActive, Player player) {
+    public VisualSelectionRoad(Secuboid secuboid, RoadArea area, RoadArea originalArea, boolean isActive,
+            Player player) {
         this.secuboid = secuboid;
         this.originalArea = originalArea;
         if (area == null) {
-            visualCommon = new VisualCommon(secuboid, this, player,
-                    secuboid.getPlayerConf().get(player), player.getLocation());
+            visualCommon = new VisualCommon(secuboid, this, player, secuboid.getPlayerConf().get(player),
+                    player.getLocation());
         } else {
-            visualCommon = new VisualCommon(secuboid, this, player,
-                    secuboid.getPlayerConf().get(player), area.getY1(), area.getY2());
+            visualCommon = new VisualCommon(secuboid, this, player, secuboid.getPlayerConf().get(player), area.getY1(),
+                    area.getY2());
         }
         changedBlocks = new ChangedBlocks(player);
         this.isActive = isActive;
@@ -99,8 +100,8 @@ public class VisualSelectionRoad implements VisualSelection {
     }
 
     @Override
-    public Land getParentDetected() {
-        return secuboid.getLands().getOutsideArea(area.getWorldName());
+    public LandPermissionsFlags getParentPermsFlagsDetected() {
+        return secuboid.getLands().getOutsideLandPermissionsFlags(area.getWorldName());
     }
 
     @Override
@@ -126,17 +127,18 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public void makeVisualSelection() {
 
-        WorldLand outsideArea = secuboid.getLands().getOutsideArea(area.getWorldName());
-        boolean canCreate = outsideArea.getPermissionsFlags()
-                .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType());
-        int stepX = visualCommon.getStepX(area);
-        int stepZ = visualCommon.getStepZ(area);
+        final LandPermissionsFlags outsidePermsFlags = secuboid.getLands()
+                .getOutsideLandPermissionsFlags(area.getWorldName());
+        final boolean canCreate = outsidePermsFlags.checkPermissionAndInherit(player,
+                PermissionList.LAND_CREATE.getPermissionType());
+        final int stepX = visualCommon.getStepX(area);
+        final int stepZ = visualCommon.getStepZ(area);
 
         // Makes borders X
         for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
             boolean isLastActive = false;
             for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
-                isLastActive = makeBorders(false, posX, posZ, isLastActive, outsideArea, canCreate);
+                isLastActive = makeBorders(false, posX, posZ, isLastActive, outsidePermsFlags, canCreate);
             }
         }
 
@@ -144,15 +146,17 @@ public class VisualSelectionRoad implements VisualSelection {
         for (int posZ = area.getZ1(); posZ <= area.getZ2(); posZ += stepZ) {
             boolean isLastActive = false;
             for (int posX = area.getX1(); posX <= area.getX2(); posX += stepX) {
-                isLastActive = makeBorders(true, posX, posZ, isLastActive, outsideArea, canCreate);
+                isLastActive = makeBorders(true, posX, posZ, isLastActive, outsidePermsFlags, canCreate);
             }
         }
     }
 
-    private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive, WorldLand outsideArea, boolean canCreate) {
+    private boolean makeBorders(boolean isZ, int posX, int posZ, boolean isLastActive,
+            LandPermissionsFlags outsidePermsFlags, boolean canCreate) {
 
-        Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1, posZ);
-        boolean isLocationInside = area.isLocationInside(newloc);
+        final Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d,
+                posZ);
+        final boolean isLocationInside = area.isLocationInside(newloc);
         if (isLastActive) {
             if (!isLocationInside) {
                 Location lastLoc;
@@ -164,27 +168,28 @@ public class VisualSelectionRoad implements VisualSelection {
 
                 // Not active selection
                 lastLoc.setY(PlayersUtil.getYNearPlayer(player, lastLoc.getBlockX(), lastLoc.getBlockZ()) - 1);
-                setChangedBlocks(outsideArea, canCreate, lastLoc);
+                setChangedBlocks(outsidePermsFlags, canCreate, lastLoc);
                 return false;
             }
         } else {
             if (isLocationInside) {
 
                 // Active Selection
-                setChangedBlocks(outsideArea, canCreate, newloc);
+                setChangedBlocks(outsidePermsFlags, canCreate, newloc);
                 return true;
             }
         }
         return isLastActive;
     }
 
-    private void setChangedBlocks(WorldLand outsideArea, boolean canCreate, Location newloc) {
+    private void setChangedBlocks(LandPermissionsFlags outsidePermsFlags, boolean canCreate, Location newloc) {
 
-        Land testArea = secuboid.getLands().getLandOrOutsideArea(newloc);
+        final LandPermissionsFlags testPermissionsFlags = secuboid.getLands().getPermissionsFlags(newloc);
         if (!isActive) {
             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_PASSIVE.createBlockData());
         } else {
-            if (outsideArea == testArea && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
+            if (outsidePermsFlags == testPermissionsFlags
+                    && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
                 changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE.createBlockData());
             } else {
                 changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_COLLISION.createBlockData());
@@ -196,27 +201,27 @@ public class VisualSelectionRoad implements VisualSelection {
     @Override
     public void playerMove(AreaSelection.MoveType moveType) {
         switch (moveType) {
-            case EXPAND:
-                moveWithPlayer(true);
-                break;
+        case EXPAND:
+            moveWithPlayer(true);
+            break;
 
-            case RETRACT:
-                moveWithPlayer(false);
-                break;
+        case RETRACT:
+            moveWithPlayer(false);
+            break;
 
-            default:
+        default:
         }
     }
 
     private void moveWithPlayer(boolean isAdd) {
 
         isAreaChange = false;
-        Location playerLoc = player.getLocation();
+        final Location playerLoc = player.getLocation();
         visualCommon.setBottomTop(playerLoc);
-        int posX = playerLoc.getBlockX();
-        int posZ = playerLoc.getBlockZ();
+        final int posX = playerLoc.getBlockX();
+        final int posZ = playerLoc.getBlockZ();
         int radius = secuboid.getPlayerConf().get(player).getSelectionRadius();
-        int maxRadius = secuboid.getConf().getMaxRadius();
+        final int maxRadius = secuboid.getConf().getMaxRadius();
         if (radius > maxRadius) {
             radius = maxRadius;
         }
@@ -271,9 +276,8 @@ public class VisualSelectionRoad implements VisualSelection {
     }
 
     private boolean checkForPoint(boolean isAdd, int x, int z) {
-
-        EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
-        Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1, z);
+        final EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
+        final Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1d, z);
 
         if (isAdd) {
             // Add point

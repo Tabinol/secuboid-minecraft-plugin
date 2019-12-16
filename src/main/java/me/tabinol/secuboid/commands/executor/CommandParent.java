@@ -17,16 +17,17 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.RealLand;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The parent command.
@@ -59,7 +60,7 @@ public final class CommandParent extends CommandCollisionsThreadExec {
         checkPermission(true, true, null, null);
 
         String curArg = argList.getNext();
-        RealLand parent = null;
+        Land parent = null;
 
         if (!curArg.equalsIgnoreCase("unset")) {
             parent = secuboid.getLands().getLand(curArg);
@@ -70,14 +71,14 @@ public final class CommandParent extends CommandCollisionsThreadExec {
             }
 
             // Check if the land is a children
-            if (land.isDescendants(parent)) {
+            if (landSelectNullable.isDescendants(parent)) {
                 throw new SecuboidCommandException(secuboid, "CommandParent", player, "COMMAND.PARENT.NOTCHILD");
             }
         }
 
         // Check for collision
-        checkCollision(land.getWorldName(), land.getName(), land, null, LandAction.LAND_PARENT, 0, null, parent,
-                land.getOwner(), true);
+        checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.LAND_PARENT, 0, null, parent,
+                landSelectNullable.getOwner(), true);
     }
 
     @Override
@@ -89,7 +90,7 @@ public final class CommandParent extends CommandCollisionsThreadExec {
         }
 
         // Set parent
-        land.setParent(parent);
+        landSelectNullable.setParent(parent);
         if (parent == null) {
             player.sendMessage(
                     ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PARENT.REMOVEDONE"));

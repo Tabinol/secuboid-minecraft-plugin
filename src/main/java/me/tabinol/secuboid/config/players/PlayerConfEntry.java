@@ -18,20 +18,21 @@
  */
 package me.tabinol.secuboid.config.players;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.selection.PlayerSelection;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ChatPage;
+import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.selection.PlayerSelection;
+
 /**
  * The Class PlayerConfEntry. Entries for each players.
  */
-public class PlayerConfEntry {
+public final class PlayerConfEntry {
 
     private final Secuboid secuboid;
 
@@ -73,7 +74,7 @@ public class PlayerConfEntry {
     /**
      * Last Land for player
      */
-    private Land lastLand = null;
+    private LandPermissionsFlags lastLandPermissionsFlags = null;
 
     /**
      * Present location
@@ -116,7 +117,7 @@ public class PlayerConfEntry {
      * @param secuboid secuboid instance
      * @param sender   the sender
      */
-    PlayerConfEntry(Secuboid secuboid, CommandSender sender) {
+    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender) {
 
         this.secuboid = secuboid;
         this.sender = sender;
@@ -191,7 +192,7 @@ public class PlayerConfEntry {
      *
      * @param value the new admin mod
      */
-    public void setAdminMode(boolean value) {
+    public void setAdminMode(final boolean value) {
         adminMode = value;
     }
 
@@ -209,7 +210,7 @@ public class PlayerConfEntry {
      *
      * @param entry the new confirm
      */
-    public void setConfirm(ConfirmEntry entry) {
+    public void setConfirm(final ConfirmEntry entry) {
         confirm = entry;
     }
 
@@ -227,7 +228,7 @@ public class PlayerConfEntry {
      *
      * @param page the new chat page
      */
-    public void setChatPage(ChatPage page) {
+    public void setChatPage(final ChatPage page) {
         chatPage = page;
     }
 
@@ -245,26 +246,26 @@ public class PlayerConfEntry {
      *
      * @param lastMove the new last move update
      */
-    public void setLastMoveUpdate(Long lastMove) {
+    public void setLastMoveUpdate(final Long lastMove) {
         lastMoveUpdate = lastMove;
     }
 
     /**
-     * Gets the last land.
+     * Gets the last land permissions flags.
      *
-     * @return the last land
+     * @return the last land permissions flags
      */
-    public Land getLastLand() {
-        return lastLand;
+    public LandPermissionsFlags getLastLandPermissionsFlags() {
+        return lastLandPermissionsFlags;
     }
 
     /**
-     * Sets the last land.
+     * Sets the last land permissions flags.
      *
-     * @param land the new last land
+     * @param landPermissionsFlags the new last land permissions flags
      */
-    public void setLastLand(Land land) {
-        lastLand = land;
+    public void setLastLandPermissionsFlags(final LandPermissionsFlags landPermissionsFlags) {
+        lastLandPermissionsFlags = landPermissionsFlags;
     }
 
     /**
@@ -281,7 +282,7 @@ public class PlayerConfEntry {
      *
      * @param loc the new last location
      */
-    public void setLastLoc(Location loc) {
+    public void setLastLoc(final Location loc) {
         lastLoc = loc;
     }
 
@@ -299,7 +300,7 @@ public class PlayerConfEntry {
      *
      * @param tpCancel the new tp cancel
      */
-    public void setTpCancel(boolean tpCancel) {
+    public void setTpCancel(final boolean tpCancel) {
         this.tpCancel = tpCancel;
     }
 
@@ -308,9 +309,9 @@ public class PlayerConfEntry {
      *
      * @param value the new auto cancel select
      */
-    public void setAutoCancelSelect(boolean value) {
+    public void setAutoCancelSelect(final boolean value) {
 
-        Long timeTick = secuboid.getConf().getSelectAutoCancel();
+        final Long timeTick = secuboid.getConf().getSelectAutoCancel();
 
         if (timeTick == 0) {
             return;
@@ -349,7 +350,7 @@ public class PlayerConfEntry {
      *
      * @param selectionTop the top selection
      */
-    public void setSelectionTop(int selectionTop) {
+    public void setSelectionTop(final int selectionTop) {
         this.selectionTop = selectionTop;
     }
 
@@ -367,7 +368,7 @@ public class PlayerConfEntry {
      *
      * @param selectionBottom the bottom selection
      */
-    public void setSelectionBottom(int selectionBottom) {
+    public void setSelectionBottom(final int selectionBottom) {
         this.selectionBottom = selectionBottom;
     }
 
@@ -385,7 +386,7 @@ public class PlayerConfEntry {
      *
      * @param selectionRadius the radius selection
      */
-    public void setSelectionRadius(int selectionRadius) {
+    public void setSelectionRadius(final int selectionRadius) {
         this.selectionRadius = selectionRadius;
     }
 }

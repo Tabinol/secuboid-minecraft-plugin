@@ -21,12 +21,11 @@ package me.tabinol.secuboid.events;
 import org.bukkit.event.HandlerList;
 
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
 
 /**
- * The Class PlayerContainerLandBanEvent. This events is called when a player container is banned from a land.
+ * The Class LandEvent (when it is inside a land). Just for inheritance
  */
-public class PlayerContainerLandBanEvent extends LandInsideEvent {
+public abstract class LandInsideEvent extends LandEvent {
 
     /**
      * The Constant handlers.
@@ -34,19 +33,18 @@ public class PlayerContainerLandBanEvent extends LandInsideEvent {
     private static final HandlerList handlers = new HandlerList();
 
     /**
-     * The player container.
+     * The land.
      */
-    private PlayerContainer playerContainer;
+    private final Land land;
 
     /**
-     * Instantiates a new player container land ban events.
+     * Instantiates a new land inside events.
      *
-     * @param land            the land
-     * @param playerContainer the player container
+     * @param land the land
      */
-    public PlayerContainerLandBanEvent(final Land land, final PlayerContainer playerContainer) {
-        super(land);
-        this.playerContainer = playerContainer;
+    public LandInsideEvent(Land land) {
+        super(land.getPermissionsFlags());
+        this.land = land;
     }
 
     @Override
@@ -64,11 +62,11 @@ public class PlayerContainerLandBanEvent extends LandInsideEvent {
     }
 
     /**
-     * Gets the player container.
+     * Gets the land.
      *
-     * @return the player container
+     * @return the land
      */
-    public PlayerContainer getPlayerContainer() {
-        return playerContainer;
+    public Land getLand() {
+        return land;
     }
 }

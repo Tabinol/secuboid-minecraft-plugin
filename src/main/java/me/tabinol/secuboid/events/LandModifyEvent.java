@@ -1,5 +1,5 @@
 /*
- Secuboid: Lands and Factions plugin for Minecraft server
+ Secuboid: Lands plugin for Minecraft server
  Copyright (C) 2014 Kaz00, Tabinol
 
  This program is free software: you can redistribute it and/or modify
@@ -74,11 +74,7 @@ public class LandModifyEvent extends LandInsideEvent {
         /**
          * The land rename.
          */
-        RENAME,
-        /**
-         * Change the faction territory or siege
-         */
-        FACTION_TERRITORY_CHANGE
+        RENAME
     }
 
     /**
@@ -135,7 +131,7 @@ public class LandModifyEvent extends LandInsideEvent {
 
     /**
      * Gets the new object. This object can be an Area, a playerContainer (for RESIDENT or owner change), a flag, a
-     * permission, a String for a name change or a faction.
+     * permission, a String for a name change.
      *
      * @return the new object
      */

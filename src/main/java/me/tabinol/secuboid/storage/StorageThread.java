@@ -117,7 +117,7 @@ public class StorageThread extends Thread {
             // Output request loop (waiting for a command)
             while (!exitRequest) {
 
-                // Save Lands or Factions
+                // Save Lands
                 while (!saveList.isEmpty()) {
 
                     final Land saveEntry = saveList.remove(0);
@@ -131,7 +131,7 @@ public class StorageThread extends Thread {
                     }
                 }
 
-                // Remove Lands or Factions
+                // Remove Lands
                 while (!removeList.isEmpty()) {
 
                     final Land removeEntry = removeList.remove(0);

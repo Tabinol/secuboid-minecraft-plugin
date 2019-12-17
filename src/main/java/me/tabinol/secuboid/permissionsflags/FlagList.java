@@ -118,10 +118,6 @@ public enum FlagList {
      */
     FULL_PVP(true),
     /**
-     * The faction pvp.
-     */
-    FACTION_PVP(true),
-    /**
      * The message enter.
      */
     MESSAGE_ENTER(""),

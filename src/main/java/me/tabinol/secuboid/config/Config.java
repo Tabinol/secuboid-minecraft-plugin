@@ -554,7 +554,7 @@ public class Config {
         maxLandPerPlayer = config.getInt("Lands.MaxLandPerPlayer", 5);
         overrideExplosions = config.getBoolean("General.OverrideExplosions", true);
 
-        config.addDefault("Lands.OwnerCanSet.Flags", new String[]{"MESSAGE_JOIN", "MESSAGE_QUIT"});
+        config.addDefault("Lands.OwnerCanSet.Flags", new String[]{"MESSAGE_ENTER", "MESSAGE_EXIT"});
         ownerConfigFlag = new TreeSet<FlagType>();
         for (String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
             ownerConfigFlag.add(secuboid.getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));

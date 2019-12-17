@@ -100,8 +100,8 @@ Lands:
     Flags:
       - TNT_EXPLOSION
       - TNT_DAMAGE
-      - MESSAGE_JOIN
-      - MESSAGE_QUIT
+      - MESSAGE_ENTER
+      - MESSAGE_EXIT
 
 # Fly and Creative configuration (only if general.FlyAndCreative is activated)
 FlyCreative:

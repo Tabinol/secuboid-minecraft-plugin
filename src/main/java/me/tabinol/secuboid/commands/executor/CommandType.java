@@ -1,5 +1,5 @@
 /*
- Secuboid: Lands and Factions plugin for Minecraft server
+ Secuboid: Lands plugin for Minecraft server
  Copyright (C) 2014 Kaz00, Tabinol
 
  This program is free software: you can redistribute it and/or modify

@@ -17,7 +17,7 @@
 permissions:
 
   # Every worlds
-  - playercontainers: b:newbies
+  - playercontainers: g:newbies
     permissions: 
       - BUILD
       - OPEN
@@ -29,7 +29,7 @@ permissions:
       - USE_NOTEBLOCK
       - TAME
     value: false
-  - playercontainers: b:regular
+  - playercontainers: g:regular
     permissions: BUILD
     value: true
     inheritable: false
@@ -60,7 +60,7 @@ permissions:
     worlds: world
 
 #  # The end
-#  - playercontainers: b:group.newbies
+#  - playercontainers: g:newbies
 #    permissions: BUILD
 #    value: false
 #    inheritable: false

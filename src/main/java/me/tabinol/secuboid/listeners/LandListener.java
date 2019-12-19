@@ -142,11 +142,12 @@ public final class LandListener extends CommonListener implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final LandPermissionsFlags landPermissionsFlags = playerConf.get(player).getLastLandPermissionsFlags();
-        final Land landNullable = landPermissionsFlags.getLandNullable();
+        Land landNullable = landPermissionsFlags.getLandNullable();
 
         // Notify for quit
         while (landNullable != null) {
             notifyPlayers(landNullable, "ACTION.PLAYEREXIT", player);
+            landNullable = landNullable.getParent();
         }
 
         if (playerHeal.contains(player)) {

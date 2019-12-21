@@ -40,7 +40,7 @@ import org.bukkit.command.CommandSender;
  */
 @InfoCommand(name = "area", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "add", "remove", "replace" }), //
+                @CompletionMap(regex = "^$", completions = { "add", "list", "remove", "replace" }), //
                 @CompletionMap(regex = "^(remove|replace)$", completions = { "@areaLand" }) //
         })
 public final class CommandArea extends CommandCollisionsThreadExec {
@@ -80,8 +80,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             Area area = playerConf.getSelection().getArea();
 
             // Check for collision
-            checkCollision(area.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.AREA_ADD, 0, area,
-                    landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
+            checkCollision(area.getWorldName(), landSelectNullable.getName(), landSelectNullable, null,
+                    LandAction.AREA_ADD, 0, area, landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
 
         } else if (fonction.equalsIgnoreCase("remove") || fonction.equalsIgnoreCase("replace")) {
 
@@ -121,8 +121,9 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             if (fonction.equalsIgnoreCase("remove")) {
 
                 // Check for collision
-                checkCollision(landSelectNullable.getWorldName(), fonction, landSelectNullable, null, LandAction.AREA_REMOVE, areaNb, null,
-                        landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
+                checkCollision(landSelectNullable.getWorldName(), fonction, landSelectNullable, null,
+                        LandAction.AREA_REMOVE, areaNb, null, landSelectNullable.getParent(),
+                        landSelectNullable.getOwner(), true);
 
             } else {
 
@@ -132,8 +133,9 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 Area area = playerConf.getSelection().getArea();
 
                 // Check for collision
-                checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, LandAction.AREA_MODIFY, areaNb, area,
-                        landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
+                checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable,
+                        null, LandAction.AREA_MODIFY, areaNb, area, landSelectNullable.getParent(),
+                        landSelectNullable.getOwner(), true);
             }
 
         } else if (fonction.equalsIgnoreCase("list")) {
@@ -144,7 +146,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint())
                         .append(Config.NEWLINE);
             }
-            new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, landSelectNullable.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.AREA.LISTSTART", stList.toString(), sender, landSelectNullable.getName())
+                    .getPage(1);
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
         }

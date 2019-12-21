@@ -36,7 +36,8 @@ import org.bukkit.command.CommandSender;
  */
 @InfoCommand(name = "rent", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "recreate" }), //
+                @CompletionMap(regex = "^$", completions = { "@number", "recreate" }), //
+                @CompletionMap(regex = "^([^\\s]+)$", completions = { "@number" }), //
                 @CompletionMap(regex = "^([^\\s]+) ([^\\s]+)$", completions = { "@boolean" }) //
         })
 public final class CommandRent extends CommandExec {
@@ -50,8 +51,8 @@ public final class CommandRent extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandRent(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandRent(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -61,7 +62,8 @@ public final class CommandRent extends CommandExec {
 
         // Economy activated in configuration?
         if (!secuboid.getConf().useEconomy()) {
-            throw new SecuboidCommandException(secuboid, "Economy not available.", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+            throw new SecuboidCommandException(secuboid, "Economy not available.", player,
+                    "COMMAND.ECONOMY.NOTAVAILABLE");
         }
 
         checkSelections(true, null);
@@ -92,14 +94,21 @@ public final class CommandRent extends CommandExec {
             }
             try {
                 ecoSign = new EcoSign(secuboid, landSelectNullable, player);
-                ecoSign.createSignForRent(landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(), landSelectNullable.getRentAutoRenew(),
-                        landSelectNullable.isRented() ? landSelectNullable.getTenant().getPlayerName() : null); // Tenant name if the land is rented
+                ecoSign.createSignForRent(landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(),
+                        landSelectNullable.getRentAutoRenew(),
+                        landSelectNullable.isRented() ? landSelectNullable.getTenant().getPlayerName() : null); // Tenant
+                                                                                                                // name
+                                                                                                                // if
+                                                                                                                // the
+                                                                                                                // land
+                                                                                                                // is
+                                                                                                                // rented
                 removeSignFromHand();
                 if (!ecoSign.getLocation().getBlock().equals(landSelectNullable.getRentSignLoc().getBlock())) {
                     ecoSign.removeSign(landSelectNullable.getRentSignLoc());
                     landSelectNullable.setRentSignLoc(ecoSign.getLocation());
                 }
-            } catch (SignException e) {
+            } catch (final SignException e) {
                 throw new SecuboidCommandException(secuboid, "Error in the command", player,
                         "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
@@ -113,7 +122,7 @@ public final class CommandRent extends CommandExec {
         // get price
         try {
             rentPrice = Double.parseDouble(curArg);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player, "GENERAL.MISSINGINFO");
         }
 
@@ -121,7 +130,7 @@ public final class CommandRent extends CommandExec {
         curArg = argList.getNext();
         try {
             rentRenew = Integer.parseInt(curArg);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player, "GENERAL.MISSINGINFO");
         }
 
@@ -130,7 +139,7 @@ public final class CommandRent extends CommandExec {
         if (curArg != null) {
             try {
                 rentAutoRenew = Boolean.parseBoolean(curArg);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 // Default value
                 rentAutoRenew = true;
             }
@@ -147,7 +156,7 @@ public final class CommandRent extends CommandExec {
             ecoSign = new EcoSign(secuboid, landSelectNullable, player);
             ecoSign.createSignForRent(rentPrice, rentRenew, rentAutoRenew, null);
             removeSignFromHand();
-        } catch (SignException e) {
+        } catch (final SignException e) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player,
                     "COMMAND.ECONOMY.ERRORCREATESIGN");
         }

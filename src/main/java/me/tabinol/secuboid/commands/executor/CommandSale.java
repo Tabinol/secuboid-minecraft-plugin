@@ -38,7 +38,7 @@ import org.bukkit.command.CommandSender;
  */
 @InfoCommand(name = "sale", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "recreate" }) //
+                @CompletionMap(regex = "^$", completions = { "@number", "recreate" }) //
         })
 public final class CommandSale extends CommandExec {
 
@@ -51,8 +51,8 @@ public final class CommandSale extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSale(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandSale(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -62,7 +62,8 @@ public final class CommandSale extends CommandExec {
 
         // Economy activated in configuration?
         if (!secuboid.getConf().useEconomy()) {
-            throw new SecuboidCommandException(secuboid, "Economy not available.", player, "COMMAND.ECONOMY.NOTAVAILABLE");
+            throw new SecuboidCommandException(secuboid, "Economy not available.", player,
+                    "COMMAND.ECONOMY.NOTAVAILABLE");
         }
 
         checkSelections(true, null);
@@ -72,7 +73,7 @@ public final class CommandSale extends CommandExec {
             checkPermission(false, false, PermissionList.ECO_LAND_FOR_SALE.getPermissionType(), null);
         }
 
-        String curArg = argList.getNext();
+        final String curArg = argList.getNext();
         double salePrice;
         EcoSign ecoSign;
 
@@ -97,7 +98,7 @@ public final class CommandSale extends CommandExec {
                     ecoSign.removeSign(landSelectNullable.getSaleSignLoc());
                     landSelectNullable.setSaleSignLoc(ecoSign.getLocation());
                 }
-            } catch (SignException e) {
+            } catch (final SignException e) {
                 throw new SecuboidCommandException(secuboid, "Error in the command", player,
                         "COMMAND.ECONOMY.ERRORCREATESIGN");
             }
@@ -111,7 +112,7 @@ public final class CommandSale extends CommandExec {
         // get price
         try {
             salePrice = Double.parseDouble(curArg);
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player, "GENERAL.MISSINGINFO");
         }
 
@@ -126,7 +127,7 @@ public final class CommandSale extends CommandExec {
             ecoSign = new EcoSign(secuboid, landSelectNullable, player);
             ecoSign.createSignForSale(salePrice);
             removeSignFromHand();
-        } catch (SignException e) {
+        } catch (final SignException e) {
             throw new SecuboidCommandException(secuboid, "Error in the command", player,
                     "COMMAND.ECONOMY.ERRORCREATESIGN");
         }

@@ -41,7 +41,6 @@ import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 @InfoCommand(name = "list", //
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "world", "type", "@playerContainer" }), //
-                @CompletionMap(regex = "^player$", completions = { "@player" }), //
                 @CompletionMap(regex = "^type$", completions = { "@type" }) //
         })
 public final class CommandList extends CommandPlayerThreadExec {

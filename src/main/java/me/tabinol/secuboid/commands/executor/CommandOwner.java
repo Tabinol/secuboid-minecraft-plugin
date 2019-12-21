@@ -33,8 +33,7 @@ import org.bukkit.command.CommandSender;
  */
 @InfoCommand(name = "owner", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "@playerContainer" }), //
-                @CompletionMap(regex = "^player$", completions = { "@player" }) //
+                @CompletionMap(regex = "^$", completions = { "@playerContainer" }) //
         })
 public final class CommandOwner extends CommandPlayerThreadExec {
 

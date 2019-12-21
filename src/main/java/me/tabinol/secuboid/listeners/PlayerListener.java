@@ -23,9 +23,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Furnace;
-import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -256,6 +257,7 @@ public final class PlayerListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(final PlayerInteractEvent event) {
 
+        final BlockState blockState = event.getClickedBlock().getState();
         final Material ml = event.getClickedBlock().getType();
         final Player player = event.getPlayer();
         final Action action = event.getAction();
@@ -303,7 +305,7 @@ public final class PlayerListener extends CommonListener implements Listener {
 
             // For economy (buy or rent/unrent)
         } else if (conf.useEconomy() && (action == Action.RIGHT_CLICK_BLOCK || action == Action.LEFT_CLICK_BLOCK)
-                && Sign.class.isAssignableFrom(ml.data)) {
+                && (blockState instanceof Sign)) {
 
             final Land trueLand = secuboid.getLands().getLand(loc);
 

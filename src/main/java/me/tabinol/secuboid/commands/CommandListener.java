@@ -29,6 +29,12 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.executor.CommandExec;
@@ -39,12 +45,6 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.utilities.StringChanges;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 /**
  * The Class OnCommand.
@@ -61,7 +61,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
      *
      * @param secuboid secuboid instance
      */
-    public CommandListener(Secuboid secuboid) {
+    public CommandListener(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
 
@@ -70,18 +70,19 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         consoleCommands = new ArrayList<>();
         playerCommands = new ArrayList<>();
 
-        for (CommandClassList presentClass : CommandClassList.values()) {
+        for (final CommandClassList presentClass : CommandClassList.values()) {
             // Store commands information
             final InfoCommand infoCommand = presentClass.getCommandClass().getAnnotation(InfoCommand.class);
             final Class<? extends CommandExec> commandClass = presentClass.getCommandClass();
             addCommandToList(infoCommand, infoCommand.name().toLowerCase(), commandClass);
-            for (String alias : infoCommand.aliases()) {
+            for (final String alias : infoCommand.aliases()) {
                 addCommandToList(infoCommand, alias.toLowerCase(), commandClass);
             }
         }
     }
 
-    private void addCommandToList(InfoCommand infoCommand, String command, Class<? extends CommandExec> commandClass) {
+    private void addCommandToList(final InfoCommand infoCommand, final String command,
+            final Class<? extends CommandExec> commandClass) {
         commandToClass.put(command, commandClass);
         playerCommands.add(command);
         if (infoCommand.allowConsole()) {
@@ -90,7 +91,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 
         // Others commands then /secuboid, /claim and /fd will not be send.
         final ArgList argList = new ArgList(secuboid, args, sender);
@@ -99,13 +100,14 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
             getCommand(sender, cmd, argList);
             return true;
             // If error on command, send the message to the player
-        } catch (SecuboidCommandException ex) {
+        } catch (final SecuboidCommandException ex) {
             return true;
         }
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias,
+            final String[] args) {
         final String firstChars = args[args.length - 1];
 
         // First arguments
@@ -131,8 +133,8 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         final InfoCommand ci = cv.getAnnotation(InfoCommand.class);
 
         // Find match with regex
-        for (CompletionMap completionMap : ci.completion()) {
-            Pattern pattern = Pattern.compile(completionMap.regex(), Pattern.CASE_INSENSITIVE);
+        for (final CompletionMap completionMap : ci.completion()) {
+            final Pattern pattern = Pattern.compile(completionMap.regex(), Pattern.CASE_INSENSITIVE);
             if (pattern.matcher(line).matches()) {
                 return makeArgList(sender, completionMap.completions(), firstChars);
             }
@@ -142,9 +144,9 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
-    private List<String> makeArgList(CommandSender sender, String[] completions, String firstChars) {
-        List<String> argList = new ArrayList<>();
-        for (String completion : completions) {
+    private List<String> makeArgList(final CommandSender sender, final String[] completions, final String firstChars) {
+        final List<String> argList = new ArrayList<>();
+        for (final String completion : completions) {
             switch (completion) {
             case "@approveLandList":
                 argList.addAll(listApproveLandList(sender));
@@ -163,6 +165,9 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
                 break;
             case "@land":
                 argList.addAll(listLand());
+                break;
+            case "@number":
+                argList.addAll(Arrays.asList("1", "10", "100", "1000"));
                 break;
             case "@player":
                 argList.addAll(listPlayer());
@@ -183,18 +188,19 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return filterList(argList, firstChars);
     }
 
-    private Set<String> listApproveLandList(CommandSender sender) {
+    private Set<String> listApproveLandList(final CommandSender sender) {
         if (sender.hasPermission("secuboid.collisionapprove")) {
             return secuboid.getLands().getApproveList().getApproveList().keySet();
         }
         return Collections.emptySet();
     }
 
-    private List<String> listAreaLand(CommandSender sender) {
+    private List<String> listAreaLand(final CommandSender sender) {
         final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
         if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
             final Land land = playerConf.getSelection().getLand();
-            final List<String> areasStrs = land.getAreas().stream().map(Object::toString).collect(Collectors.toList());
+            final List<String> areasStrs = land.getAreasKey().stream().map(key -> key.toString())
+                    .collect(Collectors.toList());
             return areasStrs;
         }
         return Collections.emptyList();
@@ -214,7 +220,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private List<String> listLand() {
         final List<String> argList = new ArrayList<>();
-        for (Land land : secuboid.getLands().getLands()) {
+        for (final Land land : secuboid.getLands().getLands()) {
             argList.add(land.getName());
         }
         return argList;
@@ -227,7 +233,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
     private List<String> listPlayerContainer() {
         final List<String> argList = new ArrayList<>();
         argList.addAll(secuboid.getPlayersCache().getPlayerNames());
-        for (PlayerContainerType pcType : PlayerContainerType.values()) {
+        for (final PlayerContainerType pcType : PlayerContainerType.values()) {
             if (pcType != PlayerContainerType.PLAYERNAME) {
                 argList.add(pcType.getPrint());
             }
@@ -243,7 +249,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return secuboid.getTypes().getTypes().stream().map(Type::getName).collect(Collectors.toList());
     }
 
-    private List<String> filterList(List<String> matches, String firstChars) {
+    private List<String> filterList(final List<String> matches, final String firstChars) {
         return matches.stream().filter(match -> match.toLowerCase().startsWith(firstChars.toLowerCase()))
                 .collect(Collectors.toList());
     }
@@ -256,7 +262,8 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
      * @param argList arguments list
      * @throws SecuboidCommandException
      */
-    private void getCommand(CommandSender sender, Command cmd, ArgList argList) throws SecuboidCommandException {
+    private void getCommand(final CommandSender sender, final Command cmd, final ArgList argList)
+            throws SecuboidCommandException {
 
         try {
             // Show help if there is no arguments
@@ -291,27 +298,27 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
             }
 
             // a huge number of Exception to catch!
-        } catch (IllegalAccessException ex) {
+        } catch (final IllegalAccessException ex) {
             ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
                     "GENERAL.ERROR");
-        } catch (InstantiationException ex) {
+        } catch (final InstantiationException ex) {
             ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
                     "GENERAL.ERROR");
-        } catch (NoSuchMethodException ex) {
+        } catch (final NoSuchMethodException ex) {
             ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
                     "GENERAL.ERROR");
-        } catch (SecurityException ex) {
+        } catch (final SecurityException ex) {
             ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
                     "GENERAL.ERROR");
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             ex.printStackTrace();
             throw new SecuboidCommandException(secuboid, "General Error on Command class find", sender,
                     "GENERAL.ERROR");
-        } catch (InvocationTargetException ex) {
+        } catch (final InvocationTargetException ex) {
             // Catched by SecuboidCommandException
         }
     }
@@ -322,7 +329,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
      * @param command the command
      * @return command information
      */
-    public InfoCommand getInfoCommand(String command) {
+    public InfoCommand getInfoCommand(final String command) {
 
         final Class<?> infoClass = commandToClass.get(command.toLowerCase());
 

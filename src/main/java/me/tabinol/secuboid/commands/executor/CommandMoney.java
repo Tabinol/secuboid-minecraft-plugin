@@ -33,7 +33,8 @@ import org.bukkit.command.CommandSender;
  */
 @InfoCommand(name = "money", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "balance", "deposit", "withdraw" }) //
+                @CompletionMap(regex = "^$", completions = { "balance", "deposit", "withdraw" }), //
+                @CompletionMap(regex = "^(deposit|withdraw)$", completions = { "@number" }) //
         })
 public final class CommandMoney extends CommandExec {
 
@@ -51,8 +52,8 @@ public final class CommandMoney extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandMoney(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandMoney(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
         playerMoney = secuboid.getPlayerMoney();
@@ -69,7 +70,7 @@ public final class CommandMoney extends CommandExec {
 
         checkSelections(true, null);
 
-        String curArg = argList.getNext();
+        final String curArg = argList.getNext();
 
         if (curArg.equalsIgnoreCase("balance")) {
             balance();
@@ -90,8 +91,9 @@ public final class CommandMoney extends CommandExec {
     private void balance() throws SecuboidCommandException {
 
         checkPermission(true, false, PermissionList.MONEY_BALANCE.getPermissionType(), null);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDBALANCE", landSelectNullable.getName(), playerMoney.toFormat(landSelectNullable.getMoney())));
+        player.sendMessage(
+                ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDBALANCE",
+                        landSelectNullable.getName(), playerMoney.toFormat(landSelectNullable.getMoney())));
     }
 
     /**
@@ -103,7 +105,7 @@ public final class CommandMoney extends CommandExec {
 
         checkPermission(true, false, PermissionList.MONEY_DEPOSIT.getPermissionType(), null);
 
-        double amount = getAmountFromCommandLine();
+        final double amount = getAmountFromCommandLine();
 
         // Amount is valid?
         if (amount > playerMoney.getPlayerBalance(player.getPlayer(), landSelectNullable.getWorldName())) {
@@ -113,8 +115,9 @@ public final class CommandMoney extends CommandExec {
         // Land Deposit
         playerMoney.getFromPlayer(player.getPlayer(), landSelectNullable.getWorldName(), amount);
         landSelectNullable.addMoney(amount);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDDEPOSIT", playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
+        player.sendMessage(
+                ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
+                        playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
     }
 
     /**
@@ -126,7 +129,7 @@ public final class CommandMoney extends CommandExec {
 
         checkPermission(true, false, PermissionList.MONEY_WITHDRAW.getPermissionType(), null);
 
-        double amount = getAmountFromCommandLine();
+        final double amount = getAmountFromCommandLine();
 
         // Amount is valid?
         if (amount > landSelectNullable.getMoney()) {
@@ -136,8 +139,9 @@ public final class CommandMoney extends CommandExec {
         // Land Deposit
         landSelectNullable.subtractMoney(amount);
         playerMoney.giveToPlayer(player.getPlayer(), landSelectNullable.getWorldName(), amount);
-        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                .getMessage("COMMAND.ECONOMY.LANDWITHDRAW", playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
+        player.sendMessage(
+                ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
+                        playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
     }
 
     /**
@@ -157,10 +161,10 @@ public final class CommandMoney extends CommandExec {
                 // Amount is 0 or less
                 err = true;
             }
-        } catch (NullPointerException ex) {
+        } catch (final NullPointerException ex) {
             // Amount is null
             err = true;
-        } catch (NumberFormatException ex) {
+        } catch (final NumberFormatException ex) {
             // Amount is unreadable
             err = true;
         }

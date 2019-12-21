@@ -38,8 +38,7 @@ import org.bukkit.command.CommandSender;
 @InfoCommand(name = "resident", aliases = { "res" }, forceParameter = true, //
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "add", "remove", "list" }), //
-                @CompletionMap(regex = "^(add|remove)$", completions = { "@playerContainer" }), //
-                @CompletionMap(regex = "^(add|remove) player$", completions = { "@player" }) //
+                @CompletionMap(regex = "^(add|remove)$", completions = { "@playerContainer" }) //
         })
 public final class CommandResident extends CommandPlayerThreadExec {
 

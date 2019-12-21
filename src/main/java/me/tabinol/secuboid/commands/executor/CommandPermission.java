@@ -46,11 +46,9 @@ import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
         completion = { //
                 @CompletionMap(regex = "^$", completions = { "add", "remove", "list" }), //
                 @CompletionMap(regex = "^(add|remove)$", completions = { "@playerContainer" }), //
-                @CompletionMap(regex = "^(add|remove) player$", completions = { "@player" }), //
-                @CompletionMap(regex = "^(add|remove) \\w+\\b(?<!\\bplayer)$", completions = { "@permission" }), //
-                @CompletionMap(regex = "^(add|remove) player ([^\\s]+)$", completions = { "@permission" }), //
-                @CompletionMap(regex = "^add \\w+\\b(?<!\\bplayer) .*$", completions = { "@boolean" }), //
-                @CompletionMap(regex = "^add player ([^\\s]+) .*$", completions = { "@boolean" }) //
+                @CompletionMap(regex = "^(add|remove) ([^\\s]+)$", completions = { "@permission" }), //
+                @CompletionMap(regex = "^add ([^\\s]+) ([^\\s]+)$", completions = { "@boolean" }), //
+                @CompletionMap(regex = "^add ([^\\s]+) ([^\\s]+) ([^\\s]+)$", completions = { "@boolean" }) //
         })
 public final class CommandPermission extends CommandPlayerThreadExec {
 

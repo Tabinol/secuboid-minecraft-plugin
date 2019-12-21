@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.commands;
 
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.Flag;
@@ -27,7 +29,6 @@ import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class ArgList. Works with command arguments.
@@ -58,7 +59,7 @@ public class ArgList {
      * @param arg      the arg
      * @param player   the player
      */
-    public ArgList(Secuboid secuboid, String[] arg, CommandSender player) {
+    public ArgList(final Secuboid secuboid, final String[] arg, final CommandSender player) {
 
         this.secuboid = secuboid;
         this.arg = arg;
@@ -120,7 +121,7 @@ public class ArgList {
      */
     private String getNextToEnd() {
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         String cur;
 
         while ((cur = getNext()) != null) {
@@ -141,9 +142,10 @@ public class ArgList {
      * @return the flag type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public FlagType getFlagTypeFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
+    public FlagType getFlagTypeFromArg(final boolean isAdminmode, final boolean isOwner)
+            throws SecuboidCommandException {
 
-        String curArg = getNext();
+        final String curArg = getNext();
         FlagType flagType;
 
         if (curArg == null) {
@@ -170,15 +172,15 @@ public class ArgList {
      * @return the flag from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public Flag getFlagFromArg(boolean isAdminmob, boolean isOwner) throws SecuboidCommandException {
+    public Flag getFlagFromArg(final boolean isAdminmob, final boolean isOwner) throws SecuboidCommandException {
 
-        FlagType flagType = getFlagTypeFromArg(isAdminmob, isOwner);
+        final FlagType flagType = getFlagTypeFromArg(isAdminmob, isOwner);
 
         if (isLast()) {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "GENERAL.MISSINGINFO");
         }
 
-        FlagValue flagValue = secuboid.getNewInstance().getFlagValueFromFileFormat(getNextToEnd(), flagType);
+        final FlagValue flagValue = secuboid.getNewInstance().getFlagValueFromFileFormat(getNextToEnd(), flagType);
 
         if (flagValue != null) {
             return secuboid.getPermissionsFlags().newFlag(flagType, flagValue, true);
@@ -194,28 +196,41 @@ public class ArgList {
      * @return the player container from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PlayerContainer getPlayerContainerFromArg(PlayerContainerType[] bannedPCTList) throws SecuboidCommandException {
+    public PlayerContainer getPlayerContainerFromArg(final PlayerContainerType[] bannedPCTList)
+            throws SecuboidCommandException {
 
-        String curArg = getNext();
-        String param = null;
+        final String curArg = getNext();
         PlayerContainer pc;
 
         if (curArg == null) {
-            throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player, "COMMAND.CONTAINERTYPE.TYPENULL");
+            throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
+                    "COMMAND.CONTAINERTYPE.TYPENULL");
         }
 
         PlayerContainerType pcType = PlayerContainerType.getFromString(curArg);
-
+        String param = null;
         if (pcType == null) {
-            // Type player if it is the player directly
-            pcType = PlayerContainerType.PLAYER;
-            param = curArg;
+            if (curArg.contains(":")) {
+                // New method
+                final String[] split = curArg.split(":", 2);
+                pcType = PlayerContainerType.getFromString(split[0]);
+                param = split[1];
+                if (pcType == null || pcType == PlayerContainerType.PLAYERNAME) {
+                    throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
+                            "COMMAND.CONTAINERTYPE.NOTPERMITTED");
+                }
+            } else {
+                // Type player if it is the player directly
+                pcType = PlayerContainerType.PLAYER;
+                param = curArg;
+            }
         }
 
         if (bannedPCTList != null) {
-            for (PlayerContainerType bPCT : bannedPCTList) {
+            for (final PlayerContainerType bPCT : bannedPCTList) {
                 if (pcType == bPCT) {
-                    throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player, "COMMAND.CONTAINERTYPE.NOTPERMITTED");
+                    throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
+                            "COMMAND.CONTAINERTYPE.NOTPERMITTED");
                 }
             }
         }
@@ -225,7 +240,8 @@ public class ArgList {
                 param = getNext();
             }
             if (param == null) {
-                throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player, "COMMAND.CONTAINER.CONTAINERNULL");
+                throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
+                        "COMMAND.CONTAINER.CONTAINERNULL");
             }
             pc = secuboid.getNewInstance().createPlayerContainer(pcType, param);
         } else {
@@ -235,7 +251,8 @@ public class ArgList {
         if (pcType == PlayerContainerType.PLAYER && pc == null) {
 
             // this player doesn't exist
-            throw new SecuboidCommandException(secuboid, "Player not exist Error", player, "COMMAND.CONTAINER.PLAYERNOTEXIST");
+            throw new SecuboidCommandException(secuboid, "Player not exist Error", player,
+                    "COMMAND.CONTAINER.PLAYERNOTEXIST");
         }
 
         return pc;
@@ -249,9 +266,10 @@ public class ArgList {
      * @return the permission type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PermissionType getPermissionTypeFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
+    public PermissionType getPermissionTypeFromArg(final boolean isAdminmode, final boolean isOwner)
+            throws SecuboidCommandException {
 
-        String curArg = getNext();
+        final String curArg = getNext();
         PermissionType pt;
 
         if (curArg == null) {
@@ -278,13 +296,15 @@ public class ArgList {
      * @return the permission from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public Permission getPermissionFromArg(boolean isAdminmode, boolean isOwner) throws SecuboidCommandException {
+    public Permission getPermissionFromArg(final boolean isAdminmode, final boolean isOwner)
+            throws SecuboidCommandException {
 
-        PermissionType pt = getPermissionTypeFromArg(isAdminmode, isOwner);
-        String curArg = getNext();
+        final PermissionType pt = getPermissionTypeFromArg(isAdminmode, isOwner);
+        final String curArg = getNext();
 
         if (curArg == null) {
-            throw new SecuboidCommandException(secuboid, "Permission Error", player, "COMMAND.PERMISSIONVALUE.VALUENULL");
+            throw new SecuboidCommandException(secuboid, "Permission Error", player,
+                    "COMMAND.PERMISSIONVALUE.VALUENULL");
         }
 
         return secuboid.getPermissionsFlags().newPermission(pt, Boolean.parseBoolean(curArg), true);

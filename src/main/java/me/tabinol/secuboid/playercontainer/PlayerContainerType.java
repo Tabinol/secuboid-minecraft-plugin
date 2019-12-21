@@ -97,6 +97,15 @@ public enum PlayerContainerType {
     }
 
     /**
+     * Gets one letter code
+     *
+     * @return one letter code
+     */
+    public String getOneLetterCode() {
+        return oneLetterCode;
+    }
+
+    /**
      * Gets printable name
      *
      * @return printable name

@@ -173,7 +173,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
                 argList.addAll(listPlayer());
                 break;
             case "@playerContainer":
-                argList.addAll(listPlayerContainer());
+                argList.addAll(listPlayerContainer(firstChars));
                 break;
             case "@permission":
                 argList.addAll(listPermission());
@@ -230,12 +230,32 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         return secuboid.getPlayersCache().getPlayerNames();
     }
 
-    private List<String> listPlayerContainer() {
+    private List<String> listPlayerContainer(final String firstChars) {
         final List<String> argList = new ArrayList<>();
-        argList.addAll(secuboid.getPlayersCache().getPlayerNames());
-        for (final PlayerContainerType pcType : PlayerContainerType.values()) {
-            if (pcType != PlayerContainerType.PLAYERNAME) {
-                argList.add(pcType.getPrint());
+        if (firstChars.matches("^.:")) {
+            switch (firstChars.substring(0, 1).toLowerCase()) {
+            case "b":
+                argList.add("B:perm.perm");
+                break;
+            case "g":
+                argList.add("G:group");
+                break;
+            case "p":
+                argList.addAll(secuboid.getPlayersCache().getPlayerNames().stream()
+                        .map(playerName -> String.format("P:%s", playerName)).collect(Collectors.toList()));
+                break;
+            default:
+            }
+        } else {
+            argList.addAll(secuboid.getPlayersCache().getPlayerNames());
+            for (final PlayerContainerType pcType : PlayerContainerType.values()) {
+                if (pcType != PlayerContainerType.PLAYERNAME) {
+                    if (pcType.hasParameter()) {
+                        argList.add(String.format("%s:", pcType.getOneLetterCode()));
+                    } else {
+                        argList.add(pcType.getPrint());
+                    }
+                }
             }
         }
         return argList;

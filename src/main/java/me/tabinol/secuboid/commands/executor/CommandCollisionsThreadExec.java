@@ -66,7 +66,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         private final Collisions collisions;
         private long nbTick;
 
-        CollisionThreadStatus(Player player, Collisions collisions) {
+        CollisionThreadStatus(final Player player, final Collisions collisions) {
             this.player = player;
             this.collisions = collisions;
             nbTick = STATUS_FIRST_NB_TICKS;
@@ -92,8 +92,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandCollisionsThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender,
-            ArgList argList) throws SecuboidCommandException {
+    public CommandCollisionsThreadExec(final Secuboid secuboid, final InfoCommand infoCommand,
+            final CommandSender sender, final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -122,8 +122,9 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param addForApprove the add for approve
      * @throws SecuboidCommandException the secuboid command exception
      */
-    final void checkCollision(String worldName, String landName, Land land, Type type, Collisions.LandAction action,
-            int removeId, Area newArea, Land parent, PlayerContainer owner, boolean addForApprove) {
+    final void checkCollision(final String worldName, final String landName, final Land land, final Type type,
+            final Collisions.LandAction action, final int removeId, final Area newArea, final Land parent,
+            final PlayerContainer owner, final boolean addForApprove) {
 
         // allowApprove: false: The command can absolutely not be done if there is
         // error!
@@ -134,11 +135,11 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         this.newArea = newArea;
         this.owner = owner;
         this.parent = parent;
-        boolean isFree = !isPlayerMustPay();
-        Collisions coll = new Collisions(secuboid, worldName, landName, land, action, removeId, newArea, parent, owner,
-                isFree, !addForApprove);
+        final boolean isFree = !isPlayerMustPay();
+        final Collisions coll = new Collisions(secuboid, worldName, landName, land, action, removeId, newArea, parent,
+                owner, isFree, !addForApprove);
         secuboid.getCollisionsManagerThread().lookForCollisions(this, coll);
-        CollisionThreadStatus collisionThreadStatus = new CollisionThreadStatus(player, coll);
+        final CollisionThreadStatus collisionThreadStatus = new CollisionThreadStatus(player, coll);
         statusTask = Bukkit.getScheduler().runTaskTimer(secuboid, (Runnable) collisionThreadStatus,
                 STATUS_FIRST_NB_TICKS, STATUS_NEXT_NB_TICKS);
     }
@@ -149,9 +150,9 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param collisions collisions
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public final void commandThreadParentExecute(Collisions collisions) throws SecuboidCommandException {
+    public final void commandThreadParentExecute(final Collisions collisions) throws SecuboidCommandException {
 
-        boolean allowApprove = collisions.getAllowApprove();
+        final boolean allowApprove = collisions.getAllowApprove();
 
         if (statusTask != null) {
             statusTask.cancel();
@@ -210,13 +211,13 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @return multiple the value for area create
      * @throws SecuboidCommandException no permission/command error
      */
-    final LandCheckValues landCheckForCreate(AreaSelection select) throws SecuboidCommandException {
-        LandCheckValues landCheckValues = new LandCheckValues();
+    final LandCheckValues landCheckForCreate(final AreaSelection select) throws SecuboidCommandException {
+        final LandCheckValues landCheckValues = new LandCheckValues();
 
         // Check for parent
         if (!argList.isLast()) {
 
-            String curString = argList.getNext();
+            final String curString = argList.getNext();
 
             if (curString.equalsIgnoreCase("noparent")) {
 
@@ -245,7 +246,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
         // If the player is adminmode, the owner is nobody, and set type
         if (playerConf.isAdminMode()) {
-            landCheckValues.localOwner = new PlayerContainerNobody();
+            landCheckValues.localOwner = PlayerContainerNobody.getInstance();
             landCheckValues.localType = secuboid.getConf().getTypeAdminMode();
         } else {
             landCheckValues.localOwner = playerConf.getPlayerContainer();

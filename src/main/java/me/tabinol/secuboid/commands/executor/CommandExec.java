@@ -32,9 +32,7 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
-import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 
 /**
  * The Class CommandExec.
@@ -95,8 +93,8 @@ public abstract class CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected CommandExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    protected CommandExec(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         this.secuboid = secuboid;
         this.infoCommand = infoCommand;
@@ -162,7 +160,7 @@ public abstract class CommandExec {
      * @param mustBeAreaSelected the must be area selected
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected final void checkSelections(Boolean mustBeSelectMode, Boolean mustBeAreaSelected)
+    protected final void checkSelections(final Boolean mustBeSelectMode, final Boolean mustBeAreaSelected)
             throws SecuboidCommandException {
 
         if (mustBeSelectMode != null) {
@@ -185,8 +183,8 @@ public abstract class CommandExec {
      * @param startSelectCancel the start select cancel
      * @throws SecuboidCommandException the secuboid command exception
      */
-    private final void checkSelection(boolean result, boolean neededResult, String messageFalse,
-            boolean startSelectCancel) throws SecuboidCommandException {
+    private final void checkSelection(final boolean result, final boolean neededResult, final String messageFalse,
+            final boolean startSelectCancel) throws SecuboidCommandException {
 
         if (result != neededResult) {
             if (!result) {
@@ -211,18 +209,14 @@ public abstract class CommandExec {
      * @param bukkitPermission the bukkit permission
      * @throws SecuboidCommandException the secuboid command exception
      */
-    protected final void checkPermission(boolean mustBeAdminMode, boolean mustBeOwner, PermissionType neededPerm,
-            String bukkitPermission) throws SecuboidCommandException {
+    protected final void checkPermission(final boolean mustBeAdminMode, final boolean mustBeOwner,
+            final PermissionType neededPerm, final String bukkitPermission) throws SecuboidCommandException {
 
         boolean canDo = false;
-        final LandPermissionsFlags landPermissionsFlagsSelectNullable = landSelectNullable != null
-                ? landSelectNullable.getPermissionsFlags()
-                : null;
 
         if (mustBeAdminMode && playerConf.isAdminMode()) {
             canDo = true;
-        } else if (mustBeOwner && (landSelectNullable == null || new PlayerContainerOwner().hasAccess(player,
-                landSelectNullable, landPermissionsFlagsSelectNullable))) {
+        } else if (mustBeOwner && (landSelectNullable == null || landSelectNullable.isOwner(player))) {
             canDo = true;
         } else if (neededPerm != null
                 && landSelectNullable.getPermissionsFlags().checkPermissionAndInherit(player, neededPerm)) {
@@ -255,7 +249,7 @@ public abstract class CommandExec {
      */
     final void removeSignFromHand() {
         if (player.getGameMode() != GameMode.CREATIVE) {
-            EntityEquipment equipment = player.getEquipment();
+            final EntityEquipment equipment = player.getEquipment();
             if (equipment.getItemInMainHand().getAmount() == 1) {
                 equipment.setItemInMainHand(new ItemStack(Material.AIR));
             } else {

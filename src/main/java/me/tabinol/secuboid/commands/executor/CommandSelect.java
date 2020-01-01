@@ -33,7 +33,6 @@ import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
-import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.LandSelection;
@@ -144,8 +143,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         }
     }
 
-    private void doSelectLand(final String curArg)
-            throws SecuboidCommandException {
+    private void doSelectLand(final String curArg) throws SecuboidCommandException {
         Land landtest;
 
         // If land is already selected, select an area, not a land
@@ -163,10 +161,13 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
 
         }
-        final boolean isResidentManager = landtest.getPermissionsFlags().checkPermissionAndInherit(player, PermissionList.RESIDENT_MANAGER.getPermissionType());
+        final boolean isResidentManager = landtest.getPermissionsFlags().checkPermissionAndInherit(player,
+                PermissionList.RESIDENT_MANAGER.getPermissionType());
 
-        // (isResidentManager && landtest.isResident(player): Bug exploitation found by Geo_Log: Add resident for a non resident
-        if (!(landtest.isOwner(player) || playerConf.isAdminMode() || (isResidentManager && landtest.isResident(player)))) {
+        // (isResidentManager && landtest.isResident(player): Bug exploitation found by
+        // Geo_Log: Add resident for a non resident
+        if (!(landtest.isOwner(player) || playerConf.isAdminMode()
+                || (isResidentManager && landtest.isResident(player)))) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
         }
 
@@ -181,8 +182,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         }
     }
 
-    private void doSelectArea(final String curArg)
-            throws SecuboidCommandException {
+    private void doSelectArea(final String curArg) throws SecuboidCommandException {
 
         final Land landtest = playerConf.getSelection().getLand();
         Area areaSelect;
@@ -191,10 +191,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.JOIN.SELECTMODE");
         }
 
-        final PlayerContainer ownerLocal = landtest.getOwner();
-
-        if (!ownerLocal.hasAccess(player, landtest, landtest.getPermissionsFlags())
-                && !playerConf.isAdminMode() && !landtest.isOwner(player)) {
+        if (!playerConf.isAdminMode() && !landtest.isOwner(player)) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
         }
 

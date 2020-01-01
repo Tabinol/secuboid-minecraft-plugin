@@ -26,7 +26,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
@@ -40,22 +39,22 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 	private final UUID minecraftUUID;
 	private final String name;
 
-	public PlayerContainerPlayer(Secuboid secuboid, UUID minecraftUUID) {
+	public PlayerContainerPlayer(final Secuboid secuboid, final UUID minecraftUUID) {
 		this.secuboid = secuboid;
 		name = "ID-" + minecraftUUID.toString();
 		this.minecraftUUID = minecraftUUID;
 	}
 
 	@Override
-	public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+	public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
 		return player != null && minecraftUUID.equals(player.getUniqueId());
 	}
 
 	@Override
 	public String getPrint() {
 
-		StringBuilder sb = new StringBuilder();
-		String playerName = getPlayerName();
+		final StringBuilder sb = new StringBuilder();
+		final String playerName = getPlayerName();
 
 		sb.append(ChatColor.DARK_RED).append("P:");
 
@@ -74,7 +73,7 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 		String playerName;
 
 		// Pass 1 get in Online players
-		Player player = Bukkit.getPlayer(minecraftUUID);
+		final Player player = Bukkit.getPlayer(minecraftUUID);
 		if (player != null) {
 			return player.getName();
 		}
@@ -86,7 +85,7 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 		}
 
 		// Pass 3 get from offline players
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
+		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(minecraftUUID);
 		if (offlinePlayer != null) {
 			return offlinePlayer.getName();
 		}
@@ -122,8 +121,13 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 	}
 
 	@Override
-	public int compareTo(PlayerContainer t) {
-		int result = PlayerContainerType.PLAYER.compareTo(t.getContainerType());
+    public boolean isLandRelative() {
+        return false;
+    }
+
+	@Override
+	public int compareTo(final PlayerContainer t) {
+		final int result = PlayerContainerType.PLAYER.compareTo(t.getContainerType());
 		if (result != 0) {
 			return result;
 		}

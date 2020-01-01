@@ -28,18 +28,24 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.types.Type;
+import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import me.tabinol.secuboid.playercontainer.PlayerContainerResident;
+import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
 
 /**
  * Represents a land with a number of areas.
@@ -245,7 +251,7 @@ public final class Land {
      * Sets the land default values
      */
     public void setDefault() {
-        owner = new PlayerContainerNobody();
+        owner = PlayerContainerNobody.getInstance();
         residents = new TreeSet<>();
         playerNotify = new TreeSet<>();
         landPermissionsFlags.setDefault();
@@ -550,13 +556,18 @@ public final class Land {
     }
 
     /**
-     * Checks if is owner.
+     * Checks if the player is owner with inheritance.
      *
      * @param player the player
      * @return true, if is owner
      */
     public boolean isOwner(final Player player) {
-        return owner.hasAccess(player, this, landPermissionsFlags);
+        if (PlayerContainerOwner.getInstance().hasAccess(player, landPermissionsFlags)) {
+            return true;
+        }
+        return parent != null
+                && landPermissionsFlags.getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()
+                && parent.isOwner(player);
     }
 
     /**
@@ -566,6 +577,11 @@ public final class Land {
      */
     public void setOwner(final PlayerContainer owner) {
         this.owner = owner;
+
+        // Reset all owner permissions and resident managers for safety
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_OWNER.getPermissionType());
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.RESIDENT_MANAGER.getPermissionType());
+
         doSave();
 
         // Start Event
@@ -617,18 +633,18 @@ public final class Land {
     }
 
     /**
-     * Checks if is resident.
+     * Checks if the player is resident with inheritance.
      *
      * @param player the player
      * @return true, if is resident
      */
     public boolean isResident(final Player player) {
-        for (final PlayerContainer resident : residents) {
-            if (resident.hasAccess(player, this, landPermissionsFlags)) {
-                return true;
-            }
+        if (PlayerContainerResident.getInstance().hasAccess(player, landPermissionsFlags)) {
+            return true;
         }
-        return false;
+        return parent != null
+                && landPermissionsFlags.getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()
+                && parent.isResident(player);
     }
 
     /**
@@ -669,18 +685,18 @@ public final class Land {
     }
 
     /**
-     * Checks if is banned.
+     * Checks if is banned with inheritance.
      *
      * @param player the player
      * @return true, if is banned
      */
     public boolean isBanned(final Player player) {
         for (final PlayerContainer banned : banneds) {
-            if (banned.hasAccess(player, this, landPermissionsFlags)) {
+            if (banned.hasAccess(player, landPermissionsFlags)) {
                 return true;
             }
         }
-        return false;
+        return parent != null && parent.isBanned(player);
     }
 
     /**
@@ -1207,6 +1223,7 @@ public final class Land {
         rented = true;
         this.tenant = tenant;
         lastPayment = System.currentTimeMillis();
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
         doSave();
     }
 
@@ -1218,6 +1235,7 @@ public final class Land {
         rented = false;
         tenant = null;
         lastPayment = 0;
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
         doSave();
     }
 
@@ -1231,13 +1249,18 @@ public final class Land {
     }
 
     /**
-     * Checks if is tenant.
+     * Checks if is tenant with inheritance.
      *
      * @param player the player
      * @return true, if is tenant
      */
     public boolean isTenant(final Player player) {
-        return rented && tenant.hasAccess(player, this, landPermissionsFlags);
+        if (tenant != null && PlayerContainerTenant.getInstance().hasAccess(player, landPermissionsFlags)) {
+            return true;
+        }
+        return parent != null
+                && landPermissionsFlags.getFlagAndInherit(FlagList.INHERIT_TENANT.getFlagType()).getValueBoolean()
+                && parent.isTenant(player);
     }
 
     /**

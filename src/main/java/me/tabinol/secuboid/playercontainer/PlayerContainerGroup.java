@@ -22,7 +22,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
@@ -35,13 +34,13 @@ public final class PlayerContainerGroup implements PlayerContainer {
     private final Secuboid secuboid;
     private final String groupName;
 
-    public PlayerContainerGroup(Secuboid secuboid, String groupName) {
+    public PlayerContainerGroup(final Secuboid secuboid, final String groupName) {
         this.secuboid = secuboid;
         this.groupName = groupName;
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
         return player != null && secuboid.getDependPlugin().getVaultPermission().playerInGroup(player, groupName);
     }
 
@@ -67,8 +66,13 @@ public final class PlayerContainerGroup implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
-        int result = PlayerContainerType.GROUP.compareTo(t.getContainerType());
+    public boolean isLandRelative() {
+        return false;
+    }
+
+    @Override
+    public int compareTo(final PlayerContainer t) {
+        final int result = PlayerContainerType.GROUP.compareTo(t.getContainerType());
         if (result != 0) {
             return result;
         }

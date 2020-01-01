@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
-import me.tabinol.secuboid.permissionsflags.FlagList;
 
 /**
  * Represents a land resident.
@@ -31,25 +30,30 @@ import me.tabinol.secuboid.permissionsflags.FlagList;
  */
 public final class PlayerContainerResident implements PlayerContainer {
 
+    private static final PlayerContainerResident instance = new PlayerContainerResident();
+
+    private PlayerContainerResident() {
+    }
+
+    public static PlayerContainerResident getInstance() {
+        return instance;
+    }
+
     @Override
-    public boolean hasAccess(final Player player, final Land pcLandNullable,
-            final LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
         final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
-        if (pcLandNullable == null || testLandNullable == null) {
+        if (testLandNullable == null) {
             return false;
         }
 
-        boolean value = pcLandNullable.isResident(player);
-        Land actual = pcLandNullable;
-        Land parentNullable;
-
-        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
-                .getFlagAndInherit(FlagList.INHERIT_RESIDENTS.getFlagType()).getValueBoolean()) {
-            value = parentNullable.isResident(player);
-            actual = parentNullable;
+        for (final PlayerContainer playerContainer : testLandNullable.getResidents()) {
+            // First check is anti inifite loop
+            if (!playerContainer.isLandRelative() && playerContainer.hasAccess(player, testLandPermissionsFlags)) {
+                return true;
+            }
         }
 
-        return value;
+        return false;
     }
 
     @Override
@@ -70,6 +74,11 @@ public final class PlayerContainerResident implements PlayerContainer {
     @Override
     public String toFileFormat() {
         return PlayerContainerType.RESIDENT.getPrint() + ":";
+    }
+
+    @Override
+    public boolean isLandRelative() {
+        return true;
     }
 
     @Override

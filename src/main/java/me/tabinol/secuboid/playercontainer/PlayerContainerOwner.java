@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
-import me.tabinol.secuboid.permissionsflags.FlagList;
+import me.tabinol.secuboid.permissionsflags.PermissionList;
 
 /**
  * Represents the land owner.
@@ -31,25 +31,34 @@ import me.tabinol.secuboid.permissionsflags.FlagList;
  */
 public final class PlayerContainerOwner implements PlayerContainer {
 
+    private static final PlayerContainerOwner instance = new PlayerContainerOwner();
+
+    private PlayerContainerOwner() {
+    }
+
+    public static PlayerContainerOwner getInstance() {
+        return instance;
+    }
+
     @Override
-    public boolean hasAccess(final Player player, final Land pcLandNullable,
-            final LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
         final Land testLandNullable = testLandPermissionsFlags.getLandNullable();
-        if (pcLandNullable == null || testLandNullable == null) {
+        if (testLandNullable == null) {
             return false;
         }
 
-        boolean value = pcLandNullable.getOwner().hasAccess(player, pcLandNullable, testLandPermissionsFlags);
-        Land actual = pcLandNullable;
-        Land parentNullable;
-
-        while (!value && (parentNullable = actual.getParent()) != null && actual.getPermissionsFlags()
-                .getFlagAndInherit(FlagList.INHERIT_OWNER.getFlagType()).getValueBoolean()) {
-            value = parentNullable.isOwner(player);
-            actual = parentNullable;
+        // Check for permission
+        if (testLandPermissionsFlags.checkPermissionAndInherit(player, PermissionList.LAND_OWNER.getPermissionType())) {
+            return true;
         }
 
-        return value;
+        // Anti inifite loop
+        final PlayerContainer playerContainer = testLandNullable.getOwner();
+        if (playerContainer == null || playerContainer.isLandRelative()) {
+            return false;
+        }
+
+        return playerContainer.hasAccess(player, testLandPermissionsFlags);
     }
 
     @Override
@@ -70,6 +79,11 @@ public final class PlayerContainerOwner implements PlayerContainer {
     @Override
     public String toFileFormat() {
         return PlayerContainerType.OWNER.getPrint() + ":";
+    }
+
+    @Override
+    public boolean isLandRelative() {
+        return true;
     }
 
     @Override

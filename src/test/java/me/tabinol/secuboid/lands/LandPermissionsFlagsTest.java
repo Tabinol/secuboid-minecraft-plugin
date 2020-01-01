@@ -60,16 +60,16 @@ public final class LandPermissionsFlagsTest {
                 secuboid = initLands.getSecuboid();
 
                 // Create lands for test
-                parent = lands.createLand(LAND_PARENT, new PlayerContainerNobody(),
+                parent = lands.createLand(LAND_PARENT, PlayerContainerNobody.getInstance(),
                                 new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
-                child = lands.createLand(LAND_CHILD, new PlayerContainerNobody(),
+                child = lands.createLand(LAND_CHILD, PlayerContainerNobody.getInstance(),
                                 new CuboidArea(WORLD, 9, 9, 9, 60, 255, 60), parent);
                 fakePlayer = new FakePlayer(UUID.randomUUID(), "fakeplayer").getPlayer();
         }
 
         @Test
         public void simplePermission() {
-                parent.getPermissionsFlags().addPermission(new PlayerContainerEverybody(),
+                parent.getPermissionsFlags().addPermission(PlayerContainerEverybody.getInstance(),
                                 secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
                                                 false, true));
                 assertFalse("Permission should be false", parent.getPermissionsFlags()
@@ -86,7 +86,7 @@ public final class LandPermissionsFlagsTest {
 
         @Test
         public void inheritPermission() {
-                parent.getPermissionsFlags().addPermission(new PlayerContainerEverybody(),
+                parent.getPermissionsFlags().addPermission(PlayerContainerEverybody.getInstance(),
                                 secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
                                                 false, true));
                 assertFalse("Permission should be false", child.getPermissionsFlags()
@@ -104,8 +104,9 @@ public final class LandPermissionsFlagsTest {
         @Test
         public void defaultPermission() {
 
-                lands.getDefaultConf(null).addPermission(new PlayerContainerEverybody(), secuboid.getPermissionsFlags()
-                                .newPermission(PermissionList.BUILD.getPermissionType(), false, true));
+                lands.getDefaultConf(null).addPermission(PlayerContainerEverybody.getInstance(),
+                                secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
+                                                false, true));
                 assertFalse("Permission should be false", parent.getPermissionsFlags()
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.BUILD.getPermissionType()));
         }
@@ -121,8 +122,9 @@ public final class LandPermissionsFlagsTest {
         @Test
         public void ownerPermission() {
                 parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
-                parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(), secuboid.getPermissionsFlags()
-                                .newPermission(PermissionList.GOD.getPermissionType(), true, true));
+                parent.getPermissionsFlags().addPermission(PlayerContainerOwner.getInstance(),
+                                secuboid.getPermissionsFlags().newPermission(PermissionList.GOD.getPermissionType(),
+                                                true, true));
                 assertTrue("Permission should be true", parent.getPermissionsFlags()
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.GOD.getPermissionType()));
         }
@@ -130,25 +132,27 @@ public final class LandPermissionsFlagsTest {
         @Test
         public void ownerParentPermission() {
                 parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
-                parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(), secuboid.getPermissionsFlags()
-                                .newPermission(PermissionList.USE.getPermissionType(), false, true));
+                parent.getPermissionsFlags().addPermission(PlayerContainerOwner.getInstance(),
+                                secuboid.getPermissionsFlags().newPermission(PermissionList.USE.getPermissionType(),
+                                                false, true));
                 assertFalse("Permission should be false", child.getPermissionsFlags()
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.USE.getPermissionType()));
         }
 
         @Test
         public void notOwnerPermission() {
-                parent.getPermissionsFlags().addPermission(new PlayerContainerOwner(), secuboid.getPermissionsFlags()
-                                .newPermission(PermissionList.GOD.getPermissionType(), true, true));
+                parent.getPermissionsFlags().addPermission(PlayerContainerOwner.getInstance(),
+                                secuboid.getPermissionsFlags().newPermission(PermissionList.GOD.getPermissionType(),
+                                                true, true));
                 assertFalse("Permission should be false", parent.getPermissionsFlags()
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.GOD.getPermissionType()));
         }
 
         @Test
         public void everybodyGlobal() {
-                lands.getOutsideLandPermissionsFlags((String) null).addPermission(new PlayerContainerEverybody(),
-                                secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
-                                                false, true));
+                lands.getOutsideLandPermissionsFlags((String) null)
+                                .addPermission(PlayerContainerEverybody.getInstance(), secuboid.getPermissionsFlags()
+                                                .newPermission(PermissionList.BUILD.getPermissionType(), false, true));
                 assertFalse("Permission should be false", lands.getOutsideLandPermissionsFlags((String) null)
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.BUILD.getPermissionType()));
         }
@@ -159,10 +163,73 @@ public final class LandPermissionsFlagsTest {
                                 new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()),
                                 secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
                                                 true, false));
-                lands.getOutsideLandPermissionsFlags((String) null).addPermission(new PlayerContainerEverybody(),
-                                secuboid.getPermissionsFlags().newPermission(PermissionList.BUILD.getPermissionType(),
-                                                false, true));
+                lands.getOutsideLandPermissionsFlags((String) null)
+                                .addPermission(PlayerContainerEverybody.getInstance(), secuboid.getPermissionsFlags()
+                                                .newPermission(PermissionList.BUILD.getPermissionType(), false, true));
                 assertTrue("Permission should be true", lands.getOutsideLandPermissionsFlags((String) null)
                                 .checkPermissionAndInherit(fakePlayer, PermissionList.BUILD.getPermissionType()));
+        }
+
+        @Test
+        public void ownerInheritance() {
+                parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                assertTrue("Player must be owner", child.isOwner(fakePlayer));
+        }
+
+        @Test
+        public void ownerPermissionInheritance() {
+                parent.getPermissionsFlags()
+                                .addPermission(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()),
+                                                secuboid.getPermissionsFlags().newPermission(
+                                                                PermissionList.LAND_OWNER.getPermissionType(), true,
+                                                                true));
+                assertTrue("Player must be owner", child.isOwner(fakePlayer));
+        }
+
+        @Test
+        public void ownerNoInheritance() {
+                parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                child.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags()
+                                .newFlag(FlagList.INHERIT_OWNER.getFlagType(), false, true));
+                assertFalse("Player must not be owner", child.isOwner(fakePlayer));
+        }
+
+        @Test
+        public void tenantInheritance() {
+                parent.setRented(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                assertTrue("Player must be tenant", child.isTenant(fakePlayer));
+        }
+
+        @Test
+        public void tenantPermissionInheritance() {
+                parent.setRented(new PlayerContainerPlayer(secuboid, UUID.randomUUID()));
+                parent.getPermissionsFlags()
+                                .addPermission(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()),
+                                                secuboid.getPermissionsFlags().newPermission(
+                                                                PermissionList.LAND_TENANT.getPermissionType(), true,
+                                                                true));
+                assertTrue("Player must be tenant", child.isTenant(fakePlayer));
+        }
+
+        @Test
+        public void tennatNoInheritance() {
+                parent.setRented(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                child.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags()
+                                .newFlag(FlagList.INHERIT_TENANT.getFlagType(), false, true));
+                assertFalse("Player must not be tenant", child.isTenant(fakePlayer));
+        }
+
+        @Test
+        public void residentInheritance() {
+                parent.addResident(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                assertTrue("Player must be resident", child.isResident(fakePlayer));
+        }
+
+        @Test
+        public void residentNoInheritance() {
+                parent.setOwner(new PlayerContainerPlayer(secuboid, fakePlayer.getUniqueId()));
+                child.getPermissionsFlags().addFlag(secuboid.getPermissionsFlags()
+                                .newFlag(FlagList.INHERIT_RESIDENTS.getFlagType(), false, true));
+                assertFalse("Player must not be resident", child.isResident(fakePlayer));
         }
 }

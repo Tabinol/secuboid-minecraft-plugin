@@ -2,7 +2,6 @@ package me.tabinol.secuboid.playercontainer;
 
 import org.bukkit.entity.Player;
 
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
@@ -14,12 +13,12 @@ public final class PlayerContainerPlayerName implements PlayerContainer {
 
     private final String name;
 
-    public PlayerContainerPlayerName(String name) {
+    public PlayerContainerPlayerName(final String name) {
         this.name = name;
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
         return false;
     }
 
@@ -44,8 +43,13 @@ public final class PlayerContainerPlayerName implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
-        int result = PlayerContainerType.PLAYERNAME.compareTo(t.getContainerType());
+    public boolean isLandRelative() {
+        return false;
+    }
+
+    @Override
+    public int compareTo(final PlayerContainer t) {
+        final int result = PlayerContainerType.PLAYERNAME.compareTo(t.getContainerType());
         if (result != 0) {
             return result;
         }

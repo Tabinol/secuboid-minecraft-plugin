@@ -432,7 +432,7 @@ public final class LandListener extends CommonListener implements Listener {
                                                                                       // ConcurrentModificationException
 
         for (final Player players : playersArray) {
-            if (pc.hasAccess(players, land, land.getPermissionsFlags()) && !land.isOwner(players)
+            if (pc.hasAccess(players, land.getPermissionsFlags()) && !land.isOwner(players)
                     && !playerConf.get(players).isAdminMode() && !players.hasPermission("secuboid.bypassban")
                     && (!land.getPermissionsFlags().checkPermissionAndInherit(players,
                             PermissionList.LAND_ENTER.getPermissionType()) || land.isBanned(players))

@@ -21,7 +21,6 @@ package me.tabinol.secuboid.playercontainer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 
 /**
@@ -32,16 +31,17 @@ import me.tabinol.secuboid.lands.LandPermissionsFlags;
 public final class PlayerContainerPermission implements PlayerContainer {
 
     /**
-     * The permission: Must be a String, not a new Permission() or Bukkit (sometimes) will not be able to compare.
+     * The permission: Must be a String, not a new Permission() or Bukkit
+     * (sometimes) will not be able to compare.
      */
     private final String perm;
 
-    public PlayerContainerPermission(String bukkitPermission) {
+    public PlayerContainerPermission(final String bukkitPermission) {
         perm = bukkitPermission;
     }
 
     @Override
-    public boolean hasAccess(Player player, Land pcLandNullable, LandPermissionsFlags testLandPermissionsFlags) {
+    public boolean hasAccess(final Player player, final LandPermissionsFlags testLandPermissionsFlags) {
         return player.hasPermission(perm);
     }
 
@@ -66,8 +66,13 @@ public final class PlayerContainerPermission implements PlayerContainer {
     }
 
     @Override
-    public int compareTo(PlayerContainer t) {
-        int result = PlayerContainerType.PERMISSION.compareTo(t.getContainerType());
+    public boolean isLandRelative() {
+        return false;
+    }
+
+    @Override
+    public int compareTo(final PlayerContainer t) {
+        final int result = PlayerContainerType.PERMISSION.compareTo(t.getContainerType());
         if (result != 0) {
             return result;
         }

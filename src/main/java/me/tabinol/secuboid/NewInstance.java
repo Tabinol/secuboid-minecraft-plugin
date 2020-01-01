@@ -52,7 +52,7 @@ public class NewInstance {
 
     private final Secuboid secuboid;
 
-    public NewInstance(Secuboid secuboid) {
+    public NewInstance(final Secuboid secuboid) {
         this.secuboid = secuboid;
     }
 
@@ -63,41 +63,41 @@ public class NewInstance {
      * @param name the name
      * @return the player container
      */
-    public PlayerContainer createPlayerContainer(PlayerContainerType pct, String name) {
+    public PlayerContainer createPlayerContainer(final PlayerContainerType pct, final String name) {
 
         if (null != pct) {
             switch (pct) {
-                case GROUP:
-                    return new PlayerContainerGroup(secuboid, name);
-                case RESIDENT:
-                    return new PlayerContainerResident();
-                case OWNER:
-                    return new PlayerContainerOwner();
-                case EVERYBODY:
-                    return new PlayerContainerEverybody();
-                case NOBODY:
-                    return new PlayerContainerNobody();
-                case PLAYER:
-                case PLAYERNAME:
-                    UUID minecraftUUID;
+            case GROUP:
+                return new PlayerContainerGroup(secuboid, name);
+            case RESIDENT:
+                return PlayerContainerResident.getInstance();
+            case OWNER:
+                return PlayerContainerOwner.getInstance();
+            case EVERYBODY:
+                return PlayerContainerEverybody.getInstance();
+            case NOBODY:
+                return PlayerContainerNobody.getInstance();
+            case PLAYER:
+            case PLAYERNAME:
+                UUID minecraftUUID;
 
-                    // First check if the ID is valid or was connected to the server
-                    try {
-                        minecraftUUID = UUID.fromString(name.replaceFirst("ID-", ""));
-                    } catch (IllegalArgumentException ex) {
+                // First check if the ID is valid or was connected to the server
+                try {
+                    minecraftUUID = UUID.fromString(name.replaceFirst("ID-", ""));
+                } catch (final IllegalArgumentException ex) {
 
-                        // If there is an error, just return a temporary PlayerName
-                        return new PlayerContainerPlayerName(name);
-                    }
+                    // If there is an error, just return a temporary PlayerName
+                    return new PlayerContainerPlayerName(name);
+                }
 
-                    // If not null, assign the value to a new PlayerContainer
-                    return new PlayerContainerPlayer(secuboid, minecraftUUID);
-                case PERMISSION:
-                    return new PlayerContainerPermission(name);
-                case TENANT:
-                    return new PlayerContainerTenant();
-                default:
-                    break;
+                // If not null, assign the value to a new PlayerContainer
+                return new PlayerContainerPlayer(secuboid, minecraftUUID);
+            case PERMISSION:
+                return new PlayerContainerPermission(name);
+            case TENANT:
+                return PlayerContainerTenant.getInstance();
+            default:
+                break;
             }
         }
         return null;
@@ -109,10 +109,10 @@ public class NewInstance {
      * @param string the player container from string
      * @return the string
      */
-    public PlayerContainer getPlayerContainerFromFileFormat(String string) {
+    public PlayerContainer getPlayerContainerFromFileFormat(final String string) {
 
-        String strs[] = StringChanges.splitAddVoid(string, ":");
-        PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
+        final String strs[] = StringChanges.splitAddVoid(string, ":");
+        final PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
         return createPlayerContainer(type, strs[1]);
     }
 
@@ -122,11 +122,11 @@ public class NewInstance {
      * @param str the str
      * @return the from string
      */
-    public Flag getFlagFromFileFormat(String str) {
+    public Flag getFlagFromFileFormat(final String str) {
 
-        String[] multiStr = StringChanges.splitKeepQuote(str, ":");
-        FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(multiStr[0]);
-        Object value = getFlagValueFromFileFormat(multiStr[1], ft);
+        final String[] multiStr = StringChanges.splitKeepQuote(str, ":");
+        final FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(multiStr[0]);
+        final Object value = getFlagValueFromFileFormat(multiStr[1], ft);
 
         return secuboid.getPermissionsFlags().newFlag(ft, value, Boolean.parseBoolean(multiStr[2]));
     }
@@ -138,23 +138,23 @@ public class NewInstance {
      * @param ft  the flag type
      * @return the flag value
      */
-    public FlagValue getFlagValueFromFileFormat(String str, FlagType ft) {
+    public FlagValue getFlagValueFromFileFormat(final String str, final FlagType ft) {
 
         FlagValue value;
 
         if (ft.isRegistered()) {
             if (ft.getDefaultValue().getValue() instanceof Boolean) {
-                String[] strs = str.split(" ");
+                final String[] strs = str.split(" ");
                 value = new FlagValue(Boolean.parseBoolean(strs[0]));
             } else if (ft.getDefaultValue().getValue() instanceof Double) {
-                String[] strs = str.split(" ");
+                final String[] strs = str.split(" ");
                 value = new FlagValue(Double.parseDouble(strs[0]));
             } else if (ft.getDefaultValue().getValue() instanceof String) {
                 value = new FlagValue(StringChanges.fromQuote(str));
             } else if (ft.getDefaultValue().getValue() instanceof String[]) {
-                ArrayList<String> result = new ArrayList<String>();
-                String[] strs = StringChanges.splitKeepQuote(str, ";");
-                for (String st : strs) {
+                final ArrayList<String> result = new ArrayList<String>();
+                final String[] strs = StringChanges.splitKeepQuote(str, ";");
+                for (final String st : strs) {
                     result.add(StringChanges.fromQuote(st));
                 }
                 value = new FlagValue(result.toArray(new String[result.size()]));
@@ -178,17 +178,18 @@ public class NewInstance {
      * @param player     the player
      * @return visual selection
      */
-    public VisualSelection createVisualSelection(AreaType areaType, boolean isFromLand, Player player) {
+    public VisualSelection createVisualSelection(final AreaType areaType, final boolean isFromLand,
+            final Player player) {
 
         switch (areaType) {
-            case CUBOID:
-                return new VisualSelectionCuboid(secuboid, null, null, isFromLand, player);
-            case CYLINDER:
-                return new VisualSelectionCylinder(secuboid, null, null, isFromLand, player);
-            case ROAD:
-                return new VisualSelectionRoad(secuboid, null, null, isFromLand, player);
-            default:
-                return null;
+        case CUBOID:
+            return new VisualSelectionCuboid(secuboid, null, null, isFromLand, player);
+        case CYLINDER:
+            return new VisualSelectionCylinder(secuboid, null, null, isFromLand, player);
+        case ROAD:
+            return new VisualSelectionRoad(secuboid, null, null, isFromLand, player);
+        default:
+            return null;
         }
     }
 
@@ -196,22 +197,26 @@ public class NewInstance {
      * Create a visual selection from an area
      *
      * @param area         area
-     * @param originalArea the original area from a land for expand (in this case, area must be a copy of)
+     * @param originalArea the original area from a land for expand (in this case,
+     *                     area must be a copy of)
      * @param isFromLand   is from land or must be false
      * @param player       the player
      * @return visual selection
      */
-    public VisualSelection createVisualSelection(Area area, Area originalArea, boolean isFromLand, Player player) {
+    public VisualSelection createVisualSelection(final Area area, final Area originalArea, final boolean isFromLand,
+            final Player player) {
 
         switch (area.getAreaType()) {
-            case CUBOID:
-                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) originalArea, isFromLand, player);
-            case CYLINDER:
-                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) originalArea, isFromLand, player);
-            case ROAD:
-                return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) originalArea, isFromLand, player);
-            default:
-                return null;
+        case CUBOID:
+            return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) originalArea, isFromLand,
+                    player);
+        case CYLINDER:
+            return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) originalArea, isFromLand,
+                    player);
+        case ROAD:
+            return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) originalArea, isFromLand, player);
+        default:
+            return null;
         }
     }
 }

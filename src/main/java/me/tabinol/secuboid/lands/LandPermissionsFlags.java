@@ -80,7 +80,7 @@ public final class LandPermissionsFlags {
     /**
      * Constructor for world configuration,
      * 
-     * @param secuboid the secuboid plugin
+     * @param secuboid          the secuboid plugin
      * @param worldNameNullable the world name nullabe
      */
     public LandPermissionsFlags(final Secuboid secuboid, final String worldNameNullable) {
@@ -280,6 +280,18 @@ public final class LandPermissionsFlags {
     }
 
     /**
+     * Remove all permissions for this type from every player containers. This
+     * command does not save.
+     * 
+     * @param permissionType
+     */
+    void removeAllPermissionsType(final PermissionType permissionType) {
+        for (final Map<PermissionType, Permission> typeToPermission : permissions.values()) {
+            typeToPermission.remove(permissionType);
+        }
+    }
+
+    /**
      * Gets the sets the pc have permission.
      *
      * @return the sets the pc have permission
@@ -325,8 +337,7 @@ public final class LandPermissionsFlags {
             final boolean onlyInherit, final LandPermissionsFlags originPermissionsFlags) {
 
         for (final PlayerContainerType pcType : PlayerContainerType.values()) {
-            final Optional<Boolean> permValueOpt = getPermission(pcType, player, pt, onlyInherit,
-                    originPermissionsFlags);
+            final Optional<Boolean> permValueOpt = getPermission(pcType, player, pt, onlyInherit);
             if (permValueOpt.isPresent()) {
                 return permValueOpt;
             }
@@ -351,12 +362,12 @@ public final class LandPermissionsFlags {
      * @return the optional boolean
      */
     private Optional<Boolean> getPermission(final PlayerContainerType pcType, final Player player,
-            final PermissionType pt, final boolean onlyInherit, final LandPermissionsFlags originPermissionsFlags) {
+            final PermissionType pt, final boolean onlyInherit) {
         Optional<Boolean> resultOpt;
 
         for (final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : permissions
                 .entrySet()) {
-            resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit, originPermissionsFlags);
+            resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit);
             if (resultOpt.isPresent()) {
                 return resultOpt;
             }
@@ -368,8 +379,7 @@ public final class LandPermissionsFlags {
                 && (defaultPermissionsFlags = secuboid.getLands().getDefaultConf(landNullable.getType())) != null) {
             for (final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry : defaultPermissionsFlags.permissions
                     .entrySet()) {
-                resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit,
-                        originPermissionsFlags);
+                resultOpt = permissionSingleCheck(pcType, permissionEntry, player, pt, onlyInherit);
                 if (resultOpt.isPresent()) {
                     return resultOpt;
                 }
@@ -381,19 +391,26 @@ public final class LandPermissionsFlags {
 
     private Optional<Boolean> permissionSingleCheck(final PlayerContainerType pcType,
             final Map.Entry<PlayerContainer, Map<PermissionType, Permission>> permissionEntry, final Player player,
-            final PermissionType pt, final boolean onlyInherit, final LandPermissionsFlags originPermissionsFlags) {
-        if (pcType != permissionEntry.getKey().getContainerType()) {
+            final PermissionType pt, final boolean onlyInherit) {
+        final PlayerContainer playerContainer = permissionEntry.getKey();
+        final Map<PermissionType, Permission> permissionTypeToPermission = permissionEntry.getValue();
+        if (pcType != playerContainer.getContainerType()) {
             return Optional.empty();
         }
 
-        boolean value;
-        value = permissionEntry.getKey().hasAccess(player, landNullable, originPermissionsFlags);
+        // Prevents infinite loop
+        if ((pt == PermissionList.LAND_OWNER.getPermissionType()
+                || pt == PermissionList.LAND_TENANT.getPermissionType()) && playerContainer.isLandRelative()) {
+            return Optional.empty();
+        }
+
+        final boolean value = playerContainer.hasAccess(player, this);
         if (value) {
-            Permission perm = permissionEntry.getValue().get(pt);
+            Permission perm = permissionTypeToPermission.get(pt);
 
             // take the parent if the permission does not exist
             if (perm == null && pt.hasParent()) {
-                perm = permissionEntry.getValue().get(pt.getParent());
+                perm = permissionTypeToPermission.get(pt.getParent());
             }
 
             if (perm != null && (!onlyInherit || perm.isInheritable())) {

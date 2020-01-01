@@ -258,6 +258,14 @@ public enum PermissionList {
      */
     LAND_NOTIFY(false),
     /**
+     * Land owner access
+     */
+    LAND_OWNER(false),
+    /**
+     * Land tenant access (auto removed)
+     */
+    LAND_TENANT(false),
+    /**
      * The money deposit.
      */
     MONEY_DEPOSIT(false),

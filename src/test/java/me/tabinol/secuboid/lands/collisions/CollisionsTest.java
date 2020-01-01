@@ -45,7 +45,7 @@ public final class CollisionsTest {
         final InitLands initLands = new InitLands();
         secuboid = initLands.getSecuboid();
         lands = initLands.getLands();
-        lands.createLand("land1", new PlayerContainerNobody(), new CuboidArea(WORLD, 0, 0, 0, 100, 255, 100));
+        lands.createLand("land1", PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 0, 0, 0, 100, 255, 100));
     }
 
     private boolean isError(Collisions collisions, Collisions.LandError landError) {
@@ -60,7 +60,7 @@ public final class CollisionsTest {
     @Test
     public void landCollision() throws SecuboidLandException {
         final Collisions collisions = new Collisions(secuboid, WORLD, "landT", null, Collisions.LandAction.LAND_ADD, 0,
-                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, new PlayerContainerNobody(), true, false);
+                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, PlayerContainerNobody.getInstance(), true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.COLLISION)) {
             fail("Land collision not detected");
@@ -70,7 +70,7 @@ public final class CollisionsTest {
     @Test
     public void landOutsideParent() throws SecuboidLandException {
         final Collisions collisions = new Collisions(secuboid, WORLD, "landT", null, Collisions.LandAction.LAND_ADD, 0,
-                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), lands.getLand("land1"), new PlayerContainerNobody(),
+                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), lands.getLand("land1"), PlayerContainerNobody.getInstance(),
                 true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.OUT_OF_PARENT)) {
@@ -80,12 +80,12 @@ public final class CollisionsTest {
 
     @Test
     public void landChildrenOutside() throws SecuboidLandException {
-        final Land land2 = lands.createLand("land2", new PlayerContainerNobody(),
+        final Land land2 = lands.createLand("land2", PlayerContainerNobody.getInstance(),
                 new CuboidArea(WORLD, 1000, 0, 1000, 1100, 255, 1100));
-        lands.createLand("land3", new PlayerContainerNobody(), new CuboidArea(WORLD, 1000, 0, 1000, 1100, 255, 1100),
+        lands.createLand("land3", PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 1000, 0, 1000, 1100, 255, 1100),
                 land2);
         Collisions collisions = new Collisions(secuboid, WORLD, "land2", land2, Collisions.LandAction.AREA_MODIFY, 1,
-                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, new PlayerContainerNobody(), true, false);
+                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, PlayerContainerNobody.getInstance(), true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.CHILD_OUT_OF_BORDER)) {
             fail("Land has children outside not detected");
@@ -94,12 +94,12 @@ public final class CollisionsTest {
 
     @Test
     public void landHasChild() throws SecuboidLandException {
-        final Land land4 = lands.createLand("land4", new PlayerContainerNobody(),
+        final Land land4 = lands.createLand("land4", PlayerContainerNobody.getInstance(),
                 new CuboidArea(WORLD, 2000, 0, 2000, 2100, 255, 2100));
-        lands.createLand("land5", new PlayerContainerNobody(), new CuboidArea(WORLD, 2000, 0, 2000, 2100, 255, 2100),
+        lands.createLand("land5", PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 2000, 0, 2000, 2100, 255, 2100),
                 land4);
         final Collisions collisions = new Collisions(secuboid, WORLD, "land4", land4, Collisions.LandAction.LAND_REMOVE,
-                0, null, null, new PlayerContainerNobody(), true, false);
+                0, null, null, PlayerContainerNobody.getInstance(), true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.HAS_CHILDREN)) {
             fail("Land has children not detected");
@@ -108,9 +108,9 @@ public final class CollisionsTest {
 
     @Test
     public void landNameInUse() throws SecuboidLandException {
-        lands.createLand("land6", new PlayerContainerNobody(), new CuboidArea(WORLD, 3000, 0, 3000, 3100, 255, 3100));
+        lands.createLand("land6", PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 3000, 0, 3000, 3100, 255, 3100));
         final Collisions collisions = new Collisions(secuboid, WORLD, "land6", null, Collisions.LandAction.LAND_ADD, 0,
-                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, new PlayerContainerNobody(), true, false);
+                new CuboidArea(WORLD, 10, 0, 10, 120, 255, 120), null, PlayerContainerNobody.getInstance(), true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.NAME_IN_USE)) {
             fail("Land name in use not detected");
@@ -120,7 +120,7 @@ public final class CollisionsTest {
     @Test
     public void landMustHasOneArea() throws SecuboidLandException {
         final Collisions collisions = new Collisions(secuboid, WORLD, "land1", lands.getLand("land1"),
-                Collisions.LandAction.AREA_REMOVE, 1, null, null, new PlayerContainerNobody(), true, false);
+                Collisions.LandAction.AREA_REMOVE, 1, null, null, PlayerContainerNobody.getInstance(), true, false);
         collisions.doCollisionCheck();
         if (!isError(collisions, Collisions.LandError.MUST_HAVE_AT_LEAST_ONE_AREA)) {
             fail("Land must has at least one area not detected");

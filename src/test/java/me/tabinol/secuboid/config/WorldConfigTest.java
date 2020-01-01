@@ -234,9 +234,9 @@ public final class WorldConfigTest {
         worldConfig.loadDataYml(inputStream, FileType.LAND_DEFAULT);
 
         assertTrue(permissionValueCheck(new PlayerContainerGroup(secuboid, "new"), "BUILD", false));
-        assertTrue(permissionValueCheck(new PlayerContainerEverybody(), "BUILD", false));
+        assertTrue(permissionValueCheck(PlayerContainerEverybody.getInstance(), "BUILD", false));
         assertTrue(permissionValueCheck(new PlayerContainerGroup(secuboid, "new"), "OPEN", false));
-        assertTrue(permissionValueCheck(new PlayerContainerEverybody(), "OPEN", false));
+        assertTrue(permissionValueCheck(PlayerContainerEverybody.getInstance(), "OPEN", false));
     }
 
     @After
@@ -244,17 +244,17 @@ public final class WorldConfigTest {
         logger.removeHandler(logHandler);
     }
 
-    private boolean permissionValueCheck(PlayerContainer pc, String permName, boolean value) {
+    private boolean permissionValueCheck(final PlayerContainer pc, final String permName, final boolean value) {
         return worldConfig.getDefaultPermissionsFlags().getPermissionsForPC(pc).stream()
                 .anyMatch(p -> p.getPermType().getName().equalsIgnoreCase(permName) && p.getValue() == value);
     }
 
-    private boolean flagValueCheck(String flagName, Object value) {
+    private boolean flagValueCheck(final String flagName, final Object value) {
         return worldConfig.getDefaultPermissionsFlags().getFlags().stream().anyMatch(
                 f -> f.getFlagType().getName().equalsIgnoreCase(flagName) && f.getValue().getValue().equals(value));
     }
 
-    private boolean flagValueStringArrayCheck(String flagName, String[] stringArray) {
+    private boolean flagValueStringArrayCheck(final String flagName, final String[] stringArray) {
         return worldConfig.getDefaultPermissionsFlags().getFlags().stream()
                 .anyMatch(f -> f.getFlagType().getName().equalsIgnoreCase(flagName)
                         && Arrays.equals((String[]) f.getValue().getValue(), stringArray));

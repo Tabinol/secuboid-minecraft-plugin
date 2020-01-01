@@ -30,7 +30,6 @@ import me.tabinol.secuboid.events.LandEconomyEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
@@ -42,7 +41,6 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 public final class CommandEcosign extends CommandExec {
 
     public enum SignType {
-
         SALE, RENT
     }
 
@@ -72,9 +70,6 @@ public final class CommandEcosign extends CommandExec {
     public final void commandExecute() throws SecuboidCommandException {
 
         final PluginManager pm = secuboid.getServer().getPluginManager();
-        final LandPermissionsFlags landPermissionsFlagsSelectNullable = landSelectNullable != null
-                ? landSelectNullable.getPermissionsFlags()
-                : null;
 
         // Economy activated in configuration?
         if (!secuboid.getConf().useEconomy()) {
@@ -129,10 +124,8 @@ public final class CommandEcosign extends CommandExec {
                 pm.callEvent(new LandEconomyEvent(landSelectNullable, LandEconomyEvent.LandEconomyReason.SELL, oldOwner,
                         playerConf.getPlayerContainer()));
             } else // Rent and unrent
-            if (landSelectNullable.isRented() && (landSelectNullable.getTenant().hasAccess(player, landSelectNullable,
-                    landPermissionsFlagsSelectNullable)
-                    || landSelectNullable.getOwner().hasAccess(player, landSelectNullable,
-                            landPermissionsFlagsSelectNullable)
+            if (landSelectNullable.isRented() && (landSelectNullable.isTenant(player)
+                    || landSelectNullable.isOwner(player)
                     || playerConf.isAdminMode())) {
 
                 // Unrent
@@ -196,8 +189,7 @@ public final class CommandEcosign extends CommandExec {
                 pm.callEvent(new LandEconomyEvent(landSelectNullable, LandEconomyEvent.LandEconomyReason.RENT,
                         landSelectNullable.getOwner(), playerConf.getPlayerContainer()));
             }
-        } else if (landSelectNullable.getOwner().hasAccess(player, landSelectNullable,
-                landPermissionsFlagsSelectNullable) || playerConf.isAdminMode()) {
+        } else if (landSelectNullable.isOwner(player) || playerConf.isAdminMode()) {
 
             // Left Click, destroy the sign
             if (signType == SignType.SALE) {

@@ -18,15 +18,21 @@
  */
 package me.tabinol.secuboid.exceptions;
 
-import me.tabinol.secuboid.Secuboid;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import me.tabinol.secuboid.Secuboid;
 
 /**
  * The Class SecuboidCommandException.
  */
 public class SecuboidCommandException extends Exception {
     private static final long serialVersionUID = 5585486767311219615L;
+
+    private final Secuboid secuboid;
+    private final CommandSender sender;
+    private final String langMsg;
+    private final String[] params;
 
     /**
      * Instantiates a new secuboid command exception.
@@ -37,11 +43,38 @@ public class SecuboidCommandException extends Exception {
      * @param langMsg  the lang msg
      * @param param    the param
      */
-    public SecuboidCommandException(Secuboid secuboid, String logMsg, CommandSender sender, String langMsg, String... param) {
+    public SecuboidCommandException(final Secuboid secuboid, final String logMsg, final CommandSender sender,
+            final String langMsg, final String... params) {
         super(logMsg);
+        this.secuboid = secuboid;
+        this.sender = sender;
+        this.langMsg = langMsg;
+        this.params = params;
+    }
 
+    /**
+     * Instantiates a new secuboid command exception with Throwable.
+     * 
+     * @param secuboid the secuboid instance
+     * @param sender   the sender
+     * @param message  the message
+     * @param cause    the cause
+     */
+    public SecuboidCommandException(final Secuboid secuboid, final CommandSender sender, final String message,
+            final Throwable cause) {
+        super(message, cause);
+        this.secuboid = secuboid;
+        this.sender = sender;
+        this.langMsg = "GENERAL.ERROR";
+        this.params = new String[0];
+    }
+
+    /**
+     * Notifies the sender or just return if the sender is null.
+     */
+    public void notifySender() {
         if (sender != null) {
-            sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage(langMsg, param));
+            sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage(langMsg, params));
         }
     }
 }

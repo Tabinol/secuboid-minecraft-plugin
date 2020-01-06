@@ -18,14 +18,92 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.World;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.approve.Approvable;
 
 /**
  * Represents a area of any type (abstract).
  */
-public interface Area extends Comparable<Area> {
+public interface Area extends Comparable<Area>, Approvable {
+
+    /**
+     * Gets the Area from string file format.
+     *
+     * @param str the str
+     * @return the from string
+     */
+    static Area getFromFileFormat(final String str) {
+        final String[] multiStr = str.split(":");
+        final String areaTypeStr = multiStr[0];
+
+        // Detect if it contains the "approved" parameter (or legacy)
+        // parseBoolean method returns "false" if the value is not boolean
+        final boolean isApproved;
+        final int firstIdx;
+        switch (multiStr[1]) {
+        case "true":
+            isApproved = true;
+            firstIdx = 2;
+            break;
+        case "false":
+            isApproved = false;
+            firstIdx = 2;
+            break;
+        default:
+            // Legacy
+            isApproved = true;
+            firstIdx = 1;
+        }
+
+        // Create cuboid area
+        if (areaTypeStr.equals(AreaType.CUBOID.toString())) {
+            return new CuboidArea(isApproved, multiStr[firstIdx], Integer.parseInt(multiStr[firstIdx + 1]),
+                    Integer.parseInt(multiStr[firstIdx + 2]), Integer.parseInt(multiStr[firstIdx + 3]),
+                    Integer.parseInt(multiStr[firstIdx + 4]), Integer.parseInt(multiStr[firstIdx + 5]),
+                    Integer.parseInt(multiStr[firstIdx + 6]));
+        }
+
+        // Create cylinder area
+        if (areaTypeStr.equals(AreaType.CYLINDER.toString())) {
+            return new CylinderArea(isApproved, multiStr[firstIdx], Integer.parseInt(multiStr[firstIdx + 1]),
+                    Integer.parseInt(multiStr[firstIdx + 2]), Integer.parseInt(multiStr[firstIdx + 3]),
+                    Integer.parseInt(multiStr[firstIdx + 4]), Integer.parseInt(multiStr[firstIdx + 5]),
+                    Integer.parseInt(multiStr[firstIdx + 6]));
+        }
+        // Create road area
+        if (areaTypeStr.equals(AreaType.ROAD.toString())) {
+            final Map<Integer, Map<Integer, ChunkMatrix>> points = new HashMap<>();
+            for (int i = firstIdx + 3; i < multiStr.length; i += 3) {
+                final int regionX = Integer.parseInt(multiStr[i]);
+                final int regionZ = Integer.parseInt(multiStr[i + 1]);
+                final String hex = multiStr[i + 2];
+                final short[] matrix = new short[16];
+                for (int j = 0; j < 16; j++) {
+                    matrix[j] = (short) (Integer.parseInt(hex.substring(j * 4, (j * 4) + 4), 16) & 0xffff);
+                }
+                final ChunkMatrix chunkMatrix = new ChunkMatrix(matrix);
+                Map<Integer, ChunkMatrix> pointX = points.get(regionX);
+                if (pointX == null) {
+                    pointX = new HashMap<>();
+                    points.put(regionX, pointX);
+                }
+                pointX.put(regionZ, chunkMatrix);
+            }
+            return new RoadArea(isApproved, multiStr[firstIdx], Integer.parseInt(multiStr[firstIdx + 1]),
+                    Integer.parseInt(multiStr[firstIdx + 2]), new RegionMatrix(points));
+        }
+
+        // Create CuboidArea (old version)
+        return new CuboidArea(isApproved, multiStr[0], Integer.parseInt(multiStr[1]), Integer.parseInt(multiStr[2]),
+                Integer.parseInt(multiStr[3]), Integer.parseInt(multiStr[4]), Integer.parseInt(multiStr[5]),
+                Integer.parseInt(multiStr[6]));
+    }
 
     /**
      * Transforms the area to file format.
@@ -126,48 +204,54 @@ public interface Area extends Comparable<Area> {
     int getZ2();
 
     /**
-     * Sets the x1. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the x1. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param x1 x1
      */
     void setX1(int x1);
 
     /**
-     * Sets the x2. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the x2. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param x2 x2
      */
     void setX2(int x2);
 
     /**
-     * Sets the y1. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the y1. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param y1 y1
      */
     void setY1(int y1);
 
     /**
-     * Sets the y2. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the y2. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param y2 y2
      */
     void setY2(int y2);
 
     /**
-     * Sets the z1. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the z1. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param z1 z1
      */
     void setZ1(int z1);
 
     /**
-     * Sets the z2. Do not use if the area is already in a land. Normally, it us for internal use.
-     * For roads, it changes only the limit to start and stop looking the matrix.
+     * Sets the z2. Do not use if the area is already in a land. Normally, it us for
+     * internal use. For roads, it changes only the limit to start and stop looking
+     * the matrix.
      *
      * @param z2 z2
      */
@@ -217,8 +301,9 @@ public interface Area extends Comparable<Area> {
     boolean isLocationInside(Location loc);
 
     /**
-     * Gets if the location is in the square limit of the land. This method ignore the world and the y values.
-     * Use isLocationInside methods if you want to check an exact location.
+     * Gets if the location is in the square limit of the land. This method ignore
+     * the world and the y values. Use isLocationInside methods if you want to check
+     * an exact location.
      *
      * @param x the x
      * @param z the z

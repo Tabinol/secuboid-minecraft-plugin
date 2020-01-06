@@ -47,12 +47,15 @@ public final class LandsTest {
         lands = new InitLands().getLands();
 
         // Create lands for test
-        lands.createLand(TEST_CUBOID, PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
-        lands.createLand(TEST_CYLINDER, PlayerContainerNobody.getInstance(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
-        RegionMatrix regionMatrix = new RegionMatrix();
+        lands.createLand(TEST_CUBOID, PlayerContainerNobody.getInstance(),
+                new CuboidArea(true, WORLD, 0, 0, 0, 99, 255, 99));
+        lands.createLand(TEST_CYLINDER, PlayerContainerNobody.getInstance(),
+                new CylinderArea(true, WORLD, 9, 9, 9, 120, 255, 100));
+        final RegionMatrix regionMatrix = new RegionMatrix();
         regionMatrix.addPoint(200, 200);
         regionMatrix.addPoint(-200, -200);
-        lands.createLand(TEST_ROAD, PlayerContainerNobody.getInstance(), new RoadArea(WORLD, 0, 255, regionMatrix));
+        lands.createLand(TEST_ROAD, PlayerContainerNobody.getInstance(),
+                new RoadArea(true, WORLD, 0, 255, regionMatrix));
     }
 
     @Test

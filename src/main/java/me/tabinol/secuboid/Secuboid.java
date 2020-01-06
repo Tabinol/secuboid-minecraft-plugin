@@ -30,8 +30,8 @@ import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.ChatListener;
@@ -43,6 +43,7 @@ import me.tabinol.secuboid.listeners.PvpListener;
 import me.tabinol.secuboid.listeners.WorldListener;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playerscache.PlayersCache;
+import me.tabinol.secuboid.storage.Storage;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
@@ -81,11 +82,11 @@ public final class Secuboid extends JavaPlugin {
      * The world config.
      */
     private WorldConfig worldConfig;
-    
+
     /**
      * The approve list.
      */
-    private ApproveList approveList;
+    private Approves approves;
 
     /**
      * The parameters.
@@ -116,6 +117,8 @@ public final class Secuboid extends JavaPlugin {
      * The approve notif.
      */
     private ApproveNotif approveNotif;
+
+    private Storage storage;
 
     /**
      * The storage thread.
@@ -178,12 +181,13 @@ public final class Secuboid extends JavaPlugin {
         playerConf = new PlayerConfig(this);
         playerConf.addAll();
         language = new Lang(this);
-        storageThread = new StorageThread(this);
+        storage = Storage.getStorageFromConfig(this, getConf().getStorage());
+        storageThread = new StorageThread(this, storage);
         worldConfig = new WorldConfig(this);
         worldConfig.loadResources();
-        approveList = new ApproveList(this);
-        approveList.loadResources();
-        lands = new Lands(this, worldConfig, approveList);
+        approves = new Approves(this);
+
+        lands = new Lands(this, worldConfig, approves);
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
@@ -206,8 +210,7 @@ public final class Secuboid extends JavaPlugin {
         getServer().getPluginManager().registerEvents(pvpListener, this);
         getServer().getPluginManager().registerEvents(landListener, this);
         getServer().getPluginManager().registerEvents(chatListener, this);
-        
-        
+
         final PluginCommand pluginCommand = getCommand("secuboid");
         pluginCommand.setExecutor(commandListener);
         pluginCommand.setTabCompleter(commandListener);
@@ -243,10 +246,9 @@ public final class Secuboid extends JavaPlugin {
         }
         language.reloadConfig();
         worldConfig.loadResources();
-        approveList.loadResources();
-        lands = new Lands(this, worldConfig, approveList);
+        lands = new Lands(this, worldConfig, approves);
         storageThread.stopNextRun();
-        storageThread = new StorageThread(this);
+        storageThread = new StorageThread(this, storage);
         storageThread.loadAllAndStart();
         approveNotif.stopNextRun();
         approveNotif.runApproveNotifLater();

@@ -21,13 +21,14 @@ package me.tabinol.secuboid.config;
 import java.util.EnumSet;
 import java.util.TreeSet;
 
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * The Class Config.
@@ -54,7 +55,7 @@ public class Config {
      *
      * @param secuboid secuboid instance
      */
-    public Config(Secuboid secuboid) {
+    public Config(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
         secuboid.saveDefaultConfig();
@@ -65,10 +66,9 @@ public class Config {
         reloadConfig();
     }
 
-    /* ************************************************************************
-     * ***** CONFIGURATION SECTION *****
-     * ************************************************************************
-     */
+    // **********************************
+    // ****** CONFIGURATION SECTION *****
+    // **********************************
 
     /**
      * The lang.
@@ -82,6 +82,20 @@ public class Config {
      */
     public String getLang() {
         return lang;
+    }
+
+    /**
+     * The Storage.
+     */
+    private String storage;
+
+    /**
+     * Gets the storage.
+     *
+     * @return the storage
+     */
+    public String getStorage() {
+        return storage;
     }
 
     /**
@@ -499,31 +513,35 @@ public class Config {
      */
     private void getConfig() {
 
-        config.addDefault("General.worlds", new String[]{"world", "world_nether", "world_the_end"});
+        config.addDefault("General.worlds", new String[] { "world", "world_nether", "world_the_end" });
         lang = config.getString("General.Lang", "english");
+        storage = config.getString("General.Storage", "flat");
         useEconomy = config.getBoolean("General.UseEconomy", false);
         multipleInventories = config.getBoolean("General.MultipleInventories", false);
 
-        String infoItemS = config.getString("General.InfoItem", "BONE");
+        final String infoItemS = config.getString("General.InfoItem", "BONE");
         try {
             infoItem = Material.valueOf(infoItemS.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            secuboid.getLogger().warning("Error in config.yml on General.InfoItem : No " + infoItemS + " item found in Bukkit! Using default.");
+        } catch (final IllegalArgumentException ex) {
+            secuboid.getLogger().warning("Error in config.yml on General.InfoItem : No " + infoItemS
+                    + " item found in Bukkit! Using default.");
             infoItem = Material.BONE;
         }
 
-        String selectItemS = config.getString("General.SelectItem", "ROTTEN_FLESH");
+        final String selectItemS = config.getString("General.SelectItem", "ROTTEN_FLESH");
         try {
             selectItem = Material.valueOf(selectItemS.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            secuboid.getLogger().warning("Error in config.yml on General.SelectItem : No " + selectItemS + " item found in Bukkit! Using default.");
+        } catch (final IllegalArgumentException ex) {
+            secuboid.getLogger().warning("Error in config.yml on General.SelectItem : No " + selectItemS
+                    + " item found in Bukkit! Using default.");
             selectItem = Material.ROTTEN_FLESH;
         }
 
         // Remove error if the parameter is not here (AllowCollision)
         try {
-            allowCollision = AllowCollisionType.valueOf(config.getString("Lands.AllowCollision", "approve").toUpperCase());
-        } catch (NullPointerException ex) {
+            allowCollision = AllowCollisionType
+                    .valueOf(config.getString("Lands.AllowCollision", "approve").toUpperCase());
+        } catch (final NullPointerException ex) {
             allowCollision = AllowCollisionType.APPROVE;
         }
         isLandChat = config.getBoolean("Lands.LandChat", true);
@@ -540,13 +558,14 @@ public class Config {
         maxRadius = config.getInt("Lands.MaxRadius", 10);
 
         // Default non selected materials
-        config.addDefault("Lands.DefaultNonSelectedMaterials", new String[]{"DIAMOND", "GOLD_INGOT"});
+        config.addDefault("Lands.DefaultNonSelectedMaterials", new String[] { "DIAMOND", "GOLD_INGOT" });
         defaultNonSelectedMaterials = EnumSet.noneOf(Material.class);
-        for (String value : config.getStringList("Lands.DefaultNonSelectedMaterials")) {
+        for (final String value : config.getStringList("Lands.DefaultNonSelectedMaterials")) {
             try {
                 defaultNonSelectedMaterials.add(Material.valueOf(value.toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().warning("Error in config.yml on Lands.DefaultNonSelectedMaterials : No " + value + " item found in Bukkit!");
+            } catch (final IllegalArgumentException ex) {
+                secuboid.getLogger().warning("Error in config.yml on Lands.DefaultNonSelectedMaterials : No " + value
+                        + " item found in Bukkit!");
             }
         }
 
@@ -554,27 +573,28 @@ public class Config {
         maxLandPerPlayer = config.getInt("Lands.MaxLandPerPlayer", 5);
         overrideExplosions = config.getBoolean("General.OverrideExplosions", true);
 
-        config.addDefault("Lands.OwnerCanSet.Flags", new String[]{"MESSAGE_ENTER", "MESSAGE_EXIT"});
+        config.addDefault("Lands.OwnerCanSet.Flags", new String[] { "MESSAGE_ENTER", "MESSAGE_EXIT" });
         ownerConfigFlag = new TreeSet<FlagType>();
-        for (String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
+        for (final String value : config.getStringList("Lands.OwnerCanSet.Flags")) {
             ownerConfigFlag.add(secuboid.getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));
         }
-        config.addDefault("Lands.OwnerCanSet.Permissions", new String[]{"BUILD", "OPEN", "USE"});
+        config.addDefault("Lands.OwnerCanSet.Permissions", new String[] { "BUILD", "OPEN", "USE" });
         ownerConfigPerm = new TreeSet<PermissionType>();
-        for (String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
+        for (final String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
             ownerConfigPerm.add(secuboid.getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
         }
 
         // Fly and creative
         flyAndCreative = config.getBoolean("General.FlyAndCreative", false);
 
-        config.addDefault("FlyCreativeListener.IgnoredGameMode", new String[]{"ADVENTURE", "SPECTATOR"});
+        config.addDefault("FlyCreativeListener.IgnoredGameMode", new String[] { "ADVENTURE", "SPECTATOR" });
         ignoredGameMode = EnumSet.noneOf(GameMode.class);
-        for (String value : config.getStringList("FlyCreativeListener.IgnoredGameMode")) {
+        for (final String value : config.getStringList("FlyCreativeListener.IgnoredGameMode")) {
             try {
                 ignoredGameMode.add(GameMode.valueOf(value.toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().warning("Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
+            } catch (final IllegalArgumentException ex) {
+                secuboid.getLogger().warning(
+                        "Error in config.yml on FlyCreativeListener.IgnoredGameMode : No " + value + " game mode!");
             }
         }
 
@@ -582,25 +602,27 @@ public class Config {
         creativeNoOpenChest = config.getBoolean("FlyCreativeListener.Creative.NoOpenChest", true);
         creativeNoBuildOutside = config.getBoolean("FlyCreativeListener.Creative.NoBuildOutside", true);
 
-        config.addDefault("FlyCreativeListener.Creative.BannedItems", new String[]{"DIAMOND", "GOLD_INGOT"});
+        config.addDefault("FlyCreativeListener.Creative.BannedItems", new String[] { "DIAMOND", "GOLD_INGOT" });
         creativeBannedItems = EnumSet.noneOf(Material.class);
-        for (String value : config.getStringList("FlyCreativeListener.Creative.BannedItems")) {
+        for (final String value : config.getStringList("FlyCreativeListener.Creative.BannedItems")) {
             try {
                 creativeBannedItems.add(Material.valueOf(value.toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                secuboid.getLogger().warning("Error in config.yml on FlyCreativeListener.Creative.BannedItems : No " + value + "item found in Bukkit!");
+            } catch (final IllegalArgumentException ex) {
+                secuboid.getLogger().warning("Error in config.yml on FlyCreativeListener.Creative.BannedItems : No "
+                        + value + "item found in Bukkit!");
             }
         }
 
         // Add types
-        for (String typeName : config.getStringList("Lands.Types.List")) {
+        for (final String typeName : config.getStringList("Lands.Types.List")) {
             secuboid.getTypes().addOrGetType(typeName);
         }
         typeAdminMode = secuboid.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.AdminMode", "admin"));
-        typeNoneAdminMode = secuboid.getTypes().addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMode", "player"));
+        typeNoneAdminMode = secuboid.getTypes()
+                .addOrGetType(getStringOrNull("Lands.Types.OnCreate.NoneAdminMode", "player"));
     }
 
-    private String getStringOrNull(String path, String defaultSt) {
+    private String getStringOrNull(final String path, final String defaultSt) {
 
         String result = config.getString(path, defaultSt);
         if (result.equalsIgnoreCase("-null-")) {

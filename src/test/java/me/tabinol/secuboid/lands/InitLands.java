@@ -31,12 +31,14 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.WorldConfig;
-import me.tabinol.secuboid.lands.approve.ApproveList;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.storage.StorageThread;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 
 /**
  * Init lands database and methods.
@@ -51,6 +53,11 @@ public final class InitLands {
     public InitLands() {
         // Prepare Mock
         secuboid = mock(Secuboid.class);
+
+        // conf
+        final Config config = mock(Config.class);
+        when(config.useEconomy()).thenReturn(false);
+        when(secuboid.getConf()).thenReturn(config);
 
         // log
         final Logger log = Logger.getLogger("Secuboid");
@@ -72,7 +79,6 @@ public final class InitLands {
 
         // WorldConfig
 
-        
         // WorldConfig
         final WorldConfig worldConfig = mock(WorldConfig.class);
         final Map<String, LandPermissionsFlags> worldNameToPermissionsFlags = new HashMap<>();
@@ -85,15 +91,15 @@ public final class InitLands {
         when(worldConfig.getDefaultPermissionsFlags()).thenReturn(defaultPermissionsFlags);
 
         // ApproveList
-        final ApproveList approveList = mock(ApproveList.class);
+        final Approves approves = mock(Approves.class);
 
         // Lands
-        lands = new Lands(secuboid, worldConfig, approveList);
+        lands = new Lands(secuboid, worldConfig, approves);
         when(secuboid.getLands()).thenReturn(lands);
 
         // Storage
         final StorageThread storageThread = mock(StorageThread.class);
-        doNothing().when(storageThread).saveLand(any(Land.class));
+        doNothing().when(storageThread).addSaveAction(any(SaveActionEnum.class), any());
         when(secuboid.getStorageThread()).thenReturn(storageThread);
     }
 

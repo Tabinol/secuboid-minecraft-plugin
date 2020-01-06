@@ -18,17 +18,45 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.util.List;
+import java.util.logging.Level;
+
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.storage.flat.ApprovesFlat;
+import me.tabinol.secuboid.storage.flat.LandsFlat;
+import me.tabinol.secuboid.storage.flat.StorageFlat;
 
 /**
  * The Interface Storage.
  */
 public interface Storage {
 
+    static Storage getStorageFromConfig(final Secuboid secuboid, final String configParam) {
+        final Storage storage;
+
+        switch (configParam.toLowerCase()) {
+        default: // No break because dafault execute "flat"
+            secuboid.getLogger().log(Level.WARNING, () -> String
+                    .format("The storage type \"%s\" is not available, using default \"flat\"", configParam));
+        case "flat":
+            final LandsFlat landsFlat = new LandsFlat(secuboid);
+            final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
+            storage = new StorageFlat(landsFlat, approvesFlat);
+        }
+        return storage;
+    }
+
     /**
      * Load all.
      */
     void loadAll();
+
+    /**
+     * Load lands.
+     */
+    void loadLands();
 
     /**
      * Save land.
@@ -45,7 +73,26 @@ public interface Storage {
     void removeLand(Land land);
 
     /**
-     * Load lands.
+     * Load approves.
      */
-    void loadLands();
+    List<Approve> loadApproves();
+
+    /**
+     * Save approve.
+     *
+     * @param approve the approve
+     */
+    void saveApprove(Approve approve);
+
+    /**
+     * Removes the approve.
+     *
+     * @param landUUID the approve
+     */
+    void removeApprove(Approve approve);
+
+    /**
+     * Removes all approves.
+     */
+    void removeAllApproves();
 }

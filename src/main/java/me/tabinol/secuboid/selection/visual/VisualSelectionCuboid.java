@@ -63,8 +63,8 @@ public final class VisualSelectionCuboid implements VisualSelection {
 
     private final CuboidArea originalArea;
 
-    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, CuboidArea originalArea, boolean isActive,
-            Player player) {
+    public VisualSelectionCuboid(final Secuboid secuboid, final CuboidArea area, final CuboidArea originalArea,
+            final boolean isActive, final Player player) {
         this.secuboid = secuboid;
         this.originalArea = originalArea;
         if (area == null) {
@@ -120,7 +120,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
         final Location loc = player.getLocation();
         final int landXr = secuboid.getConf().getDefaultXSize() / 2;
         final int landZr = secuboid.getConf().getDefaultZSize() / 2;
-        area = new CuboidArea(loc.getWorld().getName(), loc.getBlockX() - landXr, visualCommon.getY1(),
+        area = new CuboidArea(false, loc.getWorld().getName(), loc.getBlockX() - landXr, visualCommon.getY1(),
                 loc.getBlockZ() - landZr, loc.getBlockX() + landXr, visualCommon.getY2(), loc.getBlockZ() + landZr);
 
         makeVisualSelection();
@@ -185,7 +185,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
 
                     if (isActive) {
                         // Active Selection
-                        LandPermissionsFlags testCuboidarea = secuboid.getLands().getPermissionsFlags(newloc);
+                        final LandPermissionsFlags testCuboidarea = secuboid.getLands().getPermissionsFlags(newloc);
                         if (parentPermsFlagsDetected == testCuboidarea
                                 && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
                             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE.createBlockData());
@@ -207,7 +207,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
     }
 
     @Override
-    public void playerMove(AreaSelection.MoveType moveType) {
+    public void playerMove(final AreaSelection.MoveType moveType) {
         visualCommon.playerMoveSquare(moveType, area);
     }
 }

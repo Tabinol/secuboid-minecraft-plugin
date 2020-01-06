@@ -36,13 +36,14 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bukkit.Bukkit;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
 import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
-import org.bukkit.Bukkit;
 
 /**
  * The Class PlayersCache.
@@ -127,7 +128,7 @@ public final class PlayersCache extends Thread {
          * @param commandExec the command exec
          * @param playerNames the player names
          */
-        OutputRequest(CommandPlayerThreadExec commandExec, String[] playerNames) {
+        OutputRequest(final CommandPlayerThreadExec commandExec, final String[] playerNames) {
 
             this.commandExec = commandExec;
             this.playerNames = playerNames;
@@ -139,12 +140,12 @@ public final class PlayersCache extends Thread {
      *
      * @param secuboid secuboid instance
      */
-    public PlayersCache(Secuboid secuboid) {
+    public PlayersCache(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
         playerCacheVersion = secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
         this.setName("Secuboid Players cache");
-        String fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
+        final String fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
         file = new File(fileName);
         outputList = Collections.synchronizedList(new ArrayList<OutputRequest>());
         updateList = Collections.synchronizedList(new ArrayList<PlayerCacheEntry>());
@@ -158,7 +159,7 @@ public final class PlayersCache extends Thread {
      * @param uuid       the uuid
      * @param playerName the player name
      */
-    public void updatePlayer(UUID uuid, String playerName) {
+    public void updatePlayer(final UUID uuid, final String playerName) {
 
         updateList.add(new PlayerCacheEntry(uuid, playerName));
         lock.lock();
@@ -178,9 +179,9 @@ public final class PlayersCache extends Thread {
         return playersCacheList.keySet();
     }
 
-    public String getNameFromUUID(UUID uuid) {
+    public String getNameFromUUID(final UUID uuid) {
 
-        PlayerCacheEntry entry = playersRevCacheList.get(uuid);
+        final PlayerCacheEntry entry = playersRevCacheList.get(uuid);
 
         if (entry != null) {
             return entry.getName();
@@ -195,7 +196,7 @@ public final class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param pc          the pc
      */
-    public void getUUIDWithNames(CommandPlayerThreadExec commandExec, PlayerContainer pc) {
+    public void getUUIDWithNames(final CommandPlayerThreadExec commandExec, final PlayerContainer pc) {
 
         if (pc != null && pc instanceof PlayerContainerPlayerName) {
             getUUIDWithNames(commandExec, pc.getName());
@@ -211,7 +212,7 @@ public final class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param playerNames the player names
      */
-    private void getUUIDWithNames(CommandPlayerThreadExec commandExec, String... playerNames) {
+    private void getUUIDWithNames(final CommandPlayerThreadExec commandExec, final String... playerNames) {
 
         outputList.add(new OutputRequest(commandExec, playerNames));
         lock.lock();
@@ -232,13 +233,13 @@ public final class PlayersCache extends Thread {
 
                 // Check if the list is empty and execute the list
                 while (!outputList.isEmpty()) {
-                    OutputRequest outputRequest = outputList.remove(0);
-                    int length = outputRequest.playerNames.length;
+                    final OutputRequest outputRequest = outputList.remove(0);
+                    final int length = outputRequest.playerNames.length;
 
-                    PlayerCacheEntry[] entries = new PlayerCacheEntry[length];
+                    final PlayerCacheEntry[] entries = new PlayerCacheEntry[length];
 
                     // Pass 1 check in playersCache or null
-                    ArrayList<String> names = new ArrayList<String>(); // Pass 2 list
+                    final ArrayList<String> names = new ArrayList<String>(); // Pass 2 list
                     for (int t = 0; t < length; t++) {
                         entries[t] = playersCacheList.get(outputRequest.playerNames[t].toLowerCase());
                         if (entries[t] == null) {
@@ -249,15 +250,15 @@ public final class PlayersCache extends Thread {
 
                     // Pass 2 check in Minecraft website
                     if (!names.isEmpty()) {
-                        Profile[] profiles = httpProfileRepository
+                        final Profile[] profiles = httpProfileRepository
                                 .findProfilesByNames(names.toArray(new String[names.size()]));
-                        for (Profile profile : profiles) {
+                        for (final Profile profile : profiles) {
                             // Put in the correct position
                             int compt = 0;
 
                             while (compt != length) {
                                 if (entries[compt] == null) {
-                                    UUID uuid = stringToUUID(profile.getId());
+                                    final UUID uuid = stringToUUID(profile.getId());
                                     if (uuid != null) {
                                         entries[compt] = new PlayerCacheEntry(uuid, profile.getName());
                                         // Update now
@@ -269,8 +270,8 @@ public final class PlayersCache extends Thread {
                         }
                     }
                     // Return the output of the request on the main thread
-                    ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec,
-                            entries);
+                    final ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(secuboid,
+                            outputRequest.commandExec, entries);
                     Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
                 }
 
@@ -282,7 +283,7 @@ public final class PlayersCache extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -293,9 +294,9 @@ public final class PlayersCache extends Thread {
         }
     }
 
-    private void updatePlayerInlist(PlayerCacheEntry entry) {
+    private void updatePlayerInlist(final PlayerCacheEntry entry) {
 
-        String nameLower = entry.getName().toLowerCase();
+        final String nameLower = entry.getName().toLowerCase();
         if (playersCacheList.get(nameLower) == null) {
 
             // Update to do
@@ -324,7 +325,7 @@ public final class PlayersCache extends Thread {
         commandRequest.signal();
         try {
             notSaved.await();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
@@ -344,29 +345,29 @@ public final class PlayersCache extends Thread {
 
             try {
                 br = new BufferedReader(new FileReader(file));
-            } catch (FileNotFoundException ex) {
+            } catch (final FileNotFoundException ex) {
                 // Not existing? Nothing to load!
                 return;
             }
 
             @SuppressWarnings("unused")
-            int version = Integer.parseInt(br.readLine().split(":")[1]);
+            final int version = Integer.parseInt(br.readLine().split(":")[1]);
             br.readLine(); // Read remark line
 
             String str;
 
             while ((str = br.readLine()) != null && !str.isEmpty()) {
                 // Read from String "PlayerUUID:LastInventoryName:isCreative"
-                String[] strs = str.split(":");
+                final String[] strs = str.split(":");
 
-                String name = strs[0];
-                UUID uuid = UUID.fromString(strs[1]);
+                final String name = strs[0];
+                final UUID uuid = UUID.fromString(strs[1]);
                 playersCacheList.put(name.toLowerCase(), new PlayerCacheEntry(uuid, name));
                 playersRevCacheList.put(uuid, new PlayerCacheEntry(uuid, name));
             }
             br.close();
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             ex.printStackTrace();
         }
 
@@ -382,7 +383,7 @@ public final class PlayersCache extends Thread {
 
             try {
                 bw = new BufferedWriter(new FileWriter(file));
-            } catch (FileNotFoundException ex) {
+            } catch (final FileNotFoundException ex) {
                 // Not existing? Nothing to load!
                 return;
             }
@@ -392,25 +393,25 @@ public final class PlayersCache extends Thread {
             bw.write("# Name:PlayerUUID");
             bw.newLine();
 
-            for (Map.Entry<String, PlayerCacheEntry> PlayerInvEntry : playersCacheList.entrySet()) {
+            for (final Map.Entry<String, PlayerCacheEntry> PlayerInvEntry : playersCacheList.entrySet()) {
                 // Write to String "Name:PlayerUUID"
                 bw.write(PlayerInvEntry.getValue().getName() + ":" + PlayerInvEntry.getValue().getUUID());
                 bw.newLine();
             }
             bw.close();
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    private UUID stringToUUID(String stId) {
+    private UUID stringToUUID(final String stId) {
 
-        String convId = stId.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
+        final String convId = stId.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
         UUID uuid;
         try {
             uuid = UUID.fromString(convId);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             // error? return null
             return null;
         }

@@ -18,7 +18,9 @@
 package me.tabinol.secuboid.playerscache;
 
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
@@ -26,6 +28,8 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
  * The Class ReturnPlayerToCommand.
  */
 class ReturnPlayerToCommand implements Callable<Void> {
+
+    private final Secuboid secuboid;
 
     /**
      * The command exec.
@@ -43,21 +47,22 @@ class ReturnPlayerToCommand implements Callable<Void> {
      * @param commandExec      the command exec
      * @param playerCacheEntry the player cache entry
      */
-    ReturnPlayerToCommand(CommandPlayerThreadExec commandExec, PlayerCacheEntry[] playerCacheEntry) {
+    ReturnPlayerToCommand(final Secuboid secuboid, final CommandPlayerThreadExec commandExec,
+            final PlayerCacheEntry[] playerCacheEntry) {
+        this.secuboid = secuboid;
         this.commandExec = commandExec;
         this.playerCacheEntry = playerCacheEntry;
     }
 
     @Override
     public Void call() {
-
         // Return the output of the request
         try {
             commandExec.commandThreadExecute(playerCacheEntry);
-        } catch (SecuboidCommandException e) {
-            System.err.println("SecuboidCommandException: " + e.getMessage());
+        } catch (final SecuboidCommandException e) {
+            secuboid.getLogger().log(Level.SEVERE, "Error in command", e);
+            e.notifySender();
         }
-
         return null;
     }
 }

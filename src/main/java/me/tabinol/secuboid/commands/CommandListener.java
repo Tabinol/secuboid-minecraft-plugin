@@ -101,6 +101,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
             return true;
             // If error on command, send the message to the player
         } catch (final SecuboidCommandException ex) {
+            ex.notifySender();
             return true;
         }
     }
@@ -190,7 +191,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private Set<String> listApproveLandList(final CommandSender sender) {
         if (sender.hasPermission("secuboid.collisionapprove")) {
-            return secuboid.getLands().getApproveList().getApproveList().keySet();
+            return secuboid.getLands().getApproves().getApproveList().keySet();
         }
         return Collections.emptySet();
     }

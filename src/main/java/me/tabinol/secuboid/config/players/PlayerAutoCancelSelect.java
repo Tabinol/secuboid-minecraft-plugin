@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.config.players;
 
+import java.util.logging.Level;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
@@ -39,7 +41,7 @@ class PlayerAutoCancelSelect extends SecuboidRunnable {
      * @param secuboid the secuboid instance
      * @param entry    the entry
      */
-    PlayerAutoCancelSelect(Secuboid secuboid, PlayerConfEntry entry) {
+    PlayerAutoCancelSelect(final Secuboid secuboid, final PlayerConfEntry entry) {
 
         super(secuboid);
         this.entry = entry;
@@ -51,8 +53,9 @@ class PlayerAutoCancelSelect extends SecuboidRunnable {
         setOneTimeDone();
         try {
             new CommandCancel(secuboid, null, entry.getSender(), null).commandExecute();
-        } catch (SecuboidCommandException ex) {
-            secuboid.getLogger().severe("Can not cancel the command:" + ex.getLocalizedMessage());
+        } catch (final SecuboidCommandException ex) {
+            secuboid.getLogger().log(Level.SEVERE, "Error in select cancel command", ex);
+            ex.notifySender();
         }
     }
 }

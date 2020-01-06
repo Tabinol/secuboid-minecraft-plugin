@@ -24,6 +24,10 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Region;
+
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
@@ -32,12 +36,11 @@ import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 /**
- * The Class CommandSelectWorldedit.
- * WorldEdit is in a separate class from CommandSelect because if WorldEdit is not installed, we don't want to makes error.
+ * The Class CommandSelectWorldedit. WorldEdit is in a separate class from
+ * CommandSelect because if WorldEdit is not installed, we don't want to makes
+ * error.
  */
 class CommandSelectWorldedit {
 
@@ -51,7 +54,7 @@ class CommandSelectWorldedit {
     /**
      * The entry.
      */
-    private PlayerConfEntry entry;
+    private final PlayerConfEntry entry;
 
     /**
      * Instantiates a new command select worldedit.
@@ -61,7 +64,8 @@ class CommandSelectWorldedit {
      * @param entry    the entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    CommandSelectWorldedit(Secuboid secuboid, Player player, PlayerConfEntry entry) throws SecuboidCommandException {
+    CommandSelectWorldedit(final Secuboid secuboid, final Player player, final PlayerConfEntry entry)
+            throws SecuboidCommandException {
 
         this.secuboid = secuboid;
         this.player = player;
@@ -76,40 +80,46 @@ class CommandSelectWorldedit {
     void MakeSelect() throws SecuboidCommandException {
 
         if (secuboid.getDependPlugin().getWorldEdit() == null) {
-            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
+            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player,
+                    "COMMAND.SELECT.WORLDEDIT.NOTLOAD");
         }
         final LocalSession session = ((WorldEditPlugin) secuboid.getDependPlugin().getWorldEdit()).getSession(player);
 
         try {
             final Region sel;
             if (session.getSelectionWorld() == null
-                    || !((sel = session.getSelection(session.getSelectionWorld())) != null && (sel instanceof CuboidRegion
-                    || sel instanceof CylinderRegion))) {
-                throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
+                    || !((sel = session.getSelection(session.getSelectionWorld())) != null
+                            && (sel instanceof CuboidRegion || sel instanceof CylinderRegion))) {
+                throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player,
+                        "COMMAND.SELECT.WORLDEDIT.NOSELECTIONNED");
             }
 
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
+            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + ChatColor.DARK_GRAY
+                    + secuboid.getLanguage().getMessage("COMMAND.SELECT.WORLDEDIT.SELECTIONNED"));
 
             final AreaSelection select;
             if (sel instanceof CuboidRegion) {
-                select = new AreaSelection(secuboid, player, new CuboidArea(player.getWorld().getName(),
-                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
-                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                select = new AreaSelection(secuboid, player,
+                        new CuboidArea(false, player.getWorld().getName(), sel.getMinimumPoint().getBlockX(),
+                                sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ(),
+                                sel.getMaximumPoint().getBlockX(), sel.getMaximumPoint().getBlockY(),
+                                sel.getMaximumPoint().getBlockZ()),
                         null, true, AreaType.CUBOID, MoveType.PASSIVE);
             } else {
-                select = new AreaSelection(secuboid, player, new CylinderArea(player.getWorld().getName(),
-                        sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(),
-                        sel.getMinimumPoint().getBlockZ(), sel.getMaximumPoint().getBlockX(),
-                        sel.getMaximumPoint().getBlockY(), sel.getMaximumPoint().getBlockZ()),
+                select = new AreaSelection(secuboid, player,
+                        new CylinderArea(false, player.getWorld().getName(), sel.getMinimumPoint().getBlockX(),
+                                sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ(),
+                                sel.getMaximumPoint().getBlockX(), sel.getMaximumPoint().getBlockY(),
+                                sel.getMaximumPoint().getBlockZ()),
                         null, true, AreaType.CYLINDER, MoveType.PASSIVE);
             }
 
             entry.getSelection().addSelection(select);
             entry.setAutoCancelSelect(true);
 
-        } catch (IncompleteRegionException ex) {
-            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player, "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
+        } catch (final IncompleteRegionException ex) {
+            throw new SecuboidCommandException(secuboid, "CommandSelectWorldEdit", player,
+                    "COMMAND.SELECT.WORLDEDIT.SELECTIONINCOMPLET");
         }
     }
 }

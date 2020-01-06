@@ -16,7 +16,7 @@
         <!-- *** Change Language version here here *** -->
         <langVersion>31</langVersion>
         <!-- *** Change land .conf version here here *** -->
-        <landVersion>7</landVersion>
+        <landVersion>8</landVersion>
         <!-- *** Change players cache .conf version here here *** -->
         <playersCacheVersion>1</playersCacheVersion>
         <!-- *** Change Inventory Storage version here *** -->

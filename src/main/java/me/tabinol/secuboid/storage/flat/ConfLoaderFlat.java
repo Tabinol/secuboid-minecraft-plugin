@@ -82,14 +82,14 @@ final class ConfLoaderFlat {
      * @param file     the file
      * @throws FileLoadException the file load exception
      */
-    ConfLoaderFlat(Secuboid secuboid, File file) throws FileLoadException {
+    ConfLoaderFlat(final Secuboid secuboid, final File file) throws FileLoadException {
 
         this.secuboid = secuboid;
         this.file = file;
         FileReader fr = null;
         try {
             fr = new FileReader(file);
-        } catch (FileNotFoundException ex) {
+        } catch (final FileNotFoundException ex) {
             // Impossible
         }
         assert fr != null;
@@ -124,7 +124,7 @@ final class ConfLoaderFlat {
         readParam();
         try {
             uuid = UUID.fromString(getValueString());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read UUID.");
         }
     }
@@ -155,7 +155,7 @@ final class ConfLoaderFlat {
 
         try {
             actLine = br.readLine();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the next line.");
         }
 
@@ -177,7 +177,7 @@ final class ConfLoaderFlat {
      */
     boolean readParam() throws FileLoadException {
 
-        String str = readln();
+        final String str = readln();
 
         if (str == null) {
             return false;
@@ -185,7 +185,7 @@ final class ConfLoaderFlat {
         if (str.endsWith("\\{")) {
             value = null;
         } else if (str.contains(":")) {
-            String[] chn = str.split(":", 2);
+            final String[] chn = str.split(":", 2);
             if (chn[1].equals("-null-")) {
                 value = null;
             } else {
@@ -216,8 +216,9 @@ final class ConfLoaderFlat {
 
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
+        } catch (final NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb,
+                    "Can't read the Integer parameter.");
         }
     }
 
@@ -231,8 +232,9 @@ final class ConfLoaderFlat {
 
         try {
             return Long.parseLong(value);
-        } catch (NumberFormatException ex) {
-            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Integer parameter.");
+        } catch (final NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb,
+                    "Can't read the Integer parameter.");
         }
     }
 
@@ -246,8 +248,9 @@ final class ConfLoaderFlat {
 
         try {
             return Short.parseShort(value);
-        } catch (NumberFormatException ex) {
-            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Short parameter.");
+        } catch (final NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb,
+                    "Can't read the Short parameter.");
         }
     }
 
@@ -261,9 +264,19 @@ final class ConfLoaderFlat {
 
         try {
             return Double.parseDouble(value);
-        } catch (NumberFormatException ex) {
-            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Can't read the Double parameter.");
+        } catch (final NumberFormatException ex) {
+            throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb,
+                    "Can't read the Double parameter.");
         }
+    }
+
+    /**
+     * Gets the value boolean.
+     *
+     * @return the value boolean
+     */
+    boolean getValueBoolean() {
+        return Boolean.parseBoolean(value);
     }
 
     /**
@@ -332,7 +345,7 @@ final class ConfLoaderFlat {
     void close() throws FileLoadException {
         try {
             br.close();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             throw new FileLoadException(secuboid, file.getName(), actLine, actLineNb, "Impossible to close the file.");
         }
     }

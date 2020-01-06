@@ -25,9 +25,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.bukkit.Bukkit;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
-import org.bukkit.Bukkit;
 
 /**
  * This class is for lands and cuboids calculation. It need to be threaded
@@ -82,7 +83,7 @@ public class CollisionsManagerThread extends Thread {
          * @param commandExec the command exec
          * @param collisions  the collisions
          */
-        OutputRequest(CommandCollisionsThreadExec commandExec, Collisions collisions) {
+        OutputRequest(final CommandCollisionsThreadExec commandExec, final Collisions collisions) {
 
             this.commandExec = commandExec;
             this.collisions = collisions;
@@ -94,7 +95,7 @@ public class CollisionsManagerThread extends Thread {
      *
      * @param secuboid secuboid instance
      */
-    public CollisionsManagerThread(Secuboid secuboid) {
+    public CollisionsManagerThread(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
         this.setName("Secuboid collisions manager");
@@ -112,11 +113,12 @@ public class CollisionsManagerThread extends Thread {
                 while (!requests.isEmpty()) {
 
                     // Do collision and price check
-                    OutputRequest output = requests.remove(0);
+                    final OutputRequest output = requests.remove(0);
                     output.collisions.doCollisionCheck();
 
                     // Return the result to main thread
-                    ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(output.commandExec, output.collisions);
+                    final ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(secuboid,
+                            output.commandExec, output.collisions);
                     Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
 
                 }
@@ -124,7 +126,7 @@ public class CollisionsManagerThread extends Thread {
                 // wait!
                 try {
                     commandRequest.await();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -148,7 +150,7 @@ public class CollisionsManagerThread extends Thread {
         commandRequest.signal();
         try {
             notSaved.await();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
@@ -161,7 +163,7 @@ public class CollisionsManagerThread extends Thread {
      * @param commandThreadExec The command instance
      * @param collisionsReq     An instance of collision
      */
-    public void lookForCollisions(CommandCollisionsThreadExec commandThreadExec, Collisions collisionsReq) {
+    public void lookForCollisions(final CommandCollisionsThreadExec commandThreadExec, final Collisions collisionsReq) {
 
         requests.add(new OutputRequest(commandThreadExec, collisionsReq));
         wakeUp();

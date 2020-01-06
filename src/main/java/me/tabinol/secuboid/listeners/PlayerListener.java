@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -273,7 +275,8 @@ public final class PlayerListener extends CommonListener implements Listener {
                 final Area foundArea = secuboid.getLands().getArea(event.getClickedBlock().getLocation());
                 new CommandInfo(secuboid, player, foundArea).commandExecute();
             } catch (final SecuboidCommandException ex) {
-                ex.printStackTrace();
+                secuboid.getLogger().log(Level.SEVERE, "Error in info command", ex);
+                ex.notifySender();
             }
             event.setCancelled(true);
 
@@ -285,7 +288,7 @@ public final class PlayerListener extends CommonListener implements Listener {
                 new CommandSelect(secuboid, player, new ArgList(secuboid, new String[] { "here" }, player),
                         event.getClickedBlock().getLocation()).commandExecute();
             } catch (final SecuboidCommandException ex) {
-                // Empty, message is sent by the catch
+                ex.notifySender();
             }
 
             event.setCancelled(true);
@@ -298,7 +301,7 @@ public final class PlayerListener extends CommonListener implements Listener {
             try {
                 new CommandCancel(secuboid, null, player, null).commandExecute();
             } catch (final SecuboidCommandException ex) {
-                // Empty, message is sent by the catch
+                ex.notifySender();
             }
 
             event.setCancelled(true);
@@ -322,7 +325,7 @@ public final class PlayerListener extends CommonListener implements Listener {
                         new CommandEcosign(secuboid, player, trueLand, action, SignType.RENT).commandExecute();
                     }
                 } catch (final SecuboidCommandException ex) {
-                    // Empty, message is sent by the catch
+                    ex.notifySender();
                 }
             }
 

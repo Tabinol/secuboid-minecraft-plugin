@@ -18,8 +18,12 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.*;
+import me.tabinol.secuboid.commands.ArgList;
+import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.config.BannedWords;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
@@ -29,8 +33,6 @@ import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.selection.PlayerSelection.SelectionType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandCreate.
@@ -47,8 +49,8 @@ public final class CommandCreate extends CommandCollisionsThreadExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandCreate(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandCreate(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -58,23 +60,23 @@ public final class CommandCreate extends CommandCollisionsThreadExec {
 
         checkSelections(null, true);
 
-        AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
+        final AreaSelection select = (AreaSelection) playerConf.getSelection().getSelection(SelectionType.AREA);
 
-        Area area = select.getVisualSelection().getArea();
-        String curArg = argList.getNext();
+        final Area area = select.getVisualSelection().getArea();
+        final String curArg = argList.getNext();
 
         // Check if is is a banned word
         if (BannedWords.isBannedWord(curArg.toUpperCase())) {
             throw new SecuboidCommandException(secuboid, "CommandCreate", player, "COMMAND.CREATE.HINTUSE");
         }
 
-        LandCheckValues landCheckValues = landCheckForCreate(select);
+        final LandCheckValues landCheckValues = landCheckForCreate(select);
         checkCollision(area.getWorldName(), curArg, null, landCheckValues.localType, LandAction.LAND_ADD, 0, area,
                 landCheckValues.realLocalParent, landCheckValues.localOwner, true);
     }
 
     @Override
-    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+    public void commandThreadExecute(final Collisions collisions) throws SecuboidCommandException {
 
         // Check for collision
         if (collisions.hasCollisions()) {
@@ -84,17 +86,21 @@ public final class CommandCreate extends CommandCollisionsThreadExec {
 
         // Create Land
         try {
-            Land cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent, collisions.getPrice(), type);
+            final Land cLand = secuboid.getLands().createLand(collisions.getLandName(), owner, newArea, parent,
+                    collisions.getPrice(), type);
 
-            player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
+            player.sendMessage(
+                    ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CREATE.DONE"));
 
             // Cancel and select the land
             new CommandCancel(secuboid, null, sender, argList).commandExecute();
-            new CommandSelect(secuboid, null, player, new ArgList(secuboid, new String[]{"land", cLand.getName()},
-                    player)).commandExecute();
+            new CommandSelect(secuboid, null, player,
+                    new ArgList(secuboid, new String[] { "land", cLand.getName() }, player)).commandExecute();
 
-        } catch (SecuboidLandException ex) {
-            ex.printStackTrace();
+        } catch (final SecuboidLandException ex) {
+            throw new SecuboidCommandException(secuboid, sender,
+                    String.format("Error creating land \"%s\" for \"%s\"", collisions.getLandName(), owner.getName()),
+                    ex);
         }
     }
 }

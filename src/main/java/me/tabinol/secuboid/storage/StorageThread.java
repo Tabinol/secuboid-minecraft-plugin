@@ -21,6 +21,7 @@ package me.tabinol.secuboid.storage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +29,7 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.storage.flat.StorageFlat;
+import me.tabinol.secuboid.lands.approve.Approve;
 
 /**
  * The Class StorageThread.
@@ -53,14 +54,9 @@ public class StorageThread extends Thread {
     private final Storage storage;
 
     /**
-     * The land save list request.
+     * The object save list request.
      */
-    private final List<Land> saveList;
-
-    /**
-     * The land delete list request.
-     */
-    private final List<Land> removeList;
+    private final List<SaveEntry> saveEntries;
 
     /**
      * The lock.
@@ -77,17 +73,31 @@ public class StorageThread extends Thread {
      */
     private final Condition notSaved = lock.newCondition();
 
+    public enum SaveActionEnum {
+        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE,
+    }
+
+    private static class SaveEntry {
+        final SaveActionEnum saveActionEnum;
+        final Optional<Savable> savableOpt;
+
+        SaveEntry(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
+            this.saveActionEnum = saveActionEnum;
+            this.savableOpt = savableOpt;
+        }
+    }
+
     /**
      * Instantiates a new storage thread.
      *
      * @param secuboid secuboid instance
+     * @param storage  storage instance
      */
-    public StorageThread(final Secuboid secuboid) {
+    public StorageThread(final Secuboid secuboid, final Storage storage) {
         this.secuboid = secuboid;
+        this.storage = storage;
         this.setName("Secuboid Storage");
-        storage = new StorageFlat(secuboid);
-        saveList = Collections.synchronizedList(new ArrayList<>());
-        removeList = Collections.synchronizedList(new ArrayList<>());
+        saveEntries = Collections.synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -116,45 +126,57 @@ public class StorageThread extends Thread {
         try {
             // Output request loop (waiting for a command)
             while (!exitRequest) {
-
-                // Save Lands
-                while (!saveList.isEmpty()) {
-
-                    final Land saveEntry = saveList.remove(0);
-                    try {
-                        storage.saveLand(saveEntry);
-                    } catch (final Exception e) {
-                        secuboid.getLogger().log(Level.SEVERE,
-                                String.format("Unable to save land \"%s\" on disk, UUID \"%s\". Possible data loss!",
-                                        saveEntry.getName(), saveEntry.getUUID()),
-                                e);
-                    }
-                }
-
-                // Remove Lands
-                while (!removeList.isEmpty()) {
-
-                    final Land removeEntry = removeList.remove(0);
-                    try {
-                        storage.removeLand(removeEntry);
-                    } catch (final Exception e) {
-                        secuboid.getLogger().log(Level.SEVERE,
-                                String.format("Unable to delete land \"%s\" on disk, UUID \"%s\". Possible data loss!",
-                                        removeEntry.getName(), removeEntry.getUUID()),
-                                e);
-                    }
-                }
+                doSaveList();
 
                 // wait!
                 try {
                     commandRequest.await();
                 } catch (final InterruptedException e) {
-                    e.printStackTrace();
+                    secuboid.getLogger().log(Level.SEVERE, "Error in thread await", e);
                 }
             }
             notSaved.signal();
         } finally {
             lock.unlock();
+        }
+    }
+
+    private void doSaveList() {
+        // Save Lands
+        while (!saveEntries.isEmpty()) {
+            final SaveEntry saveEntry = saveEntries.remove(0);
+            try {
+                doSave(saveEntry);
+            } catch (final Exception e) {
+                final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
+                final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
+                secuboid.getLogger().log(Level.SEVERE,
+                        String.format("Unable to save \"%s\" for \"%s\" on disk, UUID \"%s\". Possible data loss!",
+                                saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
+                        e);
+            }
+        }
+    }
+
+    private void doSave(final SaveEntry saveEntry) {
+        final Savable savableNullable = saveEntry.savableOpt.orElse(null);
+        switch (saveEntry.saveActionEnum) {
+        case APPROVE_REMOVE:
+            storage.removeApprove((Approve) savableNullable);
+            break;
+        case APPROVE_REMOVE_ALL:
+            storage.removeAllApproves();
+            break;
+        case APPROVE_SAVE:
+            storage.saveApprove((Approve) savableNullable);
+            break;
+        case LAND_REMOVE:
+            storage.removeLand((Land) savableNullable);
+            break;
+        case LAND_SAVE:
+            storage.saveLand((Land) savableNullable);
+            break;
+        default:
         }
     }
 
@@ -173,32 +195,24 @@ public class StorageThread extends Thread {
         try {
             notSaved.await();
         } catch (final InterruptedException e) {
-            e.printStackTrace();
+            secuboid.getLogger().log(Level.SEVERE, "Error in not saved thread await", e);
         } finally {
             lock.unlock();
         }
     }
 
     /**
-     * Save land.
+     * Add a save action for lands, approves or any objects to save to the disk or
+     * the database.
      *
-     * @param land the land
+     * @param saveActionEnum the action type to do
+     * @param savableOpt     the savable object optional
      */
-    public void saveLand(final Land land) {
+    public void addSaveAction(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
         if (!inLoad) {
-            saveList.add(land);
+            saveEntries.add(new SaveEntry(saveActionEnum, savableOpt));
             wakeUp();
         }
-    }
-
-    /**
-     * Removes the land.
-     *
-     * @param land the land
-     */
-    public void removeLand(final Land land) {
-        removeList.add(land);
-        wakeUp();
     }
 
     private void wakeUp() {

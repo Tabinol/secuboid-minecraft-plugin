@@ -18,12 +18,13 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.utilities.LocalMath;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.util.Map;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.utilities.LocalMath;
 
 /**
  * Represents a road area.
@@ -38,18 +39,20 @@ public final class RoadArea implements Area {
     private final RegionMatrix regionMatrix;
 
     /**
-     * Instantiates a new cuboid area.
+     * Instantiates a new road area.
      *
+     * @param isApproved   is this land is approved or in approve list
      * @param worldName    the world name
      * @param y1           the y1
      * @param y2           the y2
      * @param regionMatrix the region matrix (can be null)
      */
 
-    public RoadArea(String worldName, int y1, int y2, RegionMatrix regionMatrix) {
+    public RoadArea(final boolean isApproved, final String worldName, final int y1, final int y2,
+            final RegionMatrix regionMatrix) {
 
         // We need to set x, y and z after the new instance to have a reversed order
-        areaCommon = new AreaCommon(this, worldName, 0, y1, 0, 0, y2, 0);
+        areaCommon = new AreaCommon(this, isApproved, worldName, 0, y1, 0, 0, y2, 0);
         areaCommon.setX1(Integer.MAX_VALUE);
         areaCommon.setZ1(Integer.MAX_VALUE);
         areaCommon.setX2(Integer.MIN_VALUE);
@@ -62,16 +65,26 @@ public final class RoadArea implements Area {
         }
     }
 
+    @Override
+    public boolean isApproved() {
+        return areaCommon.isApproved();
+    }
+
+    @Override
+    public void setApproved() {
+        areaCommon.setApproved();
+    }
+
     private void updateLimits() {
-        for (Map.Entry<Integer, Map<Integer, ChunkMatrix>> eRegionZ : regionMatrix.getPoints().entrySet()) {
-            int regX = eRegionZ.getKey();
-            for (Map.Entry<Integer, ChunkMatrix> pMatrix : eRegionZ.getValue().entrySet()) {
-                int regZ = pMatrix.getKey();
+        for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> eRegionZ : regionMatrix.getPoints().entrySet()) {
+            final int regX = eRegionZ.getKey();
+            for (final Map.Entry<Integer, ChunkMatrix> pMatrix : eRegionZ.getValue().entrySet()) {
+                final int regZ = pMatrix.getKey();
                 for (byte chunkX = 0; chunkX < 16; chunkX++) {
                     for (byte chunkZ = 0; chunkZ < 16; chunkZ++) {
                         if (pMatrix.getValue().getPoint(chunkX, chunkZ)) {
-                            int x = (regX * 16) + chunkX;
-                            int z = (regZ * 16) + chunkZ;
+                            final int x = (regX * 16) + chunkX;
+                            final int z = (regZ * 16) + chunkZ;
                             if (areaCommon.getX1() > x) {
                                 areaCommon.setX1(x);
                             }
@@ -152,12 +165,12 @@ public final class RoadArea implements Area {
     }
 
     @Override
-    public void setX1(int x1) {
+    public void setX1(final int x1) {
         areaCommon.setX1(x1);
     }
 
     @Override
-    public void setX2(int x2) {
+    public void setX2(final int x2) {
         areaCommon.setX2(x2);
     }
 
@@ -167,7 +180,7 @@ public final class RoadArea implements Area {
      * @param y1 y1
      */
     @Override
-    public void setY1(int y1) {
+    public void setY1(final int y1) {
         areaCommon.setY1(y1);
     }
 
@@ -177,26 +190,27 @@ public final class RoadArea implements Area {
      * @param y2 y2
      */
     @Override
-    public void setY2(int y2) {
+    public void setY2(final int y2) {
         areaCommon.setY2(y2);
     }
 
     @Override
-    public void setZ1(int z1) {
+    public void setZ1(final int z1) {
         areaCommon.setZ1(z1);
     }
 
     @Override
-    public void setZ2(int z2) {
+    public void setZ2(final int z2) {
         areaCommon.setZ2(z2);
     }
 
     /**
-     * Adds point from location. Y is ignored. Do not use if the area is already in a land.
+     * Adds point from location. Y is ignored. Do not use if the area is already in
+     * a land.
      *
      * @param location the location
      */
-    public void add(Location location) {
+    public void add(final Location location) {
         add(location.getBlockX(), location.getBlockZ());
     }
 
@@ -206,7 +220,7 @@ public final class RoadArea implements Area {
      * @param x the x
      * @param z the z
      */
-    public void add(int x, int z) {
+    public void add(final int x, final int z) {
         regionMatrix.addPoint(x, z);
 
         // Update x and z square
@@ -231,7 +245,7 @@ public final class RoadArea implements Area {
      * @param z the z position
      * @return boolean point value
      */
-    public boolean getPoint(int x, int z) {
+    public boolean getPoint(final int x, final int z) {
         return regionMatrix.getPoint(x, z);
     }
 
@@ -241,7 +255,7 @@ public final class RoadArea implements Area {
      * @param x the x
      * @param z the z
      */
-    public void remove(int x, int z) {
+    public void remove(final int x, final int z) {
         regionMatrix.removePoint(x, z);
     }
 
@@ -256,30 +270,29 @@ public final class RoadArea implements Area {
     }
 
     @Override
-    public boolean isLocationInside(String worldName, int x, int z) {
-        return worldName.equals(areaCommon.getWorldName())
-                && regionMatrix.getPoint(x, z);
+    public boolean isLocationInside(final String worldName, final int x, final int z) {
+        return worldName.equals(areaCommon.getWorldName()) && regionMatrix.getPoint(x, z);
     }
 
     @Override
-    public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return isLocationInside(worldName, x, z)
-                && LocalMath.isInInterval(y, getY1(), getY2());
+    public boolean isLocationInside(final String worldName, final int x, final int y, final int z) {
+        return isLocationInside(worldName, x, z) && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
     @Override
-    public boolean isLocationInside(Location loc) {
+    public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     @Override
-    public boolean isLocationInsideSquare(int x, int z) {
+    public boolean isLocationInsideSquare(final int x, final int z) {
         return areaCommon.isLocationInsideSquare(x, z);
     }
 
     @Override
     public String toFileFormat() {
-        return AreaType.ROAD + ":" + areaCommon.getWorldName() + ":" + getY1() + ":" + getY2() + regionMatrix.toFileFormat();
+        return AreaType.ROAD + ":" + areaCommon.isApproved() + ":" + areaCommon.getWorldName() + ":" + getY1() + ":"
+                + getY2() + regionMatrix.toFileFormat();
     }
 
     /**
@@ -289,9 +302,8 @@ public final class RoadArea implements Area {
      */
     @Override
     public String getPrint() {
-        return AreaType.ROAD.toString().substring(0, 3).toLowerCase()
-                + ":(" + getX1() + ", " + getY1() + ", " + getZ1() + ")-("
-                + getX2() + ", " + getY2() + ", " + getZ2() + ")";
+        return AreaType.ROAD.toString().substring(0, 3).toLowerCase() + ":(" + getX1() + ", " + getY1() + ", " + getZ1()
+                + ")-(" + getX2() + ", " + getY2() + ", " + getZ2() + ")";
     }
 
     @Override
@@ -305,7 +317,7 @@ public final class RoadArea implements Area {
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(final Land land) {
         areaCommon.setLand(land);
     }
 
@@ -325,12 +337,12 @@ public final class RoadArea implements Area {
     }
 
     @Override
-    public int compareTo(Area t) {
+    public int compareTo(final Area t) {
         return areaCommon.compareToArea(t);
     }
 
     @Override
     public Area copyOf() {
-        return new RoadArea(getWorldName(), getY1(), getY2(), regionMatrix.copyOf());
+        return new RoadArea(areaCommon.isApproved(), getWorldName(), getY1(), getY2(), regionMatrix.copyOf());
     }
 }

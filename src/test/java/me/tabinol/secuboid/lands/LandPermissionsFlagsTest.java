@@ -61,9 +61,9 @@ public final class LandPermissionsFlagsTest {
 
                 // Create lands for test
                 parent = lands.createLand(LAND_PARENT, PlayerContainerNobody.getInstance(),
-                                new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
+                                new CuboidArea(true, WORLD, 0, 0, 0, 99, 255, 99));
                 child = lands.createLand(LAND_CHILD, PlayerContainerNobody.getInstance(),
-                                new CuboidArea(WORLD, 9, 9, 9, 60, 255, 60), parent);
+                                new CuboidArea(true, WORLD, 9, 9, 9, 60, 255, 60), parent);
                 fakePlayer = new FakePlayer(UUID.randomUUID(), "fakeplayer").getPlayer();
         }
 

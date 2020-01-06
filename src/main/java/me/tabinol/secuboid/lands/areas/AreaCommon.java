@@ -18,15 +18,23 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.utilities.LocalMath;
 
 /**
  * Area common methodes.
  */
 final class AreaCommon {
+
+    /**
+     * The area.
+     */
+    private final Area area;
+
+    private boolean isApproved;
 
     /**
      * The world name.
@@ -44,23 +52,20 @@ final class AreaCommon {
     private Land land = null;
 
     /**
-     * The area.
-     */
-    private final Area area;
-
-    /**
      * Instantiates a new area.
      *
-     * @param area      the area
-     * @param worldName the world name
-     * @param x1        the x1
-     * @param y1        the y1
-     * @param z1        the z1
-     * @param x2        the x2
-     * @param y2        the y2
-     * @param z2        the z2
+     * @param area       the area
+     * @param isApproved is this land is approved or in approve list
+     * @param worldName  the world name
+     * @param x1         the x1
+     * @param y1         the y1
+     * @param z1         the z1
+     * @param x2         the x2
+     * @param y2         the y2
+     * @param z2         the z2
      */
-    AreaCommon(Area area, String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
+    AreaCommon(final Area area, final boolean isApproved, final String worldName, final int x1, final int y1,
+            final int z1, final int x2, final int y2, final int z2) {
 
         this.area = area;
         this.worldName = worldName;
@@ -91,7 +96,7 @@ final class AreaCommon {
      *
      * @param land the new land
      */
-    final void setLand(Land land) {
+    final void setLand(final Land land) {
         this.land = land;
     }
 
@@ -102,6 +107,14 @@ final class AreaCommon {
      */
     Land getLand() {
         return land;
+    }
+
+    boolean isApproved() {
+        return isApproved;
+    }
+
+    void setApproved() {
+        isApproved = true;
     }
 
     /**
@@ -181,7 +194,7 @@ final class AreaCommon {
      *
      * @param x1 x1
      */
-    void setX1(int x1) {
+    void setX1(final int x1) {
         this.x1 = x1;
     }
 
@@ -190,7 +203,7 @@ final class AreaCommon {
      *
      * @param x2 x2
      */
-    void setX2(int x2) {
+    void setX2(final int x2) {
         this.x2 = x2;
     }
 
@@ -199,7 +212,7 @@ final class AreaCommon {
      *
      * @param y1 y1
      */
-    void setY1(int y1) {
+    void setY1(final int y1) {
         this.y1 = y1;
     }
 
@@ -208,7 +221,7 @@ final class AreaCommon {
      *
      * @param y2 y2
      */
-    void setY2(int y2) {
+    void setY2(final int y2) {
         this.y2 = y2;
     }
 
@@ -217,7 +230,7 @@ final class AreaCommon {
      *
      * @param z1 z1
      */
-    void setZ1(int z1) {
+    void setZ1(final int z1) {
         this.z1 = z1;
     }
 
@@ -226,31 +239,33 @@ final class AreaCommon {
      *
      * @param z2 z2
      */
-    void setZ2(int z2) {
+    void setZ2(final int z2) {
         this.z2 = z2;
     }
 
     /**
-     * Gets if the location is in the square limit of the land. This method ignore the world and the y values.
-     * Use isLocationInside methods if you want to check an exact location.
+     * Gets if the location is in the square limit of the land. This method ignore
+     * the world and the y values. Use isLocationInside methods if you want to check
+     * an exact location.
      *
      * @param x the x
      * @param z the z
      * @return if true or false
      */
-    boolean isLocationInsideSquare(int x, int z) {
+    boolean isLocationInsideSquare(final int x, final int z) {
         return LocalMath.isInInterval(x, getX1(), getX2()) && LocalMath.isInInterval(z, getZ1(), getZ2());
     }
 
     /**
-     * Implements compareTo. This methode is not overrided because this class is not public
+     * Implements compareTo. This methode is not overrided because this class is not
+     * public
      *
      * @param t the area
      * @return integer
      */
-    int compareToArea(Area t) {
+    int compareToArea(final Area t) {
 
-        int worldCompare = worldName.compareTo(t.getWorldName());
+        final int worldCompare = worldName.compareTo(t.getWorldName());
         if (worldCompare != 0) {
             return worldCompare;
         }

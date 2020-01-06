@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -36,6 +37,8 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
+import me.tabinol.secuboid.lands.approve.Approvable;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagList;
@@ -46,13 +49,15 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerResident;
 import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
+import me.tabinol.secuboid.storage.Savable;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 
 /**
  * Represents a land with a number of areas.
  *
  * @author tabinol
  */
-public final class Land {
+public final class Land implements Savable, Approvable {
 
     /**
      * The Constant DEFAULT_PRIORITY.
@@ -81,6 +86,8 @@ public final class Land {
      */
     private String name;
 
+    private boolean isApproved;
+
     /**
      * The type.
      */
@@ -100,11 +107,6 @@ public final class Land {
      * The priority.
      */
     private short priority = DEFAULT_PRIORITY; // Do not put more then 100000!!!!
-
-    /**
-     * The genealogy.
-     */
-    private int genealogy = 0; // 0 = first, 1 = child, 2 = child of child, ...
 
     /**
      * The parent.
@@ -215,31 +217,35 @@ public final class Land {
      * IMPORTANT: Please use createLand in Lands class to create a Land or it will
      * not be accessible.
      *
-     * @param secuboid  secuboid instance
-     * @param landName  the land name
-     * @param uuid      the uuid
-     * @param owner     the owner
-     * @param area      the area
-     * @param genealogy the genealogy
-     * @param parent    the parent
-     * @param areaId    the area id
-     * @param type      the type
+     * @param secuboid   secuboid instance
+     * @param landName   the land name
+     * @param uuid       the uuid
+     * @param isApproved is this land is approved or in approve list
+     * @param owner      the owner
+     * @param area       the area
+     * @param parent     the parent
+     * @param areaId     the area id
+     * @param type       the type
      */
-    public Land(final Secuboid secuboid, final String landName, final UUID uuid, final PlayerContainer owner,
-            final Area area, final int genealogy, final Land parent, final int areaId, final Type type) {
+    Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
+            final PlayerContainer owner, final Area area, final Land parent, final int areaId, final Type type) {
 
         this.secuboid = secuboid;
         this.uuid = uuid;
+        this.isApproved = isApproved;
         name = landName.toLowerCase();
         this.type = type;
-        if (parent != null) {
+        if (parent != null && isApproved) {
             this.parent = parent;
             parent.addChild(this);
         }
         this.owner = owner;
-        this.genealogy = genealogy;
         worldName = area.getWorldName();
         landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
+        if (isApproved) {
+            // A approved should have only an approved area.
+            area.setApproved();
+        }
         addArea(area, areaId);
     }
 
@@ -247,8 +253,35 @@ public final class Land {
         return landPermissionsFlags;
     }
 
+    @Override
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    @Override
+    public void setApproved() {
+        // Set approved
+        isApproved = true;
+
+        // Add to parent
+        if (parent != null) {
+            parent.addChild(this);
+        }
+
+        // Activate new area (should has only one)
+        for (final Area area : areas.values()) {
+            area.setApproved();
+            activateArea(area);
+        }
+    }
+
+    public void setApproved(final double price) {
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        setApproved();
+    }
+
     /**
-     * Sets the land default values
+     * Sets the land default values.
      */
     public void setDefault() {
         owner = PlayerContainerNobody.getInstance();
@@ -290,9 +323,7 @@ public final class Land {
      */
     public void addArea(final Area area, final double price) {
 
-        if (price > 0) {
-            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-        }
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
         addArea(area);
     }
 
@@ -306,14 +337,37 @@ public final class Land {
 
         area.setLand(this);
         areas.put(key, area);
-        secuboid.getLands().addAreaToList(area);
+        activateArea(area);
+    }
+
+    /**
+     * Approves the area.
+     *
+     * @param areaId the area id
+     * @param price  the price
+     * @throws SecuboidLandException
+     */
+    public void approveArea(final int areaId, final double price) throws SecuboidLandException {
+        final Area area = getArea(areaId);
+        if (area == null) {
+            throw new SecuboidLandException(
+                    String.format("The area %d does not exist in land \"%s\", \"%s\"", areaId, name, uuid));
+        }
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        area.setApproved();
+        activateArea(area);
+    }
+
+    private void activateArea(final Area area) {
+        if (isApproved && area.isApproved()) {
+            // Add area for get location only if the land and the area are approved.
+            secuboid.getLands().addAreaToList(area);
+        }
         doSave();
 
         // Start Event
-        secuboid.getServer().getPluginManager() /*
-                                                 * .callEvent(new LandModifyEvent(this,
-                                                 * LandModifyEvent.LandModifyReason.AREA_ADD, area))
-                                                 */;
+        secuboid.getServer().getPluginManager()
+                .callEvent(new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_ADD, area));
     }
 
     /**
@@ -360,11 +414,7 @@ public final class Land {
      * @return true, if successful
      */
     public boolean replaceArea(final int key, final Area newArea, final double price) {
-
-        if (price > 0) {
-            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-        }
-
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
         return replaceArea(key, newArea);
     }
 
@@ -382,6 +432,7 @@ public final class Land {
             secuboid.getLands().removeAreaFromList(area);
             newArea.setLand(this);
             areas.put(key, newArea);
+            newArea.setApproved();
             secuboid.getLands().addAreaToList(newArea);
             doSave();
 
@@ -393,6 +444,34 @@ public final class Land {
         }
 
         return false;
+    }
+
+    /**
+     * Replace approve replace area.
+     *
+     * @param key        the key
+     * @param newAreaKey the new area id
+     * @param price      the price
+     * @return true, if successful
+     * @throws SecuboidLandException
+     */
+    public boolean approveReplaceArea(final int key, final int newAreaId, final double price)
+            throws SecuboidLandException {
+        if (getArea(key) == null) {
+            throw new SecuboidLandException(
+                    String.format("The area to replace %d does not exist in land \"%s\", \"%s\"", key, name, uuid));
+        }
+        final Area newArea = getArea(newAreaId);
+        if (newArea == null) {
+            throw new SecuboidLandException(
+                    String.format("The new area %d does not exist in land \"%s\", \"%s\"", newAreaId, name, uuid));
+        }
+
+        // Remove the "new" area to replace the actual area
+        setAutoSave(false);
+        removeArea(newArea);
+        setAutoSave(true);
+        return replaceArea(key, newArea, price);
     }
 
     /**
@@ -519,6 +598,7 @@ public final class Land {
      *
      * @return the name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -528,6 +608,7 @@ public final class Land {
      *
      * @return the uuid
      */
+    @Override
     public UUID getUUID() {
         return uuid;
     }
@@ -713,15 +794,6 @@ public final class Land {
     }
 
     /**
-     * Gets the genealogy.
-     *
-     * @return the genealogy
-     */
-    public int getGenealogy() {
-        return genealogy;
-    }
-
-    /**
      * Sets the priority.
      *
      * @param priority the new priority
@@ -741,19 +813,29 @@ public final class Land {
     }
 
     /**
+     * Gets the first parent in the line (or this land).
+     * 
+     * @return the first parent
+     */
+    public Land getFirstParent() {
+        Land firstParent = this;
+        Land nextParent;
+        while ((nextParent = firstParent.parent) != null) {
+            firstParent = nextParent;
+        }
+        return firstParent;
+    }
+
+    /**
      * Sets the land parent.
      *
      * @param newParent the land parent
      */
     public void setParent(final Land newParent) {
-        // Remove files
-        removeChildFiles();
-
         // remove parent (if needed)
         if (parent != null) {
             parent.removeChild(uuid);
             parent = null;
-            genealogy = 0;
         }
 
         // Add parent
@@ -761,7 +843,6 @@ public final class Land {
             newParent.addChild(this);
             parent = newParent;
             priority = parent.getPriority();
-            genealogy = parent.getGenealogy() + 1;
         }
 
         // Save
@@ -771,38 +852,13 @@ public final class Land {
         saveChildFiles();
     }
 
-    private void removeChildFiles() {
-        for (final Land child : children.values()) {
-            child.setAutoSave(false);
-            secuboid.getStorageThread().removeLand(child);
-            child.removeChildFiles();
-        }
-    }
-
     private void saveChildFiles() {
         for (final Land child : children.values()) {
             child.setPriority(priority);
-            child.genealogy = genealogy + 1;
             child.setAutoSave(true);
             child.forceSave();
             child.saveChildFiles();
         }
-    }
-
-    /**
-     * Gets the ancestor.
-     *
-     * @param gen the genealogy
-     * @return the ancestor
-     */
-    public Land getAncestor(final int gen) { // 1 parent, 2 grand-parent, 3 ...
-        Land ancestor = this;
-
-        for (int t = 0; t < gen; t++) {
-            ancestor = ancestor.getParent();
-        }
-
-        return ancestor;
     }
 
     /**
@@ -824,6 +880,24 @@ public final class Land {
         }
 
         return false;
+    }
+
+    /**
+     * Checks if the land is parent, grand-parent or ancestor.
+     *
+     * @param land the land
+     * @return true, if is ancestor
+     */
+    public boolean isParentOrAncestor(final Land land) {
+        if (parent == null) {
+            return false;
+        }
+
+        if (parent.equals(land)) {
+            return true;
+        }
+
+        return parent.isParentOrAncestor(land);
     }
 
     /**
@@ -878,7 +952,7 @@ public final class Land {
      * Force save.
      */
     private void forceSave() {
-        secuboid.getStorageThread().saveLand(this);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_SAVE, Optional.of(this));
     }
 
     void doSave() {

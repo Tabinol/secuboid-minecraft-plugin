@@ -89,24 +89,31 @@ public class Approves {
      */
     public void removeApprove(final Approve approve) {
         landNameToApprove.remove(approve.getName());
+        removeLandIfNeeded(approve);
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, Optional.of(approve));
     }
 
     /**
-     * Removes the all.
+     * Removes the all approve.
      */
     public void removeAll() {
         for (final Approve approve : landNameToApprove.values()) {
-            final Land land = approve.getLand();
-            try {
-                secuboid.getLands().removeLand(approve.getLand());
-            } catch (final SecuboidLandException e) {
-                secuboid.getLogger().log(Level.SEVERE, String.format(
-                        "Unable to delete non approved land \"%s\", \"%s\"", land.getName(), land.getUUID()), e);
-            }
+            removeLandIfNeeded(approve);
         }
         landNameToApprove.clear();
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, Optional.empty());
+    }
+
+    private final void removeLandIfNeeded(final Approve approve) {
+        final Land land = approve.getLand();
+        if (!land.isApproved()) {
+            try {
+                secuboid.getLands().removeLand(land);
+            } catch (final SecuboidLandException e) {
+                secuboid.getLogger().log(Level.WARNING, String.format(
+                        "Unable to delete non approved land \"%s\", \"%s\"", land.getName(), land.getUUID()), e);
+            }
+        }
     }
 
     /**

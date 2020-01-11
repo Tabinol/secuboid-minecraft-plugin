@@ -98,6 +98,10 @@ public enum FlagList {
      */
     ANIMAL_SPAWN(true),
     /**
+     * The villager spawn.
+     */
+    VILLAGER_SPAWN(true),
+    /**
      * The leaves decay
      */
     LEAF_DECAY(true),

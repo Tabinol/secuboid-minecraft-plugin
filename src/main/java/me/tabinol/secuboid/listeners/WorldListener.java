@@ -24,12 +24,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Flying;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Slime;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -215,7 +210,9 @@ public final class WorldListener extends CommonListener implements Listener {
         if (cancelEvent) {
             // Cancel Event and do a false explosion
             event.setCancelled(true);
-            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), power, setFire, false);
+            if(!secuboid.getLands().getPermissionsFlags(loc).getFlagAndInherit(FlagList.FIREWORK_EXPLOSION.getFlagType()).getValueBoolean()) {
+                loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), power, setFire, false);
+            }
         }
 
         // If not the events will be executed has is
@@ -299,7 +296,8 @@ public final class WorldListener extends CommonListener implements Listener {
                 || ((event.getEntity() instanceof Monster || event.getEntity() instanceof Slime
                         || event.getEntity() instanceof Flying)
                         && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType())
-                                .getValueBoolean())) {
+                                .getValueBoolean())
+                || (event.getEntity() instanceof Villager && !landPermissionsFlags.getFlagAndInherit(FlagList.VILLAGER_SPAWN.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
         }
     }

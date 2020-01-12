@@ -18,19 +18,14 @@
  */
 package me.tabinol.secuboid.playerscache;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -44,6 +39,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
 import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 
 /**
  * The Class PlayersCache.
@@ -53,24 +49,14 @@ public final class PlayersCache extends Thread {
     private final Secuboid secuboid;
 
     /**
-     * The player cache version.
-     */
-    private final int playerCacheVersion;
-
-    /**
-     * The file.
-     */
-    private final File file;
-
-    /**
      * The players cache list.
      */
-    private TreeMap<String, PlayerCacheEntry> playersCacheList;
+    private final Map<String, PlayerCacheEntry> playersCacheList;
 
     /**
      * The players rev cache list.
      */
-    private TreeMap<UUID, PlayerCacheEntry> playersRevCacheList;
+    private final Map<UUID, PlayerCacheEntry> playersRevCacheList;
 
     /**
      * The output list.
@@ -110,7 +96,7 @@ public final class PlayersCache extends Thread {
     /**
      * The Class OutputRequest.
      */
-    private class OutputRequest {
+    private static class OutputRequest {
 
         /**
          * The command exec.
@@ -129,7 +115,6 @@ public final class PlayersCache extends Thread {
          * @param playerNames the player names
          */
         OutputRequest(final CommandPlayerThreadExec commandExec, final String[] playerNames) {
-
             this.commandExec = commandExec;
             this.playerNames = playerNames;
         }
@@ -141,16 +126,27 @@ public final class PlayersCache extends Thread {
      * @param secuboid secuboid instance
      */
     public PlayersCache(final Secuboid secuboid) {
-
         this.secuboid = secuboid;
-        playerCacheVersion = secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
-        this.setName("Secuboid Players cache");
-        final String fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
-        file = new File(fileName);
+        playersCacheList = new HashMap<>();
+        playersRevCacheList = new HashMap<>();
         outputList = Collections.synchronizedList(new ArrayList<OutputRequest>());
         updateList = Collections.synchronizedList(new ArrayList<PlayerCacheEntry>());
+        this.setName("Secuboid Players cache");
         httpProfileRepository = new HttpProfileRepository("minecraft");
-        loadAll();
+    }
+
+    /**
+     * Load players cache (Internal).
+     * 
+     * @param playerCacheEntries the player cache entries
+     */
+    public void loadPlayerscache(final List<PlayerCacheEntry> playerCacheEntries) {
+        playersCacheList.clear();
+        playersRevCacheList.clear();
+        playerCacheEntries.forEach(playerCacheEntry -> {
+            playersCacheList.put(playerCacheEntry.getName(), playerCacheEntry);
+            playersRevCacheList.put(playerCacheEntry.getUUID(), playerCacheEntry);
+        });
     }
 
     /**
@@ -177,6 +173,15 @@ public final class PlayersCache extends Thread {
      */
     public Set<String> getPlayerNames() {
         return playersCacheList.keySet();
+    }
+
+    /**
+     * Gets the player cache entries.
+     * 
+     * @return an unmodifiable collection
+     */
+    public Collection<PlayerCacheEntry> getPlayerCacheEntries() {
+        return Collections.unmodifiableCollection(playersCacheList.values());
     }
 
     public String getNameFromUUID(final UUID uuid) {
@@ -287,7 +292,6 @@ public final class PlayersCache extends Thread {
                     e.printStackTrace();
                 }
             }
-            saveAll();
             notSaved.signal();
         } finally {
             lock.unlock();
@@ -308,6 +312,9 @@ public final class PlayersCache extends Thread {
             // update name
             playersCacheList.put(nameLower, entry);
             playersRevCacheList.put(entry.getUUID(), entry);
+
+            // Request save
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, Optional.of(entry));
         }
     }
 
@@ -329,79 +336,6 @@ public final class PlayersCache extends Thread {
             e.printStackTrace();
         } finally {
             lock.unlock();
-        }
-    }
-
-    /**
-     * Load all.
-     */
-    private void loadAll() {
-
-        playersCacheList = new TreeMap<String, PlayerCacheEntry>();
-        playersRevCacheList = new TreeMap<UUID, PlayerCacheEntry>();
-
-        try {
-            BufferedReader br;
-
-            try {
-                br = new BufferedReader(new FileReader(file));
-            } catch (final FileNotFoundException ex) {
-                // Not existing? Nothing to load!
-                return;
-            }
-
-            @SuppressWarnings("unused")
-            final int version = Integer.parseInt(br.readLine().split(":")[1]);
-            br.readLine(); // Read remark line
-
-            String str;
-
-            while ((str = br.readLine()) != null && !str.isEmpty()) {
-                // Read from String "PlayerUUID:LastInventoryName:isCreative"
-                final String[] strs = str.split(":");
-
-                final String name = strs[0];
-                final UUID uuid = UUID.fromString(strs[1]);
-                playersCacheList.put(name.toLowerCase(), new PlayerCacheEntry(uuid, name));
-                playersRevCacheList.put(uuid, new PlayerCacheEntry(uuid, name));
-            }
-            br.close();
-
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Save all.
-     */
-    private void saveAll() {
-
-        try {
-            BufferedWriter bw;
-
-            try {
-                bw = new BufferedWriter(new FileWriter(file));
-            } catch (final FileNotFoundException ex) {
-                // Not existing? Nothing to load!
-                return;
-            }
-
-            bw.write("Version:" + playerCacheVersion);
-            bw.newLine();
-            bw.write("# Name:PlayerUUID");
-            bw.newLine();
-
-            for (final Map.Entry<String, PlayerCacheEntry> PlayerInvEntry : playersCacheList.entrySet()) {
-                // Write to String "Name:PlayerUUID"
-                bw.write(PlayerInvEntry.getValue().getName() + ":" + PlayerInvEntry.getValue().getUUID());
-                bw.newLine();
-            }
-            bw.close();
-
-        } catch (final IOException ex) {
-            ex.printStackTrace();
         }
     }
 

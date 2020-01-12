@@ -20,10 +20,12 @@ package me.tabinol.secuboid.playerscache;
 
 import java.util.UUID;
 
+import me.tabinol.secuboid.storage.Savable;
+
 /**
  * The Class PlayerCacheEntry.
  */
-public class PlayerCacheEntry {
+public class PlayerCacheEntry implements Savable {
 
     /**
      * The uuid.
@@ -33,7 +35,7 @@ public class PlayerCacheEntry {
     /**
      * The case sensitive name.
      */
-    private String caseSensitiveName;
+    private final String caseSensitiveName;
 
     /**
      * Instantiates a new player cache entry.
@@ -41,7 +43,7 @@ public class PlayerCacheEntry {
      * @param uuid              the uuid
      * @param caseSensitiveName the case sensitive name
      */
-    PlayerCacheEntry(UUID uuid, String caseSensitiveName) {
+    public PlayerCacheEntry(final UUID uuid, final String caseSensitiveName) {
 
         this.uuid = uuid;
         this.caseSensitiveName = caseSensitiveName;
@@ -52,6 +54,7 @@ public class PlayerCacheEntry {
      *
      * @return the uuid
      */
+    @Override
     public UUID getUUID() {
         return uuid;
     }
@@ -61,6 +64,7 @@ public class PlayerCacheEntry {
      *
      * @return the name
      */
+    @Override
     public String getName() {
         return caseSensitiveName;
     }

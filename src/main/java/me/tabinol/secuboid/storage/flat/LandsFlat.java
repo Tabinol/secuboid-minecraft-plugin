@@ -68,12 +68,6 @@ public class LandsFlat {
      */
     private String landsDir;
 
-    /**
-     * Represents lands with non resolved parents. In a second loop, we will try to
-     * resolve.
-     */
-    private Map<Land, UUID> orphans;
-
     public LandsFlat(final Secuboid secuboid) {
         this.secuboid = secuboid;
         landVersion = secuboid.getMavenAppProperties().getPropertyInt("landVersion");
@@ -113,13 +107,13 @@ public class LandsFlat {
     }
 
     void loadLands() {
-
+        final Map<Land, UUID> orphanToUUID = new HashMap<>();
         final File[] files = new File(landsDir).listFiles();
         int loadedlands = 0;
-        orphans = new HashMap<>();
 
         assert files != null;
         if (files.length == 0) {
+            // No land yet
             return;
         }
 
@@ -127,7 +121,7 @@ public class LandsFlat {
         for (final File file : files) {
             if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
                 try {
-                    loadLand(file);
+                    loadLand(file, orphanToUUID);
                 } catch (final Exception e) {
                     e.printStackTrace();
                     secuboid.getLogger().severe("Unable to load the land from file: " + file.getName());
@@ -137,13 +131,13 @@ public class LandsFlat {
         }
 
         // Pass 2: find parents
-        for (final Map.Entry<Land, UUID> entry : orphans.entrySet()) {
+        for (final Map.Entry<Land, UUID> entry : orphanToUUID.entrySet()) {
             final Land land = entry.getKey();
             final Land parent = secuboid.getLands().getLand(entry.getValue());
             if (parent != null) {
                 if (parent.isDescendants(land)) {
                     secuboid.getLogger().log(Level.SEVERE,
-                            () -> String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUuid=%s]",
+                            String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUuid=%s]",
                                     land.getName(), land.getUUID(), entry.getValue()));
                     continue;
                 }
@@ -161,7 +155,7 @@ public class LandsFlat {
      *
      * @param file the file
      */
-    private void loadLand(final File file) {
+    private void loadLand(final File file, final Map<Land, UUID> orphanToUUID) {
 
         final NewInstance newInstance = secuboid.getNewInstance();
         int version;
@@ -336,7 +330,7 @@ public class LandsFlat {
                     land = secuboid.getLands().createLand(landName, isApproved, owner, entry.getValue(), null,
                             entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
                     if (parentUUID != null) {
-                        orphans.put(land, UUID.fromString(parentUUID));
+                        orphanToUUID.put(land, UUID.fromString(parentUUID));
                     }
                 } catch (final SecuboidLandException ex) {
                     secuboid.getLogger().severe("Error on loading land " + landName + ":" + ex.getLocalizedMessage());

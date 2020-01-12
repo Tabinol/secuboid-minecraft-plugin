@@ -24,8 +24,10 @@ import java.util.logging.Level;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.flat.ApprovesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
+import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
 
 /**
@@ -43,7 +45,8 @@ public interface Storage {
         case "flat":
             final LandsFlat landsFlat = new LandsFlat(secuboid);
             final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
-            storage = new StorageFlat(landsFlat, approvesFlat);
+            final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
+            storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat);
         }
         return storage;
     }
@@ -75,7 +78,7 @@ public interface Storage {
     /**
      * Load approves.
      */
-    List<Approve> loadApproves();
+    void loadApproves();
 
     /**
      * Save approve.
@@ -95,4 +98,16 @@ public interface Storage {
      * Removes all approves.
      */
     void removeAllApproves();
+
+    /**
+     * Load players cache.
+     */
+    void loadPlayersCache();
+
+    /**
+     * Save the player cache entry.
+     * 
+     * @param playerCacheEntry the player cache entry
+     */
+    void savePlayerCacheEntry(PlayerCacheEntry playerCacheEntry);
 }

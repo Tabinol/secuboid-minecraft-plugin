@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -45,6 +46,16 @@ public class Approves {
     }
 
     /**
+     * Load all approves (Internal).
+     * 
+     * @param approves approve list
+     */
+    public void loadApproves(final List<Approve> approves) {
+        landNameToApprove.clear();
+        approves.stream().forEach(approve -> landNameToApprove.put(approve.getName(), approve));
+    }
+
+    /**
      * Adds the approve.
      *
      * @param approve the approve
@@ -59,7 +70,7 @@ public class Approves {
      *
      * @return the approve instance
      */
-    public Approve getApprove(String name) {
+    public Approve getApprove(final String name) {
         return landNameToApprove.get(name);
     }
 

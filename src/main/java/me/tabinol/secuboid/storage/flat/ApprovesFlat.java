@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,9 +77,9 @@ public class ApprovesFlat {
         approveFile = new File(secuboid.getDataFolder() + "/approvelist.yml");
     }
 
-    List<Approve> loadApproves() {
+    void loadApproves() {
         loadApproveYml();
-        return getApproveList();
+        secuboid.getLands().getApproves().loadApproves(getApproveList());
     }
 
     private void loadApproveYml() {
@@ -124,7 +125,7 @@ public class ApprovesFlat {
             }
         }
 
-        return landNameToApprove;
+        return Collections.unmodifiableList(landNameToApprove);
     }
 
     private Approve getApproveNullable(final UUID landUUID) {

@@ -74,7 +74,7 @@ public class StorageThread extends Thread {
     private final Condition notSaved = lock.newCondition();
 
     public enum SaveActionEnum {
-        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE,
+        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
     }
 
     private static class SaveEntry {

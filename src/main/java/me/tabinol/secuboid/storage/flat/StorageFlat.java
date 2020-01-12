@@ -18,10 +18,9 @@
  */
 package me.tabinol.secuboid.storage.flat;
 
-import java.util.List;
-
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 
 /**
@@ -31,16 +30,20 @@ public class StorageFlat implements Storage {
 
     private final LandsFlat landsFlat;
     private final ApprovesFlat approvesFlat;
+    private final PlayersCacheFlat playersCacheFlat;
 
-    public StorageFlat(final LandsFlat landsFlat, final ApprovesFlat approvesFlat) {
+    public StorageFlat(final LandsFlat landsFlat, final ApprovesFlat approvesFlat,
+            final PlayersCacheFlat playersCacheFlat) {
         this.landsFlat = landsFlat;
         this.approvesFlat = approvesFlat;
+        this.playersCacheFlat = playersCacheFlat;
     }
 
     @Override
     public void loadAll() {
         loadLands();
         loadApproves();
+        loadPlayersCache();
     }
 
     @Override
@@ -59,8 +62,8 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public List<Approve> loadApproves() {
-        return approvesFlat.loadApproves();
+    public void loadApproves() {
+        approvesFlat.loadApproves();
     }
 
     @Override
@@ -76,5 +79,15 @@ public class StorageFlat implements Storage {
     @Override
     public void removeAllApproves() {
         approvesFlat.removeAll();
+    }
+
+    @Override
+    public void loadPlayersCache() {
+        playersCacheFlat.loadPlayersCache();
+    }
+
+    @Override
+    public void savePlayerCacheEntry(final PlayerCacheEntry playerCacheEntry) {
+        playersCacheFlat.savePlayersCache();
     }
 }

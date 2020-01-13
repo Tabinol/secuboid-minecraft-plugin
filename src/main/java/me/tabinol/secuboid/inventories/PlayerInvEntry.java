@@ -19,17 +19,63 @@
 
 package me.tabinol.secuboid.inventories;
 
+import java.util.Arrays;
+import java.util.UUID;
+
+import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import me.tabinol.secuboid.storage.Savable;
+
 /**
  * The class for inventory entries.
  */
-public class PlayerInvEntry {
+public class PlayerInvEntry implements Savable {
 
-    private InventorySpec actualInv;
-    private boolean isCreativeInv;
+    private final static int MAX_FOOD_LEVEL = 20;
 
-    PlayerInvEntry(InventorySpec actualInv, boolean isCreativeInv) {
+    private final Player player;
+    private final InventorySpec actualInv;
+    private final boolean isCreativeInv;
+    private int level;
+    private float exp;
+    private double healt;
+    private int foodLevel;
+    private ItemStack[] itemListLoad;
+    private ItemStack[] itemArmorLoad;
+    private ItemStack[] itemEnderChest;
+    private ItemStack itemOffhand;
+
+    // TODO Envoyer les contents length en paramètre
+    public PlayerInvEntry(final Player player, final InventorySpec actualInv, final boolean isCreativeInv) {
+        this.player = player;
         this.actualInv = actualInv;
         this.isCreativeInv = isCreativeInv;
+    }
+
+    public PlayerInvEntry setDefault() {
+        level = 0;
+        exp = 0f;
+        healt = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        foodLevel = MAX_FOOD_LEVEL;
+        itemListLoad = new ItemStack[player.getInventory().getContents().length];
+        resetItemStacks(itemListLoad);
+        itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
+        resetItemStacks(itemArmorLoad);
+        itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
+        resetItemStacks(itemEnderChest);
+        itemOffhand = new ItemStack(Material.AIR);
+        return this;
+    }
+
+    private void resetItemStacks(final ItemStack[] itemStacks) {
+        Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public InventorySpec getActualInv() {
@@ -38,5 +84,15 @@ public class PlayerInvEntry {
 
     public boolean isCreativeInv() {
         return isCreativeInv;
+    }
+
+    @Override
+    public String getName() {
+        return player.getName();
+    }
+
+    @Override
+    public UUID getUUID() {
+        return player.getUniqueId();
     }
 }

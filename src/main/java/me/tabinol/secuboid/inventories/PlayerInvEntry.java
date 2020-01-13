@@ -81,6 +81,29 @@ public class PlayerInvEntry implements Savable {
         return playerConfEntryOpt;
     }
 
+    public PlayerInvEntry setDefault() {
+        level = 0;
+        exp = 0f;
+        healt = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        foodLevel = MAX_FOOD_LEVEL;
+        itemListLoad = new ItemStack[player.getInventory().getContents().length];
+        resetItemStacks(itemListLoad);
+        itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
+        resetItemStacks(itemArmorLoad);
+        itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
+        resetItemStacks(itemEnderChest);
+        itemOffhand = new ItemStack(Material.AIR);
+        return this;
+    }
+
+    private void resetItemStacks(final ItemStack[] itemStacks) {
+        Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
     public InventorySpec getActualInv() {
         return actualInv;
     }

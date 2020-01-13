@@ -45,7 +45,7 @@ public final class InventoryStorage {
 
     public final static String INV_DIR = "inventories";
     public final static String DEFAULT_INV = "DEFAULTINV";
-    private final static int MAX_FOOD_LEVEL = 20;
+    private final static int MAX_FOOD_LEVEL = 20; // TODO Remove?
     private final static String DEATH = "DEATH";
 
     private final Secuboid secuboid;
@@ -65,7 +65,7 @@ public final class InventoryStorage {
     private enum InventoryType {
         CREATIVE, SURVIVAL;
 
-        public static InventoryType getFromBoolean(boolean isCreative) {
+        public static InventoryType getFromBoolean(final boolean isCreative) {
             if (isCreative) {
                 return CREATIVE;
             } else {
@@ -79,15 +79,16 @@ public final class InventoryStorage {
      *
      * @param secuboid secuboid instance
      */
-    public InventoryStorage(Secuboid secuboid) {
+    public InventoryStorage(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
         storageVersion = secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
         playerInvList = new HashMap<Player, PlayerInvEntry>();
     }
 
-    public void saveInventory(Player player, String invName, boolean isCreative, boolean isDeath, boolean isSaveAllowed,
-            boolean isDefaultInv, boolean enderChestOnly) {
+    public void saveInventory(final Player player, final String invName, final boolean isCreative,
+            final boolean isDeath, final boolean isSaveAllowed, final boolean isDefaultInv,
+            final boolean enderChestOnly) {
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
         if (!isSaveAllowed) {
@@ -163,7 +164,7 @@ public final class InventoryStorage {
                 configPlayerItemFile.set("Health", player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 configPlayerItemFile.set("FoodLevel", MAX_FOOD_LEVEL);
 
-                ItemStack[] itemEnderChest = player.getEnderChest().getContents();
+                final ItemStack[] itemEnderChest = player.getEnderChest().getContents();
                 for (int t = 0; t < 4; t++) {
                     configPlayerItemFile.set("Armor." + t, new ItemStack(Material.AIR));
                 }
@@ -178,10 +179,10 @@ public final class InventoryStorage {
                 configPlayerItemFile.set("Health", player.getHealth());
                 configPlayerItemFile.set("FoodLevel", player.getFoodLevel());
 
-                ItemStack[] itemListSave = player.getInventory().getContents();
-                ItemStack[] itemArmorSave = player.getInventory().getArmorContents();
-                ItemStack[] itemEnderChest = player.getEnderChest().getContents();
-                ItemStack itemOffhand = player.getInventory().getItemInOffHand();
+                final ItemStack[] itemListSave = player.getInventory().getContents();
+                final ItemStack[] itemArmorSave = player.getInventory().getArmorContents();
+                final ItemStack[] itemEnderChest = player.getEnderChest().getContents();
+                final ItemStack itemOffhand = player.getInventory().getItemInOffHand();
                 for (int t = 0; t < itemListSave.length; t++) {
                     configPlayerItemFile.set("Slot." + t, itemListSave[t]);
                 }
@@ -194,10 +195,11 @@ public final class InventoryStorage {
                 configPlayerItemFile.set("OffHand.0", itemOffhand);
 
                 // PotionsEffects
-                Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
-                ConfigurationSection effectSection = configPlayerItemFile.createSection("PotionEffect");
-                for (PotionEffect effect : activePotionEffects) {
-                    ConfigurationSection effectSubSection = effectSection.createSection(effect.getType().getName());
+                final Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
+                final ConfigurationSection effectSection = configPlayerItemFile.createSection("PotionEffect");
+                for (final PotionEffect effect : activePotionEffects) {
+                    final ConfigurationSection effectSubSection = effectSection
+                            .createSection(effect.getType().getName());
                     effectSubSection.set("Duration", effect.getDuration());
                     effectSubSection.set("Amplifier", effect.getAmplifier());
                     effectSubSection.set("Ambient", effect.isAmbient());
@@ -206,7 +208,7 @@ public final class InventoryStorage {
 
             configPlayerItemFile.save(playerItemFile);
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             secuboid.getLogger().severe("Error on inventory save for player " + player.getName() + ", filename: "
                     + playerItemFile.getPath());
         }
@@ -222,21 +224,21 @@ public final class InventoryStorage {
      * @param deathVersion the death version
      * @return true is the inventory exist
      */
-    public boolean loadInventory(Player player, String invName, boolean isCreative, boolean fromDeath,
-            int deathVersion) {
+    public boolean loadInventory(final Player player, final String invName, final boolean isCreative,
+            final boolean fromDeath, final int deathVersion) {
 
         boolean invExist = false;
         String suffixName;
 
         // Get the suffix name
-        String gmName = InventoryType.getFromBoolean(isCreative).name();
+        final String gmName = InventoryType.getFromBoolean(isCreative).name();
         if (fromDeath) {
             suffixName = gmName + "." + DEATH + "." + deathVersion;
         } else {
             suffixName = gmName;
         }
 
-        YamlConfiguration ConfigPlayerItemFile = new YamlConfiguration();
+        final YamlConfiguration ConfigPlayerItemFile = new YamlConfiguration();
 
         // player item file
         File playerItemFile = new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName + "/"
@@ -259,7 +261,7 @@ public final class InventoryStorage {
                 ConfigPlayerItemFile.load(playerItemFile);
 
                 @SuppressWarnings("unused")
-                int version = ConfigPlayerItemFile.getInt("Version");
+                final int version = ConfigPlayerItemFile.getInt("Version");
 
                 player.setTotalExperience(ConfigPlayerItemFile.getInt("Experience"));
                 player.setLevel(ConfigPlayerItemFile.getInt("Level"));
@@ -277,9 +279,9 @@ public final class InventoryStorage {
                     }
                 }
 
-                ItemStack[] itemListLoad = new ItemStack[player.getInventory().getContents().length];
-                ItemStack[] itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
-                ItemStack[] itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
+                final ItemStack[] itemListLoad = new ItemStack[player.getInventory().getContents().length];
+                final ItemStack[] itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
+                final ItemStack[] itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
                 for (int t = 0; t < itemListLoad.length; t++) {
                     itemListLoad[t] = ConfigPlayerItemFile.getItemStack("Slot." + t, new ItemStack(Material.AIR));
                 }
@@ -290,7 +292,8 @@ public final class InventoryStorage {
                     itemEnderChest[t] = ConfigPlayerItemFile.getItemStack("EnderChest." + t,
                             new ItemStack(Material.AIR));
                 }
-                ItemStack itemOffhand = ConfigPlayerItemFile.getItemStack("OffHand.0", new ItemStack(Material.AIR));
+                final ItemStack itemOffhand = ConfigPlayerItemFile.getItemStack("OffHand.0",
+                        new ItemStack(Material.AIR));
 
                 player.getInventory().setContents(itemListLoad);
                 player.getInventory().setArmorContents(itemArmorLoad);
@@ -299,9 +302,9 @@ public final class InventoryStorage {
 
                 // PotionsEffects
                 removePotionEffects(player);
-                ConfigurationSection effectSection = ConfigPlayerItemFile.getConfigurationSection("PotionEffect");
+                final ConfigurationSection effectSection = ConfigPlayerItemFile.getConfigurationSection("PotionEffect");
                 if (effectSection != null) {
-                    for (Map.Entry<String, Object> effectEntry : effectSection.getValues(false).entrySet()) {
+                    for (final Map.Entry<String, Object> effectEntry : effectSection.getValues(false).entrySet()) {
 
                         final PotionEffectType type = PotionEffectType.getByName(effectEntry.getKey());
                         final ConfigurationSection effectSubSection = (ConfigurationSection) effectEntry.getValue();
@@ -312,10 +315,10 @@ public final class InventoryStorage {
                     }
                 }
 
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 secuboid.getLogger().severe("Error on inventory load for player " + player.getName() + ", filename: "
                         + playerItemFile.getPath());
-            } catch (InvalidConfigurationException ex) {
+            } catch (final InvalidConfigurationException ex) {
                 secuboid.getLogger().severe("Invalid configuration on inventory load for player " + player.getName()
                         + ", filename: " + playerItemFile.getPath());
             }
@@ -339,14 +342,14 @@ public final class InventoryStorage {
 
     }
 
-    private void removePotionEffects(Player player) {
-        for (PotionEffect effect : player.getActivePotionEffects()) {
+    private void removePotionEffects(final Player player) {
+        for (final PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
     }
 
-    public void switchInventory(Player player, LandPermissionsFlags landPermissionsFlags, boolean toIsCreative,
-            PlayerAction playerAction) {
+    public void switchInventory(final Player player, final LandPermissionsFlags landPermissionsFlags,
+            boolean toIsCreative, final PlayerAction playerAction) {
 
         PlayerInvEntry invEntry = null;
         boolean fromIsCreative = false;
@@ -383,7 +386,7 @@ public final class InventoryStorage {
 
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
-            playerInvList.put(player, new PlayerInvEntry(toInv, toIsCreative));
+            playerInvList.put(player, new PlayerInvEntry(player, toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same
@@ -415,7 +418,7 @@ public final class InventoryStorage {
         }
     }
 
-    public PlayerInvEntry getPlayerInvEntry(Player player) {
+    public PlayerInvEntry getPlayerInvEntry(final Player player) {
         return playerInvList.get(player);
     }
 }

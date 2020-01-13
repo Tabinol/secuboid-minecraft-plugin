@@ -32,8 +32,8 @@ public class InventorySpec {
     private final boolean isAllowDrop;
     private final List<String> disabledCommands;
 
-    public InventorySpec(String inventoryName, boolean isCreativeChange,
-                         boolean isSaveInventory, boolean isAllowDrop, List<String> disabledCommands) {
+    public InventorySpec(final String inventoryName, final boolean isCreativeChange, final boolean isSaveInventory,
+            final boolean isAllowDrop, final List<String> disabledCommands) {
 
         this.inventoryName = inventoryName;
         this.isCreativeChange = isCreativeChange;
@@ -58,11 +58,11 @@ public class InventorySpec {
         return isAllowDrop;
     }
 
-    public boolean isDisabledCommand(String command) {
+    public boolean isDisabledCommand(final String command) {
 
         // We have to check for no cas sensitive
         if (disabledCommands != null) {
-            for (String cItem : disabledCommands) {
+            for (final String cItem : disabledCommands) {
                 if (cItem.equalsIgnoreCase(command)) {
                     return true;
                 }

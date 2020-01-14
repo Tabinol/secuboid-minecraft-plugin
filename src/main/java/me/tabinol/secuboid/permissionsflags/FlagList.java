@@ -82,10 +82,6 @@ public enum FlagList {
      */
     END_CRYSTAL_DAMAGE(true),
     /**
-     * The firework damage.
-     */
-    FIREWORK_DAMAGE(true),
-    /**
      * The tnt damage.
      */
     TNT_DAMAGE(true),

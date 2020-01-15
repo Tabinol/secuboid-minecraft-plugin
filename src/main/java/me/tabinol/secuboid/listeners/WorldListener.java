@@ -228,7 +228,7 @@ public final class WorldListener extends CommonListener implements Listener {
         if (cancelEvent) {
             // Cancel Event and do a false explosion
             event.setCancelled(true);
-                loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), power, setFire, false);
+            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), power, setFire, false);
         }
 
         // If not the events will be executed has is

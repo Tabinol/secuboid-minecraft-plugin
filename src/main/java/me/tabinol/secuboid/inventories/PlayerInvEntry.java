@@ -16,7 +16,6 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package me.tabinol.secuboid.inventories;
 
 import java.util.Arrays;
@@ -39,20 +38,23 @@ public class PlayerInvEntry implements Savable {
     private final Player player;
     private final InventorySpec actualInv;
     private final boolean isCreativeInv;
+    final private ItemStack[] itemListLoad;
+    final private ItemStack[] itemArmorLoad;
+    final private ItemStack[] itemEnderChest;
     private int level;
     private float exp;
     private double healt;
     private int foodLevel;
-    private ItemStack[] itemListLoad;
-    private ItemStack[] itemArmorLoad;
-    private ItemStack[] itemEnderChest;
     private ItemStack itemOffhand;
 
-    // TODO Envoyer les contents length en paramètre
-    public PlayerInvEntry(final Player player, final InventorySpec actualInv, final boolean isCreativeInv) {
+    public PlayerInvEntry(final Player player, final InventorySpec actualInv, final boolean isCreativeInv,
+            final int itemListLoadSize, final int itemArmorLoadSize, final int itemEnderChestSize) {
         this.player = player;
         this.actualInv = actualInv;
         this.isCreativeInv = isCreativeInv;
+        itemListLoad = new ItemStack[itemListLoadSize];
+        itemArmorLoad = new ItemStack[itemArmorLoadSize];
+        itemEnderChest = new ItemStack[itemEnderChestSize];
     }
 
     public PlayerInvEntry setDefault() {
@@ -60,11 +62,8 @@ public class PlayerInvEntry implements Savable {
         exp = 0f;
         healt = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         foodLevel = MAX_FOOD_LEVEL;
-        itemListLoad = new ItemStack[player.getInventory().getContents().length];
         resetItemStacks(itemListLoad);
-        itemArmorLoad = new ItemStack[player.getInventory().getArmorContents().length];
         resetItemStacks(itemArmorLoad);
-        itemEnderChest = new ItemStack[player.getEnderChest().getContents().length];
         resetItemStacks(itemEnderChest);
         itemOffhand = new ItemStack(Material.AIR);
         return this;
@@ -86,9 +85,67 @@ public class PlayerInvEntry implements Savable {
         return isCreativeInv;
     }
 
+    public ItemStack[] getItemListLoad() {
+        return this.itemListLoad;
+    }
+
+    public ItemStack[] getItemArmorLoad() {
+        return this.itemArmorLoad;
+    }
+
+    public ItemStack[] getItemEnderChest() {
+        return this.itemEnderChest;
+    }
+
+    public int getLevel() {
+        return this.level;
+    }
+
+    public PlayerInvEntry setLevel(int level) {
+        this.level = level;
+        return this;
+    }
+
+    public float getExp() {
+        return this.exp;
+    }
+
+    public PlayerInvEntry setExp(float exp) {
+        this.exp = exp;
+        return this;
+    }
+
+    public double getHealt() {
+        return this.healt;
+    }
+
+    public PlayerInvEntry setHealt(double healt) {
+        this.healt = healt;
+        return this;
+    }
+
+    public int getFoodLevel() {
+        return this.foodLevel;
+    }
+
+    public PlayerInvEntry setFoodLevel(int foodLevel) {
+        this.foodLevel = foodLevel;
+        return this;
+    }
+
+    public ItemStack getItemOffhand() {
+        return this.itemOffhand;
+    }
+
+    public PlayerInvEntry setItemOffhand(ItemStack itemOffhand) {
+        this.itemOffhand = itemOffhand;
+        return this;
+    }
+
     @Override
     public String getName() {
-        return player.getName();
+        return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", actualInv.getInventoryName(),
+                isCreativeInv, player.getName());
     }
 
     @Override

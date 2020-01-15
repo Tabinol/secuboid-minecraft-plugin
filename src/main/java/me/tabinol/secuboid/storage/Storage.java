@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.storage;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;

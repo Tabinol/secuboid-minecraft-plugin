@@ -218,7 +218,6 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
                                 // Update now
                                 updatePlayerInlist(entries[compt]);
                             }
-                            compt++;
                         }
                         compt++;
                     }

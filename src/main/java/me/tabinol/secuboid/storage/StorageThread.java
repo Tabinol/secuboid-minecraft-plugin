@@ -18,13 +18,9 @@
  */
 package me.tabinol.secuboid.storage;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
@@ -39,42 +35,22 @@ public class StorageThread extends Thread {
     private final Secuboid secuboid;
 
     /**
-     * The exit request.
+     * The storage.
      */
-    private boolean exitRequest = false;
+    private final Storage storage;
+
+    /**
+     * The save list queue request.
+     */
+    private final BlockingQueue<SaveEntry> saveEntryQueue;
 
     /**
      * True if the Database is in Loaded.
      */
     private boolean inLoad = true;
 
-    /**
-     * The storage.
-     */
-    private final Storage storage;
-
-    /**
-     * The object save list request.
-     */
-    private final List<SaveEntry> saveEntries;
-
-    /**
-     * The lock.
-     */
-    private final Lock lock = new ReentrantLock();
-
-    /**
-     * The lock command request.
-     */
-    private final Condition commandRequest = lock.newCondition();
-
-    /**
-     * The lock not saved.
-     */
-    private final Condition notSaved = lock.newCondition();
-
     public enum SaveActionEnum {
-        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
+        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE, SHUTDOWN
     }
 
     private static class SaveEntry {
@@ -97,7 +73,7 @@ public class StorageThread extends Thread {
         this.secuboid = secuboid;
         this.storage = storage;
         this.setName("Secuboid Storage");
-        saveEntries = Collections.synchronizedList(new ArrayList<>());
+        saveEntryQueue = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -121,30 +97,17 @@ public class StorageThread extends Thread {
 
     @Override
     public void run() {
-
-        lock.lock();
         try {
-            // Output request loop (waiting for a command)
-            while (!exitRequest) {
-                doSaveList();
-
-                // wait!
-                try {
-                    commandRequest.await();
-                } catch (final InterruptedException e) {
-                    secuboid.getLogger().log(Level.SEVERE, "Error in thread await", e);
-                }
-            }
-            notSaved.signal();
-        } finally {
-            lock.unlock();
+            loopSaveList();
+        } catch (final InterruptedException e) {
+            secuboid.getLogger().log(Level.SEVERE, String.format("Interruption requested for %s", getName()), e);
         }
     }
 
-    private void doSaveList() {
-        // Save Lands
-        while (!saveEntries.isEmpty()) {
-            final SaveEntry saveEntry = saveEntries.remove(0);
+    private void loopSaveList() throws InterruptedException {
+        // Save loop
+        SaveEntry saveEntry;
+        while ((saveEntry = saveEntryQueue.take()).saveActionEnum != SaveActionEnum.SHUTDOWN) {
             try {
                 doSave(saveEntry);
             } catch (final Exception e) {
@@ -184,21 +147,11 @@ public class StorageThread extends Thread {
      * Stop next run.
      */
     public void stopNextRun() {
-
         if (!isAlive()) {
-            secuboid.getLogger().severe("Problem with save Thread. Possible data loss!");
+            secuboid.getLogger().severe("Problem with storage thread. Possible data loss!");
             return;
         }
-        exitRequest = true;
-        lock.lock();
-        commandRequest.signal();
-        try {
-            notSaved.await();
-        } catch (final InterruptedException e) {
-            secuboid.getLogger().log(Level.SEVERE, "Error in not saved thread await", e);
-        } finally {
-            lock.unlock();
-        }
+        addSaveAction(SaveActionEnum.SHUTDOWN, Optional.empty());
     }
 
     /**
@@ -210,17 +163,7 @@ public class StorageThread extends Thread {
      */
     public void addSaveAction(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
         if (!inLoad) {
-            saveEntries.add(new SaveEntry(saveActionEnum, savableOpt));
-            wakeUp();
-        }
-    }
-
-    private void wakeUp() {
-        lock.lock();
-        try {
-            commandRequest.signal();
-        } finally {
-            lock.unlock();
+            saveEntryQueue.add(new SaveEntry(saveActionEnum, savableOpt));
         }
     }
 }

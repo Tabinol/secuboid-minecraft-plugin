@@ -20,12 +20,13 @@ package me.tabinol.secuboid.playerscache;
 
 import java.util.UUID;
 
+import me.tabinol.secuboid.playerscache.PlayersCache.PlayerCacheable;
 import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The Class PlayerCacheEntry.
  */
-public class PlayerCacheEntry implements Savable {
+public class PlayerCacheEntry implements Savable, PlayerCacheable {
 
     /**
      * The uuid.

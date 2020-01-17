@@ -64,8 +64,8 @@ public abstract class SecuboidQueueThread<T> extends Thread {
         try {
             loopQueue();
         } catch (final InterruptedException e) {
-            secuboid.getLogger().log(Level.SEVERE, String.format("Interruption requested for thread \"%s\"", getName()),
-                    e);
+            secuboid.getLogger().log(Level.WARNING,
+                    String.format("Interruption requested for thread \"%s\".", getName()), e);
         }
     }
 
@@ -88,7 +88,7 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      * 
      * @param t the element
      */
-    protected abstract void doElement(T t);
+    protected abstract void doElement(T t) throws InterruptedException;
 
     /**
      * Stop next run.
@@ -104,17 +104,22 @@ public abstract class SecuboidQueueThread<T> extends Thread {
         taskQueue.add(Optional.empty());
 
         // Waiting for thread
-        try {
-            join(TIME_WAITING_THREAD_MILLIS);
-        } catch (final InterruptedException e) {
-            secuboid.getLogger().severe(String.format("Thread \"%s\" interrupted!", getName()));
-            return;
-        }
+        waitForThread(TIME_WAITING_THREAD_MILLIS);
 
         // If the thread is not stopped
         if (isAlive()) {
-            secuboid.getLogger().severe(String.format("Unable to stop gracefully the thread \"%s\"!", getName()));
+            secuboid.getLogger().warning(String.format("Unable to stop gracefully the thread \"%s\"!", getName()));
             interrupt();
+            waitForThread(TIME_WAITING_THREAD_MILLIS);
+        }
+    }
+
+    private void waitForThread(final long millis) {
+        try {
+            join(millis);
+        } catch (final InterruptedException e) {
+            secuboid.getLogger().warning(String.format("Thread \"%s\" interrupted!", getName()));
+            return;
         }
     }
 }

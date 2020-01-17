@@ -19,45 +19,32 @@
 package me.tabinol.secuboid.storage;
 
 import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * The Class StorageThread.
  */
-public class StorageThread extends Thread {
-
-    private final Secuboid secuboid;
+public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> {
 
     /**
      * The storage.
      */
     private final Storage storage;
 
-    /**
-     * The save list queue request.
-     */
-    private final BlockingQueue<SaveEntry> saveEntryQueue;
-
-    /**
-     * True if the Database is in Loaded.
-     */
-    private boolean inLoad = true;
-
     public enum SaveActionEnum {
-        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE, SHUTDOWN
+        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
     }
 
-    private static class SaveEntry {
+    protected static final class SaveEntry {
         final SaveActionEnum saveActionEnum;
         final Optional<Savable> savableOpt;
 
-        SaveEntry(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
+        private SaveEntry(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
             this.saveActionEnum = saveActionEnum;
             this.savableOpt = savableOpt;
         }
@@ -70,19 +57,17 @@ public class StorageThread extends Thread {
      * @param storage  storage instance
      */
     public StorageThread(final Secuboid secuboid, final Storage storage) {
-        this.secuboid = secuboid;
+        super(secuboid, "Secuboid Storage");
         this.storage = storage;
-        this.setName("Secuboid Storage");
-        saveEntryQueue = new LinkedBlockingQueue<>();
     }
 
     /**
      * Load all and start.
      */
     public void loadAllAndStart() {
-        inLoad = true;
+        isQueueActive = false;
         storage.loadAll();
-        inLoad = false;
+        isQueueActive = true;
         this.start();
     }
 
@@ -92,32 +77,20 @@ public class StorageThread extends Thread {
      * @return true, if is in load
      */
     public boolean isInLoad() {
-        return inLoad;
+        return !isQueueActive;
     }
 
     @Override
-    public void run() {
+    protected void doElement(final SaveEntry saveEntry) {
         try {
-            loopSaveList();
-        } catch (final InterruptedException e) {
-            secuboid.getLogger().log(Level.SEVERE, String.format("Interruption requested for %s", getName()), e);
-        }
-    }
-
-    private void loopSaveList() throws InterruptedException {
-        // Save loop
-        SaveEntry saveEntry;
-        while ((saveEntry = saveEntryQueue.take()).saveActionEnum != SaveActionEnum.SHUTDOWN) {
-            try {
-                doSave(saveEntry);
-            } catch (final Exception e) {
-                final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
-                final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
-                secuboid.getLogger().log(Level.SEVERE,
-                        String.format("Unable to save \"%s\" for \"%s\" on disk, UUID \"%s\". Possible data loss!",
-                                saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
-                        e);
-            }
+            doSave(saveEntry);
+        } catch (final Exception e) {
+            final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
+            final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
+            secuboid.getLogger().log(Level.SEVERE,
+                    String.format("Unable to save \"%s\" for \"%s\" on disk, UUID \"%s\". Possible data loss!",
+                            saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
+                    e);
         }
     }
 
@@ -144,17 +117,6 @@ public class StorageThread extends Thread {
     }
 
     /**
-     * Stop next run.
-     */
-    public void stopNextRun() {
-        if (!isAlive()) {
-            secuboid.getLogger().severe("Problem with storage thread. Possible data loss!");
-            return;
-        }
-        addSaveAction(SaveActionEnum.SHUTDOWN, Optional.empty());
-    }
-
-    /**
      * Add a save action for lands, approves or any objects to save to the disk or
      * the database.
      *
@@ -162,8 +124,6 @@ public class StorageThread extends Thread {
      * @param savableOpt     the savable object optional
      */
     public void addSaveAction(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
-        if (!inLoad) {
-            saveEntryQueue.add(new SaveEntry(saveActionEnum, savableOpt));
-        }
+        addElement(new SaveEntry(saveActionEnum, savableOpt));
     }
 }

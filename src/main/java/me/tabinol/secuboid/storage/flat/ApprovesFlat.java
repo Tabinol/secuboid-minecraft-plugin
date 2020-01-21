@@ -110,7 +110,7 @@ public class ApprovesFlat {
                 final UUID landUUID = UUID.fromString(key);
                 try {
                     app = getApproveNullable(landUUID);
-                } catch (final Exception ex) {
+                } catch (final RuntimeException ex) {
                     secuboid.getLogger().log(Level.SEVERE,
                             String.format("In approvelist.yml, error loading \"%s\"", landUUID), ex);
                     app = null;

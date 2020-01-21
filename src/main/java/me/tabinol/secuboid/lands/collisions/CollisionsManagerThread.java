@@ -74,7 +74,7 @@ public class CollisionsManagerThread extends SecuboidQueueThread<CollisionsManag
         // Do collision and price check
         try {
             outputRequest.collisions.doCollisionCheck();
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             final Land land = outputRequest.collisions.getLand();
             secuboid.getLogger().log(Level.SEVERE, String.format(
                     "Unable to complete collision check for \"%s\", UUID \"%s\"", land.getName(), land.getUUID()), e);

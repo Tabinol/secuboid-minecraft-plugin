@@ -29,10 +29,10 @@ import org.bukkit.inventory.ItemStack;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 
 /**
  * The Class CommandExec.

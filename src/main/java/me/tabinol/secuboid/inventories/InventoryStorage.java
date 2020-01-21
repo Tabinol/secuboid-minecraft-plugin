@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Optional;
+
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
@@ -386,8 +388,9 @@ public final class InventoryStorage {
 
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
-            playerInvList.put(player,
-                    new PlayerInvEntry(player, toInv, toIsCreative);
+            // TODO Resolve and Uncomment
+            //playerInvList.put(player,
+            //        new PlayerInvEntry(Optional.of(player), toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same

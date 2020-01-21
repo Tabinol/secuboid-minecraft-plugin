@@ -21,12 +21,13 @@ package me.tabinol.secuboid.storage;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.flat.ApprovesFlat;
+import me.tabinol.secuboid.storage.flat.InventoriesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
 import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
@@ -47,7 +48,8 @@ public interface Storage {
             final LandsFlat landsFlat = new LandsFlat(secuboid);
             final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
             final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
-            storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat);
+            final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
+            storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
         }
         return storage;
     }

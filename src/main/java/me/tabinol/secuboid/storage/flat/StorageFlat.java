@@ -18,8 +18,10 @@
  */
 package me.tabinol.secuboid.storage.flat;
 
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 
@@ -31,12 +33,14 @@ public class StorageFlat implements Storage {
     private final LandsFlat landsFlat;
     private final ApprovesFlat approvesFlat;
     private final PlayersCacheFlat playersCacheFlat;
+    private final InventoriesFlat inventoriesFlat;
 
     public StorageFlat(final LandsFlat landsFlat, final ApprovesFlat approvesFlat,
-            final PlayersCacheFlat playersCacheFlat) {
+            final PlayersCacheFlat playersCacheFlat, final InventoriesFlat inventoriesFlat) {
         this.landsFlat = landsFlat;
         this.approvesFlat = approvesFlat;
         this.playersCacheFlat = playersCacheFlat;
+        this.inventoriesFlat = inventoriesFlat;
     }
 
     @Override
@@ -44,6 +48,7 @@ public class StorageFlat implements Storage {
         loadLands();
         loadApproves();
         loadPlayersCache();
+        loadInventories();
     }
 
     @Override
@@ -79,6 +84,31 @@ public class StorageFlat implements Storage {
     @Override
     public void removeAllApproves() {
         approvesFlat.removeAll();
+    }
+
+    @Override
+    public void loadInventories() {
+        inventoriesFlat.loadInventories();
+    }
+
+    @Override
+    public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
+        inventoriesFlat.saveInventoryDefault(playerInvEntry);
+    }
+
+    @Override
+    public void loadInventoryPlayer(final PlayerConfEntry playerConfEntry) {
+        inventoriesFlat.loadInventoryPlayer(playerConfEntry);
+    }
+
+    @Override
+    public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
+        inventoriesFlat.saveInventoryPlayer(playerInvEntry);
+    }
+
+    @Override
+    public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
+        inventoriesFlat.saveInventoryPlayerDeath(playerInvEntry);
     }
 
     @Override

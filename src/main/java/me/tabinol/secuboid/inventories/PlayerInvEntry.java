@@ -25,7 +25,7 @@ import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.Savable;
 
 /**

@@ -37,11 +37,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.players.PlayerConfEntry;
+import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.utilities.ExpirableHashMap;
 
 /**

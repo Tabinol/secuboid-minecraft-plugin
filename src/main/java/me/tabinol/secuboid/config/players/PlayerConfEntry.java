@@ -18,6 +18,12 @@
  */
 package me.tabinol.secuboid.config.players;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,14 +31,16 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
+import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The Class PlayerConfEntry. Entries for each players.
  */
-public final class PlayerConfEntry {
+public final class PlayerConfEntry implements Savable {
 
     private final Secuboid secuboid;
 
@@ -50,6 +58,21 @@ public final class PlayerConfEntry {
      * Player Lands, areas and visual selections
      */
     private final PlayerSelection playerSelection;
+
+    /**
+     * By inventorie names survival inventories.
+     */
+    private final Map<String, PlayerInvEntry> inventoryNameToSurvivalInvEntry;
+
+    /**
+     * By inventorie names creative inventories.
+     */
+    private final Map<String, PlayerInvEntry> inventoryNameToCreativeInvEntry;
+
+    /**
+     * Death inventories
+     */
+    private final List<PlayerInvEntry> deathInvEntry;
 
     /**
      * If the player is in Admin Mod
@@ -118,9 +141,9 @@ public final class PlayerConfEntry {
      * @param sender   the sender
      */
     PlayerConfEntry(final Secuboid secuboid, final CommandSender sender) {
-
         this.secuboid = secuboid;
         this.sender = sender;
+
         if (sender instanceof Player) {
             player = (Player) sender;
             playerSelection = new PlayerSelection(secuboid, this);
@@ -130,9 +153,14 @@ public final class PlayerConfEntry {
             playerSelection = null;
             pcp = null;
         }
+
         selectionTop = secuboid.getConf().getDefaultTop();
         selectionBottom = secuboid.getConf().getDefaultBottom();
         selectionRadius = secuboid.getConf().getDefaultRadius();
+
+        inventoryNameToSurvivalInvEntry = new HashMap<>();
+        inventoryNameToCreativeInvEntry = new HashMap<>();
+        deathInvEntry = new ArrayList<>();
     }
 
     /**
@@ -388,5 +416,15 @@ public final class PlayerConfEntry {
      */
     public void setSelectionRadius(final int selectionRadius) {
         this.selectionRadius = selectionRadius;
+    }
+
+    @Override
+    public String getName() {
+        return player.getName();
+    }
+
+    @Override
+    public UUID getUUID() {
+        return player.getUniqueId();
     }
 }

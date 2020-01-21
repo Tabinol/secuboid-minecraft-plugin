@@ -18,34 +18,17 @@
  */
 package me.tabinol.secuboid.inventories;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
- * Inventories store
+ * Inventories store for default inventories. Player inventories are in PlayerConfig.
  */
 public final class Inventories {
 
-    private static class PlayerInvInfo {
-        final Map<String, PlayerInvEntry> InventoryNameToSurvivalInvEntry;
-        final Map<String, PlayerInvEntry> InventoryNameToCreativeInvEntry;
-        final List<PlayerInvEntry> DeathInvEntry;
-
-        PlayerInvInfo() {
-            InventoryNameToSurvivalInvEntry = new HashMap<>();
-            InventoryNameToCreativeInvEntry = new HashMap<>();
-            DeathInvEntry = new ArrayList<>();
-        }
-    }
-
     private final Map<String, PlayerInvEntry> InventoryNameToDefaultInvEntry;
-    private final Map<UUID, PlayerInvInfo> playerUUIDToPlayerInvInfo;
 
     public Inventories() {
         InventoryNameToDefaultInvEntry = new HashMap<>();
-        playerUUIDToPlayerInvInfo = new HashMap<>();
     }
 }

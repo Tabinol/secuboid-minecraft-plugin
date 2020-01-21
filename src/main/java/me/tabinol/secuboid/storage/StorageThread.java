@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.utilities.SecuboidQueueThread;
@@ -37,7 +39,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     private final Storage storage;
 
     public enum SaveActionEnum {
-        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
+        APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_SAVE, INVENTORY_PLAYER_LOAD,
+        INVENTORY_PLAYER_SAVE, INVENTORY_PLAYER_DEATH_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
     }
 
     protected static final class SaveEntry {
@@ -105,6 +108,18 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             break;
         case APPROVE_SAVE:
             storage.saveApprove((Approve) savableNullable);
+            break;
+        case INVENTORY_DEFAULT_SAVE:
+            storage.saveInventoryDefault((PlayerInvEntry) savableNullable);
+            break;
+        case INVENTORY_PLAYER_LOAD:
+            storage.loadInventoryPlayer((PlayerConfEntry) savableNullable);
+            break;
+        case INVENTORY_PLAYER_SAVE:
+            storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
+            break;
+        case INVENTORY_PLAYER_DEATH_SAVE:
+            storage.saveInventoryPlayerDeath((PlayerInvEntry) savableNullable);
             break;
         case LAND_REMOVE:
             storage.removeLand((Land) savableNullable);

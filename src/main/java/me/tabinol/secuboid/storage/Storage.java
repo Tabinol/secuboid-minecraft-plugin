@@ -21,6 +21,8 @@ package me.tabinol.secuboid.storage;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
@@ -97,6 +99,39 @@ public interface Storage {
      * Removes all approves.
      */
     void removeAllApproves();
+
+    /**
+     * Load all inventories (except player specific).
+     */
+    void loadInventories();
+
+    /**
+     * Save default inventory.
+     * 
+     * @param playerInvEntry the inventory
+     */
+    void saveInventoryDefault(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Load all inventories for a specific player.
+     * 
+     * @param playerConfEntry the player configuration entry
+     */
+    void loadInventoryPlayer(PlayerConfEntry playerConfEntry);
+
+    /**
+     * Save a specific inventory for a player.
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayer(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Save a specific inventory for a death player.
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayerDeath(PlayerInvEntry playerInvEntry);
 
     /**
      * Load players cache.

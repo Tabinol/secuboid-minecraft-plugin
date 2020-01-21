@@ -22,10 +22,10 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
@@ -87,7 +87,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     protected void doElement(final SaveEntry saveEntry) {
         try {
             doSave(saveEntry);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
             final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
             secuboid.getLogger().log(Level.SEVERE,

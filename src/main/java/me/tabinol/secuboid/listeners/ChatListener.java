@@ -13,8 +13,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.utilities.ColoredConsole;
 
 /**

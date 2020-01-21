@@ -122,9 +122,9 @@ public class LandsFlat {
             if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
                 try {
                     loadLand(file, orphanToUUID);
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    secuboid.getLogger().severe("Unable to load the land from file: " + file.getName());
+                } catch (final RuntimeException e) {
+                    secuboid.getLogger().log(Level.SEVERE,
+                            String.format("Unable to load the land from file: %s", file.getName()), e);
                 }
                 loadedlands++;
             }

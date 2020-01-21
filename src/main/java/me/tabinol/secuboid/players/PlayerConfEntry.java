@@ -16,8 +16,9 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.players;
+package me.tabinol.secuboid.players;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
@@ -73,6 +75,11 @@ public final class PlayerConfEntry implements Savable {
      * Death inventories
      */
     private final List<PlayerInvEntry> deathInvEntry;
+
+    /**
+     * Current game mode and inventory
+     */
+    private final Map.Entry<Boolean, InventorySpec> currentGameModeAndInventorySpec;
 
     /**
      * If the player is in Admin Mod
@@ -161,6 +168,7 @@ public final class PlayerConfEntry implements Savable {
         inventoryNameToSurvivalInvEntry = new HashMap<>();
         inventoryNameToCreativeInvEntry = new HashMap<>();
         deathInvEntry = new ArrayList<>();
+        currentGameModeAndInventorySpec = new AbstractMap.SimpleEntry<>(null, null);
     }
 
     /**

@@ -387,9 +387,7 @@ public final class InventoryStorage {
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
             playerInvList.put(player,
-                    new PlayerInvEntry(player, toInv, toIsCreative, player.getInventory().getContents().length,
-                            player.getInventory().getArmorContents().length,
-                            player.getEnderChest().getContents().length));
+                    new PlayerInvEntry(player, toInv, toIsCreative);
         }
 
         // Return if the inventory will be exacly the same

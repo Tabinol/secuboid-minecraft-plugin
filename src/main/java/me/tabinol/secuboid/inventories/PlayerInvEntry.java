@@ -19,13 +19,13 @@
 package me.tabinol.secuboid.inventories;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.Savable;
 
 /**
@@ -34,8 +34,12 @@ import me.tabinol.secuboid.storage.Savable;
 public class PlayerInvEntry implements Savable {
 
     private final static int MAX_FOOD_LEVEL = 20;
+    private final static double MAX_HEALT = 20d;
+    private final static int INVENTORY_LIST_SIZE = 27;
+    private final static int ARMOR_SIZE = 4;
+    private final static int ENDER_CHEST_SIZE = 27;
 
-    private final Player player;
+    private final Optional<PlayerConfEntry> playerConfEntryOpt;
     private final InventorySpec actualInv;
     private final boolean isCreativeInv;
     final private ItemStack[] itemListLoad;
@@ -47,20 +51,20 @@ public class PlayerInvEntry implements Savable {
     private int foodLevel;
     private ItemStack itemOffhand;
 
-    public PlayerInvEntry(final Player player, final InventorySpec actualInv, final boolean isCreativeInv,
-            final int itemListLoadSize, final int itemArmorLoadSize, final int itemEnderChestSize) {
-        this.player = player;
+    public PlayerInvEntry(final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec actualInv,
+            final boolean isCreativeInv) {
+        this.playerConfEntryOpt = playerConfEntryOpt;
         this.actualInv = actualInv;
         this.isCreativeInv = isCreativeInv;
-        itemListLoad = new ItemStack[itemListLoadSize];
-        itemArmorLoad = new ItemStack[itemArmorLoadSize];
-        itemEnderChest = new ItemStack[itemEnderChestSize];
+        itemListLoad = new ItemStack[INVENTORY_LIST_SIZE];
+        itemArmorLoad = new ItemStack[ARMOR_SIZE];
+        itemEnderChest = new ItemStack[ENDER_CHEST_SIZE];
     }
 
     public PlayerInvEntry setDefault() {
         level = 0;
         exp = 0f;
-        healt = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        healt = MAX_HEALT;
         foodLevel = MAX_FOOD_LEVEL;
         resetItemStacks(itemListLoad);
         resetItemStacks(itemArmorLoad);
@@ -73,8 +77,8 @@ public class PlayerInvEntry implements Savable {
         Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
     }
 
-    public Player getPlayer() {
-        return player;
+    public Optional<PlayerConfEntry> getPlayerConfEntryOpt() {
+        return playerConfEntryOpt;
     }
 
     public InventorySpec getActualInv() {
@@ -145,11 +149,11 @@ public class PlayerInvEntry implements Savable {
     @Override
     public String getName() {
         return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", actualInv.getInventoryName(),
-                isCreativeInv, player.getName());
+                isCreativeInv, playerConfEntryOpt.map(pce -> pce.getName()).orElse(null));
     }
 
     @Override
     public UUID getUUID() {
-        return player.getUniqueId();
+        return playerConfEntryOpt.map(pce -> pce.getUUID()).orElse(null);
     }
 }

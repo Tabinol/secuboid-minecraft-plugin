@@ -82,10 +82,6 @@ public enum FlagList {
      */
     END_CRYSTAL_DAMAGE(true),
     /**
-     * The firework damage.
-     */
-    FIREWORK_DAMAGE(true),
-    /**
      * The tnt damage.
      */
     TNT_DAMAGE(true),
@@ -97,6 +93,10 @@ public enum FlagList {
      * The animal spawn.
      */
     ANIMAL_SPAWN(true),
+    /**
+     * The villager spawn.
+     */
+    VILLAGER_SPAWN(true),
     /**
      * The leaves decay
      */

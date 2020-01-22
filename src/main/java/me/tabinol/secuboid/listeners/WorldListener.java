@@ -24,13 +24,15 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.Cancellable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Flying;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Slime;
-import org.bukkit.event.Cancellable;
+import org.bukkit.entity.Villager;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,6 +47,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 
@@ -95,8 +98,6 @@ public final class WorldListener extends CommonListener implements Listener {
                                 .getValueBoolean())
                 || (entityType == EntityType.ENDER_CRYSTAL && !landPermissionsFlags
                         .getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
-                || (entityType == EntityType.FIREWORK && !landPermissionsFlags
-                        .getFlagAndInherit(FlagList.FIREWORK_EXPLOSION.getFlagType()).getValueBoolean())
                 || !landPermissionsFlags.getFlagAndInherit(FlagList.EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
             if (entityType == EntityType.CREEPER) {
@@ -157,15 +158,28 @@ public final class WorldListener extends CommonListener implements Listener {
                             event.getLocation(), event.getYield(), 4L, false);
                     break;
 
-                case FIREWORK:
-                    ExplodeBlocks(event, event.blockList(), FlagList.FIREWORK_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), 0L, false);
-                    break;
-
                 default:
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * On firework explosion
+     *
+     * @param event the event
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onFireworkExplode(FireworkExplodeEvent event){
+        final Location loc = event.getEntity().getLocation();
+        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
+
+        //Check if the explosion is in a land
+        if (!landPermissionsFlags.getFlagAndInherit(FlagList.FIREWORK_EXPLOSION.getFlagType()).getValueBoolean()) {
+            event.setCancelled(true);
+            //Remove entity to stop completly the event
+            event.getEntity().remove();
         }
     }
 
@@ -211,7 +225,6 @@ public final class WorldListener extends CommonListener implements Listener {
                 cancelEvent = true;
             }
         }
-
         if (cancelEvent) {
             // Cancel Event and do a false explosion
             event.setCancelled(true);
@@ -299,7 +312,8 @@ public final class WorldListener extends CommonListener implements Listener {
                 || ((event.getEntity() instanceof Monster || event.getEntity() instanceof Slime
                         || event.getEntity() instanceof Flying)
                         && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType())
-                                .getValueBoolean())) {
+                                .getValueBoolean())
+                || (event.getEntity() instanceof Villager && !landPermissionsFlags.getFlagAndInherit(FlagList.VILLAGER_SPAWN.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
         }
     }

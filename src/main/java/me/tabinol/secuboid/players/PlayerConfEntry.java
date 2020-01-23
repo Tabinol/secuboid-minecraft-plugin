@@ -18,11 +18,6 @@
  */
 package me.tabinol.secuboid.players;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -32,8 +27,7 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.inventories.InventorySpec;
-import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
@@ -62,24 +56,9 @@ public final class PlayerConfEntry implements Savable {
     private final PlayerSelection playerSelection;
 
     /**
-     * By inventorie names survival inventories.
+     * Plauer inventory cache.
      */
-    private final Map<String, PlayerInvEntry> inventoryNameToSurvivalInvEntry;
-
-    /**
-     * By inventorie names creative inventories.
-     */
-    private final Map<String, PlayerInvEntry> inventoryNameToCreativeInvEntry;
-
-    /**
-     * Death inventories
-     */
-    private final List<PlayerInvEntry> deathInvEntry;
-
-    /**
-     * Current game mode and inventory
-     */
-    private final Map.Entry<Boolean, InventorySpec> currentGameModeAndInventorySpec;
+    private final PlayerInventoryCache playerInventoryCache;
 
     /**
      * If the player is in Admin Mod
@@ -164,11 +143,7 @@ public final class PlayerConfEntry implements Savable {
         selectionTop = secuboid.getConf().getDefaultTop();
         selectionBottom = secuboid.getConf().getDefaultBottom();
         selectionRadius = secuboid.getConf().getDefaultRadius();
-
-        inventoryNameToSurvivalInvEntry = new HashMap<>();
-        inventoryNameToCreativeInvEntry = new HashMap<>();
-        deathInvEntry = new ArrayList<>();
-        currentGameModeAndInventorySpec = new AbstractMap.SimpleEntry<>(null, null);
+        playerInventoryCache = new PlayerInventoryCache();
     }
 
     /**
@@ -205,6 +180,15 @@ public final class PlayerConfEntry implements Savable {
      */
     public PlayerSelection getSelection() {
         return playerSelection;
+    }
+
+    /**
+     * Gets the player inventory cache.
+     * 
+     * @return the player inventory cache
+     */
+    public PlayerInventoryCache getPlayerInventoryCache() {
+        return playerInventoryCache;
     }
 
     /**

@@ -265,7 +265,7 @@ public final class InventoryStorage {
                 @SuppressWarnings("unused")
                 final int version = ConfigPlayerItemFile.getInt("Version");
 
-                player.setTotalExperience(ConfigPlayerItemFile.getInt("Experience"));
+                //player.setTotalExperience(ConfigPlayerItemFile.getInt("Experience"));
                 player.setLevel(ConfigPlayerItemFile.getInt("Level"));
                 player.setExp((float) ConfigPlayerItemFile.getDouble("Exp"));
 

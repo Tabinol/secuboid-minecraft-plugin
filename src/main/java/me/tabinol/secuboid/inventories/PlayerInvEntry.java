@@ -18,12 +18,16 @@
  */
 package me.tabinol.secuboid.inventories;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.Savable;
@@ -42,14 +46,15 @@ public class PlayerInvEntry implements Savable {
     private final Optional<PlayerConfEntry> playerConfEntryOpt;
     private final InventorySpec actualInv;
     private final boolean isCreativeInv;
-    final private ItemStack[] itemListLoad;
-    final private ItemStack[] itemArmorLoad;
-    final private ItemStack[] itemEnderChest;
+    private final ItemStack[] itemListLoad;
+    private final ItemStack[] itemArmorLoad;
+    private final ItemStack[] itemEnderChest;
     private int level;
     private float exp;
-    private double healt;
+    private double health;
     private int foodLevel;
     private ItemStack itemOffhand;
+    private final List<PotionEffect> potionEffects;
 
     public PlayerInvEntry(final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec actualInv,
             final boolean isCreativeInv) {
@@ -59,12 +64,13 @@ public class PlayerInvEntry implements Savable {
         itemListLoad = new ItemStack[INVENTORY_LIST_SIZE];
         itemArmorLoad = new ItemStack[ARMOR_SIZE];
         itemEnderChest = new ItemStack[ENDER_CHEST_SIZE];
+        potionEffects = new ArrayList<>();
     }
 
     public PlayerInvEntry setDefault() {
         level = 0;
         exp = 0f;
-        healt = MAX_HEALT;
+        health = MAX_HEALT;
         foodLevel = MAX_FOOD_LEVEL;
         resetItemStacks(itemListLoad);
         resetItemStacks(itemArmorLoad);
@@ -105,7 +111,7 @@ public class PlayerInvEntry implements Savable {
         return this.level;
     }
 
-    public PlayerInvEntry setLevel(int level) {
+    public PlayerInvEntry setLevel(final int level) {
         this.level = level;
         return this;
     }
@@ -114,17 +120,17 @@ public class PlayerInvEntry implements Savable {
         return this.exp;
     }
 
-    public PlayerInvEntry setExp(float exp) {
+    public PlayerInvEntry setExp(final float exp) {
         this.exp = exp;
         return this;
     }
 
-    public double getHealt() {
-        return this.healt;
+    public double getHealth() {
+        return this.health;
     }
 
-    public PlayerInvEntry setHealt(double healt) {
-        this.healt = healt;
+    public PlayerInvEntry setHealth(final double health) {
+        this.health = health;
         return this;
     }
 
@@ -132,7 +138,7 @@ public class PlayerInvEntry implements Savable {
         return this.foodLevel;
     }
 
-    public PlayerInvEntry setFoodLevel(int foodLevel) {
+    public PlayerInvEntry setFoodLevel(final int foodLevel) {
         this.foodLevel = foodLevel;
         return this;
     }
@@ -141,8 +147,17 @@ public class PlayerInvEntry implements Savable {
         return this.itemOffhand;
     }
 
-    public PlayerInvEntry setItemOffhand(ItemStack itemOffhand) {
+    public PlayerInvEntry setItemOffhand(final ItemStack itemOffhand) {
         this.itemOffhand = itemOffhand;
+        return this;
+    }
+
+    public List<PotionEffect> getPotionEffects() {
+        return Collections.unmodifiableList(potionEffects);
+    }
+
+    public PlayerInvEntry addPotionEffect(final PotionEffect potionEffect) {
+        potionEffects.add(potionEffect);
         return this;
     }
 

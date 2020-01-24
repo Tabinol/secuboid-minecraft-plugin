@@ -129,11 +129,18 @@ public interface Storage {
     void saveInventoryPlayer(PlayerInvEntry playerInvEntry);
 
     /**
-     * Save a specific inventory for a death player.
+     * Save a specific inventory for a death player. (Just the Ender chest)
      * 
      * @param playerInvEntry the player inventory.
      */
     void saveInventoryPlayerDeath(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Save a specific inventory for a death player (for restore).
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayerDeathHistory(PlayerInvEntry playerInvEntry);
 
     /**
      * Load players cache.

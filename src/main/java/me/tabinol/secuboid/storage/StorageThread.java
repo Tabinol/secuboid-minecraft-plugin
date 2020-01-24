@@ -40,7 +40,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_SAVE, INVENTORY_PLAYER_LOAD,
-        INVENTORY_PLAYER_SAVE, INVENTORY_PLAYER_DEATH_SAVE, LAND_REMOVE, LAND_SAVE, PLAYERS_CACHE_SAVE
+        INVENTORY_PLAYER_SAVE, INVENTORY_PLAYER_DEATH_HISTORY_SAVE, INVENTORY_PLAYER_DEATH_SAVE, LAND_REMOVE, LAND_SAVE,
+        PLAYERS_CACHE_SAVE
     }
 
     protected static final class SaveEntry {
@@ -117,6 +118,9 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             break;
         case INVENTORY_PLAYER_SAVE:
             storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
+            break;
+        case INVENTORY_PLAYER_DEATH_HISTORY_SAVE:
+            storage.saveInventoryPlayerDeathHistory((PlayerInvEntry) savableNullable);
             break;
         case INVENTORY_PLAYER_DEATH_SAVE:
             storage.saveInventoryPlayerDeath((PlayerInvEntry) savableNullable);

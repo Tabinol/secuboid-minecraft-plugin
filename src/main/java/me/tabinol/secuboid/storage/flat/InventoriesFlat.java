@@ -61,7 +61,7 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerConfEntryOpt(), false, false);
 
     }
 
@@ -71,13 +71,16 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerConfEntryOpt(), false, false);
 
     }
 
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerConfEntryOpt(), false, true);
+    }
 
+    public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerConfEntryOpt(), true, false);
     }
 
     private Optional<PlayerInvEntry> loadInventory(final Optional<PlayerConfEntry> playerConfEntryOpt,
@@ -164,8 +167,8 @@ public class InventoriesFlat {
     }
 
     public void saveInventory(final PlayerInvEntry playerInvEntry, final Optional<PlayerConfEntry> playerConfEntryOpt,
-            final InventorySpec inventorySpec, final boolean isCreative, final boolean isDeath,
-            final boolean enderChestOnly) {
+            final boolean isDeathHistory, final boolean enderChestOnly) {
+        final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
         if (!playerConfEntryOpt.isPresent() && !inventorySpec.isSaveInventory()) {
@@ -180,10 +183,10 @@ public class InventoriesFlat {
         }
 
         // Get the suffix name
-        final String gmName = getGameModeFromBoolean(isCreative);
+        final String gmName = getGameModeFromBoolean(playerInvEntry.isCreativeInv());
         final String filePreName;
 
-        if (isDeath && playerConfEntryOpt.isPresent()) {
+        if (isDeathHistory && playerConfEntryOpt.isPresent()) {
             // Save death inventory
             final String playerUUIDStr = playerConfEntryOpt.get().getUUID().toString();
             final String fileDeathPrefix = playerUUIDStr + "." + gmName + "." + DEATH + ".";

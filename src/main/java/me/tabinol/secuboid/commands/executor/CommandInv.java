@@ -92,7 +92,7 @@ public final class CommandInv extends CommandExec {
         }
 
         // Get the land name
-        InventorySpec invSpec = secuboid.getInventoryListener().getPlayerInvEntry(player).getActualInv();
+        InventorySpec invSpec = secuboid.getInventoryListener().getPlayerInvEntry(player).getInventorySpec();
         String subCom = argList.getNext();
 
         if (subCom != null && subCom.equalsIgnoreCase("save")) {

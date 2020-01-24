@@ -158,7 +158,7 @@ public final class InventoryListener extends CommonListener implements Listener 
         }
 
         // Cancel if the world is no drop
-        InventorySpec invSpec = entry.getActualInv();
+        InventorySpec invSpec = entry.getInventorySpec();
 
         if (!invSpec.isAllowDrop()) {
             event.setCancelled(true);
@@ -187,7 +187,7 @@ public final class InventoryListener extends CommonListener implements Listener 
         }
 
         // Cancel if the world is no drop at death
-        final InventorySpec invSpec = invEntry.getActualInv();
+        final InventorySpec invSpec = invEntry.getInventorySpec();
 
         if (!invSpec.isAllowDrop()) {
             event.setDroppedExp(0);
@@ -202,7 +202,7 @@ public final class InventoryListener extends CommonListener implements Listener 
         final Player player = event.getPlayer();
 
         if (!player.hasPermission(InventoryConfig.PERM_IGNORE_DISABLED_COMMANDS)
-                && inventoryStorage.getPlayerInvEntry(player).getActualInv()
+                && inventoryStorage.getPlayerInvEntry(player).getInventorySpec()
                         .isDisabledCommand(event.getMessage().substring(1).split(" ")[0])) {
             event.setCancelled(true);
         }
@@ -217,7 +217,7 @@ public final class InventoryListener extends CommonListener implements Listener 
     }
 
     public boolean loadDeathInventory(Player player, int deathVersion) {
-        InventorySpec invSpec = inventoryStorage.getPlayerInvEntry(player).getActualInv();
+        InventorySpec invSpec = inventoryStorage.getPlayerInvEntry(player).getInventorySpec();
         return inventoryStorage.loadInventory(player, invSpec.getInventoryName(),
                 player.getGameMode() == GameMode.CREATIVE, true, deathVersion);
     }

@@ -44,7 +44,7 @@ public class PlayerInvEntry implements Savable {
     private final static int ENDER_CHEST_SIZE = 27;
 
     private final Optional<PlayerConfEntry> playerConfEntryOpt;
-    private final InventorySpec actualInv;
+    private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
     private final ItemStack[] slotItems;
     private final ItemStack[] armorItems;
@@ -56,10 +56,10 @@ public class PlayerInvEntry implements Savable {
     private ItemStack itemOffhand;
     private final List<PotionEffect> potionEffects;
 
-    public PlayerInvEntry(final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec actualInv,
+    public PlayerInvEntry(final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec,
             final boolean isCreativeInv) {
         this.playerConfEntryOpt = playerConfEntryOpt;
-        this.actualInv = actualInv;
+        this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
         slotItems = new ItemStack[INVENTORY_LIST_SIZE];
         armorItems = new ItemStack[ARMOR_SIZE];
@@ -107,8 +107,8 @@ public class PlayerInvEntry implements Savable {
         return playerConfEntryOpt;
     }
 
-    public InventorySpec getActualInv() {
-        return actualInv;
+    public InventorySpec getInventorySpec() {
+        return inventorySpec;
     }
 
     public boolean isCreativeInv() {
@@ -183,7 +183,7 @@ public class PlayerInvEntry implements Savable {
 
     @Override
     public String getName() {
-        return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", actualInv.getInventoryName(),
+        return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", inventorySpec.getInventoryName(),
                 isCreativeInv, playerConfEntryOpt.map(pce -> pce.getName()).orElse(null));
     }
 

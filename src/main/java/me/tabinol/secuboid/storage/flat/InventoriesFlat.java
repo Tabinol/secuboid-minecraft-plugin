@@ -20,6 +20,7 @@ package me.tabinol.secuboid.storage.flat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -47,9 +48,11 @@ public class InventoriesFlat {
     private final static String DEATH = "DEATH";
 
     private final Secuboid secuboid;
+    private final int storageVersion;
 
     public InventoriesFlat(final Secuboid secuboid) {
         this.secuboid = secuboid;
+        storageVersion = secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
     }
 
     public void loadInventories() {
@@ -77,7 +80,7 @@ public class InventoriesFlat {
 
     }
 
-    private Optional<PlayerInvEntry> loadInventory(final PlayerConfEntry playerConfEntry,
+    private Optional<PlayerInvEntry> loadInventory(final Optional<PlayerConfEntry> playerConfEntryOpt,
             final InventorySpec inventorySpec, final boolean isCreative, final boolean fromDeath,
             final int deathVersion) {
 
@@ -93,15 +96,12 @@ public class InventoriesFlat {
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
 
         // player item file
-        File playerItemFile = new File(String.format("%s/%s/%s/%s.%s.yml", secuboid.getDataFolder(), INV_DIR,
-                inventorySpec.getInventoryName(), playerConfEntry.getUUID(), suffixName));
-
-        if (!fromDeath && !playerItemFile.exists()) {
-
-            // Check for default inventory file
-            playerItemFile = new File(String.format("%s/%s/%s/%s.yml", secuboid.getDataFolder(), INV_DIR,
-                    inventorySpec.getInventoryName(), DEFAULT_INV));
-        }
+        final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
+        final File playerItemFile = playerConfEntryOpt.map( //
+                // Player inventory
+                pce -> new File(invDirFile, String.format("%s.%s.yml", pce.getUUID(), suffixName))) //
+                // Default inventory
+                .orElse(new File(invDirFile, String.format("%s.yml", DEFAULT_INV)));
 
         // If no inventory exists
         if (!playerItemFile.exists()) {
@@ -110,8 +110,7 @@ public class InventoriesFlat {
 
         try {
             // load Inventory
-            final PlayerInvEntry playerInvEntry = new PlayerInvEntry(Optional.of(playerConfEntry), inventorySpec,
-                    isCreative);
+            final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerConfEntryOpt, inventorySpec, isCreative);
             configPlayerItemFile.load(playerItemFile);
 
             @SuppressWarnings("unused")
@@ -123,9 +122,9 @@ public class InventoriesFlat {
             playerInvEntry.setHealth(configPlayerItemFile.getDouble("Health"));
             playerInvEntry.setFoodLevel(configPlayerItemFile.getInt("FoodLevel"));
 
-            final ItemStack[] itemListLoad = playerInvEntry.getItemListLoad();
-            final ItemStack[] itemArmorLoad = playerInvEntry.getItemArmorLoad();
-            final ItemStack[] itemEnderChest = playerInvEntry.getItemEnderChest();
+            final ItemStack[] itemListLoad = playerInvEntry.getSlotItems();
+            final ItemStack[] itemArmorLoad = playerInvEntry.getArmorItems();
+            final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
             for (int t = 0; t < itemListLoad.length; t++) {
                 itemListLoad[t] = configPlayerItemFile.getItemStack("Slot." + t, new ItemStack(Material.AIR));
             }
@@ -153,16 +152,132 @@ public class InventoriesFlat {
             return Optional.of(playerInvEntry);
 
         } catch (final IOException ex) {
-            secuboid.getLogger().log(Level.SEVERE, String.format("Error on inventory load for player %s, filename: %s",
-                    playerConfEntry.getName(), playerItemFile.getPath()), ex);
+            secuboid.getLogger().log(Level.SEVERE,
+                    String.format("Error in inventory load, filename: %s", playerItemFile.getPath()), ex);
             return Optional.empty();
         } catch (final InvalidConfigurationException ex) {
             secuboid.getLogger().log(Level.SEVERE,
-                    String.format("Invalid configuration on inventory load for player %s, filename: %s",
-                            playerConfEntry.getName(), playerItemFile.getPath()),
+                    String.format("Invalid configuration on inventory load, filename: %s", playerItemFile.getPath()),
                     ex);
             return Optional.empty();
         }
+    }
+
+    public void saveInventory(final PlayerInvEntry playerInvEntry, final Optional<PlayerConfEntry> playerConfEntryOpt,
+            final InventorySpec inventorySpec, final boolean isCreative, final boolean isDeath,
+            final boolean enderChestOnly) {
+
+        // If for some reasons whe have to skip save (ex: SaveInventory = false)
+        if (!playerConfEntryOpt.isPresent() && !inventorySpec.isSaveInventory()) {
+            return;
+        }
+
+        // Create directories (if not here)
+        final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
+        invDirFile.mkdirs();
+        if (!invDirFile.isDirectory()) {
+            secuboid.getLogger().severe("Unable to create the directory: " + invDirFile.getPath());
+        }
+
+        // Get the suffix name
+        final String gmName = getGameModeFromBoolean(isCreative);
+        final String filePreName;
+
+        if (isDeath && playerConfEntryOpt.isPresent()) {
+            // Save death inventory
+            final String playerUUIDStr = playerConfEntryOpt.get().getUUID().toString();
+            final String fileDeathPrefix = playerUUIDStr + "." + gmName + "." + DEATH + ".";
+            filePreName = fileDeathPrefix + "1";
+
+            // Death rename
+            File actFile = new File(invDirFile, fileDeathPrefix + "9.yml");
+            if (actFile.exists()) {
+                if (!actFile.delete()) {
+                    secuboid.getLogger().severe("Unable to delete the file: " + actFile.getPath());
+                }
+            }
+            for (int t = 8; t >= 1; t--) {
+                actFile = new File(invDirFile, fileDeathPrefix + t + ".yml");
+                if (actFile.exists()) {
+                    if (!actFile.renameTo(new File(invDirFile, fileDeathPrefix + (t + 1) + ".yml"))) {
+                        secuboid.getLogger().severe("Unable to rename the file: " + actFile.getPath());
+                    }
+                }
+            }
+
+        } else if (!playerConfEntryOpt.isPresent()) {
+            // Save default inventory
+            filePreName = DEFAULT_INV;
+
+        } else {
+            // Save normal inventory
+            filePreName = playerConfEntryOpt.get().getUUID().toString() + "." + gmName;
+        }
+
+        // Save Inventory
+        final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
+        final File playerItemFile = new File(invDirFile, filePreName + ".yml");
+
+        try {
+            configPlayerItemFile.set("Version", storageVersion);
+
+            // Save Only ender chest (Death)
+            if (enderChestOnly) {
+                configPlayerItemFile.set("Level", 0);
+                configPlayerItemFile.set("Exp", 0f);
+                configPlayerItemFile.set("Health", PlayerInvEntry.MAX_HEALT);
+                configPlayerItemFile.set("FoodLevel", PlayerInvEntry.MAX_FOOD_LEVEL);
+
+                final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
+                for (int t = 0; t < 4; t++) {
+                    configPlayerItemFile.set("Armor." + t, new ItemStack(Material.AIR));
+                }
+                for (int t = 0; t < itemEnderChest.length; t++) {
+                    configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
+                }
+            } else {
+                // Save all
+                configPlayerItemFile.set("Level", playerInvEntry.getLevel());
+                configPlayerItemFile.set("Exp", playerInvEntry.getExp());
+                configPlayerItemFile.set("Health", playerInvEntry.getHealth());
+                configPlayerItemFile.set("FoodLevel", playerInvEntry.getFoodLevel());
+
+                final ItemStack[] itemListSave = playerInvEntry.getSlotItems();
+                final ItemStack[] itemArmorSave = playerInvEntry.getArmorItems();
+                final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
+                final ItemStack itemOffhand = playerInvEntry.getItemOffhand();
+                for (int t = 0; t < itemListSave.length; t++) {
+                    configPlayerItemFile.set("Slot." + t, itemListSave[t]);
+                }
+                for (int t = 0; t < itemArmorSave.length; t++) {
+                    configPlayerItemFile.set("Armor." + t, itemArmorSave[t]);
+                }
+                for (int t = 0; t < itemEnderChest.length; t++) {
+                    configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
+                }
+                configPlayerItemFile.set("OffHand.0", itemOffhand);
+
+                // PotionsEffects
+                final List<PotionEffect> activePotionEffects = playerInvEntry.getPotionEffects();
+                final ConfigurationSection effectSection = configPlayerItemFile.createSection("PotionEffect");
+                for (final PotionEffect effect : activePotionEffects) {
+                    final ConfigurationSection effectSubSection = effectSection
+                            .createSection(effect.getType().getName());
+                    effectSubSection.set("Duration", effect.getDuration());
+                    effectSubSection.set("Amplifier", effect.getAmplifier());
+                    effectSubSection.set("Ambient", effect.isAmbient());
+                }
+            }
+
+            configPlayerItemFile.save(playerItemFile);
+
+        } catch (final IOException ex) {
+            secuboid.getLogger().severe("Error on inventory save, filename: " + playerItemFile.getPath());
+        }
+    }
+
+    private File getInventoryDir(final String invName) {
+        return new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
     }
 
     private String getGameModeFromBoolean(final boolean isCreative) {

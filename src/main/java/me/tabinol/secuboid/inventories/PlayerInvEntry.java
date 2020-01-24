@@ -37,8 +37,8 @@ import me.tabinol.secuboid.storage.Savable;
  */
 public class PlayerInvEntry implements Savable {
 
-    private final static int MAX_FOOD_LEVEL = 20;
-    private final static double MAX_HEALT = 20d;
+    public final static int MAX_FOOD_LEVEL = 20;
+    public final static double MAX_HEALT = 20d;
     private final static int INVENTORY_LIST_SIZE = 27;
     private final static int ARMOR_SIZE = 4;
     private final static int ENDER_CHEST_SIZE = 27;
@@ -46,9 +46,9 @@ public class PlayerInvEntry implements Savable {
     private final Optional<PlayerConfEntry> playerConfEntryOpt;
     private final InventorySpec actualInv;
     private final boolean isCreativeInv;
-    private final ItemStack[] itemListLoad;
-    private final ItemStack[] itemArmorLoad;
-    private final ItemStack[] itemEnderChest;
+    private final ItemStack[] slotItems;
+    private final ItemStack[] armorItems;
+    private final ItemStack[] enderChestItems;
     private int level;
     private float exp;
     private double health;
@@ -61,9 +61,9 @@ public class PlayerInvEntry implements Savable {
         this.playerConfEntryOpt = playerConfEntryOpt;
         this.actualInv = actualInv;
         this.isCreativeInv = isCreativeInv;
-        itemListLoad = new ItemStack[INVENTORY_LIST_SIZE];
-        itemArmorLoad = new ItemStack[ARMOR_SIZE];
-        itemEnderChest = new ItemStack[ENDER_CHEST_SIZE];
+        slotItems = new ItemStack[INVENTORY_LIST_SIZE];
+        armorItems = new ItemStack[ARMOR_SIZE];
+        enderChestItems = new ItemStack[ENDER_CHEST_SIZE];
         potionEffects = new ArrayList<>();
     }
 
@@ -72,9 +72,9 @@ public class PlayerInvEntry implements Savable {
         exp = 0f;
         health = MAX_HEALT;
         foodLevel = MAX_FOOD_LEVEL;
-        resetItemStacks(itemListLoad);
-        resetItemStacks(itemArmorLoad);
-        resetItemStacks(itemEnderChest);
+        resetItemStacks(slotItems);
+        resetItemStacks(armorItems);
+        resetItemStacks(enderChestItems);
         itemOffhand = new ItemStack(Material.AIR);
         return this;
     }
@@ -95,16 +95,16 @@ public class PlayerInvEntry implements Savable {
         return isCreativeInv;
     }
 
-    public ItemStack[] getItemListLoad() {
-        return this.itemListLoad;
+    public ItemStack[] getSlotItems() {
+        return this.slotItems;
     }
 
-    public ItemStack[] getItemArmorLoad() {
-        return this.itemArmorLoad;
+    public ItemStack[] getArmorItems() {
+        return this.armorItems;
     }
 
-    public ItemStack[] getItemEnderChest() {
-        return this.itemEnderChest;
+    public ItemStack[] getEnderChestItems() {
+        return this.enderChestItems;
     }
 
     public int getLevel() {

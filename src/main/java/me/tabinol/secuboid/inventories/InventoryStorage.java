@@ -366,7 +366,7 @@ public final class InventoryStorage {
         // invEntry is null if the player is new
         if (invEntry != null) {
             fromIsCreative = invEntry.isCreativeInv();
-            fromInv = invEntry.getActualInv();
+            fromInv = invEntry.getInventorySpec();
         }
 
         // Get new inventory

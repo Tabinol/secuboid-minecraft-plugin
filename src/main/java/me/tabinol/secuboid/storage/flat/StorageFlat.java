@@ -112,6 +112,11 @@ public class StorageFlat implements Storage {
     }
 
     @Override
+    public void saveInventoryPlayerDeathHistory(PlayerInvEntry playerInvEntry) {
+        inventoriesFlat.saveInventoryPlayerDeathHistory(playerInvEntry);
+    }
+
+    @Override
     public void loadPlayersCache() {
         playersCacheFlat.loadPlayersCache();
     }

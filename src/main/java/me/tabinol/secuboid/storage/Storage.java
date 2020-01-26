@@ -119,7 +119,7 @@ public interface Storage {
      * 
      * @param playerConfEntry the player configuration entry
      */
-    void loadInventoryPlayer(PlayerConfEntry playerConfEntry);
+    void loadInventoriesPlayer(PlayerConfEntry playerConfEntry);
 
     /**
      * Save a specific inventory for a player.

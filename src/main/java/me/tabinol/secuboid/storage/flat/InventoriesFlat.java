@@ -65,7 +65,7 @@ public class InventoriesFlat {
 
     }
 
-    public void loadInventoryPlayer(final PlayerConfEntry playerConfEntry) {
+    public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
         // TODO Auto-generated method stub
 
     }

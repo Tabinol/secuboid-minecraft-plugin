@@ -114,7 +114,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             storage.saveInventoryDefault((PlayerInvEntry) savableNullable);
             break;
         case INVENTORY_PLAYER_LOAD:
-            storage.loadInventoryPlayer((PlayerConfEntry) savableNullable);
+            storage.loadInventoriesPlayer((PlayerConfEntry) savableNullable);
             break;
         case INVENTORY_PLAYER_SAVE:
             storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);

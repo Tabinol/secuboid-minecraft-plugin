@@ -97,8 +97,8 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void loadInventoryPlayer(final PlayerConfEntry playerConfEntry) {
-        inventoriesFlat.loadInventoryPlayer(playerConfEntry);
+    public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
+        inventoriesFlat.loadInventoriesPlayer(playerConfEntry);
     }
 
     @Override

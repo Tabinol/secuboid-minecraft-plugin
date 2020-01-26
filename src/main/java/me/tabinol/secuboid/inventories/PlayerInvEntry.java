@@ -181,6 +181,10 @@ public class PlayerInvEntry implements Savable {
         return this;
     }
 
+    public void removePotionEffects() {
+        potionEffects.clear();
+    }
+
     @Override
     public String getName() {
         return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", inventorySpec.getInventoryName(),

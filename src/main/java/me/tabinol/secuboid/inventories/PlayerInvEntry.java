@@ -38,7 +38,7 @@ import me.tabinol.secuboid.storage.Savable;
 public class PlayerInvEntry implements Savable {
 
     public final static int MAX_FOOD_LEVEL = 20;
-    public final static double MAX_HEALT = 20d;
+    public final static double MAX_HEALTH = 20d;
     private final static int INVENTORY_LIST_SIZE = 27;
     private final static int ARMOR_SIZE = 4;
     private final static int ENDER_CHEST_SIZE = 27;
@@ -70,7 +70,7 @@ public class PlayerInvEntry implements Savable {
     public PlayerInvEntry setDefault() {
         level = 0;
         exp = 0f;
-        health = MAX_HEALT;
+        health = MAX_HEALTH;
         foodLevel = MAX_FOOD_LEVEL;
         resetItemStacks(slotItems);
         resetItemStacks(armorItems);

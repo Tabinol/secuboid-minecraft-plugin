@@ -30,19 +30,19 @@ import java.util.Map;
 public class PlayerInventoryCache {
 
     /**
-     * By inventorie names survival inventories.
+     * By inventory specs survival inventories.
      */
-    private final Map<String, PlayerInvEntry> inventoryNameToSurvivalInvEntry;
+    private final Map<InventorySpec, PlayerInvEntry> inventorySpecToSurvivalInvEntry;
 
     /**
-     * By inventorie names creative inventories.
+     * By inventory specs creative inventories.
      */
-    private final Map<String, PlayerInvEntry> inventoryNameToCreativeInvEntry;
+    private final Map<InventorySpec, PlayerInvEntry> inventorySpecToCreativeInvEntry;
 
     /**
      * Death inventories.
      */
-    private final List<PlayerInvEntry> deathInvEntry;
+    private final List<PlayerInvEntry> deathInvEntries;
 
     /**
      * Current game mode and inventory.
@@ -50,9 +50,21 @@ public class PlayerInventoryCache {
     private final Map.Entry<Boolean, InventorySpec> currentGameModeAndInventorySpec;
 
     public PlayerInventoryCache() {
-        inventoryNameToSurvivalInvEntry = new HashMap<>();
-        inventoryNameToCreativeInvEntry = new HashMap<>();
-        deathInvEntry = new ArrayList<>();
+        inventorySpecToSurvivalInvEntry = new HashMap<>();
+        inventorySpecToCreativeInvEntry = new HashMap<>();
+        deathInvEntries = new ArrayList<>();
         currentGameModeAndInventorySpec = new AbstractMap.SimpleEntry<>(null, null);
+    }
+
+    PlayerInvEntry getInventorySurvival(final InventorySpec inventorySpec) {
+        return inventorySpecToSurvivalInvEntry.get(inventorySpec);
+    }
+
+    PlayerInvEntry getInventoryCreative(final InventorySpec inventorySpec) {
+        return inventorySpecToCreativeInvEntry.get(inventorySpec);
+    }
+
+    PlayerInvEntry getInventoryDeath(final int deathVersion) {
+        return deathInvEntries.get(deathVersion);
     }
 }

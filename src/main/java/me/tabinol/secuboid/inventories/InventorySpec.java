@@ -20,6 +20,7 @@
 package me.tabinol.secuboid.inventories;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The class for inventory specifications.
@@ -70,5 +71,21 @@ public class InventorySpec {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof InventorySpec)) {
+            return false;
+        }
+        final InventorySpec inventorySpec = (InventorySpec) o;
+        return Objects.equals(inventoryName, inventorySpec.inventoryName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(inventoryName);
     }
 }

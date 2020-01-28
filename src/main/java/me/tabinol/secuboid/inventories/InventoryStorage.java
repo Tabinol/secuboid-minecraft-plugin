@@ -48,12 +48,6 @@ public final class InventoryStorage {
     private final Secuboid secuboid;
 
 
-    private void removePotionEffects(final Player player) {
-        for (final PotionEffect effect : player.getActivePotionEffects()) {
-            player.removePotionEffect(effect.getType());
-        }
-    }
-
     public void switchInventory(final Player player, final LandPermissionsFlags landPermissionsFlags,
             boolean toIsCreative, final PlayerAction playerAction) {
 

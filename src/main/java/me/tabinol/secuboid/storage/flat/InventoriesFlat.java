@@ -228,7 +228,7 @@ public class InventoriesFlat {
             if (enderChestOnly) {
                 configPlayerItemFile.set("Level", 0);
                 configPlayerItemFile.set("Exp", 0f);
-                configPlayerItemFile.set("Health", PlayerInvEntry.MAX_HEALT);
+                configPlayerItemFile.set("Health", PlayerInvEntry.MAX_HEALTH);
                 configPlayerItemFile.set("FoodLevel", PlayerInvEntry.MAX_FOOD_LEVEL);
 
                 final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();

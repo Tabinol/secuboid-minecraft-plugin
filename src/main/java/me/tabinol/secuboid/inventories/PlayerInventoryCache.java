@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.inventories;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +46,13 @@ public class PlayerInventoryCache {
     /**
      * Current game mode and inventory.
      */
-    private final Map.Entry<Boolean, InventorySpec> currentGameModeAndInventorySpec;
+    private PlayerInvEntry curInvEntry;
 
     public PlayerInventoryCache() {
         inventorySpecToSurvivalInvEntry = new HashMap<>();
         inventorySpecToCreativeInvEntry = new HashMap<>();
         deathInvEntries = new ArrayList<>();
-        currentGameModeAndInventorySpec = new AbstractMap.SimpleEntry<>(null, null);
+        curInvEntry = null;
     }
 
     PlayerInvEntry getInventorySurvival(final InventorySpec inventorySpec) {
@@ -66,5 +65,14 @@ public class PlayerInventoryCache {
 
     PlayerInvEntry getInventoryDeath(final int deathVersion) {
         return deathInvEntries.get(deathVersion);
+    }
+
+    PlayerInvEntry getCurInvEntry() {
+        return curInvEntry;
+    }
+
+    PlayerInventoryCache setCurInvEntry(final PlayerInvEntry curInvEntry) {
+        this.curInvEntry = curInvEntry;
+        return this;
     }
 }

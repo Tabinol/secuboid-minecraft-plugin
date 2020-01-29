@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
@@ -48,12 +49,12 @@ public final class Inventories {
         JOIN, QUIT, CHANGE, DEATH
     }
 
-    public Inventories(Secuboid secuboid) {
+    public Inventories(final Secuboid secuboid) {
         this.secuboid = secuboid;
         inventorySpecToDefaultInvEntry = new HashMap<>();
     }
 
-    public void saveInventory(final Player player, final boolean isDeath, final PlayerInvEntry playerInvEntry,
+    public void saveInventory(final Player player, final PlayerInvEntry playerInvEntry, final boolean isDeath,
             final boolean isSaveAllowed, final boolean isDefaultInv, final boolean isEnderChestOnly) {
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
@@ -81,7 +82,8 @@ public final class Inventories {
         }
     }
 
-    private void updateFromPlayer(Player player, PlayerInvEntry playerInvEntry, boolean isEnderChestOnly) {
+    private void updateFromPlayer(final Player player, final PlayerInvEntry playerInvEntry,
+            final boolean isEnderChestOnly) {
         // If the player is death, reset and save only ender chest
         if (isEnderChestOnly) {
             playerInvEntry.setDefault();
@@ -102,15 +104,15 @@ public final class Inventories {
 
     }
 
-    private void replaceAllInArray(ItemStack[] source, ItemStack[] target) {
+    private void replaceAllInArray(final ItemStack[] source, final ItemStack[] target) {
         for (int i = 0; i < source.length; i++) {
             target[i] = source[i];
         }
     }
 
-    private void replaceAllPotionEffects(Player sourcePlayer, PlayerInvEntry targetPlayerInvEntry) {
+    private void replaceAllPotionEffects(final Player sourcePlayer, final PlayerInvEntry targetPlayerInvEntry) {
         targetPlayerInvEntry.removePotionEffects();
-        for (PotionEffect potionEffect : sourcePlayer.getActivePotionEffects()) {
+        for (final PotionEffect potionEffect : sourcePlayer.getActivePotionEffects()) {
             targetPlayerInvEntry.addPotionEffect(potionEffect);
         }
     }
@@ -187,7 +189,7 @@ public final class Inventories {
         }
     }
 
-    private void replaceAllPotionEffectsToPlayer(PlayerInvEntry sourcePlayerInvEntry, Player targetPlayer) {
+    private void replaceAllPotionEffectsToPlayer(final PlayerInvEntry sourcePlayerInvEntry, final Player targetPlayer) {
         removePotionEffects(targetPlayer);
         for (final PotionEffect potionEffect : sourcePlayerInvEntry.getPotionEffects()) {
             targetPlayer.addPotionEffect(potionEffect, true);
@@ -198,21 +200,21 @@ public final class Inventories {
             boolean toIsCreative, final PlayerAction playerAction) {
         final Player player = playerConfEntry.getPlayer();
         final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCache();
-        
-        PlayerInvEntry invEntry = null;
+
+        PlayerInvEntry fromInvEntry = null;
         boolean fromIsCreative = false;
         InventorySpec fromInv = null;
         InventorySpec toInv;
 
         // Check last values
         if (playerAction != PlayerAction.JOIN) {
-            invEntry = playerInvList.get(player);
+            fromInvEntry = playerInventoryCache.getCurInvEntry();
         }
 
         // invEntry is null if the player is new
-        if (invEntry != null) {
-            fromIsCreative = invEntry.isCreativeInv();
-            fromInv = invEntry.getInventorySpec();
+        if (fromInvEntry != null) {
+            fromIsCreative = fromInvEntry.isCreativeInv();
+            fromInv = fromInvEntry.getInventorySpec();
         }
 
         // Get new inventory
@@ -234,9 +236,7 @@ public final class Inventories {
 
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
-            // TODO Resolve and Uncomment
-            //playerInvList.put(player,
-            //        new PlayerInvEntry(Optional.of(player), toInv, toIsCreative));
+            playerInventoryCache.setCurInvEntry(new PlayerInvEntry(Optional.of(playerConfEntry), toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same
@@ -246,25 +246,19 @@ public final class Inventories {
         }
 
         // If the player is death, save a renamed file
-        if (playerAction == PlayerAction.DEATH && fromInv != null) {
-            saveInventory(player, fromInv.getInventoryName(), fromIsCreative, true, fromInv.isSaveInventory(), false,
-                    false);
+        if (playerAction == PlayerAction.DEATH && fromInvEntry != null) {
+            saveInventory(player, fromInvEntry, true, fromInv.isSaveInventory(), false, false);
         }
 
         // Save last inventory (only EnderChest if death)
-        if (playerAction != PlayerAction.JOIN && fromInv != null) {
-            saveInventory(player, fromInv.getInventoryName(), fromIsCreative, false, fromInv.isSaveInventory(), false,
+        if (playerAction != PlayerAction.JOIN && fromInvEntry != null) {
+            saveInventory(player, fromInvEntry, false, fromInv.isSaveInventory(), false,
                     playerAction == PlayerAction.DEATH);
         }
 
         // Don't load a new inventory if the player quit
         if (playerAction != PlayerAction.QUIT && playerAction != PlayerAction.DEATH) {
-            loadInventory(player, toInv.getInventoryName(), toIsCreative, false, 0);
-        }
-
-        // If the player quit, update Offline Inventories and remove player
-        if (playerAction == PlayerAction.QUIT) {
-            playerInvList.remove(player);
+            loadInventoryToPlayer(playerConfEntry, toInv, toIsCreative, false, 0);
         }
     }
 }

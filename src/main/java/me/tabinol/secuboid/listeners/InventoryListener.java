@@ -38,34 +38,36 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
+import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.inventories.InventorySpec;
-import me.tabinol.secuboid.inventories.InventoryStorage;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 
 /**
  * The inventory listener class.
  */
 public final class InventoryListener extends CommonListener implements Listener {
 
-    private final InventoryStorage inventoryStorage;
+    private final Inventories inventories;
 
     /**
      * Instantiates a new inventory listener.
      *
      * @param secuboid secuboid instance
      */
-    public InventoryListener(Secuboid secuboid) {
+    public InventoryListener(Secuboid secuboid, Inventories inventories) {
         super(secuboid);
-        inventoryStorage = new InventoryStorage(secuboid);
+        this.inventories = inventories;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
 
-        inventoryStorage.switchInventory(player, getDummyLand(player.getLocation()),
-                player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.JOIN);
+        inventories.switchInventory(playerConfEntry, getDummyLand(player.getLocation()),
+                player.getGameMode() == GameMode.CREATIVE, Inventories.PlayerAction.JOIN);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -85,32 +87,34 @@ public final class InventoryListener extends CommonListener implements Listener 
     public void forceSave() {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            inventoryStorage.saveInventory(player, null, true, true, false, false, false);
+            final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+            inventories.saveInventory(player, null, true, true, false, false, false);
             final InventorySpec invSpec = secuboid.getInventoryConf().getInvSpec(getDummyLand(player.getLocation()));
-            inventoryStorage.saveInventory(player, invSpec.getInventoryName(),
+            inventories.saveInventory(player, invSpec.getInventoryName(),
                     player.getGameMode() == GameMode.CREATIVE, false, false, false, false);
         }
     }
 
     private void removePlayer(Player player) {
-        inventoryStorage.switchInventory(player, getDummyLand(player.getLocation()),
-                player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.QUIT);
+        inventories.switchInventory(player, getDummyLand(player.getLocation()),
+                player.getGameMode() == GameMode.CREATIVE, inventories.PlayerAction.QUIT);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void PlayerGameModeChange(PlayerGameModeChangeEvent event) {
         final Player player = event.getPlayer();
-
-        inventoryStorage.switchInventory(player, getDummyLand(player.getLocation()),
-                event.getNewGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+        inventories.switchInventory(player, getDummyLand(player.getLocation()),
+                event.getNewGameMode() == GameMode.CREATIVE, inventories.PlayerAction.CHANGE);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLandChange(PlayerLandChangeEvent event) {
         final Player player = event.getPlayer();
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
 
-        inventoryStorage.switchInventory(player, event.getLandPermissionsFlags(),
-                player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
+        inventories.switchInventory(player, event.getLandPermissionsFlags(),
+                player.getGameMode() == GameMode.CREATIVE, inventories.PlayerAction.CHANGE);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -124,16 +128,18 @@ public final class InventoryListener extends CommonListener implements Listener 
 
             // Land area change, all players in the world affected
             for (Player player : event.getLand().getWorld().getPlayers()) {
-                inventoryStorage.switchInventory(player, secuboid.getLands().getPermissionsFlags(player.getLocation()),
-                        player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
+                final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+                inventories.switchInventory(player, secuboid.getLands().getPermissionsFlags(player.getLocation()),
+                        player.getGameMode() == GameMode.CREATIVE, inventories.PlayerAction.CHANGE);
             }
         } else if (reason != LandModifyEvent.LandModifyReason.PERMISSION_SET
                 && reason != LandModifyEvent.LandModifyReason.RENAME) {
 
             // No land resize or area replace, only players in the land affected
             for (Player player : event.getLand().getPlayersInLandAndChildren()) {
-                inventoryStorage.switchInventory(player, secuboid.getLands().getPermissionsFlags(player.getLocation()),
-                        player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.CHANGE);
+                final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+                inventories.switchInventory(player, secuboid.getLands().getPermissionsFlags(player.getLocation()),
+                        player.getGameMode() == GameMode.CREATIVE, inventories.PlayerAction.CHANGE);
             }
         }
     }
@@ -141,16 +147,17 @@ public final class InventoryListener extends CommonListener implements Listener 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         final Player player = event.getEntity();
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
 
-        inventoryStorage.switchInventory(player, getDummyLand(player.getLocation()),
-                player.getGameMode() == GameMode.CREATIVE, InventoryStorage.PlayerAction.DEATH);
+        inventories.switchInventory(player, getDummyLand(player.getLocation()),
+                player.getGameMode() == GameMode.CREATIVE, inventories.PlayerAction.DEATH);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
         final Player player = event.getPlayer();
-        final PlayerInvEntry entry = inventoryStorage.getPlayerInvEntry(player);
+        final PlayerInvEntry entry = inventories.getPlayerInvEntry(player);
 
         // For Citizens bugfix
         if (entry == null) {
@@ -179,7 +186,7 @@ public final class InventoryListener extends CommonListener implements Listener 
         }
 
         final Player player = (Player) event.getEntity();
-        final PlayerInvEntry invEntry = inventoryStorage.getPlayerInvEntry(player);
+        final PlayerInvEntry invEntry = inventories.getPlayerInvEntry(player);
 
         // Is from Citizens plugin
         if (invEntry == null) {
@@ -198,11 +205,11 @@ public final class InventoryListener extends CommonListener implements Listener 
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-
         final Player player = event.getPlayer();
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
 
         if (!player.hasPermission(InventoryConfig.PERM_IGNORE_DISABLED_COMMANDS)
-                && inventoryStorage.getPlayerInvEntry(player).getInventorySpec()
+                && inventories.getPlayerInvEntry(player).getInventorySpec()
                         .isDisabledCommand(event.getMessage().substring(1).split(" ")[0])) {
             event.setCancelled(true);
         }
@@ -212,18 +219,15 @@ public final class InventoryListener extends CommonListener implements Listener 
         return secuboid.getLands().getPermissionsFlags(location);
     }
 
-    public PlayerInvEntry getPlayerInvEntry(Player player) {
-        return inventoryStorage.getPlayerInvEntry(player);
-    }
-
     public boolean loadDeathInventory(Player player, int deathVersion) {
-        InventorySpec invSpec = inventoryStorage.getPlayerInvEntry(player).getInventorySpec();
-        return inventoryStorage.loadInventory(player, invSpec.getInventoryName(),
+        InventorySpec invSpec = inventories.getPlayerInvEntry(player).getInventorySpec();
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+        return inventories.loadInventory(player, invSpec.getInventoryName(),
                 player.getGameMode() == GameMode.CREATIVE, true, deathVersion);
     }
 
     public void saveDefaultInventory(Player player, InventorySpec invSpec) {
-        inventoryStorage.saveInventory(player, invSpec.getInventoryName(), player.getGameMode() == GameMode.CREATIVE,
+        inventories.saveInventory(player, invSpec.getInventoryName(), player.getGameMode() == GameMode.CREATIVE,
                 false, true, true, false);
     }
 }

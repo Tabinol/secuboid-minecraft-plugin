@@ -67,7 +67,7 @@ public class PlayerInventoryCache {
         return deathInvEntries.get(deathVersion);
     }
 
-    PlayerInvEntry getCurInvEntry() {
+    public PlayerInvEntry getCurInvEntry() {
         return curInvEntry;
     }
 

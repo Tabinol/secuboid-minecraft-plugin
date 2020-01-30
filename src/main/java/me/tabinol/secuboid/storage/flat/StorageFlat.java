@@ -97,6 +97,11 @@ public class StorageFlat implements Storage {
     }
 
     @Override
+    public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
+        inventoriesFlat.removeInventoryDefault(playerInvEntry);
+    }
+
+    @Override
     public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
         inventoriesFlat.loadInventoriesPlayer(playerConfEntry);
     }
@@ -112,7 +117,7 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void saveInventoryPlayerDeathHistory(PlayerInvEntry playerInvEntry) {
+    public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
         inventoriesFlat.saveInventoryPlayerDeathHistory(playerInvEntry);
     }
 

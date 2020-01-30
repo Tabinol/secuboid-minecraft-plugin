@@ -55,10 +55,17 @@ public final class Inventories {
     }
 
     public void saveInventory(final Player player, final PlayerInvEntry playerInvEntry, final boolean isDeath,
-            final boolean isSaveAllowed, final boolean isDefaultInv, final boolean isEnderChestOnly) {
+            final boolean isDefaultInv, final boolean isEnderChestOnly) {
+
+        // Il a player is just connected before the inventory load
+        if (playerInvEntry == null) {
+            return;
+        }
+
+        final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
-        if (!isSaveAllowed) {
+        if (!inventorySpec.isSaveInventory() && !isDefaultInv) {
             return;
         }
 
@@ -196,6 +203,11 @@ public final class Inventories {
         }
     }
 
+    public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
+        inventorySpecToDefaultInvEntry.remove(playerInvEntry.getInventorySpec());
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, Optional.of(playerInvEntry));
+    }
+
     public void switchInventory(final PlayerConfEntry playerConfEntry, final LandPermissionsFlags landPermissionsFlags,
             boolean toIsCreative, final PlayerAction playerAction) {
         final Player player = playerConfEntry.getPlayer();
@@ -247,13 +259,12 @@ public final class Inventories {
 
         // If the player is death, save a renamed file
         if (playerAction == PlayerAction.DEATH && fromInvEntry != null) {
-            saveInventory(player, fromInvEntry, true, fromInv.isSaveInventory(), false, false);
+            saveInventory(player, fromInvEntry, true, false, false);
         }
 
         // Save last inventory (only EnderChest if death)
         if (playerAction != PlayerAction.JOIN && fromInvEntry != null) {
-            saveInventory(player, fromInvEntry, false, fromInv.isSaveInventory(), false,
-                    playerAction == PlayerAction.DEATH);
+            saveInventory(player, fromInvEntry, false, false, playerAction == PlayerAction.DEATH);
         }
 
         // Don't load a new inventory if the player quit

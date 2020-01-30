@@ -28,6 +28,7 @@ import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
+import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
 import me.tabinol.secuboid.lands.approve.Approves;
@@ -87,6 +88,11 @@ public final class Secuboid extends JavaPlugin {
      * The approve list.
      */
     private Approves approves;
+
+    /**
+     * The inventories cache.
+     */
+    private Inventories inventories;
 
     /**
      * The parameters.
@@ -186,6 +192,7 @@ public final class Secuboid extends JavaPlugin {
         worldConfig = new WorldConfig(this);
         worldConfig.loadResources();
         approves = new Approves(this);
+        inventories = new Inventories(this);
 
         lands = new Lands(this, worldConfig, approves);
         collisionsManagerThread = new CollisionsManagerThread(this);
@@ -217,7 +224,7 @@ public final class Secuboid extends JavaPlugin {
 
         // Register events only if Inventory is active
         if (inventoryConf != null) {
-            inventoryListener = new InventoryListener(this);
+            inventoryListener = new InventoryListener(this, inventories);
             getServer().getPluginManager().registerEvents(inventoryListener, this);
         }
 

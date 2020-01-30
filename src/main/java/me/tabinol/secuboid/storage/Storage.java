@@ -115,6 +115,13 @@ public interface Storage {
     void saveInventoryDefault(PlayerInvEntry playerInvEntry);
 
     /**
+     * Remove default inventory.
+     * 
+     * @param playerInvEntry the inventory
+     */
+    void removeInventoryDefault(PlayerInvEntry playerInvEntry);
+
+    /**
      * Load all inventories for a specific player.
      * 
      * @param playerConfEntry the player configuration entry

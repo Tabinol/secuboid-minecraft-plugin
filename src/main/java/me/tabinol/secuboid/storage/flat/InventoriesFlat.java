@@ -65,6 +65,16 @@ public class InventoriesFlat {
 
     }
 
+    public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
+        final File invDirFile = getInventoryDir(playerInvEntry.getInventorySpec().getInventoryName());
+        final File invFile = new File(invDirFile, String.format("%s.yml", DEFAULT_INV));
+
+        if (!invFile.delete()) {
+            secuboid.getLogger().log(Level.WARNING,
+                    String.format("Unable to delete the inventory, filename: %s", invFile.getPath()));
+        }
+    }
+
     public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
         // TODO Auto-generated method stub
 

@@ -80,7 +80,7 @@ public final class EcoSign {
      * @param player   the player
      * @throws SignException the sign exception
      */
-    public EcoSign(Secuboid secuboid, Land land, Player player) throws SignException {
+    public EcoSign(final Secuboid secuboid, final Land land, final Player player) throws SignException {
 
         this.secuboid = secuboid;
         final Block targetBlock = player.getTargetBlock(null, 10);
@@ -130,7 +130,7 @@ public final class EcoSign {
      * @param location the location
      * @throws SignException the sign exception
      */
-    public EcoSign(Secuboid secuboid, Land land, Location location) throws SignException {
+    public EcoSign(final Secuboid secuboid, final Land land, final Location location) throws SignException {
 
         this.secuboid = secuboid;
         this.land = land;
@@ -174,13 +174,13 @@ public final class EcoSign {
      * @param price the price
      * @throws SignException the sign exception
      */
-    public void createSignForSale(double price) throws SignException {
+    public void createSignForSale(final double price) throws SignException {
 
         final String[] lines = new String[4];
         lines[0] = ChatColor.GREEN + secuboid.getLanguage().getMessage("SIGN.SALE.FORSALE");
         lines[1] = ChatColor.GREEN + land.getName();
         lines[2] = "";
-        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price);
+        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoneyOpt().get().toFormat(price);
 
         createSign(lines);
     }
@@ -194,7 +194,8 @@ public final class EcoSign {
      * @param tenantName the tenant name
      * @throws SignException the sign exception
      */
-    public void createSignForRent(double price, int renew, boolean autoRenew, String tenantName) throws SignException {
+    public void createSignForRent(final double price, final int renew, final boolean autoRenew, final String tenantName)
+            throws SignException {
 
         final String[] lines = new String[4];
 
@@ -212,7 +213,7 @@ public final class EcoSign {
             lines[2] = "";
         }
 
-        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoney().toFormat(price) + "/" + renew;
+        lines[3] = ChatColor.BLUE + secuboid.getPlayerMoneyOpt().get().toFormat(price) + "/" + renew;
 
         createSign(lines);
     }
@@ -223,7 +224,7 @@ public final class EcoSign {
      * @param lines the lines
      * @throws SignException the sign exception
      */
-    public void createSign(String[] lines) throws SignException {
+    public void createSign(final String[] lines) throws SignException {
 
         final Block blockPlace = location.getBlock();
 
@@ -258,7 +259,7 @@ public final class EcoSign {
         } else {
             ((Rotatable) blockData).setRotation(facing);
         }
-        
+
         // Create new sign block
         blockPlace.setBlockData(blockData);
 
@@ -284,7 +285,7 @@ public final class EcoSign {
      *
      * @param oldSignLocation the old sign location
      */
-    public void removeSign(Location oldSignLocation) {
+    public void removeSign(final Location oldSignLocation) {
 
         final Block block = oldSignLocation.getBlock();
         final BlockData blockData = block.getBlockData();
@@ -307,7 +308,7 @@ public final class EcoSign {
      * @param yaw the yaw
      * @return the block face
      */
-    private BlockFace signFacing(float yaw) {
+    private BlockFace signFacing(final float yaw) {
         final BlockFace newFacing;
         final float newYaw = yaw < 0 ? yaw + 360f : yaw;
 
@@ -354,7 +355,7 @@ public final class EcoSign {
      * @param yaw the yaw
      * @return the block face
      */
-    private BlockFace wallFacing(float yaw) {
+    private BlockFace wallFacing(final float yaw) {
         final BlockFace newFacing;
         final float newYaw = yaw < 0 ? yaw + 360f : yaw;
 

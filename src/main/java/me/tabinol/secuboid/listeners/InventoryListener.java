@@ -18,7 +18,6 @@
  */
 package me.tabinol.secuboid.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -73,32 +72,7 @@ public final class InventoryListener extends CommonListener implements Listener 
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        removePlayer(event.getPlayer());
-    }
-
-    /**
-     * Called when there is a shutdown
-     */
-    public void removeAndSave() {
-        for (final Player player : Bukkit.getOnlinePlayers()) {
-            removePlayer(player);
-        }
-    }
-
-    public void forceSave() {
-        for (final Player player : Bukkit.getOnlinePlayers()) {
-            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCache()
-                    .getCurInvEntry();
-            if (!player.isDead()) {
-                inventories.saveInventory(player, playerInvEntry, false, false, false);
-            }
-        }
-    }
-
-    private void removePlayer(final Player player) {
-        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
-        inventories.switchInventory(playerConfEntry, getDummyLand(player.getLocation()),
-                player.getGameMode() == GameMode.CREATIVE, PlayerAction.QUIT);
+        inventories.removePlayer(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -224,23 +198,5 @@ public final class InventoryListener extends CommonListener implements Listener 
 
     private LandPermissionsFlags getDummyLand(final Location location) {
         return secuboid.getLands().getPermissionsFlags(location);
-    }
-
-    public boolean loadDeathInventory(final Player player, final int deathVersion) {
-        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
-        final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCache().getCurInvEntry().getInventorySpec();
-        return inventories.loadInventoryToPlayer(playerConfEntry, invSpec, player.getGameMode() == GameMode.CREATIVE,
-                true, deathVersion);
-    }
-
-    public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {
-        final Player player = playerConfEntry.getPlayer();
-        inventories.saveInventory(player, playerConfEntry.getPlayerInventoryCache().getCurInvEntry(), false, true,
-                false);
-    }
-
-    public void removeDefaultInventory(final PlayerConfEntry playerConfEntry) {
-        final PlayerInvEntry playerInvEntry = playerConfEntry.getPlayerInventoryCache().getCurInvEntry();
-        inventories.removeInventoryDefault(playerInvEntry);
     }
 }

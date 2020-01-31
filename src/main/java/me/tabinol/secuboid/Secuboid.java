@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid;
 
+import java.util.Optional;
+
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -90,9 +92,9 @@ public final class Secuboid extends JavaPlugin {
     private Approves approves;
 
     /**
-     * The inventories cache.
+     * The inventories cache. Optional if inventories are enabled
      */
-    private Inventories inventories;
+    private Optional<Inventories> inventoriesOpt;
 
     /**
      * The parameters.
@@ -141,8 +143,6 @@ public final class Secuboid extends JavaPlugin {
      */
     private Config conf;
 
-    private InventoryConfig inventoryConf = null;
-
     /**
      * The language.
      */
@@ -154,9 +154,9 @@ public final class Secuboid extends JavaPlugin {
     private DependPlugin dependPlugin;
 
     /**
-     * The player money.
+     * The player money (optional).
      */
-    private PlayerMoney playerMoney;
+    private Optional<PlayerMoney> playerMoneyOpt;
 
     /**
      * The players cache.
@@ -174,15 +174,18 @@ public final class Secuboid extends JavaPlugin {
 
         // For inventory config
         if (conf.isMultipleInventories()) {
-            inventoryConf = new InventoryConfig(this);
+            final InventoryConfig inventoryConfig = new InventoryConfig(this);
+            inventoriesOpt = Optional.of(new Inventories(this, inventoryConfig));
+        } else {
+            inventoriesOpt = Optional.empty();
         }
 
         newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
+            playerMoneyOpt = Optional.of(new PlayerMoney(dependPlugin.getVaultEconomy()));
         } else {
-            playerMoney = null;
+            playerMoneyOpt = Optional.empty();
         }
         playerConf = new PlayerConfig(this);
         playerConf.addAll();
@@ -192,7 +195,6 @@ public final class Secuboid extends JavaPlugin {
         worldConfig = new WorldConfig(this);
         worldConfig.loadResources();
         approves = new Approves(this);
-        inventories = new Inventories(this);
 
         lands = new Lands(this, worldConfig, approves);
         collisionsManagerThread = new CollisionsManagerThread(this);
@@ -223,10 +225,10 @@ public final class Secuboid extends JavaPlugin {
         pluginCommand.setTabCompleter(commandListener);
 
         // Register events only if Inventory is active
-        if (inventoryConf != null) {
+        inventoriesOpt.ifPresent(inventories -> {
             inventoryListener = new InventoryListener(this, inventories);
             getServer().getPluginManager().registerEvents(inventoryListener, this);
-        }
+        });
 
         // Register events only if Fly and Creative is active
         if (conf.isFlyAndCreative()) {
@@ -243,13 +245,11 @@ public final class Secuboid extends JavaPlugin {
         types = new Types();
         // No reload of Parameters to avoid Deregistering external parameters
         conf.reloadConfig();
-        if (inventoryConf != null) {
-            inventoryConf.reloadConfig();
-        }
+        inventoriesOpt.ifPresent(Inventories::reloadConfig);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
+            playerMoneyOpt = Optional.of(new PlayerMoney(dependPlugin.getVaultEconomy()));
         } else {
-            playerMoney = null;
+            playerMoneyOpt = Optional.empty();
         }
         language.reloadConfig();
         worldConfig.loadResources();
@@ -264,9 +264,7 @@ public final class Secuboid extends JavaPlugin {
     @Override
     public void onDisable() {
         // Save all inventories
-        if (inventoryListener != null) {
-            inventoryListener.removeAndSave();
-        }
+        inventoriesOpt.ifPresent(Inventories::removeAndSave);
         collisionsManagerThread.stopNextRun();
         playersCache.stopNextRun();
         approveNotif.stopNextRun();
@@ -302,21 +300,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Inventory config
+     * Inventories. Optional if inventories are enabled.
      *
-     * @return the config
+     * @return the optional inventories
      */
-    public InventoryConfig getInventoryConf() {
-        return inventoryConf;
-    }
-
-    /**
-     * Inventory Listener,
-     *
-     * @return the inventory listener
-     */
-    public InventoryListener getInventoryListener() {
-        return inventoryListener;
+    public Optional<Inventories> getInventoriesOpt() {
+        return inventoriesOpt;
     }
 
     /**
@@ -410,12 +399,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Get player money.
+     * Get player money if economy is active.
      *
-     * @return the player money
+     * @return the optional player money
      */
-    public PlayerMoney getPlayerMoney() {
-        return playerMoney;
+    public Optional<PlayerMoney> getPlayerMoneyOpt() {
+        return playerMoneyOpt;
     }
 
     /**

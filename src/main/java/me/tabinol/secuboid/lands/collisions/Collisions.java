@@ -232,10 +232,10 @@ public final class Collisions {
         if (owner.getContainerType() == PlayerContainerType.PLAYER) {
 
             // Pass 7 check if the player has enough money
-            if (secuboid.getConf().useEconomy()) {
+            if (secuboid.getPlayerMoneyOpt().isPresent()) {
                 final double price = getPrice();
                 if ((price > 0) && newArea != null) {
-                    final double playerBalance = secuboid.getPlayerMoney().getPlayerBalance(
+                    final double playerBalance = secuboid.getPlayerMoneyOpt().get().getPlayerBalance(
                             ((PlayerContainerPlayer) owner).getOfflinePlayer(), newArea.getWorldName());
                     if (action.errorsToCheck.contains(NOT_ENOUGH_MONEY) && playerBalance < price) {
                         collisionsEntries.add(new CollisionsEntry(secuboid, LandError.NOT_ENOUGH_MONEY, null, 0));

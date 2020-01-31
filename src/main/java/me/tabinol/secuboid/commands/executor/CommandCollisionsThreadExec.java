@@ -219,7 +219,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
     private boolean isPlayerMustPay() {
         // Is Economy?
 
-        return !(secuboid.getPlayerMoney() == null || !secuboid.getConf().useEconomy() || playerConf.isAdminMode());
+        return !(!secuboid.getPlayerMoneyOpt().isPresent() || !secuboid.getConf().useEconomy()
+                || playerConf.isAdminMode());
     }
 
     /**

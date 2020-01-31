@@ -29,6 +29,8 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.inventories.Inventories;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 
 /**
  * Represents an inventory command.
@@ -41,6 +43,8 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
         })
 public final class CommandInv extends CommandExec {
 
+    private final Inventories inventories;
+
     /**
      * Instantiates a new command inventory.
      *
@@ -52,15 +56,15 @@ public final class CommandInv extends CommandExec {
      */
     public CommandInv(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
             final ArgList argList) throws SecuboidCommandException {
-
         super(secuboid, infoCommand, sender, argList);
+        inventories = secuboid.getInventoriesOpt().orElse(null);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
         // Verify if Multiple inventories is active
-        if (secuboid.getInventoryConf() == null) {
+        if (inventories == null) {
             throw new SecuboidCommandException(secuboid, "Multiple Inventories is not active", player,
                     "COMMAND.INV.NOTACTIVE");
         }
@@ -94,14 +98,15 @@ public final class CommandInv extends CommandExec {
         if (subCom != null && subCom.equalsIgnoreCase("save")) {
 
             // Save the inventory
-            secuboid.getInventoryListener().saveDefaultInventory(playerConf);
+            inventories.saveDefaultInventory(playerConf);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTSAVE"));
 
         } else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
 
             // Remove inventory
-            secuboid.getInventoryListener().removeDefaultInventory(playerConf);
+            final PlayerInvEntry playerInvEntry = playerConf.getPlayerInventoryCache().getCurInvEntry();
+            inventories.removeInventoryDefault(playerInvEntry);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));
 
@@ -143,7 +148,7 @@ public final class CommandInv extends CommandExec {
         }
 
         // Execute
-        if (!secuboid.getInventoryListener().loadDeathInventory(player, lastTime)) {
+        if (!inventories.loadDeathInventory(player, lastTime)) {
             throw new SecuboidCommandException(secuboid, "Death save not found!", sender,
                     "COMMAND.INV.ERRORDEATHNOTFOUND");
         }
@@ -153,7 +158,7 @@ public final class CommandInv extends CommandExec {
     }
 
     private void forceSave() {
-        secuboid.getInventoryListener().forceSave();
+        inventories.forceSave();
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.SAVEDONE"));
     }

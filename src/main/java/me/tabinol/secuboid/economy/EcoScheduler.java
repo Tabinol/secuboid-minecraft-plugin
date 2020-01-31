@@ -36,7 +36,7 @@ public class EcoScheduler extends BukkitRunnable {
 
     private final Secuboid secuboid;
 
-    public EcoScheduler(Secuboid secuboid) {
+    public EcoScheduler(final Secuboid secuboid) {
         this.secuboid = secuboid;
     }
 
@@ -48,37 +48,39 @@ public class EcoScheduler extends BukkitRunnable {
     }
 
     private void runEcoTask() {
-        PluginManager pm = secuboid.getServer().getPluginManager();
-        long now = System.currentTimeMillis();
+        final PlayerMoney playerMoney = secuboid.getPlayerMoneyOpt().get();
+        final PluginManager pm = secuboid.getServer().getPluginManager();
+        final long now = System.currentTimeMillis();
 
         // Check for rent renew
-        for (Land land : secuboid.getLands().getForRent()) {
+        for (final Land land : secuboid.getLands().getForRent()) {
 
-            long nextPaymentTime = land.getLastPaymentTime() + (86400000L * land.getRentRenew());
+            final long nextPaymentTime = land.getLastPaymentTime() + (86400000L * land.getRentRenew());
 
             if (land.isRented() && nextPaymentTime < now) {
-                PlayerContainerPlayer tenant = land.getTenant();
-                OfflinePlayer offlineTenant = tenant.getOfflinePlayer();
-                
+                final PlayerContainerPlayer tenant = land.getTenant();
+                final OfflinePlayer offlineTenant = tenant.getOfflinePlayer();
+
                 if (offlineTenant == null || !offlineTenant.hasPlayedBefore()) {
-                    secuboid.getLogger().warning("Player " + tenant.getMinecraftUUID() + " not found in this server and cannot pay for the land "
-                            + land.getName() + ", UUID: " + land.getUUID() + ".");
+                    secuboid.getLogger()
+                            .warning("Player " + tenant.getMinecraftUUID()
+                                    + " not found in this server and cannot pay for the land " + land.getName()
+                                    + ", UUID: " + land.getUUID() + ".");
                     continue;
                 }
 
-                //Check if the tenant has enough money or time limit whit no auto renew
-                if (secuboid.getPlayerMoney().getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
+                // Check if the tenant has enough money or time limit whit no auto renew
+                if (playerMoney.getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
                         || !land.getRentAutoRenew()) {
 
                     // Unrent
                     land.unSetRented();
-                    secuboid.getLogger().info(offlineTenant.getName() + " lost land '" + land.getName()
-                            + "' rent. (Not enough money)");
+                    secuboid.getLogger().info(
+                            offlineTenant.getName() + " lost land '" + land.getName() + "' rent. (Not enough money)");
                     try {
-                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(
-                                land.getRentPrice(), land.getRentRenew(),
-                                land.getRentAutoRenew(), null);
-                    } catch (SignException e) {
+                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(),
+                                land.getRentRenew(), land.getRentAutoRenew(), null);
+                    } catch (final SignException e) {
                         secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }
                     pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
@@ -86,24 +88,28 @@ public class EcoScheduler extends BukkitRunnable {
                 } else {
 
                     // renew rent
-                    secuboid.getPlayerMoney().getFromPlayer(offlineTenant, land.getWorldName(), land.getRentPrice());
+                    playerMoney.getFromPlayer(offlineTenant, land.getWorldName(), land.getRentPrice());
                     if (offlineTenant.isOnline()) {
-                        offlineTenant.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONGIVE",
-                                secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
+                        offlineTenant.getPlayer()
+                                .sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                                        + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONGIVE",
+                                                playerMoney.toFormat(land.getRentPrice()), land.getName()));
                     }
                     if (land.getOwner() instanceof PlayerContainerPlayer) {
-                        OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
-                        secuboid.getPlayerMoney().giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
+                        final OfflinePlayer offlineOwner = ((PlayerContainerPlayer) land.getOwner()).getOfflinePlayer();
+                        playerMoney.giveToPlayer(offlineOwner, land.getWorldName(), land.getRentPrice());
                         if (offlineOwner.isOnline()) {
-                            offlineOwner.getPlayer().sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
-                                    secuboid.getPlayerMoney().toFormat(land.getRentPrice()), land.getName()));
+                            offlineOwner.getPlayer()
+                                    .sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                                            + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LOCATIONRECEIVE",
+                                                    playerMoney.toFormat(land.getRentPrice()), land.getName()));
                         }
                     }
-                    secuboid.getLogger().info(offlineTenant.getName() + " gave " + secuboid.getPlayerMoney().toFormat(land.getRentPrice())
-                            + " for land '" + land.getName() + "'.");
+                    secuboid.getLogger().info(offlineTenant.getName() + " gave "
+                            + playerMoney.toFormat(land.getRentPrice()) + " for land '" + land.getName() + "'.");
                     land.setLastPaymentTime(now);
-                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT_RENEW, land.getOwner(),
-                            tenant));
+                    pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.RENT_RENEW,
+                            land.getOwner(), tenant));
                 }
             }
         }

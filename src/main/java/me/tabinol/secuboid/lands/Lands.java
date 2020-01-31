@@ -538,12 +538,13 @@ public final class Lands {
      * @return true, if successful
      */
     boolean getPriceFromPlayer(final String worldName, final PlayerContainer pc, final double price) {
-        if (price == 0 || !secuboid.getConf().useEconomy() || pc.getContainerType() != PlayerContainerType.PLAYER) {
+        if (price == 0 || !secuboid.getPlayerMoneyOpt().isPresent()
+                || pc.getContainerType() != PlayerContainerType.PLAYER) {
             // No transaction
             return true;
         }
-        return secuboid.getPlayerMoney().getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName,
-                price);
+        return secuboid.getPlayerMoneyOpt().get().getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(),
+                worldName, price);
     }
 
     /**

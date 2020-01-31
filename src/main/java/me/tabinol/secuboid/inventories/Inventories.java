@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +42,7 @@ import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 public final class Inventories {
 
     private final Secuboid secuboid;
+    private final InventoryConfig inventoryConfig;
     private final Map<InventorySpec, PlayerInvEntry> inventorySpecToDefaultInvEntry;
 
     /**
@@ -49,9 +52,52 @@ public final class Inventories {
         JOIN, QUIT, CHANGE, DEATH
     }
 
-    public Inventories(final Secuboid secuboid) {
+    public void reloadConfig() {
+        inventoryConfig.reloadConfig();
+    }
+
+    public Inventories(final Secuboid secuboid, final InventoryConfig inventoryConfig) {
         this.secuboid = secuboid;
+        this.inventoryConfig = inventoryConfig;
         inventorySpecToDefaultInvEntry = new HashMap<>();
+    }
+
+    public boolean loadDeathInventory(final Player player, final int deathVersion) {
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+        final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCache().getCurInvEntry().getInventorySpec();
+        return loadInventoryToPlayer(playerConfEntry, invSpec, player.getGameMode() == GameMode.CREATIVE, true,
+                deathVersion);
+    }
+
+    public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {
+        final Player player = playerConfEntry.getPlayer();
+        saveInventory(player, playerConfEntry.getPlayerInventoryCache().getCurInvEntry(), false, true, false);
+    }
+
+    /**
+     * Called when there is a shutdown
+     */
+    public void removeAndSave() {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            removePlayer(player);
+        }
+    }
+
+    public void forceSave() {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCache()
+                    .getCurInvEntry();
+            if (!player.isDead()) {
+                saveInventory(player, playerInvEntry, false, false, false);
+            }
+        }
+    }
+
+    public void removePlayer(final Player player) {
+        final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(player.getLocation());
+        switchInventory(playerConfEntry, landPermissionsFlags, player.getGameMode() == GameMode.CREATIVE,
+                PlayerAction.QUIT);
     }
 
     public void saveInventory(final Player player, final PlayerInvEntry playerInvEntry, final boolean isDeath,
@@ -230,7 +276,7 @@ public final class Inventories {
         }
 
         // Get new inventory
-        toInv = secuboid.getInventoryConf().getInvSpec(landPermissionsFlags);
+        toInv = inventoryConfig.getInvSpec(landPermissionsFlags);
 
         // check if we have to do this action
         if (player.hasPermission(InventoryConfig.PERM_IGNORE_INV)) {

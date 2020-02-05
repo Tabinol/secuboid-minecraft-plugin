@@ -46,6 +46,7 @@ public class InventoriesFlat {
     private final static String INV_DIR = "inventories";
     private final static String DEFAULT_INV = "DEFAULTINV";
     private final static String DEATH = "DEATH";
+    private final static String INV_EXT = ".yml";
 
     private final Secuboid secuboid;
     private final int storageVersion;
@@ -56,8 +57,13 @@ public class InventoriesFlat {
     }
 
     public void loadInventories() {
-        // TODO Auto-generated method stub
-
+        for (final File invDirFile : getInventoryDirs()) {
+            final File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
+            if (invDefaultFile.isFile()) {
+                // TODO Add to inventories default and resolve inventorySpec
+                // loadInventoryFromFile(invDefaultFile, Optional.empty(), inventorySpec, false);
+            }
+        }
     }
 
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
@@ -67,7 +73,7 @@ public class InventoriesFlat {
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
         final File invDirFile = getInventoryDir(playerInvEntry.getInventorySpec().getInventoryName());
-        final File invFile = new File(invDirFile, String.format("%s.yml", DEFAULT_INV));
+        final File invFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
 
         if (!invFile.delete()) {
             secuboid.getLogger().log(Level.WARNING,
@@ -106,20 +112,23 @@ public class InventoriesFlat {
             suffixName = gmName;
         }
 
-        final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
-
         // player item file
         final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
         final File playerItemFile = playerConfEntryOpt.map( //
                 // Player inventory
-                pce -> new File(invDirFile, String.format("%s.%s.yml", pce.getUUID(), suffixName))) //
+                pce -> new File(invDirFile, String.format("%s.%s%s", pce.getUUID(), suffixName, INV_EXT))) //
                 // Default inventory
-                .orElse(new File(invDirFile, String.format("%s.yml", DEFAULT_INV)));
+                .orElse(new File(invDirFile, DEFAULT_INV + INV_EXT));
 
         // If no inventory exists
         if (!playerItemFile.exists()) {
             return Optional.empty();
         }
+        return loadInventoryFromFile(playerItemFile, playerConfEntryOpt, inventorySpec, isCreative);
+    }
+
+    private Optional<PlayerInvEntry> loadInventoryFromFile(File playerItemFile, final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec, final boolean isCreative) {
+        final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
 
         try {
             // load Inventory
@@ -203,16 +212,16 @@ public class InventoriesFlat {
             filePreName = fileDeathPrefix + "1";
 
             // Death rename
-            File actFile = new File(invDirFile, fileDeathPrefix + "9.yml");
+            File actFile = new File(invDirFile, fileDeathPrefix + "9" + INV_EXT);
             if (actFile.exists()) {
                 if (!actFile.delete()) {
                     secuboid.getLogger().severe("Unable to delete the file: " + actFile.getPath());
                 }
             }
             for (int t = 8; t >= 1; t--) {
-                actFile = new File(invDirFile, fileDeathPrefix + t + ".yml");
+                actFile = new File(invDirFile, fileDeathPrefix + t + INV_EXT);
                 if (actFile.exists()) {
-                    if (!actFile.renameTo(new File(invDirFile, fileDeathPrefix + (t + 1) + ".yml"))) {
+                    if (!actFile.renameTo(new File(invDirFile, fileDeathPrefix + (t + 1) + INV_EXT))) {
                         secuboid.getLogger().severe("Unable to rename the file: " + actFile.getPath());
                     }
                 }
@@ -229,7 +238,7 @@ public class InventoriesFlat {
 
         // Save Inventory
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
-        final File playerItemFile = new File(invDirFile, filePreName + ".yml");
+        final File playerItemFile = new File(invDirFile, filePreName + INV_EXT);
 
         try {
             configPlayerItemFile.set("Version", storageVersion);
@@ -289,8 +298,12 @@ public class InventoriesFlat {
         }
     }
 
+    private File[] getInventoryDirs() {
+        return new File(secuboid.getDataFolder(), INV_DIR).listFiles(File::isDirectory);
+    }
+
     private File getInventoryDir(final String invName) {
-        return new File(secuboid.getDataFolder() + "/" + INV_DIR + "/" + invName);
+        return new File(secuboid.getDataFolder(), INV_DIR + "/" + invName);
     }
 
     private String getGameModeFromBoolean(final boolean isCreative) {

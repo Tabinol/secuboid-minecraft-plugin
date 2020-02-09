@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import java.util.Objects;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -77,5 +79,21 @@ public final class PlayerContainerGroup implements PlayerContainer {
             return result;
         }
         return groupName.compareTo(t.getName());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof PlayerContainerGroup)) {
+            return false;
+        }
+        final PlayerContainerGroup playerContainerGroup = (PlayerContainerGroup) o;
+        return Objects.equals(groupName, playerContainerGroup.groupName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(groupName);
     }
 }

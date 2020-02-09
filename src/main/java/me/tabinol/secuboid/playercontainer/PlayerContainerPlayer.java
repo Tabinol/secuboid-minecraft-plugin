@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -132,5 +133,21 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 			return result;
 		}
 		return minecraftUUID.compareTo(((PlayerContainerPlayer) t).minecraftUUID);
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof PlayerContainerPlayer)) {
+			return false;
+		}
+		final PlayerContainerPlayer playerContainerPlayer = (PlayerContainerPlayer) o;
+		return Objects.equals(minecraftUUID, playerContainerPlayer.minecraftUUID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(minecraftUUID);
 	}
 }

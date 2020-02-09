@@ -1,5 +1,7 @@
 package me.tabinol.secuboid.playercontainer;
 
+import java.util.Objects;
+
 import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
@@ -54,5 +56,21 @@ public final class PlayerContainerPlayerName implements PlayerContainer {
             return result;
         }
         return name.compareTo(t.getName());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof PlayerContainerPlayerName)) {
+            return false;
+        }
+        final PlayerContainerPlayerName playerContainerPlayerName = (PlayerContainerPlayerName) o;
+        return Objects.equals(name, playerContainerPlayerName.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }

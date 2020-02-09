@@ -18,6 +18,8 @@
  */
 package me.tabinol.secuboid.playercontainer;
 
+import java.util.Objects;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -78,4 +80,21 @@ public final class PlayerContainerPermission implements PlayerContainer {
         }
         return perm.compareTo(t.getName());
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof PlayerContainerPermission)) {
+            return false;
+        }
+        final PlayerContainerPermission playerContainerPermission = (PlayerContainerPermission) o;
+        return Objects.equals(perm, playerContainerPermission.perm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(perm);
+    }
+
 }

@@ -87,26 +87,6 @@ public class PlayerInvEntry implements Savable {
         return playerConfEntryOpt;
     }
 
-    public PlayerInvEntry setDefault() {
-        level = 0;
-        exp = 0f;
-        healt = MAX_HEALT;
-        foodLevel = MAX_FOOD_LEVEL;
-        resetItemStacks(itemListLoad);
-        resetItemStacks(itemArmorLoad);
-        resetItemStacks(itemEnderChest);
-        itemOffhand = new ItemStack(Material.AIR);
-        return this;
-    }
-
-    private void resetItemStacks(final ItemStack[] itemStacks) {
-        Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
-    }
-
-    public Optional<PlayerConfEntry> getPlayerConfEntryOpt() {
-        return playerConfEntryOpt;
-    }
-
     public InventorySpec getInventorySpec() {
         return inventorySpec;
     }

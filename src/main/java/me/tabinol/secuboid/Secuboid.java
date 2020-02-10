@@ -175,7 +175,9 @@ public final class Secuboid extends JavaPlugin {
         // For inventory config
         if (conf.isMultipleInventories()) {
             final InventoryConfig inventoryConfig = new InventoryConfig(this);
-            inventoriesOpt = Optional.of(new Inventories(this, inventoryConfig));
+            final Inventories inventories = new Inventories(this, inventoryConfig);
+            inventories.reloadConfig();
+            inventoriesOpt = Optional.of(inventories);
         } else {
             inventoriesOpt = Optional.empty();
         }

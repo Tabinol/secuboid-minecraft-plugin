@@ -34,6 +34,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.players.PlayerConfEntry;
@@ -57,11 +58,15 @@ public class InventoriesFlat {
     }
 
     public void loadInventories() {
-        for (final File invDirFile : getInventoryDirs()) {
-            final File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
-            if (invDefaultFile.isFile()) {
-                // TODO Add to inventories default and resolve inventorySpec
-                // loadInventoryFromFile(invDefaultFile, Optional.empty(), inventorySpec, false);
+        final Inventories inventories = secuboid.getInventoriesOpt().get();
+        for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
+            final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
+            if (invDirFile.isDirectory()) {
+                final File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
+                if (invDefaultFile.isFile()) {
+                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, Optional.empty(), inventorySpec, false);
+                    inventories.addDefaultInventory(playerInvEntry);
+                }
             }
         }
     }
@@ -124,15 +129,16 @@ public class InventoriesFlat {
         if (!playerItemFile.exists()) {
             return Optional.empty();
         }
-        return loadInventoryFromFile(playerItemFile, playerConfEntryOpt, inventorySpec, isCreative);
+
+        return Optional.of(loadInventoryFromFile(playerItemFile, playerConfEntryOpt, inventorySpec, isCreative));
     }
 
-    private Optional<PlayerInvEntry> loadInventoryFromFile(File playerItemFile, final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec, final boolean isCreative) {
+    private PlayerInvEntry loadInventoryFromFile(File playerItemFile, final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec, final boolean isCreative) {
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
+        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerConfEntryOpt, inventorySpec, isCreative);
 
         try {
             // load Inventory
-            final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerConfEntryOpt, inventorySpec, isCreative);
             configPlayerItemFile.load(playerItemFile);
 
             @SuppressWarnings("unused")
@@ -171,18 +177,19 @@ public class InventoriesFlat {
                     playerInvEntry.addPotionEffect(new PotionEffect(type, duration, amplifier, ambient));
                 }
             }
-            return Optional.of(playerInvEntry);
 
         } catch (final IOException ex) {
             secuboid.getLogger().log(Level.SEVERE,
                     String.format("Error in inventory load, filename: %s", playerItemFile.getPath()), ex);
-            return Optional.empty();
+            playerInvEntry.setDefault();
         } catch (final InvalidConfigurationException ex) {
             secuboid.getLogger().log(Level.SEVERE,
                     String.format("Invalid configuration on inventory load, filename: %s", playerItemFile.getPath()),
                     ex);
-            return Optional.empty();
+            playerInvEntry.setDefault();
         }
+
+        return playerInvEntry;
     }
 
     public void saveInventory(final PlayerInvEntry playerInvEntry, final Optional<PlayerConfEntry> playerConfEntryOpt,
@@ -296,10 +303,6 @@ public class InventoriesFlat {
         } catch (final IOException ex) {
             secuboid.getLogger().severe("Error on inventory save, filename: " + playerItemFile.getPath());
         }
-    }
-
-    private File[] getInventoryDirs() {
-        return new File(secuboid.getDataFolder(), INV_DIR).listFiles(File::isDirectory);
     }
 
     private File getInventoryDir(final String invName) {

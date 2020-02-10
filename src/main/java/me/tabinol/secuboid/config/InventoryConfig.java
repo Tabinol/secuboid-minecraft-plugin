@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.config;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import me.tabinol.secuboid.permissionsflags.FlagValue;
  */
 public final class InventoryConfig {
 
-    public static final String GLOBAL = "Default"; // Means it is assigned to all
+    public static final String GLOBAL = "_default_"; // Means it is assigned to all
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
     public static final String PERM_DEFAULT = "secuboid.inv.default";
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";
@@ -50,15 +51,14 @@ public final class InventoryConfig {
     private final FlagType invFlag; // Registered inventory Flag (Factoid)
     private final Secuboid secuboid;
     private FileConfiguration config;
-    private HashMap<String, InventorySpec> invList; // World-->Land-->Inventory
+    private HashMap<String, InventorySpec> invNameToInvSpec;
 
     /**
      * Instantiates a new inventory configuration.
      *
      * @param secuboid secuboid instance
      */
-    public InventoryConfig(Secuboid secuboid) {
-
+    public InventoryConfig(final Secuboid secuboid) {
         this.secuboid = secuboid;
 
         // Create files (if not exist) and load
@@ -68,29 +68,27 @@ public final class InventoryConfig {
 
         // Connect to the data file and register flag to Factoid
         invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", "");
-
-        reloadConfig();
     }
 
     public void reloadConfig() {
 
         config = YamlConfiguration.loadConfiguration(new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE));
-        invList = new HashMap<String, InventorySpec>();
+        invNameToInvSpec = new HashMap<String, InventorySpec>();
         loadInventory();
     }
 
     private void loadInventory() {
 
         // Load World and Land inventories
-        ConfigurationSection configSec = config.getConfigurationSection("Inventories");
-        for (Map.Entry<String, Object> invEntry : configSec.getValues(false).entrySet()) {
+        final ConfigurationSection configSec = config.getConfigurationSection("Inventories");
+        for (final Map.Entry<String, Object> invEntry : configSec.getValues(false).entrySet()) {
             if (invEntry.getValue() instanceof ConfigurationSection) {
-                boolean isCreativeChange = ((ConfigurationSection) invEntry.getValue()).getBoolean("SeparateCreative",
+                final boolean isCreativeChange = ((ConfigurationSection) invEntry.getValue())
+                        .getBoolean("SeparateCreative", true);
+                final boolean isSaveInventory = ((ConfigurationSection) invEntry.getValue()).getBoolean("SaveInventory",
                         true);
-                boolean isSaveInventory = ((ConfigurationSection) invEntry.getValue()).getBoolean("SaveInventory",
-                        true);
-                boolean isAllowDrop = ((ConfigurationSection) invEntry.getValue()).getBoolean("AllowDrop", true);
-                List<String> disabledCommands = ((ConfigurationSection) invEntry.getValue())
+                final boolean isAllowDrop = ((ConfigurationSection) invEntry.getValue()).getBoolean("AllowDrop", true);
+                final List<String> disabledCommands = ((ConfigurationSection) invEntry.getValue())
                         .getStringList("DisabledCommands");
                 createInventoryEntry(invEntry.getKey(), isCreativeChange, isSaveInventory, isAllowDrop,
                         disabledCommands);
@@ -98,30 +96,32 @@ public final class InventoryConfig {
         }
     }
 
-    private void createInventoryEntry(String key, boolean creativeChange, boolean saveInventory, boolean allowDrop,
-            List<String> disabledCommands) {
-
-        invList.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
+    private void createInventoryEntry(final String key, final boolean creativeChange, final boolean saveInventory,
+            final boolean allowDrop, final List<String> disabledCommands) {
+        invNameToInvSpec.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
-    public InventorySpec getInvSpec(LandPermissionsFlags dummyPermsFlags) {
-
-        FlagValue invFlagValue = dummyPermsFlags.getFlagAndInherit(invFlag);
+    public InventorySpec getInvSpec(final LandPermissionsFlags dummyPermsFlags) {
+        final FlagValue invFlagValue = dummyPermsFlags.getFlagAndInherit(invFlag);
 
         // If the flag is not set
         if (invFlagValue.getValueString().isEmpty()) {
-            return invList.get(GLOBAL);
+            return invNameToInvSpec.get(GLOBAL);
         }
 
-        InventorySpec invSpec = invList.get(invFlagValue.getValueString());
+        final InventorySpec invSpec = invNameToInvSpec.get(invFlagValue.getValueString());
 
         // If the flag is set with wrong inventory
         if (invSpec == null) {
             secuboid.getLogger().warning("Inventory name \"" + invFlagValue.getValueString() + "\" is not found "
                     + "in " + secuboid.getName() + "/plugin.yml!");
-            return invList.get(GLOBAL);
+            return invNameToInvSpec.get(GLOBAL);
         }
 
         return invSpec;
+    }
+
+    public Collection<InventorySpec> getInvSpecs() {
+        return invNameToInvSpec.values();
     }
 }

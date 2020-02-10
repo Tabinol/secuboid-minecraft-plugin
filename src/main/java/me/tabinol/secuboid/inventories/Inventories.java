@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.inventories;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -52,14 +53,18 @@ public final class Inventories {
         JOIN, QUIT, CHANGE, DEATH
     }
 
-    public void reloadConfig() {
-        inventoryConfig.reloadConfig();
-    }
-
     public Inventories(final Secuboid secuboid, final InventoryConfig inventoryConfig) {
         this.secuboid = secuboid;
         this.inventoryConfig = inventoryConfig;
         inventorySpecToDefaultInvEntry = new HashMap<>();
+    }
+
+    public void reloadConfig() {
+        inventoryConfig.reloadConfig();
+    }
+
+    public Collection<InventorySpec> getInvSpecs() {
+        return inventoryConfig.getInvSpecs();
     }
 
     public boolean loadDeathInventory(final Player player, final int deathVersion) {
@@ -67,6 +72,10 @@ public final class Inventories {
         final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCache().getCurInvEntry().getInventorySpec();
         return loadInventoryToPlayer(playerConfEntry, invSpec, player.getGameMode() == GameMode.CREATIVE, true,
                 deathVersion);
+    }
+
+    public void addDefaultInventory(final PlayerInvEntry playerInvEntry) {
+        inventorySpecToDefaultInvEntry.put(playerInvEntry.getInventorySpec(), playerInvEntry);
     }
 
     public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {

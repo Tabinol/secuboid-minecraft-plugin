@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -57,6 +58,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -72,6 +74,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
@@ -97,6 +100,8 @@ import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
+import me.tabinol.secuboid.storage.StorageThread;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 import me.tabinol.secuboid.selection.region.RegionSelection;
 
 /**
@@ -144,6 +149,27 @@ public final class PlayerListener extends CommonListener implements Listener {
     }
 
     /**
+     * On async player prelogin. This method is async, do not call bukkit/Secuboid direct methods here.
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onAsyncPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
+        if(event.getLoginResult() != Result.ALLOWED) {
+            // Player not allowed, nothing to do
+            return;
+        }
+
+        final StorageThread storageThread = secuboid.getStorageThread();
+        final UUID playerUuid = event.getUniqueId();
+        // Remove if the player still exists in the queue
+        storageThread.preloginQueueRemove(playerUuid);
+        // TODO get playerConf store by UUID, not player
+        //storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, );
+
+        // TODO waiting for enventory loaded
+    }
+    
+    /**
      * On player join.
      *
      * @param event the events
@@ -157,6 +183,7 @@ public final class PlayerListener extends CommonListener implements Listener {
         secuboid.getPlayersCache().updatePlayer(player.getUniqueId(), player.getName());
 
         // Create a new static config
+        // TODO get, net add
         final PlayerConfEntry entry = playerConf.add(player);
 
         updatePosInfo(event, entry, player.getLocation(), true);

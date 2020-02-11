@@ -19,6 +19,9 @@
 package me.tabinol.secuboid.storage;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
@@ -37,6 +40,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      * The storage.
      */
     private final Storage storage;
+
+    private final BlockingQueue<UUID> preloginBlockingQueue;
 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_REMOVE, INVENTORY_DEFAULT_SAVE,
@@ -63,6 +68,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public StorageThread(final Secuboid secuboid, final Storage storage) {
         super(secuboid, "Secuboid Storage");
         this.storage = storage;
+        preloginBlockingQueue = new LinkedBlockingQueue<>();
     }
 
     /**
@@ -147,5 +153,9 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      */
     public void addSaveAction(final SaveActionEnum saveActionEnum, final Optional<Savable> savableOpt) {
         addElement(new SaveEntry(saveActionEnum, savableOpt));
+    }
+
+    public void preloginQueueRemove(final UUID uuid) {
+        preloginBlockingQueue.remove(uuid);
     }
 }

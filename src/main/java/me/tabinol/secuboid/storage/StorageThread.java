@@ -18,17 +18,17 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
@@ -41,7 +41,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      */
     private final Storage storage;
 
-    private final BlockingQueue<UUID> preloginBlockingQueue;
+    private final Map<UUID, Thread> playerUuidToPreLoginThread;
 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_REMOVE, INVENTORY_DEFAULT_SAVE,
@@ -68,7 +68,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public StorageThread(final Secuboid secuboid, final Storage storage) {
         super(secuboid, "Secuboid Storage");
         this.storage = storage;
-        preloginBlockingQueue = new LinkedBlockingQueue<>();
+        playerUuidToPreLoginThread = new ConcurrentHashMap<>();
     }
 
     /**
@@ -123,7 +123,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             storage.saveInventoryDefault((PlayerInvEntry) savableNullable);
             break;
         case INVENTORY_PLAYER_LOAD:
-            storage.loadInventoriesPlayer((PlayerConfEntry) savableNullable);
+            storage.loadInventoriesPlayer((PlayerInventoryCache) savableNullable);
             break;
         case INVENTORY_PLAYER_SAVE:
             storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
@@ -155,7 +155,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         addElement(new SaveEntry(saveActionEnum, savableOpt));
     }
 
-    public void preloginQueueRemove(final UUID uuid) {
-        preloginBlockingQueue.remove(uuid);
+    public void preloginAddThread(final UUID uuid, final Thread thread) {
+        playerUuidToPreLoginThread.put(uuid, thread);
     }
 }

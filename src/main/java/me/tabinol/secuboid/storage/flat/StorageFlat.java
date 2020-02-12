@@ -19,9 +19,9 @@
 package me.tabinol.secuboid.storage.flat;
 
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 
@@ -102,8 +102,8 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
-        inventoriesFlat.loadInventoriesPlayer(playerConfEntry);
+    public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
+        inventoriesFlat.loadInventoriesPlayer(playerInventoryCache);
     }
 
     @Override

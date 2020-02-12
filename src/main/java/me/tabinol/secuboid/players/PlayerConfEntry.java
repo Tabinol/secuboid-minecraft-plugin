@@ -31,12 +31,11 @@ import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
-import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The Class PlayerConfEntry. Entries for each players.
  */
-public final class PlayerConfEntry implements Savable {
+public final class PlayerConfEntry {
 
     private final Secuboid secuboid;
 
@@ -126,9 +125,11 @@ public final class PlayerConfEntry implements Savable {
      * @param secuboid secuboid instance
      * @param sender   the sender
      */
-    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender) {
+    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender,
+            final PlayerInventoryCache playerInventoryCache) {
         this.secuboid = secuboid;
         this.sender = sender;
+        this.playerInventoryCache = playerInventoryCache;
 
         if (sender instanceof Player) {
             player = (Player) sender;
@@ -143,7 +144,6 @@ public final class PlayerConfEntry implements Savable {
         selectionTop = secuboid.getConf().getDefaultTop();
         selectionBottom = secuboid.getConf().getDefaultBottom();
         selectionRadius = secuboid.getConf().getDefaultRadius();
-        playerInventoryCache = new PlayerInventoryCache();
     }
 
     /**
@@ -410,13 +410,11 @@ public final class PlayerConfEntry implements Savable {
         this.selectionRadius = selectionRadius;
     }
 
-    @Override
-    public String getName() {
-        return player.getName();
-    }
-
-    @Override
     public UUID getUUID() {
         return player.getUniqueId();
+    }
+
+    public String getName() {
+        return player.getName();
     }
 }

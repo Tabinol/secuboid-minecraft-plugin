@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.players.PlayerConfEntry;
@@ -124,9 +125,9 @@ public interface Storage {
     /**
      * Load all inventories for a specific player.
      * 
-     * @param playerConfEntry the player configuration entry
+     * @param playerInventoryCache the player inventory chache
      */
-    void loadInventoriesPlayer(PlayerConfEntry playerConfEntry);
+    void loadInventoriesPlayer(PlayerInventoryCache playerInventoryCache);
 
     /**
      * Save a specific inventory for a player.

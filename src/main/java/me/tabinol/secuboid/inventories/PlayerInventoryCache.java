@@ -22,11 +22,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The player inventory status.
  */
-public class PlayerInventoryCache {
+public class PlayerInventoryCache implements Savable {
+
+    private final UUID playerUuid;
+    private final String playerName;
 
     /**
      * By inventory specs survival inventories.
@@ -48,7 +54,9 @@ public class PlayerInventoryCache {
      */
     private PlayerInvEntry curInvEntry;
 
-    public PlayerInventoryCache() {
+    public PlayerInventoryCache(final UUID playerUuid, final String playerName) {
+        this.playerUuid = playerUuid;
+        this.playerName = playerName;
         inventorySpecToSurvivalInvEntry = new HashMap<>();
         inventorySpecToCreativeInvEntry = new HashMap<>();
         deathInvEntries = new ArrayList<>();
@@ -74,5 +82,15 @@ public class PlayerInventoryCache {
     PlayerInventoryCache setCurInvEntry(final PlayerInvEntry curInvEntry) {
         this.curInvEntry = curInvEntry;
         return this;
+    }
+
+    @Override
+    public String getName() {
+        return playerName;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return playerUuid;
     }
 }

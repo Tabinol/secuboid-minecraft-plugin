@@ -21,11 +21,13 @@ package me.tabinol.secuboid.players;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.dependencies.chat.Chat;
 import me.tabinol.secuboid.dependencies.vanish.Vanish;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 
 /**
  * The Class PlayerConfig. Contains lists for player (selection, ect, ...).
@@ -54,7 +56,7 @@ public class PlayerConfig {
      *
      * @param secuboid secuboid instance
      */
-    public PlayerConfig(Secuboid secuboid) {
+    public PlayerConfig(final Secuboid secuboid) {
         this.secuboid = secuboid;
         playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
         vanish = secuboid.getDependPlugin().getVanish();
@@ -64,11 +66,12 @@ public class PlayerConfig {
     /**
      * Adds the static configuration.
      *
-     * @param sender the sender
+     * @param sender               the sender
+     * @param playerInventoryCache the player inventory cache
      * @return the player conf entry
      */
-    public PlayerConfEntry add(CommandSender sender) {
-        PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender);
+    public PlayerConfEntry add(final CommandSender sender, final PlayerInventoryCache playerInventoryCache) {
+        final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCache);
         playerConfList.put(sender, entry);
 
         return entry;
@@ -79,8 +82,8 @@ public class PlayerConfig {
      *
      * @param sender the sender
      */
-    public void remove(CommandSender sender) {
-        PlayerConfEntry entry = playerConfList.get(sender);
+    public void remove(final CommandSender sender) {
+        final PlayerConfEntry entry = playerConfList.get(sender);
 
         // First, remove AutoCancelSelect
         entry.setAutoCancelSelect(false);
@@ -94,7 +97,7 @@ public class PlayerConfig {
      * @param sender the command sender
      * @return the player static configuration
      */
-    public PlayerConfEntry get(CommandSender sender) {
+    public PlayerConfEntry get(final CommandSender sender) {
         return playerConfList.get(sender);
     }
 
@@ -103,11 +106,12 @@ public class PlayerConfig {
      */
     public void addAll() {
         // Add the consle in the list
-        add(secuboid.getServer().getConsoleSender());
+        // TODO Resolve this method with player inventory cache
+        //add(secuboid.getServer().getConsoleSender());
 
         // Add online players
-        for (CommandSender sender : secuboid.getServer().getOnlinePlayers()) {
-            add(sender);
+        for (final CommandSender sender : secuboid.getServer().getOnlinePlayers()) {
+            //add(sender);
         }
     }
 
@@ -115,7 +119,7 @@ public class PlayerConfig {
      * Removes all static configurations.
      */
     public void removeAll() {
-        for (PlayerConfEntry entry : playerConfList.values()) {
+        for (final PlayerConfEntry entry : playerConfList.values()) {
             // First, remove AutoCancelSelect
             entry.setAutoCancelSelect(false);
         }
@@ -128,7 +132,7 @@ public class PlayerConfig {
      * @param player the player
      * @return true if vanished
      */
-    public boolean isVanished(Player player) {
+    public boolean isVanished(final Player player) {
         return vanish.isVanished(player);
     }
 

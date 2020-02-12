@@ -18,7 +18,9 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -90,6 +92,7 @@ import me.tabinol.secuboid.commands.executor.CommandSelect;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -113,6 +116,8 @@ public final class PlayerListener extends CommonListener implements Listener {
      * The Constant DEFAULT_TIME_LAPS.
      */
     public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
+
+    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
 
     /**
      * The conf.
@@ -149,24 +154,38 @@ public final class PlayerListener extends CommonListener implements Listener {
     }
 
     /**
-     * On async player prelogin. This method is async, do not call bukkit/Secuboid direct methods here.
+     * On async player prelogin. This method is async, do not call bukkit/Secuboid
+     * direct methods here.
+     * 
      * @param event
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
-        if(event.getLoginResult() != Result.ALLOWED) {
+        if (event.getLoginResult() != Result.ALLOWED) {
             // Player not allowed, nothing to do
             return;
         }
 
-        final StorageThread storageThread = secuboid.getStorageThread();
         final UUID playerUuid = event.getUniqueId();
-        // Remove if the player still exists in the queue
-        storageThread.preloginQueueRemove(playerUuid);
-        // TODO get playerConf store by UUID, not player
-        //storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, );
+        final String playerName = event.getName();
 
-        // TODO waiting for enventory loaded
+        // Put the new login thread in the map for wake up after inventories load
+        final StorageThread storageThread = secuboid.getStorageThread();
+        storageThread.preloginAddThread(playerUuid, Thread.currentThread());
+
+        // Load inventories from save thread
+        final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
+        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, Optional.of(playerInventoryCache));
+
+        // Waiting for inventory load
+        // TODO login player whitout interuption
+        try {
+            wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
     
     /**
@@ -184,9 +203,9 @@ public final class PlayerListener extends CommonListener implements Listener {
 
         // Create a new static config
         // TODO get, net add
-        final PlayerConfEntry entry = playerConf.add(player);
+        //final PlayerConfEntry entry = playerConf.add(player);
 
-        updatePosInfo(event, entry, player.getLocation(), true);
+        //updatePosInfo(event, entry, player.getLocation(), true);
 
         // Check if AdminMode is auto
         if (player.hasPermission("secuboid.adminmode.auto")) {

@@ -37,6 +37,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.players.PlayerConfEntry;
 
 /**
@@ -64,7 +65,8 @@ public class InventoriesFlat {
             if (invDirFile.isDirectory()) {
                 final File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
                 if (invDefaultFile.isFile()) {
-                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, Optional.empty(), inventorySpec, false);
+                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, Optional.empty(),
+                            inventorySpec, false);
                     inventories.addDefaultInventory(playerInvEntry);
                 }
             }
@@ -86,7 +88,8 @@ public class InventoriesFlat {
         }
     }
 
-    public void loadInventoriesPlayer(final PlayerConfEntry playerConfEntry) {
+    public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
+        // TODO Return to login (synchronise, wakeup)
         // TODO Auto-generated method stub
 
     }
@@ -133,7 +136,9 @@ public class InventoriesFlat {
         return Optional.of(loadInventoryFromFile(playerItemFile, playerConfEntryOpt, inventorySpec, isCreative));
     }
 
-    private PlayerInvEntry loadInventoryFromFile(File playerItemFile, final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec, final boolean isCreative) {
+    private PlayerInvEntry loadInventoryFromFile(File playerItemFile,
+            final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec,
+            final boolean isCreative) {
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
         final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerConfEntryOpt, inventorySpec, isCreative);
 

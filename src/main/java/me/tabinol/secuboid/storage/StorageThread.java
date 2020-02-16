@@ -158,4 +158,12 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public void preloginAddThread(final UUID uuid, final Thread thread) {
         playerUuidToPreLoginThread.put(uuid, thread);
     }
+
+    public Thread preloginRemoveThread(final UUID uuid) {
+        return playerUuidToPreLoginThread.remove(uuid);
+    }
+
+    public Thread preloginGetThread(final UUID uuid) {
+        return playerUuidToPreLoginThread.get(uuid);
+    }
 }

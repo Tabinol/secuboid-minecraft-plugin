@@ -89,6 +89,7 @@ public class InventoriesFlat {
     }
 
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
+        // TODO Optional inventories
         // TODO Return to login (synchronise, wakeup)
         // TODO Auto-generated method stub
 

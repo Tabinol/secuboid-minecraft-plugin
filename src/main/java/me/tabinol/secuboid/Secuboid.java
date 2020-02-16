@@ -37,6 +37,7 @@ import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.ChatListener;
+import me.tabinol.secuboid.listeners.ConnectionListener;
 import me.tabinol.secuboid.listeners.FlyCreativeListener;
 import me.tabinol.secuboid.listeners.InventoryListener;
 import me.tabinol.secuboid.listeners.LandListener;
@@ -203,6 +204,7 @@ public final class Secuboid extends JavaPlugin {
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
         final WorldListener worldListener = new WorldListener(this);
+        final ConnectionListener connectionListener = new ConnectionListener(this);
         final PlayerListener playerListener = new PlayerListener(this);
         final PvpListener pvpListener = new PvpListener(this);
         final LandListener landListener = new LandListener(this);
@@ -217,6 +219,7 @@ public final class Secuboid extends JavaPlugin {
         playersCache = new PlayersCache(this);
         playersCache.start();
         getServer().getPluginManager().registerEvents(worldListener, this);
+        getServer().getPluginManager().registerEvents(connectionListener, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
         getServer().getPluginManager().registerEvents(pvpListener, this);
         getServer().getPluginManager().registerEvents(landListener, this);

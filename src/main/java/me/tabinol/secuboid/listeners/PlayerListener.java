@@ -18,9 +18,6 @@
  */
 package me.tabinol.secuboid.listeners;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -42,7 +39,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.entity.minecart.StorageMinecart;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -60,7 +56,6 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -70,17 +65,13 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
-import org.bukkit.plugin.PluginManager;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -90,9 +81,7 @@ import me.tabinol.secuboid.commands.executor.CommandEcosign.SignType;
 import me.tabinol.secuboid.commands.executor.CommandInfo;
 import me.tabinol.secuboid.commands.executor.CommandSelect;
 import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -101,11 +90,6 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags.SpecialPermPrefix;
 import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.players.PlayerConfig;
-import me.tabinol.secuboid.selection.region.AreaSelection;
-import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
-import me.tabinol.secuboid.storage.StorageThread;
-import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
-import me.tabinol.secuboid.selection.region.RegionSelection;
 
 /**
  * Players listener
@@ -116,8 +100,6 @@ public final class PlayerListener extends CommonListener implements Listener {
      * The Constant DEFAULT_TIME_LAPS.
      */
     public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
-
-    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
 
     /**
      * The conf.
@@ -130,110 +112,14 @@ public final class PlayerListener extends CommonListener implements Listener {
     private final PlayerConfig playerConf;
 
     /**
-     * The time check.
-     */
-    private final int timeCheck;
-
-    /**
-     * The pm.
-     */
-    private final PluginManager pm;
-
-    /**
      * Instantiates a new player listener.
      *
      * @param secuboid secuboid instance
      */
     public PlayerListener(final Secuboid secuboid) {
-
         super(secuboid);
         conf = secuboid.getConf();
         playerConf = secuboid.getPlayerConf();
-        timeCheck = DEFAULT_TIME_LAPS;
-        pm = secuboid.getServer().getPluginManager();
-    }
-
-    /**
-     * On async player prelogin. This method is async, do not call bukkit/Secuboid
-     * direct methods here.
-     * 
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onAsyncPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult() != Result.ALLOWED) {
-            // Player not allowed, nothing to do
-            return;
-        }
-
-        final UUID playerUuid = event.getUniqueId();
-        final String playerName = event.getName();
-
-        // Put the new login thread in the map for wake up after inventories load
-        final StorageThread storageThread = secuboid.getStorageThread();
-        storageThread.preloginAddThread(playerUuid, Thread.currentThread());
-
-        // Load inventories from save thread
-        final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
-        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, Optional.of(playerInventoryCache));
-
-        // Waiting for inventory load
-        // TODO login player whitout interuption
-        try {
-            wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-    
-    /**
-     * On player join.
-     *
-     * @param event the events
-     */
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
-
-        final Player player = event.getPlayer();
-
-        // Update players cache
-        secuboid.getPlayersCache().updatePlayer(player.getUniqueId(), player.getName());
-
-        // Create a new static config
-        // TODO get, net add
-        //final PlayerConfEntry entry = playerConf.add(player);
-
-        //updatePosInfo(event, entry, player.getLocation(), true);
-
-        // Check if AdminMode is auto
-        if (player.hasPermission("secuboid.adminmode.auto")) {
-            playerConf.get(player).setAdminMode(true);
-        }
-    }
-
-    // Must be running after LandListener
-
-    /**
-     * On player quit.
-     *
-     * @param event the events
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(final PlayerQuitEvent event) {
-
-        final Player player = event.getPlayer();
-
-        // Remove player from the land
-        final LandPermissionsFlags landPermissionsFlags = playerConf.get(player).getLastLandPermissionsFlags();
-        final Land landNullable = landPermissionsFlags.getLandNullable();
-        if (landNullable != null) {
-            landNullable.removePlayerInLand(player);
-        }
-
-        // Remove player from Static Config
-        playerConf.remove(player);
     }
 
     /**
@@ -285,7 +171,7 @@ public final class PlayerListener extends CommonListener implements Listener {
         }
         final long last = entry.getLastMoveUpdate();
         final long now = System.currentTimeMillis();
-        if (now - last < timeCheck) {
+        if (now - last < DEFAULT_TIME_LAPS) {
             return;
         }
         entry.setLastMoveUpdate(now);
@@ -1060,74 +946,4 @@ public final class PlayerListener extends CommonListener implements Listener {
         return false;
     }
 
-    /**
-     * Update pos info.
-     *
-     * @param event     the events
-     * @param entry     the entry
-     * @param loc       the loc
-     * @param newPlayer the new player
-     */
-    private void updatePosInfo(final Event event, final PlayerConfEntry entry, final Location loc,
-            final boolean newPlayer) {
-
-        final LandPermissionsFlags landPermissionsFlags;
-        final LandPermissionsFlags oldPermissionsFlags;
-        final Player player = entry.getPlayer();
-        PlayerLandChangeEvent landEvent;
-        Boolean isTp;
-
-        landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
-
-        if (newPlayer) {
-            entry.setLastLandPermissionsFlags(oldPermissionsFlags = landPermissionsFlags);
-        } else {
-            oldPermissionsFlags = entry.getLastLandPermissionsFlags();
-        }
-        if (newPlayer || landPermissionsFlags != oldPermissionsFlags) {
-            isTp = event instanceof PlayerTeleportEvent;
-            // First parameter : If it is a new player, it is null, if not new
-            // player, it is "old"
-            landEvent = new PlayerLandChangeEvent(newPlayer ? null : oldPermissionsFlags, landPermissionsFlags, player,
-                    entry.getLastLoc(), loc, isTp);
-            pm.callEvent(landEvent);
-
-            if (landEvent.isCancelled()) {
-                if (isTp) {
-                    ((PlayerTeleportEvent) event).setCancelled(true);
-                    return;
-                }
-                if (landPermissionsFlags == oldPermissionsFlags) {
-                    player.teleport(player.getWorld().getSpawnLocation());
-                } else {
-                    final Location retLoc = entry.getLastLoc();
-                    player.teleport(new Location(retLoc.getWorld(), retLoc.getX(), retLoc.getBlockY(), retLoc.getZ(),
-                            loc.getYaw(), loc.getPitch()));
-                }
-                entry.setTpCancel(true);
-                return;
-            }
-            entry.setLastLandPermissionsFlags(landPermissionsFlags);
-
-            // Update player in the lands
-            final Land oldLandNullable = oldPermissionsFlags.getLandNullable();
-            if (oldLandNullable != null && oldPermissionsFlags != landPermissionsFlags) {
-                oldLandNullable.removePlayerInLand(player);
-            }
-            final Land landNullable = landPermissionsFlags.getLandNullable();
-            if (landNullable != null) {
-                landNullable.addPlayerInLand(player);
-            }
-        }
-        entry.setLastLoc(loc);
-
-        // Update visual selection
-        if (entry.getSelection().hasSelection()) {
-            for (final RegionSelection sel : entry.getSelection().getSelections()) {
-                if (sel instanceof AreaSelection && ((AreaSelection) sel).getMoveType() != MoveType.PASSIVE) {
-                    ((AreaSelection) sel).playerMove();
-                }
-            }
-        }
-    }
 }

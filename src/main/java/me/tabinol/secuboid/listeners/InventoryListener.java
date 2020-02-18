@@ -142,7 +142,7 @@ public final class InventoryListener extends CommonListener implements Listener 
         }
 
         // Cancel if the world is no drop
-        final PlayerInvEntry entry = playerConfEntry.getPlayerInventoryCache().getCurInvEntry();
+        final PlayerInvEntry entry = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry();
         final InventorySpec invSpec = entry.getInventorySpec();
 
         if (!invSpec.isAllowDrop()) {
@@ -171,7 +171,7 @@ public final class InventoryListener extends CommonListener implements Listener 
             return;
         }
 
-        final PlayerInvEntry invEntry = playerConfEntry.getPlayerInventoryCache().getCurInvEntry();
+        final PlayerInvEntry invEntry = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry();
 
         // Cancel if the world is no drop at death
         final InventorySpec invSpec = invEntry.getInventorySpec();
@@ -187,7 +187,7 @@ public final class InventoryListener extends CommonListener implements Listener 
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
         final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
-        final InventorySpec inventorySpec = playerConfEntry.getPlayerInventoryCache().getCurInvEntry()
+        final InventorySpec inventorySpec = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry()
                 .getInventorySpec();
 
         if (!player.hasPermission(InventoryConfig.PERM_IGNORE_DISABLED_COMMANDS)

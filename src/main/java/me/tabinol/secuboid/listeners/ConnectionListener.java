@@ -81,6 +81,13 @@ public class ConnectionListener extends CommonListener implements Listener {
             return;
         }
 
+        // Inventory prelogin
+        if (secuboid.getInventoriesOpt().isPresent()) {
+            inventoryPreLogin(event);
+        }
+    }
+
+    private void inventoryPreLogin(final AsyncPlayerPreLoginEvent event) {
         final UUID playerUuid = event.getUniqueId();
         final String playerName = event.getName();
 
@@ -110,7 +117,6 @@ public class ConnectionListener extends CommonListener implements Listener {
 
         // Add the player to preload map
         playerUuidToInventoryCachePreLoad.put(playerUuid, playerInventoryCache);
-
     }
 
     /**
@@ -129,13 +135,19 @@ public class ConnectionListener extends CommonListener implements Listener {
         secuboid.getPlayersCache().updatePlayer(player.getUniqueId(), player.getName());
 
         // Create a new static config
-        PlayerInventoryCache playerInventoryCache = playerUuidToInventoryCachePreLoad.remove(playerUuid);
-        if (playerInventoryCache == null) {
-            secuboid.getLogger().log(Level.SEVERE,
-                    String.format("Inventory not loaded for player [uuid=%s, name=%s]", playerUuid, playerName));
-            playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
+        final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
+        if (secuboid.getInventoriesOpt().isPresent()) {
+            PlayerInventoryCache playerInventoryCache = playerUuidToInventoryCachePreLoad.remove(playerUuid);
+            if (playerInventoryCache == null) {
+                secuboid.getLogger().log(Level.SEVERE,
+                        String.format("Inventory not loaded for player [uuid=%s, name=%s]", playerUuid, playerName));
+                playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
+            }
+            playerInventoryCacheOpt = Optional.of(playerInventoryCache);
+        } else {
+            playerInventoryCacheOpt = Optional.empty();
         }
-        final PlayerConfEntry entry = playerConf.add(player, playerInventoryCache);
+        final PlayerConfEntry entry = playerConf.add(player, playerInventoryCacheOpt);
 
         updatePosInfo(event, entry, player.getLocation(), true);
 

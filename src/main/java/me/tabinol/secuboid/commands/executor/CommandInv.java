@@ -105,7 +105,7 @@ public final class CommandInv extends CommandExec {
         } else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
 
             // Remove inventory
-            final PlayerInvEntry playerInvEntry = playerConf.getPlayerInventoryCache().getCurInvEntry();
+            final PlayerInvEntry playerInvEntry = playerConf.getPlayerInventoryCacheOpt().get().getCurInvEntry();
             inventories.removeInventoryDefault(playerInvEntry);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));

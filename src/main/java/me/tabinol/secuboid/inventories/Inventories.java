@@ -69,7 +69,8 @@ public final class Inventories {
 
     public boolean loadDeathInventory(final Player player, final int deathVersion) {
         final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
-        final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCache().getCurInvEntry().getInventorySpec();
+        final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry()
+                .getInventorySpec();
         return loadInventoryToPlayer(playerConfEntry, invSpec, player.getGameMode() == GameMode.CREATIVE, true,
                 deathVersion);
     }
@@ -80,7 +81,7 @@ public final class Inventories {
 
     public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {
         final Player player = playerConfEntry.getPlayer();
-        saveInventory(player, playerConfEntry.getPlayerInventoryCache().getCurInvEntry(), false, true, false);
+        saveInventory(player, playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry(), false, true, false);
     }
 
     /**
@@ -94,8 +95,8 @@ public final class Inventories {
 
     public void forceSave() {
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCache()
-                    .getCurInvEntry();
+            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCacheOpt()
+                    .get().getCurInvEntry();
             if (!player.isDead()) {
                 saveInventory(player, playerInvEntry, false, false, false);
             }
@@ -182,7 +183,7 @@ public final class Inventories {
     public boolean loadInventoryToPlayer(final PlayerConfEntry playerConfEntry, final InventorySpec inventorySpec,
             final boolean isCreative, final boolean fromDeath, final int deathVersion) {
         final Player player = playerConfEntry.getPlayer();
-        final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCache();
+        final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCacheOpt().get();
 
         PlayerInvEntry playerInvEntry;
         if (fromDeath) {
@@ -266,7 +267,7 @@ public final class Inventories {
     public void switchInventory(final PlayerConfEntry playerConfEntry, final LandPermissionsFlags landPermissionsFlags,
             boolean toIsCreative, final PlayerAction playerAction) {
         final Player player = playerConfEntry.getPlayer();
-        final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCache();
+        final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCacheOpt().get();
 
         PlayerInvEntry fromInvEntry = null;
         boolean fromIsCreative = false;
@@ -303,7 +304,8 @@ public final class Inventories {
 
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
-            playerInventoryCache.setCurInvEntry(new PlayerInvEntry(Optional.of(playerConfEntry), toInv, toIsCreative));
+            playerInventoryCache
+                    .setCurInvEntry(new PlayerInvEntry(Optional.of(player.getUniqueId()), toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same

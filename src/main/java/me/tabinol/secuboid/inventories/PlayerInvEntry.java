@@ -29,7 +29,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.Savable;
 
 /**
@@ -43,7 +42,7 @@ public class PlayerInvEntry implements Savable {
     private final static int ARMOR_SIZE = 4;
     private final static int ENDER_CHEST_SIZE = 27;
 
-    private final Optional<PlayerConfEntry> playerConfEntryOpt;
+    private final Optional<UUID> playerUuidOpt;
     private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
     private final ItemStack[] slotItems;
@@ -56,9 +55,9 @@ public class PlayerInvEntry implements Savable {
     private ItemStack itemOffhand;
     private final List<PotionEffect> potionEffects;
 
-    public PlayerInvEntry(final Optional<PlayerConfEntry> playerConfEntryOpt, final InventorySpec inventorySpec,
+    public PlayerInvEntry(final Optional<UUID> playerUuidOpt, final InventorySpec inventorySpec,
             final boolean isCreativeInv) {
-        this.playerConfEntryOpt = playerConfEntryOpt;
+        this.playerUuidOpt = playerUuidOpt;
         this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
         slotItems = new ItemStack[INVENTORY_LIST_SIZE];
@@ -83,8 +82,8 @@ public class PlayerInvEntry implements Savable {
         Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
     }
 
-    public Optional<PlayerConfEntry> getPlayerConfEntryOpt() {
-        return playerConfEntryOpt;
+    public Optional<UUID> getPlayerUuidOpt() {
+        return playerUuidOpt;
     }
 
     public InventorySpec getInventorySpec() {
@@ -167,12 +166,12 @@ public class PlayerInvEntry implements Savable {
 
     @Override
     public String getName() {
-        return String.format("[invName=%s, isCreativeInv=%s, playerName=%s]", inventorySpec.getInventoryName(),
-                isCreativeInv, playerConfEntryOpt.map(pce -> pce.getName()).orElse(null));
+        return String.format("[invName=%s, isCreativeInv=%s, playerUuid=%s]", inventorySpec.getInventoryName(),
+                isCreativeInv, playerUuidOpt.orElse(null));
     }
 
     @Override
     public UUID getUUID() {
-        return playerConfEntryOpt.map(pce -> pce.getUUID()).orElse(null);
+        return playerUuidOpt.orElse(null);
     }
 }

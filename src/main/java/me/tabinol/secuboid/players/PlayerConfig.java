@@ -20,6 +20,7 @@ package me.tabinol.secuboid.players;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -70,8 +71,8 @@ public class PlayerConfig {
      * @param playerInventoryCache the player inventory cache
      * @return the player conf entry
      */
-    public PlayerConfEntry add(final CommandSender sender, final PlayerInventoryCache playerInventoryCache) {
-        final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCache);
+    public PlayerConfEntry add(final CommandSender sender, final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
+        final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCacheOpt);
         playerConfList.put(sender, entry);
 
         return entry;

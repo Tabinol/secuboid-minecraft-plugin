@@ -25,7 +25,6 @@ import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
-import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.flat.ApprovesFlat;
 import me.tabinol.secuboid.storage.flat.InventoriesFlat;

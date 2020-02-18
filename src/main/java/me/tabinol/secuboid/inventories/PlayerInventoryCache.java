@@ -31,6 +31,8 @@ import me.tabinol.secuboid.storage.Savable;
  */
 public class PlayerInventoryCache implements Savable {
 
+    public static final int DEATH_SAVE_MAX_NBR = 9;
+
     private final UUID playerUuid;
     private final String playerName;
 
@@ -63,12 +65,24 @@ public class PlayerInventoryCache implements Savable {
         curInvEntry = null;
     }
 
+    public void addInventorySurvival(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
+        inventorySpecToSurvivalInvEntry.put(inventorySpec, playerInvEntry);
+    }
+
     PlayerInvEntry getInventorySurvival(final InventorySpec inventorySpec) {
         return inventorySpecToSurvivalInvEntry.get(inventorySpec);
     }
 
+    public void addInventoryCreative(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
+        inventorySpecToCreativeInvEntry.put(inventorySpec, playerInvEntry);
+    }
+
     PlayerInvEntry getInventoryCreative(final InventorySpec inventorySpec) {
         return inventorySpecToCreativeInvEntry.get(inventorySpec);
+    }
+
+    public void addInventoryDeath(final int deathVersion, final PlayerInvEntry playerInvEntry) {
+        deathInvEntries.add(deathVersion - 1, playerInvEntry);
     }
 
     PlayerInvEntry getInventoryDeath(final int deathVersion) {

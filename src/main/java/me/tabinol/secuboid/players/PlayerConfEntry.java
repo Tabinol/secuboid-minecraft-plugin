@@ -18,6 +18,7 @@
  */
 package me.tabinol.secuboid.players;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -55,9 +56,9 @@ public final class PlayerConfEntry {
     private final PlayerSelection playerSelection;
 
     /**
-     * Plauer inventory cache.
+     * Plauer inventory cache optional.
      */
-    private final PlayerInventoryCache playerInventoryCache;
+    private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
 
     /**
      * If the player is in Admin Mod
@@ -122,14 +123,15 @@ public final class PlayerConfEntry {
     /**
      * Instantiates a new player conf entry.
      *
-     * @param secuboid secuboid instance
-     * @param sender   the sender
+     * @param secuboid                secuboid instance
+     * @param sender                  the sender
+     * @param playerInventoryCacheOpt the player inventory cache optional
      */
     PlayerConfEntry(final Secuboid secuboid, final CommandSender sender,
-            final PlayerInventoryCache playerInventoryCache) {
+            final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
         this.secuboid = secuboid;
         this.sender = sender;
-        this.playerInventoryCache = playerInventoryCache;
+        this.playerInventoryCacheOpt = playerInventoryCacheOpt;
 
         if (sender instanceof Player) {
             player = (Player) sender;
@@ -183,12 +185,12 @@ public final class PlayerConfEntry {
     }
 
     /**
-     * Gets the player inventory cache.
+     * Gets the player inventory cache optional.
      * 
-     * @return the player inventory cache
+     * @return the player inventory cache optional
      */
-    public PlayerInventoryCache getPlayerInventoryCache() {
-        return playerInventoryCache;
+    public Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
+        return playerInventoryCacheOpt;
     }
 
     /**

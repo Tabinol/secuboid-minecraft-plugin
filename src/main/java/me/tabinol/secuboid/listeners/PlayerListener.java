@@ -331,7 +331,9 @@ public final class PlayerListener extends CommonListener implements Listener {
                     || (ml == Material.JUKEBOX && !checkPermission(landPermissionsFlags, player,
                             PermissionList.OPEN_JUKEBOX.getPermissionType()))
                     || (ml.name().matches(".*SHULKER_BOX$") && !checkPermission(landPermissionsFlags, player,
-                            PermissionList.OPEN_SHULKER_BOX.getPermissionType())))
+                            PermissionList.OPEN_SHULKER_BOX.getPermissionType()))
+                    || (ml == Material.LECTERN && !checkPermission(landPermissionsFlags, player,
+                            PermissionList.OPEN_LECTERN.getPermissionType())))
                     // For dragon egg fix
                     || (ml == Material.DRAGON_EGG && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUILD_DESTROY.getPermissionType()))) {

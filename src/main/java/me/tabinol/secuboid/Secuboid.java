@@ -191,7 +191,7 @@ public final class Secuboid extends JavaPlugin {
             playerMoneyOpt = Optional.empty();
         }
         playerConf = new PlayerConfig(this);
-        playerConf.addAll();
+        playerConf.addConsoleSender();
         language = new Lang(this);
         storage = Storage.getStorageFromConfig(this, getConf().getStorage());
         storageThread = new StorageThread(this, storage);

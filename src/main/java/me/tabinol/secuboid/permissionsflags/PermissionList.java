@@ -102,6 +102,10 @@ public enum PermissionList {
      */
     OPEN_SHULKER_BOX(true, "OPEN"),
     /**
+     * The open Lectern
+     */
+    OPEN_LECTERN(true, "OPEN"),
+    /**
      * The use.
      */
     USE(true, "USE"),

@@ -103,17 +103,10 @@ public class PlayerConfig {
     }
 
     /**
-     * Adds all static configurations.
+     * Adds console sender.
      */
-    public void addAll() {
-        // Add the consle in the list
-        // TODO Resolve this method with player inventory cache
-        //add(secuboid.getServer().getConsoleSender());
-
-        // Add online players
-        for (final CommandSender sender : secuboid.getServer().getOnlinePlayers()) {
-            //add(sender);
-        }
+    public void addConsoleSender() {
+        add(secuboid.getServer().getConsoleSender(), Optional.empty());
     }
 
     /**

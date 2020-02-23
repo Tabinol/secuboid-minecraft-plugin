@@ -19,13 +19,14 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.storage.SavableParameter;
 
 import org.bukkit.entity.Player;
 
 /**
  * The interface PlayerContainer.
  */
-public interface PlayerContainer extends Comparable<PlayerContainer> {
+public interface PlayerContainer extends Comparable<PlayerContainer>, SavableParameter {
 
     String getName();
 

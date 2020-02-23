@@ -22,6 +22,11 @@ import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.Permission;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 
@@ -64,6 +69,68 @@ public class StorageFlat implements Storage {
     @Override
     public void removeLand(final Land land) {
         landsFlat.removeLand(land);
+    }
+
+    @Override
+    public void removeLandArea(final Land land, final Area area) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandArea(final Land land, final Area area) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void removeLandBanned(final Land land, final PlayerContainer playerContainer) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandBanned(final Land land, final PlayerContainer playerContainer) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void removeLandFlag(final Land land, final Flag flag) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandFlag(final Land land, final Flag flag) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void removeLandPermission(final Land land, final PlayerContainer playerContainer,
+            final Permission permission) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandPermission(final Land land, final PlayerContainer playerContainer,
+            final Permission permission) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void removeLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void removeLandResident(final Land land, final PlayerContainer playerContainer) {
+        landsFlat.saveLand(land);
+    }
+
+    @Override
+    public void saveLandResident(final Land land, final PlayerContainer playerContainer) {
+        landsFlat.saveLand(land);
     }
 
     @Override

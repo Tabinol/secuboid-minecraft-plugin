@@ -25,6 +25,11 @@ import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.Permission;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.flat.ApprovesFlat;
 import me.tabinol.secuboid.storage.flat.InventoriesFlat;
@@ -78,6 +83,92 @@ public interface Storage {
      */
     void removeLand(Land land);
 
+    /**
+     * Removes land area.
+     * @param land the land
+     * @param area the area
+     */
+    void removeLandArea(Land land, Area area);
+
+    /**
+     * Save land area.
+     * @param land the land
+     * @param area the area
+     */
+    void saveLandArea(Land land, Area area);
+    
+    /**
+     * Removes land banned.
+     * @param land the land
+     * @param playerContainer the banned
+     */
+    void removeLandBanned(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Save land banned.
+     * @param land the land
+     * @param playerContainer the banned
+     */
+    void saveLandBanned(Land land, PlayerContainer playerContainer);
+    
+    /**
+     * Removes land flag.
+     * @param land the land
+     * @param flag the flag
+     */
+    void removeLandFlag(Land land, Flag flag);
+
+    /**
+     * Save land flag.
+     * @param land the land
+     * @param flag the flag
+     */
+    void saveLandFlag(Land land, Flag flag);
+    
+    /**
+     * Removes land permission.
+     * @param land the land
+     * @param playerContainer the player container
+     * @param permission the permission
+     */
+    void removeLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
+
+    /**
+     * Save land permission.
+     * @param land the land
+     * @param playerContainer the player container
+     * @param permission the permission
+     */
+    void saveLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
+
+    /**
+     * Removes land notify.
+     * @param land the land
+     * @param pcp the player container player to notify
+     */
+    void removeLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
+
+    /**
+     * Save land notify.
+     * @param land the land
+     * @param pcp the player container player to notify
+     */
+    void saveLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
+    
+    /**
+     * Removes land resident.
+     * @param land the land
+     * @param playerContainer the player container
+     */
+    void removeLandResident(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Save land resident.
+     * @param land the land
+     * @param playerContainer the player container
+     */
+    void saveLandResident(Land land, PlayerContainer playerContainer);
+    
     /**
      * Load approves.
      */

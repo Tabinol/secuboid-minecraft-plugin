@@ -284,7 +284,7 @@ public final class Lands {
         if (land.getParent() != null) {
             land.getParent().removeChild(land.getUUID());
         }
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, Optional.of(land));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, false, Optional.of(land));
 
         return true;
     }

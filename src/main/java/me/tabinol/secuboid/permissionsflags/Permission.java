@@ -20,25 +20,27 @@ package me.tabinol.secuboid.permissionsflags;
 
 import org.bukkit.ChatColor;
 
+import me.tabinol.secuboid.storage.SavableParameter;
+
 /**
  * The Class Permission.
  */
-public class Permission {
+public final class Permission implements SavableParameter {
 
     /**
      * The perm type.
      */
-    private PermissionType permType;
+    private final PermissionType permType;
 
     /**
      * The value.
      */
-    private boolean value;
+    private final boolean value;
 
     /**
      * The Inheritable.
      */
-    private boolean inheritable;
+    private final boolean inheritable;
 
     /**
      * Instantiates a new permission.

@@ -18,12 +18,13 @@
  */
 package me.tabinol.secuboid.permissionsflags;
 
+import me.tabinol.secuboid.storage.SavableParameter;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
  * The Class Flag.
  */
-public class Flag {
+public final class Flag implements SavableParameter {
 
     /**
      * The flag type.
@@ -88,7 +89,7 @@ public class Flag {
      *
      * @param value the new value
      */
-    protected void setValue(FlagValue value) {
+    protected void setValue(final FlagValue value) {
 
         this.value = value;
     }
@@ -122,8 +123,8 @@ public class Flag {
         }
 
         if (value.getValue() instanceof String[]) {
-            StringBuilder sb = new StringBuilder();
-            for (String st : value.getValueStringList()) {
+            final StringBuilder sb = new StringBuilder();
+            for (final String st : value.getValueStringList()) {
                 sb.append(StringChanges.toQuote(st)).append(";");
             }
             return flagType.toString() + ":" + sb.toString() + ":" + inheritable;
@@ -133,11 +134,13 @@ public class Flag {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-        Flag flag = (Flag) o;
+        final Flag flag = (Flag) o;
 
         return flagType.equals(flag.flagType);
 

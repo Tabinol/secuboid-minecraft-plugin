@@ -130,17 +130,17 @@ public final class Inventories {
 
         // Request save
         if (isDeath) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE, false,
                     Optional.of(playerInvEntry));
         } else if (isDefaultInv) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE, false,
                     Optional.of(playerInvEntry));
         } else if (isEnderChestOnly) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE, false,
                     Optional.of(playerInvEntry));
         } else {
             // Normal save
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE, false,
                     Optional.of(playerInvEntry));
         }
     }
@@ -261,7 +261,8 @@ public final class Inventories {
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
         inventorySpecToDefaultInvEntry.remove(playerInvEntry.getInventorySpec());
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, Optional.of(playerInvEntry));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, false,
+                Optional.of(playerInvEntry));
     }
 
     public void switchInventory(final PlayerConfEntry playerConfEntry, final LandPermissionsFlags landPermissionsFlags,

@@ -19,6 +19,7 @@
 package me.tabinol.secuboid.lands;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -99,7 +100,7 @@ public final class InitLands {
 
         // Storage
         final StorageThread storageThread = mock(StorageThread.class);
-        doNothing().when(storageThread).addSaveAction(any(SaveActionEnum.class), any());
+        doNothing().when(storageThread).addSaveAction(any(SaveActionEnum.class), anyBoolean(), any(), any());
         when(secuboid.getStorageThread()).thenReturn(storageThread);
     }
 

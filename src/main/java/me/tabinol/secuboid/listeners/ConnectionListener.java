@@ -97,7 +97,7 @@ public class ConnectionListener extends CommonListener implements Listener {
 
         // Load inventories from save thread
         final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
-        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, Optional.of(playerInventoryCache));
+        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, false, Optional.of(playerInventoryCache));
 
         // Waiting for inventory load
         try {

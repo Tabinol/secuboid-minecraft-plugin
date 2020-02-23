@@ -62,7 +62,7 @@ public class Approves {
      */
     public void addApprove(final Approve approve) {
         landNameToApprove.put(approve.getName(), approve);
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, false, Optional.of(approve));
     }
 
     /**
@@ -101,7 +101,7 @@ public class Approves {
     public void removeApprove(final Approve approve) {
         landNameToApprove.remove(approve.getName());
         removeLandIfNeeded(approve);
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, false, Optional.of(approve));
     }
 
     /**
@@ -112,7 +112,7 @@ public class Approves {
             removeLandIfNeeded(approve);
         }
         landNameToApprove.clear();
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, Optional.empty());
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, false, Optional.empty());
     }
 
     private final void removeLandIfNeeded(final Approve approve) {

@@ -229,7 +229,8 @@ public final class Land implements Savable, Approvable {
      */
     Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
             final PlayerContainer owner, final Area area, final Land parent, final int areaId, final Type type) {
-
+        
+        // TODO Add Skip flat save where it is needed
         this.secuboid = secuboid;
         this.uuid = uuid;
         this.isApproved = isApproved;
@@ -952,7 +953,7 @@ public final class Land implements Savable, Approvable {
      * Force save.
      */
     private void forceSave() {
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_SAVE, Optional.of(this));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_SAVE, false, Optional.of(this));
     }
 
     void doSave() {

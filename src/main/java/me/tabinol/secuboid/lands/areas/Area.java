@@ -26,11 +26,12 @@ import org.bukkit.World;
 
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.approve.Approvable;
+import me.tabinol.secuboid.storage.SavableParameter;
 
 /**
  * Represents a area of any type (abstract).
  */
-public interface Area extends Comparable<Area>, Approvable {
+public interface Area extends Comparable<Area>, Approvable, SavableParameter {
 
     /**
      * Gets the Area from string file format.

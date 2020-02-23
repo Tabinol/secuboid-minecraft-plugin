@@ -249,7 +249,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
             playersRevCacheList.put(entry.getUUID(), entry);
 
             // Request save
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, Optional.of(entry));
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, false, Optional.of(entry));
         }
     }
 

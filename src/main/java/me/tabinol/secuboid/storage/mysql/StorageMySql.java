@@ -16,7 +16,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.flat;
+package me.tabinol.secuboid.storage.mysql;
 
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
@@ -31,190 +31,208 @@ import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 
 /**
- * The Class StorageFlat.
+ * StorageMySql
  */
-public class StorageFlat implements Storage {
-
-    private final LandsFlat landsFlat;
-    private final ApprovesFlat approvesFlat;
-    private final PlayersCacheFlat playersCacheFlat;
-    private final InventoriesFlat inventoriesFlat;
-
-    public StorageFlat(final LandsFlat landsFlat, final ApprovesFlat approvesFlat,
-            final PlayersCacheFlat playersCacheFlat, final InventoriesFlat inventoriesFlat) {
-        this.landsFlat = landsFlat;
-        this.approvesFlat = approvesFlat;
-        this.playersCacheFlat = playersCacheFlat;
-        this.inventoriesFlat = inventoriesFlat;
-    }
+public class StorageMySql implements Storage {
 
     @Override
     public void loadAll() {
-        loadLands();
-        loadApproves();
-        loadPlayersCache();
-        loadInventories();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void loadLands() {
-        landsFlat.loadLands();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLand(final Land land) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLand(final Land land) {
-        landsFlat.removeLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandArea(final Land land, final Area area) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandArea(final Land land, final Area area) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandBanned(final Land land, final PlayerContainer playerContainer) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandBanned(final Land land, final PlayerContainer playerContainer) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandFlag(final Land land, final Flag flag) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAllLandFlags(final Land land) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandFlag(final Land land, final Flag flag) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAllLandPermissions(final Land land) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAllLandPlayerNotify(final Land land) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeLandResident(final Land land, final PlayerContainer playerContainer) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAllLandResidents(final Land land) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveLandResident(final Land land, final PlayerContainer playerContainer) {
-        landsFlat.saveLand(land);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void loadApproves() {
-        approvesFlat.loadApproves();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveApprove(final Approve approve) {
-        approvesFlat.saveApprove(approve);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeApprove(final Approve approve) {
-        approvesFlat.removeApprove(approve);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeAllApproves() {
-        approvesFlat.removeAll();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void loadInventories() {
-        inventoriesFlat.loadInventories();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        inventoriesFlat.saveInventoryDefault(playerInvEntry);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        inventoriesFlat.removeInventoryDefault(playerInvEntry);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
-        inventoriesFlat.loadInventoriesPlayer(playerInventoryCache);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
-        inventoriesFlat.saveInventoryPlayer(playerInvEntry);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
-        inventoriesFlat.saveInventoryPlayerDeath(playerInvEntry);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
-        inventoriesFlat.saveInventoryPlayerDeathHistory(playerInvEntry);
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void loadPlayersCache() {
-        playersCacheFlat.loadPlayersCache();
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void savePlayerCacheEntry(final PlayerCacheEntry playerCacheEntry) {
-        playersCacheFlat.savePlayersCache();
+        // TODO Auto-generated method stub
+
     }
+
 }

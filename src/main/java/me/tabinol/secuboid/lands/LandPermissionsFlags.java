@@ -37,6 +37,8 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.storage.SavableParameter;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 
 /**
  * The class for permissions and flags access from a land
@@ -116,15 +118,23 @@ public final class LandPermissionsFlags {
      * auto save.
      */
     public void setDefault() {
-        // Remove all flags
-        flags.clear();
-        // Remove all permissions
-        permissions.clear();
+        setDefault(false);
     }
 
-    private void doSave() {
-        if (landNullable != null) {
-            landNullable.doSave();
+    void setDefault(final boolean skipFlatSave) {
+        // Remove all flags
+        flags.clear();
+        doSave(SaveActionEnum.LAND_FLAG_REMOVE_ALL, skipFlatSave);
+        // Remove all permissions
+        permissions.clear();
+        doSave(SaveActionEnum.LAND_PERMISSION_REMOVE_ALL, skipFlatSave);
+    }
+
+    private void doSave(final SaveActionEnum SaveActionEnum, final boolean skipFlatSave,
+            final SavableParameter... savableParameters) {
+        if (landNullable != null && landNullable.getAutoSave()) {
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum, skipFlatSave, Optional.of(landNullable),
+                    savableParameters);
         }
     }
 
@@ -226,7 +236,7 @@ public final class LandPermissionsFlags {
             permPlayer = permissions.get(pc);
         }
         permPlayer.put(perm.getPermType(), perm);
-        doSave();
+        doSave(SaveActionEnum.LAND_PERMISSION_SAVE, false, pc, perm);
 
         if (landNullable != null) {
             if (perm.getPermType() == PermissionList.LAND_ENTER.getPermissionType()
@@ -250,15 +260,13 @@ public final class LandPermissionsFlags {
      * @return true, if successful
      */
     public boolean removePermission(final PlayerContainer pc, final PermissionType permType) {
-
-        Map<PermissionType, Permission> permPlayer;
-        Permission perm;
-
         if (!permissions.containsKey(pc)) {
             return false;
         }
-        permPlayer = permissions.get(pc);
-        perm = permPlayer.remove(permType);
+
+        final Map<PermissionType, Permission> permPlayer = permissions.get(pc);
+        final Permission perm = permPlayer.remove(permType);
+
         if (perm == null) {
             return false;
         }
@@ -268,7 +276,7 @@ public final class LandPermissionsFlags {
             permissions.remove(pc);
         }
 
-        doSave();
+        doSave(SaveActionEnum.LAND_PERMISSION_REMOVE, false, pc, perm);
 
         if (landNullable != null) {
             // Start Event
@@ -429,7 +437,7 @@ public final class LandPermissionsFlags {
     public void addFlag(final Flag flag) {
 
         flags.put(flag.getFlagType(), flag);
-        doSave();
+        doSave(SaveActionEnum.LAND_FLAG_SAVE, false, flag);
 
         if (landNullable != null) {
             // Start Event
@@ -451,7 +459,7 @@ public final class LandPermissionsFlags {
         if (flag == null) {
             return false;
         }
-        doSave();
+        doSave(SaveActionEnum.LAND_FLAG_REMOVE, false, flag);
 
         if (landNullable != null) {
             // Start Event
@@ -528,7 +536,7 @@ public final class LandPermissionsFlags {
      * @param onlyInherit the only inherit
      * @return the flag value
      */
-    private FlagValue getFlagNullable(FlagType ft, boolean onlyInherit) {
+    private FlagValue getFlagNullable(final FlagType ft, final boolean onlyInherit) {
         Flag flag = flags.get(ft);
         if (flag != null && (!onlyInherit || flag.isInheritable())) {
             return flag.getValue();

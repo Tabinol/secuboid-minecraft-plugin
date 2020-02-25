@@ -46,15 +46,15 @@ public interface Storage {
         final Storage storage;
 
         switch (configParam.toLowerCase()) {
-        default: // No break because dafault execute "flat"
-            secuboid.getLogger().log(Level.WARNING, () -> String
-                    .format("The storage type \"%s\" is not available, using default \"flat\"", configParam));
-        case "flat":
-            final LandsFlat landsFlat = new LandsFlat(secuboid);
-            final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
-            final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
-            final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
-            storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
+            default: // No break because dafault execute "flat"
+                secuboid.getLogger().log(Level.WARNING, () -> String
+                        .format("The storage type \"%s\" is not available, using default \"flat\"", configParam));
+            case "flat":
+                final LandsFlat landsFlat = new LandsFlat(secuboid);
+                final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
+                final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
+                final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
+                storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
         }
         return storage;
     }
@@ -85,6 +85,7 @@ public interface Storage {
 
     /**
      * Removes land area.
+     * 
      * @param land the land
      * @param area the area
      */
@@ -92,83 +93,122 @@ public interface Storage {
 
     /**
      * Save land area.
+     * 
      * @param land the land
      * @param area the area
      */
     void saveLandArea(Land land, Area area);
-    
+
     /**
      * Removes land banned.
-     * @param land the land
+     * 
+     * @param land            the land
      * @param playerContainer the banned
      */
     void removeLandBanned(Land land, PlayerContainer playerContainer);
 
     /**
      * Save land banned.
-     * @param land the land
+     * 
+     * @param land            the land
      * @param playerContainer the banned
      */
     void saveLandBanned(Land land, PlayerContainer playerContainer);
-    
+
     /**
      * Removes land flag.
+     * 
      * @param land the land
      * @param flag the flag
      */
     void removeLandFlag(Land land, Flag flag);
 
     /**
+     * Removes all land flags.
+     * 
+     * @param land the land
+     */
+    void removeAllLandFlags(Land land);
+
+    /**
      * Save land flag.
+     * 
      * @param land the land
      * @param flag the flag
      */
     void saveLandFlag(Land land, Flag flag);
-    
+
     /**
      * Removes land permission.
-     * @param land the land
+     * 
+     * @param land            the land
      * @param playerContainer the player container
-     * @param permission the permission
+     * @param permission      the permission
      */
     void removeLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
 
     /**
-     * Save land permission.
+     * Removes all land permissions.
+     * 
      * @param land the land
+     */
+    void removeAllLandPermissions(Land land);
+
+    /**
+     * Save land permission.
+     * 
+     * @param land            the land
      * @param playerContainer the player container
-     * @param permission the permission
+     * @param permission      the permission
      */
     void saveLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
 
     /**
      * Removes land notify.
+     * 
      * @param land the land
-     * @param pcp the player container player to notify
+     * @param pcp  the player container player to notify
      */
     void removeLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
 
     /**
-     * Save land notify.
+     * Removes all land notify.
+     * 
      * @param land the land
-     * @param pcp the player container player to notify
+     */
+    void removeAllLandPlayerNotify(Land land);
+
+    /**
+     * Save land notify.
+     * 
+     * @param land the land
+     * @param pcp  the player container player to notify
      */
     void saveLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
-    
+
     /**
      * Removes land resident.
-     * @param land the land
+     * 
+     * @param land            the land
      * @param playerContainer the player container
      */
     void removeLandResident(Land land, PlayerContainer playerContainer);
 
     /**
-     * Save land resident.
+     * Removes all land residents.
+     * 
      * @param land the land
+     */
+    void removeAllLandResidents(Land land);
+
+    /**
+     * Save land resident.
+     * 
+     * @param land            the land
      * @param playerContainer the player container
      */
     void saveLandResident(Land land, PlayerContainer playerContainer);
-    
+
     /**
      * Load approves.
      */

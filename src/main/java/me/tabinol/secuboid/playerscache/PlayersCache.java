@@ -37,6 +37,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
 import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
@@ -249,7 +250,8 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
             playersRevCacheList.put(entry.getUUID(), entry);
 
             // Request save
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, false, Optional.of(entry));
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, SaveOn.BOTH,
+                    Optional.of(entry));
         }
     }
 

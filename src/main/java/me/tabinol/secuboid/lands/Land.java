@@ -52,6 +52,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
 import me.tabinol.secuboid.storage.Savable;
 import me.tabinol.secuboid.storage.SavableParameter;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * Represents a land with a number of areas.
@@ -131,7 +132,7 @@ public final class Land implements Savable, Approvable {
     /**
      * The residents. TreeSet because it is ordered.
      */
-    private Set<PlayerContainer> residents = new TreeSet<>();
+    private final Set<PlayerContainer> residents = new TreeSet<>();
 
     /**
      * The banneds. TreeSet because it is ordered.
@@ -151,7 +152,7 @@ public final class Land implements Savable, Approvable {
     /**
      * The player notify. TreeSet because it is ordered.
      */
-    private Set<PlayerContainerPlayer> playerNotify = new TreeSet<>();
+    private final Set<PlayerContainerPlayer> playerNotify = new TreeSet<>();
 
     /**
      * The players in land.
@@ -216,20 +217,18 @@ public final class Land implements Savable, Approvable {
     /**
      * Instantiates a new real land. <br>
      * IMPORTANT: Please use createLand in Lands class to create a Land or it will
-     * not be accessible.
+     * not be accessible and saved.
      *
      * @param secuboid   secuboid instance
      * @param landName   the land name
      * @param uuid       the uuid
      * @param isApproved is this land is approved or in approve list
      * @param owner      the owner
-     * @param area       the area
-     * @param parent     the parent
-     * @param areaId     the area id
      * @param type       the type
+     * @param worldName  the worldName
      */
     Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
-            final PlayerContainer owner, final Area area, final Land parent, final int areaId, final Type type) {
+            final PlayerContainer owner, final Type type, final String worldName) {
 
         // TODO Add Skip flat save where it is needed
         this.secuboid = secuboid;
@@ -237,17 +236,29 @@ public final class Land implements Savable, Approvable {
         this.isApproved = isApproved;
         name = landName.toLowerCase();
         this.type = type;
+        this.owner = owner;
+        this.worldName = worldName;
+        landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
+    }
+
+    /**
+     * Inits a land.
+     *
+     * @param area   the area
+     * @param parent the parent
+     * @param areaId the area id
+     */
+    void init(final Area area, final int areaId, final Land parent) {
         if (parent != null && isApproved) {
             this.parent = parent;
             parent.addChild(this);
         }
-        this.owner = owner;
-        worldName = area.getWorldName();
-        landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
         if (isApproved) {
             // A approved should have only an approved area.
             area.setApproved();
         }
+        // Flat will be save on add area
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.DATABASE);
         addArea(area, areaId);
     }
 
@@ -287,10 +298,12 @@ public final class Land implements Savable, Approvable {
      */
     public void setDefault() {
         owner = PlayerContainerNobody.getInstance();
-        residents = new TreeSet<>();
-        playerNotify = new TreeSet<>();
-        landPermissionsFlags.setDefault(true);
-        doSave(SaveActionEnum.LAND_SAVE, false);
+        residents.clear();
+        doSave(SaveActionEnum.LAND_RESIDENT_REMOVE_ALL, SaveOn.DATABASE);
+        playerNotify.clear();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_REMOVE_ALL, SaveOn.DATABASE);
+        landPermissionsFlags.setDefault(SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.FLAT);
     }
 
     /**
@@ -365,7 +378,7 @@ public final class Land implements Savable, Approvable {
             // Add area for get location only if the land and the area are approved.
             secuboid.getLands().addAreaToList(area);
         }
-        doSave(SaveActionEnum.LAND_AREA_SAVE, false, area);
+        doSave(SaveActionEnum.LAND_AREA_SAVE, SaveOn.BOTH, area);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -384,7 +397,7 @@ public final class Land implements Savable, Approvable {
 
         if ((area = areas.remove(key)) != null) {
             secuboid.getLands().removeAreaFromList(area);
-            doSave(SaveActionEnum.LAND_AREA_REMOVE, false, area);
+            doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.BOTH, area);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -436,8 +449,8 @@ public final class Land implements Savable, Approvable {
             areas.put(key, newArea);
             newArea.setApproved();
             secuboid.getLands().addAreaToList(newArea);
-            doSave(SaveActionEnum.LAND_AREA_REMOVE, true, area);
-            doSave(SaveActionEnum.LAND_AREA_SAVE, false, newArea);
+            doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.DATABASE, area);
+            doSave(SaveActionEnum.LAND_AREA_SAVE, SaveOn.BOTH, newArea);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -623,7 +636,7 @@ public final class Land implements Savable, Approvable {
      */
     protected void setName(final String newName) {
         this.name = newName;
-        doSave(SaveActionEnum.LAND_SAVE, false);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -663,11 +676,11 @@ public final class Land implements Savable, Approvable {
         this.owner = owner;
 
         // Reset all owner permissions and resident managers for safety
-        // TODO skip flat for each remove perm, skip database for final save
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_OWNER.getPermissionType());
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.RESIDENT_MANAGER.getPermissionType());
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_OWNER.getPermissionType(), SaveOn.DATABASE);
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.RESIDENT_MANAGER.getPermissionType(),
+                SaveOn.DATABASE);
 
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -681,7 +694,7 @@ public final class Land implements Savable, Approvable {
      */
     public void addResident(final PlayerContainer resident) {
         residents.add(resident);
-        doSave();
+        doSave(SaveActionEnum.LAND_RESIDENT_SAVE, SaveOn.BOTH, resident);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -696,7 +709,7 @@ public final class Land implements Savable, Approvable {
      */
     public boolean removeResident(final PlayerContainer resident) {
         if (residents.remove(resident)) {
-            doSave();
+            doSave(SaveActionEnum.LAND_RESIDENT_REMOVE, SaveOn.BOTH, resident);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -739,7 +752,7 @@ public final class Land implements Savable, Approvable {
      */
     public void addBanned(final PlayerContainer banned) {
         banneds.add(banned);
-        doSave();
+        doSave(SaveActionEnum.LAND_BANNED_SAVE, SaveOn.BOTH, banned);
 
         // Start Event
         secuboid.getServer().getPluginManager().callEvent(new PlayerContainerLandBanEvent(this, banned));
@@ -753,7 +766,7 @@ public final class Land implements Savable, Approvable {
      */
     public boolean removeBanned(final PlayerContainer banned) {
         if (banneds.remove(banned)) {
-            doSave();
+            doSave(SaveActionEnum.LAND_BANNED_REMOVE, SaveOn.BOTH, banned);
             return true;
         }
 
@@ -804,7 +817,7 @@ public final class Land implements Savable, Approvable {
      */
     public void setPriority(final short priority) {
         this.priority = priority;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -850,7 +863,7 @@ public final class Land implements Savable, Approvable {
         }
 
         // Save
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Save children files
         changeChildrenPriority();
@@ -909,7 +922,6 @@ public final class Land implements Savable, Approvable {
      */
     private void addChild(final Land land) {
         children.put(land.uuid, land);
-        doSave();
     }
 
     /**
@@ -919,7 +931,6 @@ public final class Land implements Savable, Approvable {
      */
     void removeChild(final UUID uuid) {
         children.remove(uuid);
-        doSave();
     }
 
     /**
@@ -959,10 +970,10 @@ public final class Land implements Savable, Approvable {
         this.autoSave = autoSave;
     }
 
-    private void doSave(final SaveActionEnum SaveActionEnum, final boolean skipFlatSave, final SavableParameter... savableParameters) {
+    private void doSave(final SaveActionEnum SaveActionEnum, final SaveOn saveOn,
+            final SavableParameter... savableParameters) {
         if (autoSave) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum, skipFlatSave, Optional.of(this),
-                    savableParameters);
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum, saveOn, Optional.of(this), savableParameters);
         }
     }
 
@@ -973,7 +984,7 @@ public final class Land implements Savable, Approvable {
      */
     public void addMoney(final double money) {
         this.money += money;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -983,7 +994,7 @@ public final class Land implements Savable, Approvable {
      */
     public void subtractMoney(final double money) {
         this.money -= money;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1002,7 +1013,7 @@ public final class Land implements Savable, Approvable {
      */
     public void addPlayerNotify(final PlayerContainerPlayer player) {
         playerNotify.add(player);
-        doSave();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_SAVE, SaveOn.BOTH, player);
     }
 
     /**
@@ -1013,7 +1024,7 @@ public final class Land implements Savable, Approvable {
      */
     public boolean removePlayerNotify(final PlayerContainerPlayer player) {
         final boolean ret = playerNotify.remove(player);
-        doSave();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_REMOVE, SaveOn.BOTH, player);
 
         return ret;
     }
@@ -1165,7 +1176,7 @@ public final class Land implements Savable, Approvable {
             this.forSaleSignLoc = null;
             secuboid.getLands().removeForSale(this);
         }
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1184,7 +1195,7 @@ public final class Land implements Savable, Approvable {
      */
     public void setSaleSignLoc(final Location forSaleSignLoc) {
         this.forSaleSignLoc = forSaleSignLoc;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1221,7 +1232,7 @@ public final class Land implements Savable, Approvable {
         this.rentAutoRenew = rentAutoRenew;
         this.forRentSignLoc = signLoc;
         secuboid.getLands().addForRent(this);
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1240,7 +1251,7 @@ public final class Land implements Savable, Approvable {
      */
     public void setRentSignLoc(final Location forRentSignLoc) {
         this.forRentSignLoc = forRentSignLoc;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1253,7 +1264,7 @@ public final class Land implements Savable, Approvable {
         rentAutoRenew = false;
         forRentSignLoc = null;
         secuboid.getLands().removeForRent(this);
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1302,8 +1313,8 @@ public final class Land implements Savable, Approvable {
         rented = true;
         this.tenant = tenant;
         lastPayment = System.currentTimeMillis();
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
-        doSave();
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1314,8 +1325,8 @@ public final class Land implements Savable, Approvable {
         rented = false;
         tenant = null;
         lastPayment = 0;
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
-        doSave();
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1349,7 +1360,7 @@ public final class Land implements Savable, Approvable {
      */
     public void setLastPaymentTime(final long lastPayment) {
         this.lastPayment = lastPayment;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1377,7 +1388,7 @@ public final class Land implements Savable, Approvable {
      */
     public void setType(final Type arg0) {
         type = arg0;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     @Override

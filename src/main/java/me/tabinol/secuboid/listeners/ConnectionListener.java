@@ -42,6 +42,7 @@ import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * ConnectionListener
@@ -97,7 +98,8 @@ public class ConnectionListener extends CommonListener implements Listener {
 
         // Load inventories from save thread
         final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
-        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, false, Optional.of(playerInventoryCache));
+        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, SaveOn.BOTH,
+                Optional.of(playerInventoryCache));
 
         // Waiting for inventory load
         try {

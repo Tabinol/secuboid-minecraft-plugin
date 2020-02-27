@@ -46,6 +46,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * The Class Lands manager.
@@ -232,7 +233,8 @@ public final class Lands {
             throw new SecuboidLandException(secuboid, landName, area, LandAction.LAND_ADD, LandError.NAME_IN_USE);
         }
 
-        land = new Land(secuboid, landNameLower, landUUID, isApproved, owner, area, parent, areaId, type);
+        land = new Land(secuboid, landNameLower, landUUID, isApproved, owner, type, area.getWorldName());
+        land.init(area, areaId, parent);
         addLandToList(land);
 
         return land;
@@ -284,7 +286,7 @@ public final class Lands {
         if (land.getParent() != null) {
             land.getParent().removeChild(land.getUUID());
         }
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, false, Optional.of(land));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, SaveOn.BOTH, Optional.of(land));
 
         return true;
     }
@@ -671,16 +673,16 @@ public final class Lands {
     private boolean checkContinueSearch(final Area area, final int nbToFind, final int searchIndex) {
 
         switch (searchIndex) {
-        case INDEX_X1:
-            return nbToFind >= area.getX1();
-        case INDEX_X2:
-            return nbToFind <= area.getX2();
-        case INDEX_Z1:
-            return nbToFind >= area.getZ1();
-        case INDEX_Z2:
-            return nbToFind <= area.getZ2();
-        default:
-            return false;
+            case INDEX_X1:
+                return nbToFind >= area.getX1();
+            case INDEX_X2:
+                return nbToFind <= area.getX2();
+            case INDEX_Z1:
+                return nbToFind >= area.getZ1();
+            case INDEX_Z2:
+                return nbToFind <= area.getZ2();
+            default:
+                return false;
         }
     }
 

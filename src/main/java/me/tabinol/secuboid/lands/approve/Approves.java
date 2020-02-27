@@ -30,6 +30,7 @@ import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * Approves
@@ -62,7 +63,7 @@ public class Approves {
      */
     public void addApprove(final Approve approve) {
         landNameToApprove.put(approve.getName(), approve);
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, false, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, SaveOn.BOTH, Optional.of(approve));
     }
 
     /**
@@ -101,7 +102,7 @@ public class Approves {
     public void removeApprove(final Approve approve) {
         landNameToApprove.remove(approve.getName());
         removeLandIfNeeded(approve);
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, false, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, SaveOn.BOTH, Optional.of(approve));
     }
 
     /**
@@ -112,7 +113,7 @@ public class Approves {
             removeLandIfNeeded(approve);
         }
         landNameToApprove.clear();
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, false, Optional.empty());
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, SaveOn.BOTH, Optional.empty());
     }
 
     private final void removeLandIfNeeded(final Approve approve) {
@@ -138,27 +139,27 @@ public class Approves {
 
         if (action != null) {
             switch (action) {
-            case AREA_ADD:
-                land.approveArea(approve.getNewAreaIdOpt().get(), approve.getPrice());
-                break;
-            case AREA_REMOVE:
-                land.removeArea(approve.getRemovedAreaIdOpt().get());
-                break;
-            case AREA_MODIFY:
-                land.approveReplaceArea(approve.getRemovedAreaIdOpt().get(), approve.getNewAreaIdOpt().get(),
-                        approve.getPrice());
-                break;
-            case LAND_ADD:
-                land.setApproved(approve.getPrice());
-                break;
-            case LAND_REMOVE:
-                secuboid.getLands().removeLand(landNameLower);
-                break;
-            case LAND_PARENT:
-                land.setParent(approve.getParentOpt().get());
-                break;
-            default:
-                break;
+                case AREA_ADD:
+                    land.approveArea(approve.getNewAreaIdOpt().get(), approve.getPrice());
+                    break;
+                case AREA_REMOVE:
+                    land.removeArea(approve.getRemovedAreaIdOpt().get());
+                    break;
+                case AREA_MODIFY:
+                    land.approveReplaceArea(approve.getRemovedAreaIdOpt().get(), approve.getNewAreaIdOpt().get(),
+                            approve.getPrice());
+                    break;
+                case LAND_ADD:
+                    land.setApproved(approve.getPrice());
+                    break;
+                case LAND_REMOVE:
+                    secuboid.getLands().removeLand(landNameLower);
+                    break;
+                case LAND_PARENT:
+                    land.setParent(approve.getParentOpt().get());
+                    break;
+                default:
+                    break;
             }
         }
     }

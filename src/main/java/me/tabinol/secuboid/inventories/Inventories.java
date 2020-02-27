@@ -35,6 +35,7 @@ import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * Inventories store for default inventories. Player inventories are in
@@ -130,17 +131,17 @@ public final class Inventories {
 
         // Request save
         if (isDeath) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE, false,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else if (isDefaultInv) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE, false,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else if (isEnderChestOnly) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE, false,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else {
             // Normal save
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE, false,
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         }
     }
@@ -261,7 +262,7 @@ public final class Inventories {
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
         inventorySpecToDefaultInvEntry.remove(playerInvEntry.getInventorySpec());
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, false,
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, SaveOn.BOTH,
                 Optional.of(playerInvEntry));
     }
 

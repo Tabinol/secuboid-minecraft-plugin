@@ -33,12 +33,12 @@ import me.tabinol.secuboid.permissionsflags.PermissionType;
 /**
  * The Class Config.
  */
-public class Config {
+public final class Config {
 
     /**
      * The Constant NEWLINE.
      */
-    public static final String NEWLINE = System.getProperty("line.separator");
+    public static final String NEWLINE = System.lineSeparator();
 
     /**
      * The this plugin.
@@ -96,6 +96,48 @@ public class Config {
      */
     public String getStorage() {
         return storage;
+    }
+
+    private boolean autoConvert;
+
+    public boolean getAutoConvert() {
+        return autoConvert;
+    }
+
+    private String mySqlHostName;
+
+    public String mySqlHostName() {
+        return mySqlHostName;
+    }
+
+    private int mySqlPort;
+
+    public int mySqlPort() {
+        return mySqlPort;
+    }
+
+    private String mySqlDatabase;
+
+    public String mySqlDatabase() {
+        return mySqlDatabase;
+    }
+
+    private String mySqlUser;
+
+    public String mySqlUser() {
+        return mySqlUser;
+    }
+
+    private String mySqlPassword;
+
+    public String mySqlPassword() {
+        return mySqlPassword;
+    }
+
+    private String mySqlPrefix;
+
+    public String mySqlPrefix() {
+        return mySqlPrefix;
     }
 
     /**
@@ -516,6 +558,14 @@ public class Config {
         config.addDefault("General.worlds", new String[] { "world", "world_nether", "world_the_end" });
         lang = config.getString("General.Lang", "english");
         storage = config.getString("General.Storage", "flat");
+        autoConvert = config.getBoolean("General.AutoConvert", false);
+        mySqlHostName = config.getString("MySQL.HostName", "localhost");
+        mySqlPort = config.getInt("MySQL.Port", 3306);
+        mySqlDatabase = config.getString("MySQL.Database", "secuboid");
+        mySqlUser = config.getString("MySQL.User", "secuboid");
+        mySqlPassword = config.getString("MySQL.Password", "mypass");
+        mySqlPrefix = config.getString("MySQL.Prefix", "secuboid_");
+
         useEconomy = config.getBoolean("General.UseEconomy", false);
         multipleInventories = config.getBoolean("General.MultipleInventories", false);
 

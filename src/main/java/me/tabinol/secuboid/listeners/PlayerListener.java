@@ -38,6 +38,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.WaterMob;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -303,7 +304,16 @@ public final class PlayerListener extends CommonListener implements Listener {
                                     PermissionList.USE_REPEATER.getPermissionType()))
                     || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.NOTE_BLOCK
                             && !checkPermission(landPermissionsFlags, player,
-                                    PermissionList.USE_NOTEBLOCK.getPermissionType()))) {
+                                    PermissionList.USE_NOTEBLOCK.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.GRINDSTONE
+                            && !checkPermission(landPermissionsFlags, player,
+                                    PermissionList.USE_GRINDSTONE.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.STONECUTTER
+                            && !checkPermission(landPermissionsFlags, player,
+                                    PermissionList.USE_STONECUTTER.getPermissionType()))
+                    || (action == Action.RIGHT_CLICK_BLOCK && ml == Material.BELL
+                            && !checkPermission(landPermissionsFlags, player,
+                                    PermissionList.USE_BELL.getPermissionType()))) {
 
                 if (action != Action.PHYSICAL) {
                     messagePermission(player);
@@ -333,7 +343,11 @@ public final class PlayerListener extends CommonListener implements Listener {
                     || (ml.name().matches(".*SHULKER_BOX$") && !checkPermission(landPermissionsFlags, player,
                             PermissionList.OPEN_SHULKER_BOX.getPermissionType()))
                     || (ml == Material.LECTERN && !checkPermission(landPermissionsFlags, player,
-                            PermissionList.OPEN_LECTERN.getPermissionType())))
+                            PermissionList.OPEN_LECTERN.getPermissionType()))
+                    || (ml == Material.BARREL && !checkPermission(landPermissionsFlags, player,
+                            PermissionList.OPEN_BARREL.getPermissionType()))
+                    || ((ml == Material.BEEHIVE || ml == Material.BEE_NEST) && !checkPermission(landPermissionsFlags,
+                            player, PermissionList.OPEN_BEEHIVE.getPermissionType())))
                     // For dragon egg fix
                     || (ml == Material.DRAGON_EGG && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUILD_DESTROY.getPermissionType()))) {
@@ -640,6 +654,8 @@ public final class PlayerListener extends CommonListener implements Listener {
                                     PermissionList.VILLAGER_GOLEM_KILL.getPermissionType()))
                             || (et == EntityType.HORSE && !checkPermission(landPermissionsFlags, player,
                                     PermissionList.HORSE_KILL.getPermissionType()))
+                            || (entity instanceof WaterMob && !checkPermission(landPermissionsFlags, player,
+                                    PermissionList.WATERMOB_KILL.getPermissionType()))
                             || (entity instanceof Tameable && ((Tameable) entity).isTamed()
                                     && ((Tameable) entity).getOwner() != player
                                     && !checkPermission(landPermissionsFlags, player,

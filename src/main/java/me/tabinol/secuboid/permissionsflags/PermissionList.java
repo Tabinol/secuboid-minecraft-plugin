@@ -102,9 +102,17 @@ public enum PermissionList {
      */
     OPEN_SHULKER_BOX(true, "OPEN"),
     /**
-     * The open Lectern
+     * The open lectern
      */
     OPEN_LECTERN(true, "OPEN"),
+    /**
+     * The open barrel
+     */
+    OPEN_BARREL(true, "OPEN"),
+    /**
+     * The open beehive
+     */
+    OPEN_BEEHIVE(true, "OPEN"),
     /**
      * The use.
      */
@@ -166,6 +174,18 @@ public enum PermissionList {
      */
     USE_VEHICLE(true, "USE"),
     /**
+     * Use grind stone
+     */
+    USE_GRINDSTONE(true, "USE"),
+    /**
+     * Use stone cutter
+     */
+    USE_STONECUTTER(true, "USE"),
+    /**
+     * Use bell
+     */
+    USE_BELL(true, "USE"),
+    /**
      * For taming.
      */
     TAME(true),
@@ -197,6 +217,10 @@ public enum PermissionList {
      * The horse kill.
      */
     HORSE_KILL(true),
+    /**
+     * The fish water mob kill (fishes and dolphins).
+     */
+    WATERMOB_KILL(true),
     /**
      * The bucket water.
      */

@@ -266,13 +266,16 @@ public final class InventoryStorage {
                 player.setExp((float) ConfigPlayerItemFile.getDouble("Exp"));
 
                 if (!fromDeath) {
-                    final double healt = ConfigPlayerItemFile.getDouble("Health");
-                    if (healt > 0) {
-                        player.setHealth(healt);
+                    double health = ConfigPlayerItemFile.getDouble("Health");
+                    double maxPlayerHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+
+                    if (health > 0) {
+                        // #50 Fix health greater than 20
+                        player.setHealth(health <= maxPlayerHealth ? health : maxPlayerHealth);
                         player.setFoodLevel(ConfigPlayerItemFile.getInt("FoodLevel"));
                     } else {
                         // Fix Death infinite loop
-                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
+                        player.setHealth(maxPlayerHealth);
                         player.setFoodLevel(MAX_FOOD_LEVEL);
                     }
                 }

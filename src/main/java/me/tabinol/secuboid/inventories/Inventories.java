@@ -255,9 +255,7 @@ public final class Inventories {
 
     private void replaceAllPotionEffectsToPlayer(final PlayerInvEntry sourcePlayerInvEntry, final Player targetPlayer) {
         removePotionEffects(targetPlayer);
-        for (final PotionEffect potionEffect : sourcePlayerInvEntry.getPotionEffects()) {
-            targetPlayer.addPotionEffect(potionEffect, true);
-        }
+        targetPlayer.addPotionEffects(sourcePlayerInvEntry.getPotionEffects());
     }
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {

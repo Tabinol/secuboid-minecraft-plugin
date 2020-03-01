@@ -148,7 +148,7 @@ abstract class CommonListener {
         final Block checkBlock = block.getRelative(face);
         return checkBlock.getLocation().equals(ecoSignLoc)
                 && checkBlock.getType().name().endsWith(EcoSign.WALL_SIGN_SUFFIX)
-                && ((Directional) checkBlock.getState().getData()).getFacing() == face;
+                && ((Directional) checkBlock.getBlockData()).getFacing() == face;
     }
 
     final boolean isDoor(final Material material) {

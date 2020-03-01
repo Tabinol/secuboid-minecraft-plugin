@@ -98,12 +98,6 @@ public final class Config {
         return storage;
     }
 
-    private boolean autoConvert;
-
-    public boolean getAutoConvert() {
-        return autoConvert;
-    }
-
     private String mySqlHostName;
 
     public String mySqlHostName() {
@@ -558,13 +552,12 @@ public final class Config {
         config.addDefault("General.worlds", new String[] { "world", "world_nether", "world_the_end" });
         lang = config.getString("General.Lang", "english");
         storage = config.getString("General.Storage", "flat");
-        autoConvert = config.getBoolean("General.AutoConvert", false);
-        mySqlHostName = config.getString("MySQL.HostName", "localhost");
-        mySqlPort = config.getInt("MySQL.Port", 3306);
-        mySqlDatabase = config.getString("MySQL.Database", "secuboid");
-        mySqlUser = config.getString("MySQL.User", "secuboid");
-        mySqlPassword = config.getString("MySQL.Password", "mypass");
-        mySqlPrefix = config.getString("MySQL.Prefix", "secuboid_");
+        mySqlHostName = config.getString("General.MySQL.HostName", "localhost");
+        mySqlPort = config.getInt("General.MySQL.Port", 3306);
+        mySqlDatabase = config.getString("General.MySQL.Database", "secuboid");
+        mySqlUser = config.getString("General.MySQL.User", "secuboid");
+        mySqlPassword = config.getString("General.MySQL.Password", "mypass");
+        mySqlPrefix = config.getString("General.MySQL.Prefix", "secuboid_");
 
         useEconomy = config.getBoolean("General.UseEconomy", false);
         multipleInventories = config.getBoolean("General.MultipleInventories", false);

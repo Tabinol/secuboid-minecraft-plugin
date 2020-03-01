@@ -129,7 +129,8 @@ public class PlayerInvEntry implements Savable {
     }
 
     public PlayerInvEntry setHealth(final double health) {
-        this.health = health;
+        // #50 Fix health greater than 20
+        this.health = health <= MAX_HEALTH ? health : MAX_HEALTH;
         return this;
     }
 

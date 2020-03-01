@@ -229,8 +229,6 @@ public final class Land implements Savable, Approvable {
      */
     Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
             final PlayerContainer owner, final Type type, final String worldName) {
-
-        // TODO Add Skip flat save where it is needed
         this.secuboid = secuboid;
         this.uuid = uuid;
         this.isApproved = isApproved;

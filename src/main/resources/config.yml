@@ -4,10 +4,6 @@
 General:                             # ----General Config----
   Lang: english                      # english, french for now (or your own)
   Storage: flat                      # flat or mysql
-  AutoConvert: false                 # Change to true if you wand to convert
-                                     # from the previous storage type. The
-                                     # old datas will be renamed or flagged
-                                     # as converted.
   MySQL:
     HostName: localhost
     Port: 3306

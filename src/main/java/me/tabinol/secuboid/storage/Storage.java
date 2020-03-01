@@ -36,6 +36,7 @@ import me.tabinol.secuboid.storage.flat.InventoriesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
 import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
+import me.tabinol.secuboid.storage.mysql.StorageMySql;
 
 /**
  * The Interface Storage.
@@ -55,6 +56,9 @@ public interface Storage {
                 final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
                 final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
                 storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
+                break;
+            case "mysql":
+                storage = new StorageMySql();
         }
         return storage;
     }

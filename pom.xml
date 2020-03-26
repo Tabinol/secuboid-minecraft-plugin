@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.tabinol.secuboid</groupId>
     <artifactId>secuboid</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2-SNAPSHOT</version>
     <name>Secuboid</name>
     <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
 

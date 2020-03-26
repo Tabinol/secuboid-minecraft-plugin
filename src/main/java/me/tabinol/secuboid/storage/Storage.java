@@ -21,6 +21,7 @@ package me.tabinol.secuboid.storage;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -36,6 +37,7 @@ import me.tabinol.secuboid.storage.flat.InventoriesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
 import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
+import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 import me.tabinol.secuboid.storage.mysql.StorageMySql;
 
 /**
@@ -58,7 +60,16 @@ public interface Storage {
                 storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
                 break;
             case "mysql":
-                storage = new StorageMySql();
+                final Config config = secuboid.getConf();
+                final String hostName = config.mySqlHostName();
+                final int port = config.mySqlPort();
+                final String database = config.mySqlDatabase();
+                final String user = config.mySqlUser();
+                final String password = config.mySqlPassword();
+                final String prefix = config.mySqlPrefix();
+                final DatabaseConnection dbConn = new DatabaseConnection(hostName, port, database, user, password,
+                        prefix);
+                storage = new StorageMySql(secuboid, dbConn);
         }
         return storage;
     }

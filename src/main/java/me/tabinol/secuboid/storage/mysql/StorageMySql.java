@@ -18,6 +18,13 @@
  */
 package me.tabinol.secuboid.storage.mysql;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -29,16 +36,49 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
+import me.tabinol.secuboid.storage.mysql.dao.SecuboidDao;
 
 /**
  * StorageMySql
  */
 public class StorageMySql implements Storage {
 
+    private final Secuboid secuboid;
+    private final Logger log;
+    private final DatabaseConnection dbConn;
+
+    public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
+        this.secuboid = secuboid;
+        this.dbConn = dbConn;
+        log = secuboid.getLogger();
+    }
+
     @Override
     public void loadAll() {
-        // TODO Auto-generated method stub
+        try {
+            initDatabase();
+        } catch (ClassNotFoundException | SQLException e) {
+            log.log(Level.SEVERE, "Unable to create or access the database", e);
+        }
+        loadLands();
+        loadApproves();
+        loadPlayersCache();
+        loadInventories();
+    }
 
+    private void initDatabase() throws ClassNotFoundException, SQLException {
+        dbConn.loadDriver();
+        try (final Connection conn = dbConn.openConnection()) {
+            // Verify if the database is empty
+            final SecuboidDao secuboidDao = new SecuboidDao(dbConn);
+            secuboidDao.createVarables(conn);
+            final Optional<Integer> versionOpt = secuboidDao.getVersionOpt(conn);
+            if (!versionOpt.isPresent() || versionOpt.get() < 1) {
+                // Create database
+                secuboidDao.initDatabase(conn);
+                secuboidDao.setVersion(conn);
+            }
+        }
     }
 
     @Override

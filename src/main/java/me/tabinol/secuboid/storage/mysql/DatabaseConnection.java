@@ -38,7 +38,7 @@ public final class DatabaseConnection {
     private final String password;
     private final String prefix;
 
-    DatabaseConnection(final String hostName, final int port, final String database, final String user,
+    public DatabaseConnection(final String hostName, final int port, final String database, final String user,
             final String password, final String prefix) {
         this.hostName = hostName;
         this.port = port;

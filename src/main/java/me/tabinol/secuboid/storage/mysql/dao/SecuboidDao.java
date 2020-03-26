@@ -29,7 +29,7 @@ import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 /**
  * Creates database.
  */
-public final class SecuboidDb {
+public final class SecuboidDao {
 
     private final static String VARIABLE_VERSION = "VERSION";
     private final static String CURRENT_VERSION = "1";
@@ -56,7 +56,8 @@ public final class SecuboidDb {
             "  name VARCHAR(45) NULL,{{LS}}" +
             "  PRIMARY KEY (uuid),{{LS}}" +
             "  UNIQUE INDEX uuid_UNIQUE (uuid ASC) VISIBLE){{LS}}" +
-            "ENGINE = InnoDB{{LS}}" +
+            "ENGINE = InnoDB{{LS}}",
+
             "CREATE TABLE IF NOT EXISTS {{TP}}player_containers ({{LS}}" +
             "  id INT NOT NULL AUTO_INCREMENT,{{LS}}" +
             "  player_container_type_id INT NOT NULL,{{LS}}" +
@@ -484,16 +485,16 @@ public final class SecuboidDb {
 
     private final DatabaseConnection dbConn;
 
-    public SecuboidDb(final DatabaseConnection dbConn) {
+    public SecuboidDao(final DatabaseConnection dbConn) {
         this.dbConn = dbConn;
     }
 
     public void createVarables(final Connection conn) throws SQLException {
-        final String sql = "CREATE TABLE IF NOT EXISTS {{TP}}variables({{LS}}" //
-                + "name VARCHAR(45) NOT NULL,{{LS}}" //
-                + "value VARCHAR(45) NOT NULL,{{LS}}" //
-                + "PRIMARY KEY (name),{{LS}}" //
-                + "UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE){{LS}}" //
+        final String sql = "CREATE TABLE IF NOT EXISTS {{TP}}variables ({{LS}}" //
+                + "  name VARCHAR(45) NOT NULL,{{LS}}" //
+                + "  value VARCHAR(45) NOT NULL,{{LS}}" //
+                + "  PRIMARY KEY (name),{{LS}}" //
+                + "  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE){{LS}}" //
                 + "ENGINE = InnoDB";
 
         try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(sql))) {
@@ -512,6 +513,7 @@ public final class SecuboidDb {
                 try {
                     return Optional.of(Integer.parseInt(valueStr));
                 } catch (final NumberFormatException e) {
+                    // Non number should be used has empty
                     return Optional.empty();
                 }
             }

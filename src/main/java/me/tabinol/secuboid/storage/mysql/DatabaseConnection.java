@@ -29,7 +29,7 @@ public final class DatabaseConnection {
 
     private static final String PATERN_LS_SEARCH = "{{LS}}";
     private static final String PATERN_LS_REPLACE = System.lineSeparator();
-    private static final String PATERN_TP_SEARCH = "{{LS}}";
+    private static final String PATERN_TP_SEARCH = "{{TP}}";
 
     private final String hostName;
     private final int port;

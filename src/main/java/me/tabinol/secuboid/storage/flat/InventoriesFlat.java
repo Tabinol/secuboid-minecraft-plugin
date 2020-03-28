@@ -39,6 +39,7 @@ import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
+import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
  * InventoriesFlat
@@ -55,7 +56,7 @@ public class InventoriesFlat {
 
     public InventoriesFlat(final Secuboid secuboid) {
         this.secuboid = secuboid;
-        storageVersion = secuboid.getMavenAppProperties().getPropertyInt("inventoryStorageVersion");
+        storageVersion = MavenAppProperties.getPropertyInt("inventoryStorageVersion", 1);
     }
 
     public void loadInventories() {

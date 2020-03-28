@@ -33,6 +33,7 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
+import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
  * PlayersCacheFlat
@@ -53,7 +54,7 @@ public class PlayersCacheFlat {
 
     public PlayersCacheFlat(final Secuboid secuboid) {
         this.secuboid = secuboid;
-        playerCacheVersion = secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
+        playerCacheVersion = MavenAppProperties.getPropertyInt("playersCacheVersion", 1);
         final String fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
         file = new File(fileName);
     }

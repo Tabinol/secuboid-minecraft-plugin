@@ -21,6 +21,8 @@
         <playersCacheVersion>1</playersCacheVersion>
         <!-- *** Change Inventory Storage version here *** -->
         <InventoryStorageVersion>1</InventoryStorageVersion>
+        <!-- *** Change MySQL Storage version here *** -->
+        <mySqlStorageVersion>1</mySqlStorageVersion>
     </properties>
 
     <repositories>

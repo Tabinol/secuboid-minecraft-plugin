@@ -44,6 +44,7 @@ import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.utilities.MavenAppProperties;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -70,7 +71,7 @@ public class LandsFlat {
 
     public LandsFlat(final Secuboid secuboid) {
         this.secuboid = secuboid;
-        landVersion = secuboid.getMavenAppProperties().getPropertyInt("landVersion");
+        landVersion = MavenAppProperties.getPropertyInt("landVersion", 1);
         createDirFiles();
     }
 

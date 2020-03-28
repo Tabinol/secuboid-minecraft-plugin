@@ -39,14 +39,7 @@ public final class MavenAppProperties {
     /**
      * The properties.
      */
-    private final Properties properties;
-
-    /**
-     * Instantiates a new maven app properties.
-     */
-    public MavenAppProperties() {
-        this.properties = new Properties();
-    }
+    private static Properties properties = new Properties();
 
     /**
      * Load properties.
@@ -69,20 +62,30 @@ public final class MavenAppProperties {
     /**
      * Gets the property string.
      *
-     * @param path the path
+     * @param path         the path
+     * @param defaultValue the default value
      * @return the property string
      */
-    public String getPropertyString(final String path) {
-        return properties.getProperty(path);
+    public static String getPropertyString(final String path, final String defaultValue) {
+        return properties.getProperty(path, defaultValue);
     }
 
     /**
      * Gets the property int.
      *
-     * @param path the path
+     * @param path            the path
+     * @param defaultValueInt the default value integer
      * @return the property int
      */
-    public int getPropertyInt(final String path) {
-        return Integer.parseInt(properties.getProperty(path));
+    public static int getPropertyInt(final String path, final int defaultValueInt) {
+        final String value = properties.getProperty(path);
+        if (value == null) {
+            return defaultValueInt;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException e) {
+            return defaultValueInt;
+        }
     }
 }

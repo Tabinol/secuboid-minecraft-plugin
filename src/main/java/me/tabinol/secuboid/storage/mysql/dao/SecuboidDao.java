@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
+import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
  * Creates database.
@@ -32,7 +33,6 @@ import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 public final class SecuboidDao {
 
     private final static String VARIABLE_VERSION = "VERSION";
-    private final static String CURRENT_VERSION = "1";
 
     // @formatter:off
     private static final String[] CREATE_TABLE_STMS_V1 = new String[] {
@@ -172,13 +172,13 @@ public final class SecuboidDao {
         "  `chunk_z` INT NOT NULL,{{LS}}" +
         "  `matrix` BINARY(16) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`land_uuid`, `area_id`, `chunk_x`, `chunk_z`),{{LS}}" +
-        "  INDEX `fk_areas_roads_natrixes_land_uuid_idx` (`land_uuid`),{{LS}}" +
+        "  INDEX `fk_areas_roads_matrices_land_uuid_idx` (`land_uuid`),{{LS}}" +
         "  CONSTRAINT `fk_areas_roads_matrices_area_id`{{LS}}" +
-        "    FOREIGN KEY (`area_id`){{LS}}" +
-        "    REFERENCES `{{TP}}lands_areas` (`area_id`){{LS}}" +
+        "    FOREIGN KEY (`land_uuid`, `area_id`){{LS}}" +
+        "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
-        "  CONSTRAINT `fk_areas_roads_natrixes_land_uuid`{{LS}}" +
+        "  CONSTRAINT `fk_areas_roads_matrices_land_uuid`{{LS}}" +
         "    FOREIGN KEY (`land_uuid`){{LS}}" +
         "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
@@ -336,13 +336,13 @@ public final class SecuboidDao {
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
         "  CONSTRAINT `fk_approves_removed_area_id`{{LS}}" +
-        "    FOREIGN KEY (`id` , `land_uuid`){{LS}}" +
-        "    REFERENCES `{{TP}}lands_areas` (`area_id` , `land_uuid`){{LS}}" +
+        "    FOREIGN KEY (`land_uuid`, `removed_area_id`){{LS}}" +
+        "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
         "  CONSTRAINT `fk_approves_new_area_id`{{LS}}" +
-        "    FOREIGN KEY (`new_area_id`){{LS}}" +
-        "    REFERENCES `{{TP}}lands_areas` (`area_id`){{LS}}" +
+        "    FOREIGN KEY (`land_uuid`, `new_area_id`){{LS}}" +
+        "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
         "  CONSTRAINT `fk_approves_owner_id`{{LS}}" +
@@ -382,13 +382,13 @@ public final class SecuboidDao {
         "  `inventories_entries_id` INT NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`inventory_id`),{{LS}}" +
         "  INDEX `fk_inventories_defaults_inventories_id_idx` (`inventory_id`),{{LS}}" +
-        "  INDEX `fk_inventories_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
+        "  INDEX `fk_inventories_defaults_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
         "  CONSTRAINT `fk_inventories_defaults_inventories_id`{{LS}}" +
         "    FOREIGN KEY (`inventory_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
-        "  CONSTRAINT `fk_inventories_entries_id`{{LS}}" +
+        "  CONSTRAINT `fk_inventories_defaults_entries_id`{{LS}}" +
         "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
@@ -412,7 +412,7 @@ public final class SecuboidDao {
         "  INDEX `fk_inventories_saves_game_mode_id_idx` (`game_mode_id`),{{LS}}" +
         "  INDEX `fk_inventories_saves_inventory_id_idx` (`inventory_id`),{{LS}}" +
         "  INDEX `fk_inventories_saves_player_uuid_idx` (`player_uuid`),{{LS}}" +
-        "  INDEX `fk_inventories_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
+        "  INDEX `fk_inventories_saves_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
         "  CONSTRAINT `fk_inventories_saves_inventory_id`{{LS}}" +
         "    FOREIGN KEY (`inventory_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
@@ -428,7 +428,7 @@ public final class SecuboidDao {
         "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
-        "  CONSTRAINT `fk_inventories_entries_id`{{LS}}" +
+        "  CONSTRAINT `fk_inventories_saves_entries_id`{{LS}}" +
         "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
@@ -445,7 +445,7 @@ public final class SecuboidDao {
         "  INDEX `fk_inventories_deaths_game_mode_id_idx` (`game_mode_id`),{{LS}}" +
         "  INDEX `fk_inventories_deaths_inventory_id_idx` (`inventory_id`),{{LS}}" +
         "  INDEX `fk_inventories_deaths_player_uuid_idx` (`player_uuid`),{{LS}}" +
-        "  INDEX `fk_inventories_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
+        "  INDEX `fk_inventories_deaths_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
         "  CONSTRAINT `fk_inventories_deaths_inventory_id`{{LS}}" +
         "    FOREIGN KEY (`inventory_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
@@ -461,7 +461,7 @@ public final class SecuboidDao {
         "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
-        "  CONSTRAINT `fk_inventories_entries_id`{{LS}}" +
+        "  CONSTRAINT `fk_inventories_deaths_entries_id`{{LS}}" +
         "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
@@ -475,7 +475,7 @@ public final class SecuboidDao {
         "  `amplifier` INT NOT NULL,{{LS}}" +
         "  `ambient` TINYINT(1) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`inventories_entries_id`, `name`),{{LS}}" +
-        "  CONSTRAINT `fk_inventories_entries_id`{{LS}}" +
+        "  CONSTRAINT `fk_inventories_potion_effects_entries_id`{{LS}}" +
         "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
         "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
@@ -484,9 +484,11 @@ public final class SecuboidDao {
 // @formatter:on
 
     private final DatabaseConnection dbConn;
+    private final int currentVersion;
 
     public SecuboidDao(final DatabaseConnection dbConn) {
         this.dbConn = dbConn;
+        currentVersion = MavenAppProperties.getPropertyInt("mySqlStorageVersion", 1);
     }
 
     public void createVarables(final Connection conn) throws SQLException {
@@ -531,8 +533,8 @@ public final class SecuboidDao {
 
     public void setVersion(final Connection conn) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}variables` (`name`, value) " //
-                + "VALUES('" + VARIABLE_VERSION + "', '" + CURRENT_VERSION + "') " //
-                + "ON DUPLICATE KEY UPDATE `value` = '" + CURRENT_VERSION + "'";
+                + "VALUES('" + VARIABLE_VERSION + "', '" + currentVersion + "') " //
+                + "ON DUPLICATE KEY UPDATE `value` = '" + currentVersion + "'";
 
         try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(sql))) {
             stmt.executeUpdate();

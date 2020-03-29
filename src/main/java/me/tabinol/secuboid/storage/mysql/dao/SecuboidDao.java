@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.Set;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
@@ -499,7 +500,7 @@ public final class SecuboidDao {
                 + "  UNIQUE KEY `name` (`name`)){{LS}}" //
                 + "ENGINE = InnoDB";
 
-        try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(sql))) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.executeUpdate();
         }
     }
@@ -508,8 +509,8 @@ public final class SecuboidDao {
         final String sql = "SELECT `value` FROM `{{TP}}variables` " //
                 + "  WHERE `name` = '" + VARIABLE_VERSION + "'";
 
-        try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(sql))) {
-            ResultSet rs = stmt.executeQuery();
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            final ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 final String valueStr = rs.getString("value");
                 try {
@@ -524,20 +525,29 @@ public final class SecuboidDao {
     }
 
     public void initDatabase(final Connection conn) throws SQLException {
-        for (final String stmtStr : CREATE_TABLE_STMS_V1) {
-            try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(stmtStr))) {
+        for (final String sql : CREATE_TABLE_STMS_V1) {
+            try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
                 stmt.executeUpdate();
             }
         }
     }
 
     public void setVersion(final Connection conn) throws SQLException {
-        final String sql = "INSERT INTO `{{TP}}variables` (`name`, value) " //
+        final String sql = "INSERT INTO `{{TP}}variables` (`name`, `value`) " //
                 + "VALUES('" + VARIABLE_VERSION + "', '" + currentVersion + "') " //
                 + "ON DUPLICATE KEY UPDATE `value` = '" + currentVersion + "'";
 
-        try (final PreparedStatement stmt = conn.prepareStatement(dbConn.convertStmtStrTags(sql))) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.executeUpdate();
         }
+    }
+
+    public void setApproveActions(final Connection conn, final Set<String> names) throws SQLException {
+        final String sql = "INSERT IGNORE INTO `{{TP}}approves_actions` (`name`) " //
+                + "VALUES(?)";
+
+        dbConn.prepareStatementAndExecuteBatch(conn, sql, names, (s, o) -> {
+            s.setString(1, o);
+        });
     }
 }

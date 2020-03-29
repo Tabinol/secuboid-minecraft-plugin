@@ -20,7 +20,9 @@ package me.tabinol.secuboid.storage.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * DatabaseConnection
@@ -30,6 +32,8 @@ public final class DatabaseConnection {
     private static final String PATERN_LS_SEARCH = "{{LS}}";
     private static final String PATERN_LS_REPLACE = System.lineSeparator();
     private static final String PATERN_TP_SEARCH = "{{TP}}";
+
+    private static final int MAX_BATCH_SIZE = 1_000;
 
     private final String hostName;
     private final int port;
@@ -61,5 +65,31 @@ public final class DatabaseConnection {
         return stmtStr //
                 .replace(PATERN_LS_SEARCH, PATERN_LS_REPLACE) //
                 .replace(PATERN_TP_SEARCH, prefix);
+    }
+
+    public PreparedStatement preparedStatementWithTags(final Connection conn, final String sqlWithTags)
+            throws SQLException {
+        return conn.prepareStatement(convertStmtStrTags(sqlWithTags));
+    }
+
+    public <I> void prepareStatementAndExecuteBatch(final Connection conn, final String sqlWithTags, final Collection<I> items,
+            final SqlBiConsumer<PreparedStatement, I> consumer) throws SQLException {
+        try (final PreparedStatement stmt = preparedStatementWithTags(conn, sqlWithTags)) {
+            int it = 0;
+            for (final I item : items) {
+                // Exec lamda expression
+                consumer.accept(stmt, item);
+                stmt.addBatch();
+                it++;
+                if (it % MAX_BATCH_SIZE == 0 || it == items.size()) {
+                    stmt.executeBatch();
+                }
+            }
+        }
+    }
+
+    @FunctionalInterface
+    public static interface SqlBiConsumer<T, U> {
+        void accept(T t, U u) throws SQLException;
     }
 }

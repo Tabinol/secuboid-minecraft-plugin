@@ -24,6 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import me.tabinol.secuboid.utilities.DbUtils.SqlBiConsumer;
+
 /**
  * DatabaseConnection
  */
@@ -72,8 +74,8 @@ public final class DatabaseConnection {
         return conn.prepareStatement(convertStmtStrTags(sqlWithTags));
     }
 
-    public <I> void prepareStatementAndExecuteBatch(final Connection conn, final String sqlWithTags, final Collection<I> items,
-            final SqlBiConsumer<PreparedStatement, I> consumer) throws SQLException {
+    public <I> void prepareStatementAndExecuteBatch(final Connection conn, final String sqlWithTags,
+            final Collection<I> items, final SqlBiConsumer<PreparedStatement, I> consumer) throws SQLException {
         try (final PreparedStatement stmt = preparedStatementWithTags(conn, sqlWithTags)) {
             int it = 0;
             for (final I item : items) {
@@ -86,10 +88,5 @@ public final class DatabaseConnection {
                 }
             }
         }
-    }
-
-    @FunctionalInterface
-    public static interface SqlBiConsumer<T, U> {
-        void accept(T t, U u) throws SQLException;
     }
 }

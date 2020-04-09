@@ -542,6 +542,7 @@ public final class SecuboidDao {
         }
     }
 
+    // TODO remove?
     public void setApproveActions(final Connection conn, final Set<String> names) throws SQLException {
         final String sql = "INSERT IGNORE INTO `{{TP}}approves_actions` (`name`) " //
                 + "VALUES(?)";

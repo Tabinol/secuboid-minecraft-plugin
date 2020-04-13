@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,12 +22,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 
@@ -660,6 +661,30 @@ public final class Lands {
         }
 
         return actualArea;
+    }
+
+    /**
+     * Set a parent to a map of lands.
+     * 
+     * @param orphanToParentUUID the orphan land to parent UUID
+     */
+    public void setParents(final Map<Land, UUID> orphanToParentUUID) {
+        for (final Map.Entry<Land, UUID> entry : orphanToParentUUID.entrySet()) {
+            final Land land = entry.getKey();
+            final Land parent = getLand(entry.getValue());
+            if (parent != null) {
+                if (parent.isDescendants(land)) {
+                    secuboid.getLogger().log(Level.SEVERE,
+                            String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUUID=%s]",
+                                    land.getName(), land.getUUID(), entry.getValue()));
+                    continue;
+                }
+                land.setParent(parent);
+            } else {
+                secuboid.getLogger().severe("Error: The parent is not found! [name=" + land.getName() + ", uuid="
+                        + land.getUUID() + ", parentUUID=" + entry.getValue() + "]");
+            }
+        }
     }
 
     /**

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -48,7 +47,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      */
     private final Storage storage;
 
-    private final Map<UUID, Thread> playerUuidToPreLoginThread;
+    private final Map<UUID, Thread> playerUUIDToPreLoginThread;
 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_REMOVE, INVENTORY_DEFAULT_SAVE,
@@ -87,7 +86,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public StorageThread(final Secuboid secuboid, final Storage storage) {
         super(secuboid, "Secuboid Storage");
         this.storage = storage;
-        playerUuidToPreLoginThread = new ConcurrentHashMap<>();
+        playerUUIDToPreLoginThread = new ConcurrentHashMap<>();
     }
 
     /**
@@ -234,14 +233,14 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     }
 
     public void preloginAddThread(final UUID uuid, final Thread thread) {
-        playerUuidToPreLoginThread.put(uuid, thread);
+        playerUUIDToPreLoginThread.put(uuid, thread);
     }
 
     public Thread preloginRemoveThread(final UUID uuid) {
-        return playerUuidToPreLoginThread.remove(uuid);
+        return playerUUIDToPreLoginThread.remove(uuid);
     }
 
     public Thread preloginGetThread(final UUID uuid) {
-        return playerUuidToPreLoginThread.get(uuid);
+        return playerUUIDToPreLoginThread.get(uuid);
     }
 }

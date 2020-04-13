@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -33,7 +32,7 @@ public class PlayerInventoryCache implements Savable {
 
     public static final int DEATH_SAVE_MAX_NBR = 9;
 
-    private final UUID playerUuid;
+    private final UUID playerUUID;
     private final String playerName;
 
     /**
@@ -56,8 +55,8 @@ public class PlayerInventoryCache implements Savable {
      */
     private PlayerInvEntry curInvEntry;
 
-    public PlayerInventoryCache(final UUID playerUuid, final String playerName) {
-        this.playerUuid = playerUuid;
+    public PlayerInventoryCache(final UUID playerUUID, final String playerName) {
+        this.playerUUID = playerUUID;
         this.playerName = playerName;
         inventorySpecToSurvivalInvEntry = new HashMap<>();
         inventorySpecToCreativeInvEntry = new HashMap<>();
@@ -105,6 +104,6 @@ public class PlayerInventoryCache implements Savable {
 
     @Override
     public UUID getUUID() {
-        return playerUuid;
+        return playerUUID;
     }
 }

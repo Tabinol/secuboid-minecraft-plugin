@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -154,7 +153,7 @@ public final class VisualSelectionRoad implements VisualSelection {
     private boolean makeBorders(final boolean isZ, final int posX, final int posZ, final boolean isLastActive,
             final LandPermissionsFlags outsidePermsFlags, final boolean canCreate) {
 
-        final Location newloc = new Location(area.getWord(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d,
+        final Location newloc = new Location(area.getWorld(), posX, PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d,
                 posZ);
         final boolean isLocationInside = area.isLocationInside(newloc);
         if (isLastActive) {
@@ -278,7 +277,7 @@ public final class VisualSelectionRoad implements VisualSelection {
 
     private boolean checkForPoint(final boolean isAdd, final int x, final int z) {
         final EnumSet<Material> nonSelectedMaterials = secuboid.getConf().getDefaultNonSelectedMaterials();
-        final Location newloc = new Location(area.getWord(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1d, z);
+        final Location newloc = new Location(area.getWorld(), x, PlayersUtil.getYNearPlayer(player, x, z) - 1d, z);
 
         if (isAdd) {
             // Add point

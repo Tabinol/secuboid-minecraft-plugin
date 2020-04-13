@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -42,10 +41,10 @@ public final class DbUtils {
 
     public static void setUUID(final PreparedStatement stmt, final int parameterIndex, final UUID uuid)
             throws SQLException {
-        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        stmt.setBytes(parameterIndex, bb.array());
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
+        byteBuffer.putLong(uuid.getMostSignificantBits());
+        byteBuffer.putLong(uuid.getLeastSignificantBits());
+        stmt.setBytes(parameterIndex, byteBuffer.array());
     }
 
     public static UUID getUUID(final ResultSet rs, final String columnLabel) throws SQLException {
@@ -54,6 +53,25 @@ public final class DbUtils {
         final Long high = byteBuffer.getLong();
         final Long low = byteBuffer.getLong();
         return new UUID(high, low);
+    }
+
+    public static void setMatrixs16(final PreparedStatement stmt, final int parameterIndex, final short[] matrix)
+            throws SQLException {
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
+        for (final short elem : matrix) {
+            byteBuffer.putShort(elem);
+        }
+        stmt.setBytes(parameterIndex, byteBuffer.array());
+    }
+
+    public static short[] getMatrix16(final ResultSet rs, final String columnLabel) throws SQLException {
+        final byte[] bytes = rs.getBytes(columnLabel);
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        final short[] matrix = new short[16];
+        for (int i = 0; i < 16; i++) {
+            matrix[i] = byteBuffer.getShort();
+        }
+        return matrix;
     }
 
     public static <R> Optional<R> getOpt(final ResultSet rs, final String columnLabel,

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -127,11 +126,11 @@ final class AreaCommon {
     }
 
     /**
-     * Gets the word.
+     * Gets the world.
      *
-     * @return the word
+     * @return the world
      */
-    World getWord() {
+    World getWorld() {
         return Bukkit.getWorld(worldName);
     }
 

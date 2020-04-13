@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -42,7 +41,7 @@ public class PlayerInvEntry implements Savable {
     private final static int ARMOR_SIZE = 4;
     private final static int ENDER_CHEST_SIZE = 27;
 
-    private final Optional<UUID> playerUuidOpt;
+    private final Optional<UUID> playerUUIDOpt;
     private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
     private final ItemStack[] slotItems;
@@ -55,9 +54,9 @@ public class PlayerInvEntry implements Savable {
     private ItemStack itemOffhand;
     private final List<PotionEffect> potionEffects;
 
-    public PlayerInvEntry(final Optional<UUID> playerUuidOpt, final InventorySpec inventorySpec,
+    public PlayerInvEntry(final Optional<UUID> playerUUIDOpt, final InventorySpec inventorySpec,
             final boolean isCreativeInv) {
-        this.playerUuidOpt = playerUuidOpt;
+        this.playerUUIDOpt = playerUUIDOpt;
         this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
         slotItems = new ItemStack[INVENTORY_LIST_SIZE];
@@ -82,8 +81,8 @@ public class PlayerInvEntry implements Savable {
         Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
     }
 
-    public Optional<UUID> getPlayerUuidOpt() {
-        return playerUuidOpt;
+    public Optional<UUID> getPlayerUUIDOpt() {
+        return playerUUIDOpt;
     }
 
     public InventorySpec getInventorySpec() {
@@ -167,12 +166,12 @@ public class PlayerInvEntry implements Savable {
 
     @Override
     public String getName() {
-        return String.format("[invName=%s, isCreativeInv=%s, playerUuid=%s]", inventorySpec.getInventoryName(),
-                isCreativeInv, playerUuidOpt.orElse(null));
+        return String.format("[invName=%s, isCreativeInv=%s, playerUUID=%s]", inventorySpec.getInventoryName(),
+                isCreativeInv, playerUUIDOpt.orElse(null));
     }
 
     @Override
     public UUID getUUID() {
-        return playerUuidOpt.orElse(null);
+        return playerUUIDOpt.orElse(null);
     }
 }

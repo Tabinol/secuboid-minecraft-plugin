@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -31,7 +30,7 @@ public final class LandPojo {
     private final boolean approved;
     private final Optional<Integer> typeIdOpt;
     private final int ownerId;
-    private final Optional<UUID> parentUuidOpt;
+    private final Optional<UUID> parentUUIDOpt;
     private final int priority;
     private final double money;
     private final boolean forSale;
@@ -50,7 +49,7 @@ public final class LandPojo {
     private final Optional<Long> lastPaymentMillisOpt;
 
     public LandPojo(final UUID uuid, final String name, final boolean approved, final Optional<Integer> typeIdOpt,
-            final int ownerId, final Optional<UUID> parentUuidOpt, final int priority, final double money,
+            final int ownerId, final Optional<UUID> parentUUIDOpt, final int priority, final double money,
             final boolean forSale, final Optional<Integer> forSaleSignXOpt, final Optional<Integer> forSaleSignYOpt,
             final Optional<Integer> forSaleSignZOpt, final Optional<Double> salePriceOpt, final boolean forRent,
             final Optional<Integer> forRentSignXOpt, final Optional<Integer> forRentSignYOpt,
@@ -62,7 +61,7 @@ public final class LandPojo {
         this.approved = approved;
         this.typeIdOpt = typeIdOpt;
         this.ownerId = ownerId;
-        this.parentUuidOpt = parentUuidOpt;
+        this.parentUUIDOpt = parentUUIDOpt;
         this.priority = priority;
         this.money = money;
         this.forSale = forSale;
@@ -81,7 +80,7 @@ public final class LandPojo {
         this.lastPaymentMillisOpt = lastPaymentMillisOpt;
     }
 
-    public UUID getUuid() {
+    public UUID getUUID() {
         return this.uuid;
     }
 
@@ -105,8 +104,8 @@ public final class LandPojo {
         return this.ownerId;
     }
 
-    public Optional<UUID> getParentUuidOpt() {
-        return this.parentUuidOpt;
+    public Optional<UUID> getParentUUIDOpt() {
+        return this.parentUUIDOpt;
     }
 
     public int getPriority() {

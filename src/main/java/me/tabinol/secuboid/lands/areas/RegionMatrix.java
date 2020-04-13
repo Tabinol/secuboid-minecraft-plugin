@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,7 +17,8 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a gride of point for roads.
@@ -40,7 +40,7 @@ public final class RegionMatrix {
     /**
      * Creates a new region. Only for copyOf() and from save files.
      */
-    RegionMatrix(Map<Integer, Map<Integer, ChunkMatrix>> points) {
+    public RegionMatrix(final Map<Integer, Map<Integer, ChunkMatrix>> points) {
         this.points = points;
     }
 
@@ -54,7 +54,7 @@ public final class RegionMatrix {
      * @param x the x position
      * @param z the z position
      */
-    public void addPoint(int x, int z) {
+    public void addPoint(final int x, final int z) {
         addRemovePoint(true, x, z);
     }
 
@@ -64,7 +64,7 @@ public final class RegionMatrix {
      * @param x the x position
      * @param z the z position
      */
-    void removePoint(int x, int z) {
+    void removePoint(final int x, final int z) {
         addRemovePoint(false, x, z);
     }
 
@@ -75,7 +75,7 @@ public final class RegionMatrix {
      * @param x     the x
      * @param z     the z
      */
-    private void addRemovePoint(boolean isAdd, int x, int z) {
+    private void addRemovePoint(final boolean isAdd, final int x, final int z) {
         // From region X
         final int chunkX = (int) Math.floor(x / 16d);
         Map<Integer, ChunkMatrix> pRegionZ = points.get(chunkX);
@@ -115,7 +115,7 @@ public final class RegionMatrix {
      * @param z the z position
      * @return boolean point value
      */
-    boolean getPoint(int x, int z) {
+    boolean getPoint(final int x, final int z) {
 
         // From region X
         final int chunkX = (int) Math.floor(x / 16d);
@@ -143,7 +143,7 @@ public final class RegionMatrix {
      * @param value the value (x or z)
      * @return the position (0-16)
      */
-    private byte getChunkPos(int value) {
+    private byte getChunkPos(final int value) {
         final int modul = value % 16;
         if (modul < 0) {
             return (byte) (16 + modul);
@@ -177,7 +177,7 @@ public final class RegionMatrix {
     }
 
     public String toFileFormat() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> entryX : points.entrySet()) {
             for (final Map.Entry<Integer, ChunkMatrix> entryZ : entryX.getValue().entrySet()) {
                 sb.append(':').append(entryX.getKey()).append(':').append(entryZ.getKey()).append(':')

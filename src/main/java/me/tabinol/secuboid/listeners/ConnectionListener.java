@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -56,7 +55,7 @@ public class ConnectionListener extends CommonListener implements Listener {
      */
     private final PlayerConfig playerConf;
 
-    private final Map<UUID, PlayerInventoryCache> playerUuidToInventoryCachePreLoad;
+    private final Map<UUID, PlayerInventoryCache> playerUUIDToInventoryCachePreLoad;
 
     /**
      * Instantiates a player connection listener.
@@ -66,7 +65,7 @@ public class ConnectionListener extends CommonListener implements Listener {
     public ConnectionListener(final Secuboid secuboid) {
         super(secuboid);
         playerConf = secuboid.getPlayerConf();
-        playerUuidToInventoryCachePreLoad = new ConcurrentHashMap<>();
+        playerUUIDToInventoryCachePreLoad = new ConcurrentHashMap<>();
     }
 
     /**
@@ -89,15 +88,15 @@ public class ConnectionListener extends CommonListener implements Listener {
     }
 
     private void inventoryPreLogin(final AsyncPlayerPreLoginEvent event) {
-        final UUID playerUuid = event.getUniqueId();
+        final UUID playerUUID = event.getUniqueId();
         final String playerName = event.getName();
 
         // Put the new login thread in the map for wake up after inventories load
         final StorageThread storageThread = secuboid.getStorageThread();
-        storageThread.preloginAddThread(playerUuid, Thread.currentThread());
+        storageThread.preloginAddThread(playerUUID, Thread.currentThread());
 
         // Load inventories from save thread
-        final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
+        final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
         storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, SaveOn.BOTH,
                 Optional.of(playerInventoryCache));
 
@@ -106,19 +105,19 @@ public class ConnectionListener extends CommonListener implements Listener {
             wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
         } catch (final InterruptedException e) {
             secuboid.getLogger().log(Level.WARNING,
-                    String.format("Interruption on player connexion [uuid=%s, name=%s]", playerUuid, playerName), e);
+                    String.format("Interruption on player connexion [uuid=%s, name=%s]", playerUUID, playerName), e);
         }
 
         // Check if the inventory load is completed
-        if (storageThread.preloginRemoveThread(playerUuid) != null) {
+        if (storageThread.preloginRemoveThread(playerUUID) != null) {
             secuboid.getLogger().log(Level.WARNING,
-                    String.format("Unable to load the inventoy of player [uuid=%s, name=%s]", playerUuid, playerName));
+                    String.format("Unable to load the inventoy of player [uuid=%s, name=%s]", playerUUID, playerName));
             event.disallow(Result.KICK_OTHER, "Problem with Secuboid inventory. Contact an administrator.");
             return;
         }
 
         // Add the player to preload map
-        playerUuidToInventoryCachePreLoad.put(playerUuid, playerInventoryCache);
+        playerUUIDToInventoryCachePreLoad.put(playerUUID, playerInventoryCache);
     }
 
     /**
@@ -130,7 +129,7 @@ public class ConnectionListener extends CommonListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
 
         final Player player = event.getPlayer();
-        final UUID playerUuid = player.getUniqueId();
+        final UUID playerUUID = player.getUniqueId();
         final String playerName = player.getName();
 
         // Update players cache
@@ -139,11 +138,11 @@ public class ConnectionListener extends CommonListener implements Listener {
         // Create a new static config
         final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
         if (secuboid.getInventoriesOpt().isPresent()) {
-            PlayerInventoryCache playerInventoryCache = playerUuidToInventoryCachePreLoad.remove(playerUuid);
+            PlayerInventoryCache playerInventoryCache = playerUUIDToInventoryCachePreLoad.remove(playerUUID);
             if (playerInventoryCache == null) {
                 secuboid.getLogger().log(Level.SEVERE,
-                        String.format("Inventory not loaded for player [uuid=%s, name=%s]", playerUuid, playerName));
-                playerInventoryCache = new PlayerInventoryCache(playerUuid, playerName);
+                        String.format("Inventory not loaded for player [uuid=%s, name=%s]", playerUUID, playerName));
+                playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
             }
             playerInventoryCacheOpt = Optional.of(playerInventoryCache);
         } else {

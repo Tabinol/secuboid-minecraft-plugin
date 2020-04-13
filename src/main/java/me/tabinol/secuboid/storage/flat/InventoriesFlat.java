@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -75,7 +74,7 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUuidOpt(), false, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
 
     }
 
@@ -91,36 +90,36 @@ public class InventoriesFlat {
 
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
         final Inventories inventories = secuboid.getInventoriesOpt().get();
-        final UUID playerUuid = playerInventoryCache.getUUID();
-        final Thread preLoginThread = secuboid.getStorageThread().preloginRemoveThread(playerUuid);
+        final UUID playerUUID = playerInventoryCache.getUUID();
+        final Thread preLoginThread = secuboid.getStorageThread().preloginRemoveThread(playerUUID);
 
         for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
             final File invDir = getInventoryDir(inventorySpec.getInventoryName());
 
             // Survival
             final File survivalFile = new File(invDir,
-                    String.format("%s.%s%s", playerUuid, getGameModeFromBoolean(false), INV_EXT));
+                    String.format("%s.%s%s", playerUUID, getGameModeFromBoolean(false), INV_EXT));
             if (survivalFile.exists()) {
-                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(survivalFile, Optional.of(playerUuid),
+                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(survivalFile, Optional.of(playerUUID),
                         inventorySpec, false);
                 playerInventoryCache.addInventorySurvival(inventorySpec, playerInvEntry);
             }
 
             // Creative
             final File creativeFile = new File(invDir,
-                    String.format("%s.%s%s", playerUuid, getGameModeFromBoolean(true), INV_EXT));
+                    String.format("%s.%s%s", playerUUID, getGameModeFromBoolean(true), INV_EXT));
             if (creativeFile.exists()) {
-                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(creativeFile, Optional.of(playerUuid),
+                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(creativeFile, Optional.of(playerUUID),
                         inventorySpec, true);
                 playerInventoryCache.addInventorySurvival(inventorySpec, playerInvEntry);
             }
 
             // Death
             for (int deathVersion = 1; deathVersion <= PlayerInventoryCache.DEATH_SAVE_MAX_NBR; deathVersion++) {
-                final File deathFile = new File(invDir, String.format("%s.%s.%s.%s%s", playerUuid,
+                final File deathFile = new File(invDir, String.format("%s.%s.%s.%s%s", playerUUID,
                         getGameModeFromBoolean(true), DEATH, deathVersion, INV_EXT));
                 if (deathFile.exists()) {
-                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(deathFile, Optional.of(playerUuid),
+                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(deathFile, Optional.of(playerUUID),
                             inventorySpec, false);
                     playerInventoryCache.addInventoryDeath(deathVersion, playerInvEntry);
                 }
@@ -134,22 +133,22 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUuidOpt(), false, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
 
     }
 
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUuidOpt(), false, true);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, true);
     }
 
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUuidOpt(), true, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), true, false);
     }
 
-    private PlayerInvEntry loadInventoryFromFile(final File playerItemFile, final Optional<UUID> playerUuidOpt,
+    private PlayerInvEntry loadInventoryFromFile(final File playerItemFile, final Optional<UUID> playerUUIDOpt,
             final InventorySpec inventorySpec, final boolean isCreative) {
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
-        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerUuidOpt, inventorySpec, isCreative);
+        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerUUIDOpt, inventorySpec, isCreative);
 
         try {
             // load Inventory
@@ -206,12 +205,12 @@ public class InventoriesFlat {
         return playerInvEntry;
     }
 
-    public void saveInventory(final PlayerInvEntry playerInvEntry, final Optional<UUID> playerUuidOpt,
+    public void saveInventory(final PlayerInvEntry playerInvEntry, final Optional<UUID> playerUUIDOpt,
             final boolean isDeathHistory, final boolean enderChestOnly) {
         final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
-        if (!playerUuidOpt.isPresent() && !inventorySpec.isSaveInventory()) {
+        if (!playerUUIDOpt.isPresent() && !inventorySpec.isSaveInventory()) {
             return;
         }
 
@@ -226,9 +225,9 @@ public class InventoriesFlat {
         final String gmName = getGameModeFromBoolean(playerInvEntry.isCreativeInv());
         final String filePreName;
 
-        if (isDeathHistory && playerUuidOpt.isPresent()) {
+        if (isDeathHistory && playerUUIDOpt.isPresent()) {
             // Save death inventory
-            final String playerUUIDStr = playerUuidOpt.get().toString();
+            final String playerUUIDStr = playerUUIDOpt.get().toString();
             final String fileDeathPrefix = playerUUIDStr + "." + gmName + "." + DEATH + ".";
             filePreName = fileDeathPrefix + "1";
 
@@ -248,13 +247,13 @@ public class InventoriesFlat {
                 }
             }
 
-        } else if (!playerUuidOpt.isPresent()) {
+        } else if (!playerUUIDOpt.isPresent()) {
             // Save default inventory
             filePreName = DEFAULT_INV;
 
         } else {
             // Save normal inventory
-            filePreName = playerUuidOpt.get() + "." + gmName;
+            filePreName = playerUUIDOpt.get() + "." + gmName;
         }
 
         // Save Inventory

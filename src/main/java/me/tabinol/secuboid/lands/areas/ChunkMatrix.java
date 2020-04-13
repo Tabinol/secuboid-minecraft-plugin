@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,7 +22,7 @@ import java.util.Arrays;
 /**
  * Represents a matrix in a chunk.
  */
-public class ChunkMatrix {
+public final class ChunkMatrix {
 
     private final short[] matrix;
 
@@ -39,7 +38,7 @@ public class ChunkMatrix {
      *
      * @param matrix the matrix
      */
-    ChunkMatrix(short[] matrix) {
+    public ChunkMatrix(final short[] matrix) {
         this.matrix = matrix;
     }
 
@@ -49,7 +48,7 @@ public class ChunkMatrix {
      * @param chunkX the chunk x position
      * @param chunkZ the chunk z position
      */
-    public void addPoint(byte chunkX, byte chunkZ) {
+    public void addPoint(final byte chunkX, final byte chunkZ) {
         matrix[chunkX] |= (1 << chunkZ);
     }
 
@@ -59,7 +58,7 @@ public class ChunkMatrix {
      * @param chunkX the chunk x position
      * @param chunkZ the chunk z position
      */
-    public void removePoint(byte chunkX, byte chunkZ) {
+    public void removePoint(final byte chunkX, final byte chunkZ) {
         matrix[chunkX] &= ~(1 << chunkZ);
     }
 
@@ -70,7 +69,7 @@ public class ChunkMatrix {
      * @param chunkZ the chunk z position
      * @return boolean point value
      */
-    public boolean getPoint(byte chunkX, byte chunkZ) {
+    public boolean getPoint(final byte chunkX, final byte chunkZ) {
         return (matrix[chunkX] & (1 << chunkZ)) != 0;
     }
 
@@ -80,7 +79,7 @@ public class ChunkMatrix {
      * @return true or false
      */
     public boolean isEmpty() {
-        for (short slice : matrix) {
+        for (final short slice : matrix) {
             if (slice != 0) {
                 return false;
             }
@@ -95,7 +94,7 @@ public class ChunkMatrix {
      */
     public int countPoints() {
         int nbPoints = 0;
-        for (short slice : matrix) {
+        for (final short slice : matrix) {
             for (int i = 0; i < 16; i++) {
                 if ((slice & (1 << i)) > 0) {
                     nbPoints++;
@@ -106,9 +105,9 @@ public class ChunkMatrix {
     }
 
     public String toFileFormat() {
-        StringBuilder sb = new StringBuilder();
-        for (short slice : matrix) {
-            String hexString = Integer.toHexString(slice & 0xffff);
+        final StringBuilder sb = new StringBuilder();
+        for (final short slice : matrix) {
+            final String hexString = Integer.toHexString(slice & 0xffff);
             sb.append("0000".substring(hexString.length())).append(hexString);
         }
         return sb.toString();

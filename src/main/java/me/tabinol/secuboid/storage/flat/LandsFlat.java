@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,11 +19,13 @@ package me.tabinol.secuboid.storage.flat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -108,7 +109,7 @@ public class LandsFlat {
     }
 
     void loadLands() {
-        final Map<Land, UUID> orphanToUUID = new HashMap<>();
+        final Map<Land, UUID> orphanToParentUUID = new HashMap<>();
         final File[] files = new File(landsDir).listFiles();
         int loadedlands = 0;
 
@@ -121,33 +122,25 @@ public class LandsFlat {
         // Pass 1: load lands
         for (final File file : files) {
             if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {
+                final Entry<Land, UUID> orphanToParentUUIDEntry;
                 try {
-                    loadLand(file, orphanToUUID);
+                    orphanToParentUUIDEntry = loadLand(file);
                 } catch (final RuntimeException e) {
                     secuboid.getLogger().log(Level.SEVERE,
                             String.format("Unable to load the land from file: %s", file.getName()), e);
+                    continue;
                 }
-                loadedlands++;
+                if (orphanToParentUUIDEntry != null) {
+                    loadedlands++;
+                    if (orphanToParentUUIDEntry.getValue() != null) {
+                        orphanToParentUUID.put(orphanToParentUUIDEntry.getKey(), orphanToParentUUIDEntry.getValue());
+                    }
+                }
             }
         }
 
         // Pass 2: find parents
-        for (final Map.Entry<Land, UUID> entry : orphanToUUID.entrySet()) {
-            final Land land = entry.getKey();
-            final Land parent = secuboid.getLands().getLand(entry.getValue());
-            if (parent != null) {
-                if (parent.isDescendants(land)) {
-                    secuboid.getLogger().log(Level.SEVERE,
-                            String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUuid=%s]",
-                                    land.getName(), land.getUUID(), entry.getValue()));
-                    continue;
-                }
-                land.setParent(parent);
-            } else {
-                secuboid.getLogger().severe("Error: The parent is not found! [name=" + land.getName() + ", uuid="
-                        + land.getUUID() + ", parentUuid=" + entry.getValue() + "]");
-            }
-        }
+        secuboid.getLands().setParents(orphanToParentUUID);
         secuboid.getLogger().info(loadedlands + " land(s) loaded.");
     }
 
@@ -155,8 +148,9 @@ public class LandsFlat {
      * Load land.
      *
      * @param file the file
+     * @return a map with a land (if success) and the parent (if exists)
      */
-    private void loadLand(final File file, final Map<Land, UUID> orphanToUUID) {
+    private Entry<Land, UUID> loadLand(final File file) {
 
         final NewInstance newInstance = secuboid.getNewInstance();
         int version;
@@ -317,11 +311,11 @@ public class LandsFlat {
                         cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
             } catch (final FileLoadException ex2) {
                 // Catch load
-                return;
+                return null;
             }
         } catch (final FileLoadException ex) {
             // Catch load
-            return;
+            return null;
         }
 
         // Create land
@@ -330,18 +324,15 @@ public class LandsFlat {
                 try {
                     land = secuboid.getLands().createLand(landName, isApproved, owner, entry.getValue(), null,
                             entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
-                    if (parentUUID != null) {
-                        orphanToUUID.put(land, UUID.fromString(parentUUID));
-                    }
                 } catch (final SecuboidLandException ex) {
                     secuboid.getLogger().severe("Error on loading land " + landName + ":" + ex.getLocalizedMessage());
-                    return;
+                    return null;
                 }
                 isLandCreated = true;
             } else {
                 if (land == null) {
                     secuboid.getLogger().severe("Error: Land not created: " + landName);
-                    return;
+                    return null;
                 }
                 land.addArea(entry.getValue(), entry.getKey());
             }
@@ -349,7 +340,7 @@ public class LandsFlat {
 
         if (land == null) {
             secuboid.getLogger().severe("Error: Land not created: " + landName);
-            return;
+            return null;
         }
 
         // Load land params form memory
@@ -384,6 +375,8 @@ public class LandsFlat {
                 land.setLastPaymentTime(lastPayment);
             }
         }
+
+        return new AbstractMap.SimpleEntry<Land, UUID>(land, parentUUID != null ? UUID.fromString(parentUUID) : null);
     }
 
     void saveLand(final Land land) {

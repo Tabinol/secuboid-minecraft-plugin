@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -22,7 +21,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public final class GenericIdValueDao<I, V> {
         this.valueColumnLabel = valueColumnLabel;
     }
 
-    public Map<I, V> getIdNames(final Connection conn) throws SQLException {
+    public Map<I, V> getIdToName(final Connection conn) throws SQLException {
         final String sql = String.format("SELECT `%s`, `%s` FROM `{{TP}}%s`", idColumnLabel, valueColumnLabel,
                 tableSuffix);
 
@@ -67,6 +68,23 @@ public final class GenericIdValueDao<I, V> {
                 final V v = getFromClass(valueClazz, rs, valueColumnLabel);
 
                 results.put(i, v);
+            }
+            return results;
+        }
+    }
+
+    public Map<I, List<V>> getIdToNames(final Connection conn) throws SQLException {
+        final String sql = String.format("SELECT `%s`, `%s` FROM `{{TP}}%s`", idColumnLabel, valueColumnLabel,
+                tableSuffix);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            final Map<I, List<V>> results = new HashMap<>();
+            final ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                final I i = getFromClass(idClazz, rs, idColumnLabel);
+                final V v = getFromClass(valueClazz, rs, valueColumnLabel);
+
+                results.computeIfAbsent(i, k -> new ArrayList<>()).add(v);
             }
             return results;
         }
@@ -95,13 +113,13 @@ public final class GenericIdValueDao<I, V> {
     private <C> void setFromClass(final Class<C> clazz, final PreparedStatement stmt, final int parameterIndex,
             final C c) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {
-            stmt.setInt(parameterIndex, (int) c);
+            stmt.setInt(parameterIndex, (Integer) c);
         }
         if (clazz.isAssignableFrom(Long.class)) {
-            stmt.setLong(parameterIndex, (long) c);
+            stmt.setLong(parameterIndex, (Long) c);
         }
         if (clazz.isAssignableFrom(Double.class)) {
-            stmt.setDouble(parameterIndex, (double) c);
+            stmt.setDouble(parameterIndex, (Double) c);
         }
         if (clazz.isAssignableFrom(UUID.class)) {
             DbUtils.setUUID(stmt, parameterIndex, (UUID) c);

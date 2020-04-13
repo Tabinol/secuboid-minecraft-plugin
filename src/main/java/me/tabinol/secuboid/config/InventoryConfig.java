@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -66,7 +65,7 @@ public final class InventoryConfig {
             secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
         }
 
-        // Connect to the data file and register flag to Factoid
+        // Connect to the data file and register flag to Secuboid
         invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", "");
     }
 

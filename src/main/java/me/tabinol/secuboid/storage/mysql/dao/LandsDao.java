@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -59,7 +58,7 @@ public final class LandsDao {
                 final boolean approved = rs.getBoolean("approved");
                 final Optional<Integer> typeIdOpt = DbUtils.getOpt(rs, "type_id", rs::getInt);
                 final int ownerId = rs.getInt("owner_id");
-                final Optional<UUID> parentUuidOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
+                final Optional<UUID> parentUUIDOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
                 final int priority = rs.getInt("priority");
                 final double money = rs.getDouble("money");
                 final boolean forSale = rs.getBoolean("for_sale");
@@ -77,7 +76,7 @@ public final class LandsDao {
                 final Optional<Integer> tenantIdOpt = DbUtils.getOpt(rs, "tenant_id", rs::getInt);
                 final Optional<Long> lastPaymentMillisOpt = DbUtils.getOpt(rs, "last_payment_millis", rs::getLong);
 
-                results.add(new LandPojo(uuid, name, approved, typeIdOpt, ownerId, parentUuidOpt, priority, money,
+                results.add(new LandPojo(uuid, name, approved, typeIdOpt, ownerId, parentUUIDOpt, priority, money,
                         forSale, forSaleSignXOpt, forSaleSignYOpt, forSaleSignZOpt, salePriceOpt, forRent,
                         forRentSignXOpt, forRentSignYOpt, forRentSignZOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
                         tenantIdOpt, lastPaymentMillisOpt));

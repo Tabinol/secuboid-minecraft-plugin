@@ -46,25 +46,26 @@ public final class AreasDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<UUID, List<AreaPojo>> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
-                final int areaId = rs.getInt("area_id");
-                final boolean approved = rs.getBoolean("approved");
-                final String worldName = rs.getString("world_name");
-                final int areaTypeId = rs.getInt("area_type_id");
-                final int x1 = rs.getInt("x1");
-                final int y1 = rs.getInt("y1");
-                final int z1 = rs.getInt("z1");
-                final int x2 = rs.getInt("x2");
-                final int y2 = rs.getInt("y2");
-                final int z2 = rs.getInt("z2");
-                final AreaPojo areaPojo = new AreaPojo(landUUID, areaId, approved, worldName, areaTypeId, x1, y1, z1,
-                        x2, y2, z2);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
+                    final int areaId = rs.getInt("area_id");
+                    final boolean approved = rs.getBoolean("approved");
+                    final String worldName = rs.getString("world_name");
+                    final int areaTypeId = rs.getInt("area_type_id");
+                    final int x1 = rs.getInt("x1");
+                    final int y1 = rs.getInt("y1");
+                    final int z1 = rs.getInt("z1");
+                    final int x2 = rs.getInt("x2");
+                    final int y2 = rs.getInt("y2");
+                    final int z2 = rs.getInt("z2");
+                    final AreaPojo areaPojo = new AreaPojo(landUUID, areaId, approved, worldName, areaTypeId, x1, y1,
+                            z1, x2, y2, z2);
 
-                results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(areaPojo);
+                    results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(areaPojo);
+                }
+                return results;
             }
-            return results;
         }
     }
 }

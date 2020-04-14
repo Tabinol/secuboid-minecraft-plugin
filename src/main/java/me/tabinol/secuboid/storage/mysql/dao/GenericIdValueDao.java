@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,14 +63,15 @@ public final class GenericIdValueDao<I, V> {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<I, V> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final I i = getFromClass(idClazz, rs, idColumnLabel);
-                final V v = getFromClass(valueClazz, rs, valueColumnLabel);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final I i = getFromClass(idClazz, rs, idColumnLabel);
+                    final V v = getFromClass(valueClazz, rs, valueColumnLabel);
 
-                results.put(i, v);
+                    results.put(i, v);
+                }
+                return results;
             }
-            return results;
         }
     }
 
@@ -79,14 +81,31 @@ public final class GenericIdValueDao<I, V> {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<I, List<V>> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final I i = getFromClass(idClazz, rs, idColumnLabel);
-                final V v = getFromClass(valueClazz, rs, valueColumnLabel);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final I i = getFromClass(idClazz, rs, idColumnLabel);
+                    final V v = getFromClass(valueClazz, rs, valueColumnLabel);
 
-                results.computeIfAbsent(i, k -> new ArrayList<>()).add(v);
+                    results.computeIfAbsent(i, k -> new ArrayList<>()).add(v);
+                }
+                return results;
             }
-            return results;
+        }
+    }
+
+    public I insertOrGetId(final Connection conn, final V v) throws SQLException {
+        final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=? " //
+                + "ON DUPLICATE KEY UPDATE `%s`=LAST_INSERT_ID(`%s`)", tableSuffix, valueColumnLabel, idColumnLabel,
+                idColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
+                Statement.RETURN_GENERATED_KEYS)) {
+            setFromClass(valueClazz, stmt, 1, v);
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                rs.next();
+                return getFromClass(idClazz, rs, idColumnLabel);
+            }
         }
     }
 

@@ -44,16 +44,17 @@ public final class PlayerContainersDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<Integer, PlayerContainerPojo> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final int id = rs.getInt("id");
-                final int playerContainerTypeId = rs.getInt("player_container_type_id");
-                final Optional<UUID> playerUUIDOpt = DbUtils.getOpt(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
-                final Optional<String> parameterOpt = DbUtils.getOpt(rs, "parameter", rs::getString);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final int id = rs.getInt("id");
+                    final int playerContainerTypeId = rs.getInt("player_container_type_id");
+                    final Optional<UUID> playerUUIDOpt = DbUtils.getOpt(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
+                    final Optional<String> parameterOpt = DbUtils.getOpt(rs, "parameter", rs::getString);
 
-                results.put(id, new PlayerContainerPojo(id, playerContainerTypeId, playerUUIDOpt, parameterOpt));
+                    results.put(id, new PlayerContainerPojo(id, playerContainerTypeId, playerUUIDOpt, parameterOpt));
+                }
+                return results;
             }
-            return results;
         }
     }
 }

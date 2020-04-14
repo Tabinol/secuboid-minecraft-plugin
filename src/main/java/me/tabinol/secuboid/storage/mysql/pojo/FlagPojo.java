@@ -20,7 +20,7 @@ package me.tabinol.secuboid.storage.mysql.pojo;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class FlagsPojo {
+public final class FlagPojo {
 
     private final UUID landUUID;
     private final int flagId;
@@ -29,7 +29,7 @@ public final class FlagsPojo {
     private final Optional<Boolean> valueBooleanOpt;
     private final boolean inheritance;
 
-    public FlagsPojo(final UUID landUUID, final int flagId, final Optional<String> valueStringOpt,
+    public FlagPojo(final UUID landUUID, final int flagId, final Optional<String> valueStringOpt,
             final Optional<Double> valueDoubleOpt, final Optional<Boolean> valueBooleanOpt, final boolean inheritance) {
         this.landUUID = landUUID;
         this.flagId = flagId;

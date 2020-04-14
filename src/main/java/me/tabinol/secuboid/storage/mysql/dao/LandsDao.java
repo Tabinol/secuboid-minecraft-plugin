@@ -43,10 +43,9 @@ public final class LandsDao {
 
     public List<LandPojo> getLands(final Connection conn) throws SQLException {
         final String sql = "SELECT `uuid`, `name`, `approved`, `type_id`, `owner_id`, " //
-                + "`parent_uuid`, `priority`, `money`, `for_sale`, `for_sale_sign_x`, " //
-                + "`for_sale_sign_y`, `for_sale_sign_z`, `sale_price`, `for_rent`, " //
-                + "`for_rent_sign_x`, `for_rent_sign_y`, `for_rent_sign_z`, `rent_price`, " //
-                + "`rent_renew`, `rent_auto_renew`, `tenant_id`, `last_payment_millis` " //
+                + "`parent_uuid`, `priority`, `money`, `for_sale`, `for_sale_sign_location`, " //
+                + "`sale_price`, `for_rent`, `for_rent_sign_location`, `rent_price`, " //
+                + "`rent_renew`, `rent_auto_renew`, `tenant_uuid`, `last_payment_millis` " //
                 + "FROM `{{TP}}lands`";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
@@ -59,27 +58,24 @@ public final class LandsDao {
                 final Optional<Integer> typeIdOpt = DbUtils.getOpt(rs, "type_id", rs::getInt);
                 final int ownerId = rs.getInt("owner_id");
                 final Optional<UUID> parentUUIDOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
-                final int priority = rs.getInt("priority");
+                final short priority = rs.getShort("priority");
                 final double money = rs.getDouble("money");
                 final boolean forSale = rs.getBoolean("for_sale");
-                final Optional<Integer> forSaleSignXOpt = DbUtils.getOpt(rs, "for_sale_sign_x", rs::getInt);
-                final Optional<Integer> forSaleSignYOpt = DbUtils.getOpt(rs, "for_sale_sign_y", rs::getInt);
-                final Optional<Integer> forSaleSignZOpt = DbUtils.getOpt(rs, "for_sale_sign_z", rs::getInt);
+                final Optional<String> forSaleSignLocationOpt = DbUtils.getOpt(rs, "for_sale_sign_location",
+                        rs::getString);
                 final Optional<Double> salePriceOpt = DbUtils.getOpt(rs, "sale_price", rs::getDouble);
                 final boolean forRent = rs.getBoolean("for_rent");
-                final Optional<Integer> forRentSignXOpt = DbUtils.getOpt(rs, "for_rent_sign_x", rs::getInt);
-                final Optional<Integer> forRentSignYOpt = DbUtils.getOpt(rs, "for_rent_sign_y", rs::getInt);
-                final Optional<Integer> forRentSignZOpt = DbUtils.getOpt(rs, "for_rent_sign_z", rs::getInt);
+                final Optional<String> forRentSignLocationOpt = DbUtils.getOpt(rs, "for_rent_sign_location",
+                        rs::getString);
                 final Optional<Double> rentPriceOpt = DbUtils.getOpt(rs, "rent_price", rs::getDouble);
-                final Optional<Boolean> rentRenewOpt = DbUtils.getOpt(rs, "rent_renew", rs::getBoolean);
+                final Optional<Integer> rentRenewOpt = DbUtils.getOpt(rs, "rent_renew", rs::getInt);
                 final Optional<Boolean> rentAutoRenewOpt = DbUtils.getOpt(rs, "rent_auto_renew", rs::getBoolean);
-                final Optional<Integer> tenantIdOpt = DbUtils.getOpt(rs, "tenant_id", rs::getInt);
+                final Optional<UUID> tenantUUIDOpt = DbUtils.getOpt(rs, "tenant_uuid", c -> DbUtils.getUUID(rs, c));
                 final Optional<Long> lastPaymentMillisOpt = DbUtils.getOpt(rs, "last_payment_millis", rs::getLong);
 
                 results.add(new LandPojo(uuid, name, approved, typeIdOpt, ownerId, parentUUIDOpt, priority, money,
-                        forSale, forSaleSignXOpt, forSaleSignYOpt, forSaleSignZOpt, salePriceOpt, forRent,
-                        forRentSignXOpt, forRentSignYOpt, forRentSignZOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
-                        tenantIdOpt, lastPaymentMillisOpt));
+                        forSale, forSaleSignLocationOpt, salePriceOpt, forRent, forRentSignLocationOpt, rentPriceOpt,
+                        rentRenewOpt, rentAutoRenewOpt, tenantUUIDOpt, lastPaymentMillisOpt));
             }
             return results;
         }

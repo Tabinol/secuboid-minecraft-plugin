@@ -17,6 +17,50 @@
  */
 package me.tabinol.secuboid.storage.mysql.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
+import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
+import me.tabinol.secuboid.utilities.DbUtils;
+
 public final class FlagsDao {
 
+    private final DatabaseConnection dbConn;
+
+    public FlagsDao(final DatabaseConnection dbConn) {
+        this.dbConn = dbConn;
+    }
+
+    public Map<UUID, List<FlagPojo>> getLandUUIDToFlags(final Connection conn) throws SQLException {
+        final String sql = "SELECT `land_uuid`, `flag_id`, `value_string`, `value_double`, "
+                + "`value_boolean`, `inheritance` " //
+                + "FROM `{{TP}}lands_flags`";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            final Map<UUID, List<FlagPojo>> results = new HashMap<>();
+            final ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
+                final int flagId = rs.getInt("flag_id");
+                final Optional<String> valueStringOpt = DbUtils.getOpt(rs, "value_string", rs::getString);
+                final Optional<Double> valueDoubleOpt = DbUtils.getOpt(rs, "value_double", rs::getDouble);
+                final Optional<Boolean> valueBooleanOpt = DbUtils.getOpt(rs, "value_boolean", rs::getBoolean);
+                final boolean inheritance = rs.getBoolean("inheritance");
+                final FlagPojo flagPojo = new FlagPojo(landUUID, flagId, valueStringOpt, valueDoubleOpt,
+                        valueBooleanOpt, inheritance);
+
+                results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(flagPojo);
+            }
+            return results;
+        }
+    }
 }

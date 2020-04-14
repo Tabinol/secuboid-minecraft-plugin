@@ -31,31 +31,25 @@ public final class LandPojo {
     private final Optional<Integer> typeIdOpt;
     private final int ownerId;
     private final Optional<UUID> parentUUIDOpt;
-    private final int priority;
+    private final short priority;
     private final double money;
     private final boolean forSale;
-    private final Optional<Integer> forSaleSignXOpt;
-    private final Optional<Integer> forSaleSignYOpt;
-    private final Optional<Integer> forSaleSignZOpt;
+    private final Optional<String> forSaleSignLocationOpt;
     private final Optional<Double> salePriceOpt;
     private final boolean forRent;
-    private final Optional<Integer> forRentSignXOpt;
-    private final Optional<Integer> forRentSignYOpt;
-    private final Optional<Integer> forRentSignZOpt;
+    private final Optional<String> forRentSignLocationOpt;
     private final Optional<Double> rentPriceOpt;
-    private final Optional<Boolean> rentRenewOpt;
+    private final Optional<Integer> rentRenewOpt;
     private final Optional<Boolean> rentAutoRenewOpt;
-    private final Optional<Integer> tenantIdOpt;
+    private final Optional<UUID> tenantUUIDOpt;
     private final Optional<Long> lastPaymentMillisOpt;
 
     public LandPojo(final UUID uuid, final String name, final boolean approved, final Optional<Integer> typeIdOpt,
-            final int ownerId, final Optional<UUID> parentUUIDOpt, final int priority, final double money,
-            final boolean forSale, final Optional<Integer> forSaleSignXOpt, final Optional<Integer> forSaleSignYOpt,
-            final Optional<Integer> forSaleSignZOpt, final Optional<Double> salePriceOpt, final boolean forRent,
-            final Optional<Integer> forRentSignXOpt, final Optional<Integer> forRentSignYOpt,
-            final Optional<Integer> forRentSignZOpt, final Optional<Double> rentPriceOpt,
-            final Optional<Boolean> rentRenewOpt, final Optional<Boolean> rentAutoRenewOpt,
-            final Optional<Integer> tenantIdOpt, final Optional<Long> lastPaymentMillisOpt) {
+            final int ownerId, final Optional<UUID> parentUUIDOpt, final short priority, final double money,
+            final boolean forSale, final Optional<String> forSaleSignLocationOpt, final Optional<Double> salePriceOpt,
+            final boolean forRent, final Optional<String> forRentSignLocationOpt, final Optional<Double> rentPriceOpt,
+            final Optional<Integer> rentRenewOpt, final Optional<Boolean> rentAutoRenewOpt,
+            final Optional<UUID> tenantUUIDOpt, final Optional<Long> lastPaymentMillisOpt) {
         this.uuid = uuid;
         this.name = name;
         this.approved = approved;
@@ -65,18 +59,14 @@ public final class LandPojo {
         this.priority = priority;
         this.money = money;
         this.forSale = forSale;
-        this.forSaleSignXOpt = forSaleSignXOpt;
-        this.forSaleSignYOpt = forSaleSignYOpt;
-        this.forSaleSignZOpt = forSaleSignZOpt;
+        this.forSaleSignLocationOpt = forSaleSignLocationOpt;
         this.salePriceOpt = salePriceOpt;
         this.forRent = forRent;
-        this.forRentSignXOpt = forRentSignXOpt;
-        this.forRentSignYOpt = forRentSignYOpt;
-        this.forRentSignZOpt = forRentSignZOpt;
+        this.forRentSignLocationOpt = forRentSignLocationOpt;
         this.rentPriceOpt = rentPriceOpt;
         this.rentRenewOpt = rentRenewOpt;
         this.rentAutoRenewOpt = rentAutoRenewOpt;
-        this.tenantIdOpt = tenantIdOpt;
+        this.tenantUUIDOpt = tenantUUIDOpt;
         this.lastPaymentMillisOpt = lastPaymentMillisOpt;
     }
 
@@ -108,7 +98,7 @@ public final class LandPojo {
         return this.parentUUIDOpt;
     }
 
-    public int getPriority() {
+    public short getPriority() {
         return this.priority;
     }
 
@@ -124,16 +114,8 @@ public final class LandPojo {
         return this.forSale;
     }
 
-    public Optional<Integer> getForSaleSignXOpt() {
-        return this.forSaleSignXOpt;
-    }
-
-    public Optional<Integer> getForSaleSignYOpt() {
-        return this.forSaleSignYOpt;
-    }
-
-    public Optional<Integer> getForSaleSignZOpt() {
-        return this.forSaleSignZOpt;
+    public Optional<String> getForSaleSignLocationOpt() {
+        return this.forSaleSignLocationOpt;
     }
 
     public Optional<Double> getSalePriceOpt() {
@@ -148,23 +130,15 @@ public final class LandPojo {
         return this.forRent;
     }
 
-    public Optional<Integer> getForRentSignXOpt() {
-        return this.forRentSignXOpt;
-    }
-
-    public Optional<Integer> getForRentSignYOpt() {
-        return this.forRentSignYOpt;
-    }
-
-    public Optional<Integer> getForRentSignZOpt() {
-        return this.forRentSignZOpt;
+    public Optional<String> getForRentSignLocationOpt() {
+        return this.forRentSignLocationOpt;
     }
 
     public Optional<Double> getRentPriceOpt() {
         return this.rentPriceOpt;
     }
 
-    public Optional<Boolean> getRentRenewOpt() {
+    public Optional<Integer> getRentRenewOpt() {
         return this.rentRenewOpt;
     }
 
@@ -172,8 +146,8 @@ public final class LandPojo {
         return this.rentAutoRenewOpt;
     }
 
-    public Optional<Integer> getTenantIdOpt() {
-        return this.tenantIdOpt;
+    public Optional<UUID> getTenantUUIDOpt() {
+        return this.tenantUUIDOpt;
     }
 
     public Optional<Long> getLastPaymentMillisOpt() {

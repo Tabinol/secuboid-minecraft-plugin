@@ -19,21 +19,25 @@ package me.tabinol.secuboid.storage.mysql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import me.tabinol.secuboid.NewInstance;
+import org.bukkit.Location;
+
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -46,6 +50,7 @@ import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
@@ -55,14 +60,19 @@ import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
 import me.tabinol.secuboid.storage.mysql.dao.AreasDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasRoadsMatricesDao;
+import me.tabinol.secuboid.storage.mysql.dao.FlagsDao;
 import me.tabinol.secuboid.storage.mysql.dao.GenericIdValueDao;
 import me.tabinol.secuboid.storage.mysql.dao.LandsDao;
+import me.tabinol.secuboid.storage.mysql.dao.PermissionsDao;
 import me.tabinol.secuboid.storage.mysql.dao.PlayerContainersDao;
 import me.tabinol.secuboid.storage.mysql.dao.SecuboidDao;
 import me.tabinol.secuboid.storage.mysql.pojo.AreaPojo;
+import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
+import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
+import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
  * StorageMySql
@@ -83,6 +93,11 @@ public class StorageMySql implements Storage {
     private final GenericIdValueDao<Integer, String> playerContainersTypesDao;
     private final GenericIdValueDao<UUID, Integer> landsResidentsDao;
     private final GenericIdValueDao<UUID, Integer> landsBannedDao;
+    private final PermissionsDao permissionsDao;
+    private final GenericIdValueDao<Integer, String> permissionsTypesDao;
+    private final FlagsDao flagsDao;
+    private final GenericIdValueDao<Integer, String> flagsTypesDao;
+    private final GenericIdValueDao<UUID, UUID> playerNotifiesDao;
 
     public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
         this.secuboid = secuboid;
@@ -95,9 +110,18 @@ public class StorageMySql implements Storage {
         landsDao = new LandsDao(dbConn);
         landsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "lands_types", "id", "name");
         playerContainersDao = new PlayerContainersDao(dbConn);
-        playerContainersTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "player_containers_types", "id", "name");
-        landsResidentsDao = new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_residents", "land_uuid", "player_container_id");
-        landsBannedDao= new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_banneds", "land_uuid", "player_container_id");
+        playerContainersTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class,
+                "player_containers_types", "id", "name");
+        landsResidentsDao = new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_residents", "land_uuid",
+                "player_container_id");
+        landsBannedDao = new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_banneds", "land_uuid",
+                "player_container_id");
+        permissionsDao = new PermissionsDao(dbConn);
+        permissionsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "permissions", "id", "name");
+        flagsDao = new FlagsDao(dbConn);
+        flagsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "flags", "id", "name");
+        playerNotifiesDao = new GenericIdValueDao<>(dbConn, UUID.class, UUID.class, "lands_players_notifies",
+                "land_uuid", "player_uuid");
     }
 
     @Override
@@ -143,6 +167,12 @@ public class StorageMySql implements Storage {
         final Map<Integer, String> idToPlayerContainerType;
         final Map<UUID, List<Integer>> landUUIDToResidentIds;
         final Map<UUID, List<Integer>> landUUIDToBannedIds;
+        final Map<UUID, List<PermissionPojo>> landUUIDToPermissionPojos;
+        final Map<Integer, String> idToPermissionType;
+        final Map<UUID, List<FlagPojo>> landUUIDToFlagPojos;
+        final Map<Integer, String> idToFlagType;
+        final Map<UUID, List<UUID>> landUUIDToPlayerNotifyUUIDs;
+
         try (final Connection conn = dbConn.openConnection()) {
             landUUIDToAreas = areasDao.getLandUUIDToAreas(conn);
             landUUIDToMatrices = areasRoadsMatricesDao.getLandUUIDToMatrices(conn);
@@ -153,26 +183,34 @@ public class StorageMySql implements Storage {
             idToPlayerContainerType = playerContainersTypesDao.getIdToName(conn);
             landUUIDToResidentIds = landsResidentsDao.getIdToNames(conn);
             landUUIDToBannedIds = landsBannedDao.getIdToNames(conn);
-        } catch (SQLException e) {
+            landUUIDToPermissionPojos = permissionsDao.getLandUUIDToPermissions(conn);
+            idToPermissionType = permissionsTypesDao.getIdToName(conn);
+            landUUIDToFlagPojos = flagsDao.getLandUUIDToFlags(conn);
+            idToFlagType = flagsTypesDao.getIdToName(conn);
+            landUUIDToPlayerNotifyUUIDs = playerNotifiesDao.getIdToNames(conn);
+        } catch (final SQLException e) {
             log.log(Level.SEVERE, "Unable to load lands from database", e);
             return;
         }
+
         for (final LandPojo landPojo : landPojos) {
-            final Entry<Land, UUID> orphanToParentUUIDEntry;
+            final Entry<Land, Optional<UUID>> orphanToParentUUIDOptEntry;
             final UUID landUUID = landPojo.getUUID();
             try {
-                orphanToParentUUIDEntry = loadLand(landPojo, idToType, idToPlayerContainerPojo, idToPlayerContainerType, landUUIDToAreas.get(landUUID), landUUIDToMatrices, 
-                        idToAreaType, landUUIDToResidentIds.get(landUUID), landUUIDToBannedIds.get(landUUID));
+                orphanToParentUUIDOptEntry = loadLand(landPojo, idToType, idToPlayerContainerPojo,
+                        idToPlayerContainerType, landUUIDToAreas.get(landUUID), landUUIDToMatrices, idToAreaType,
+                        landUUIDToResidentIds.get(landUUID), landUUIDToBannedIds.get(landUUID),
+                        landUUIDToPermissionPojos.get(landUUID), idToPermissionType, landUUIDToFlagPojos.get(landUUID),
+                        idToFlagType, landUUIDToPlayerNotifyUUIDs.get(landUUID));
             } catch (final RuntimeException e) {
                 secuboid.getLogger().log(Level.SEVERE,
                         String.format("Unable to load the land from database: %s", landPojo.getName()), e);
                 continue;
             }
-            if (orphanToParentUUIDEntry != null) {
+            if (orphanToParentUUIDOptEntry != null) {
                 loadedlands++;
-                if (orphanToParentUUIDEntry.getValue() != null) {
-                    orphanToParentUUID.put(orphanToParentUUIDEntry.getKey(), orphanToParentUUIDEntry.getValue());
-                }
+                orphanToParentUUIDOptEntry.getValue().ifPresent(
+                        parentUUID -> orphanToParentUUID.put(orphanToParentUUIDOptEntry.getKey(), parentUUID));
             }
         }
 
@@ -369,197 +407,172 @@ public class StorageMySql implements Storage {
 
     }
 
-    private PlayerContainer getPlayerContainer(final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo, final Map<Integer, String> idToPlayerContainerType, final int id) {
+    private PlayerContainer getPlayerContainer(final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo,
+            final Map<Integer, String> idToPlayerContainerType, final int id) {
         final PlayerContainerPojo playerContainerPojo = idToPlayerContainerPojo.get(id);
-        final String PlayerContainerTypeStr = idToPlayerContainerType.get(playerContainerPojo.getPlayerContainerTypeId());
+        final String PlayerContainerTypeStr = idToPlayerContainerType
+                .get(playerContainerPojo.getPlayerContainerTypeId());
         final PlayerContainerType playerContainerType = PlayerContainerType.getFromString(PlayerContainerTypeStr);
-        return secuboid.getNewInstance().createPlayerContainer(playerContainerType, playerContainerPojo.getParameterOpt().orElse(null));
+        return secuboid.getNewInstance().createPlayerContainer(playerContainerType,
+                playerContainerPojo.getParameterOpt().orElse(null));
     }
-    
+
     /**
      * Load a land.
      *
      * @return a map with a land (if success) and the parent (if exists)
      */
-    private Entry<Land, UUID> loadLand(final LandPojo landPojo, final Map<Integer, String> idToType, final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo, 
-            final Map<Integer, String> idToPlayerContainerType, List<AreaPojo> AreaPojos, final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, 
-            final Map<Integer, String> idToAreaType, List<Integer> residentIds, List<Integer> bannedIds) {
+    private Entry<Land, Optional<UUID>> loadLand(final LandPojo landPojo, final Map<Integer, String> idToType,
+            final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo,
+            final Map<Integer, String> idToPlayerContainerType, final List<AreaPojo> areaPojos,
+            final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, final Map<Integer, String> idToAreaType,
+            final List<Integer> residentIds, final List<Integer> bannedIds, final List<PermissionPojo> permissionPojos,
+            final Map<Integer, String> idToPermissionType, final List<FlagPojo> flagPojos,
+            final Map<Integer, String> idToFlagType, final List<UUID> playerNotifyUUIDs) {
 
         final String type = landPojo.getTypeIdOpt().map(idToType::get).orElse(null);
         final UUID landUUID = landPojo.getUUID();
-        Land land = null;
+        final String landName = landPojo.getName();
         final Map<Integer, Area> areas = new TreeMap<>();
-        boolean isLandCreated = false;
         final Set<PlayerContainer> residents = new TreeSet<>();
         final Set<PlayerContainer> banneds = new TreeSet<>();
-        final Map<PlayerContainer, Map<PermissionType, Permission>> permissions = new TreeMap<>();
+        final Map<PlayerContainer, TreeMap<PermissionType, Permission>> permissions = new TreeMap<>();
         final Set<Flag> flags = new HashSet<>();
         final Set<PlayerContainerPlayer> pNotifs = new TreeSet<>();
 
-        // For economy
-        PlayerContainerPlayer tenant = null;
-
-        try {
-            // create owner (PlayerContainer)
-            final PlayerContainer owner = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, landPojo.getOwnerId());
-            if (owner == null) {
-                log.log(Level.SEVERE, String.format("Invalid owner [land=%s]", landPojo.getName()));
-                return null;
-            }
-
-            // Create areas
-            for (final AreaPojo areaPojo : AreaPojos) {
-                final String areaTypeStr = idToAreaType.get(areaPojo.getAreaTypeId());
-                final AreaType areaType;
-                try {
-                    areaType = AreaType.valueOf(areaTypeStr);
-                } catch(final IllegalArgumentException e) {
-                    log.log(Level.SEVERE, String.format("Invalid area type [land=%s, areaType=%s, areaId=%s]", landPojo.getName(), areaTypeStr, areaPojo.getAreaId()), e);
-                    return null;
-                }
-                final Area area;
-                switch (areaType) {
-                    case CUBOID:
-                        area = new CuboidArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getX1(),areaPojo.getY1(), areaPojo.getZ1(), 
-                                areaPojo.getX2(), areaPojo.getY2(), areaPojo.getZ2());
-                    break;
-                    case CYLINDER:
-                        area = new CylinderArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getX1(),areaPojo.getY1(), areaPojo.getZ1(), 
-                        areaPojo.getX2(), areaPojo.getY2(), areaPojo.getZ2());
-                    break;
-                    case ROAD:
-                        final Map<Integer, Map<Integer, ChunkMatrix>> points = new HashMap<>();
-                        for (final RoadMatrixPojo roadMatrixPojo : landUUIDToMatrices.get(landUUID)) {
-                            final ChunkMatrix chunkMatrix = new ChunkMatrix(roadMatrixPojo.getMatrix());
-                            points.computeIfAbsent(roadMatrixPojo.getChunkX(), k -> new HashMap<>()).put(roadMatrixPojo.getChunkZ(), chunkMatrix);
-                        }
-                        area = new RoadArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getY1(), areaPojo.getY2(), new RegionMatrix(points));
-                    default:
-                }
-    
-                areas.put(areaPojo.getAreaId(), area);
-            }
-            if (areas.isEmpty()) {
-                log.log(Level.SEVERE, String.format("No area for this land [land=%s]", landPojo.getName()));
-                return null;
-            }
-
-            // Residents
-            for (int id : residentIds) {
-                residents.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
-            }
-
-            // Banneds
-            for (int id : bannedIds) {
-                banneds.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
-            }
-
-            // Create permissions
-            while ((str = cf.getNextString()) != null) {
-                final String[] multiStr = str.split(":");
-                TreeMap<PermissionType, Permission> permPlayer;
-                final PlayerContainer pc = newInstance
-                        .getPlayerContainerFromFileFormat(multiStr[0] + ":" + multiStr[1]);
-                final PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
-                if (!permissions.containsKey(pc)) {
-                    permPlayer = new TreeMap<>();
-                    permissions.put(pc, permPlayer);
-                } else {
-                    permPlayer = permissions.get(pc);
-                }
-                permPlayer.put(permType, secuboid.getPermissionsFlags().newPermission(permType,
-                        Boolean.parseBoolean(multiStr[3]), Boolean.parseBoolean(multiStr[4])));
-            }
-            cf.readParam();
-
-            // Create flags
-            while ((str = cf.getNextString()) != null) {
-                flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
-            }
-            cf.readParam();
-
-            // Set Priority
-            priority = cf.getValueShort();
-            cf.readParam();
-
-            // Money
-            money = cf.getValueDouble();
-            cf.readParam();
-
-            // Players Notify
-            while ((str = cf.getNextString()) != null) {
-                pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
-            }
-
-            // Economy
-            cf.readParam();
-            forSale = Boolean.parseBoolean(cf.getValueString());
-            if (forSale) {
-                cf.readParam();
-                forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
-                cf.readParam();
-                salePrice = cf.getValueDouble();
-            }
-            cf.readParam();
-            forRent = Boolean.parseBoolean(cf.getValueString());
-            if (forRent) {
-                cf.readParam();
-                forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
-                cf.readParam();
-                rentPrice = cf.getValueDouble();
-                cf.readParam();
-                rentRenew = cf.getValueInt();
-                cf.readParam();
-                rentAutoRenew = Boolean.parseBoolean(cf.getValueString());
-                cf.readParam();
-                rented = Boolean.parseBoolean(cf.getValueString());
-                if (rented) {
-                    cf.readParam();
-                    tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
-                    cf.readParam();
-                    lastPayment = cf.getValueLong();
-                }
-            }
-
-            cf.close();
-
-            // Catch errors here
-        } catch (final NullPointerException ex) {
+        // create owner (PlayerContainer)
+        final PlayerContainer owner = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType,
+                landPojo.getOwnerId());
+        if (owner == null) {
+            log.log(Level.SEVERE, String.format("Invalid owner [land=%s]", landName));
+            return null;
+        }
+        // Create areas
+        for (final AreaPojo areaPojo : areaPojos) {
+            final String areaTypeStr = idToAreaType.get(areaPojo.getAreaTypeId());
+            final AreaType areaType;
             try {
-                throw new FileLoadException(secuboid, file.getName(), cf != null ? cf.getLine() : "-NOT FOUND-",
-                        cf != null ? cf.getLineNb() : 0, "Problem with parameter.");
-            } catch (final FileLoadException ex2) {
-                // Catch load
+                areaType = AreaType.valueOf(areaTypeStr);
+            } catch (final IllegalArgumentException e) {
+                log.log(Level.SEVERE, String.format("Invalid area type [land=%s, areaType=%s, areaId=%s]", landName,
+                        areaTypeStr, areaPojo.getAreaId()), e);
                 return null;
             }
-        } catch (final FileLoadException ex) {
-            // Catch load
+            final Area area;
+            switch (areaType) {
+                case CUBOID:
+                    area = new CuboidArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getX1(),
+                            areaPojo.getY1(), areaPojo.getZ1(), areaPojo.getX2(), areaPojo.getY2(), areaPojo.getZ2());
+                    break;
+                case CYLINDER:
+                    area = new CylinderArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getX1(),
+                            areaPojo.getY1(), areaPojo.getZ1(), areaPojo.getX2(), areaPojo.getY2(), areaPojo.getZ2());
+                    break;
+                case ROAD:
+                    final Map<Integer, Map<Integer, ChunkMatrix>> points = new HashMap<>();
+                    for (final RoadMatrixPojo roadMatrixPojo : landUUIDToMatrices.get(landUUID)) {
+                        final ChunkMatrix chunkMatrix = new ChunkMatrix(roadMatrixPojo.getMatrix());
+                        points.computeIfAbsent(roadMatrixPojo.getChunkX(), k -> new HashMap<>())
+                                .put(roadMatrixPojo.getChunkZ(), chunkMatrix);
+                    }
+                    area = new RoadArea(areaPojo.isApproved(), areaPojo.getWorldName(), areaPojo.getY1(),
+                            areaPojo.getY2(), new RegionMatrix(points));
+                    break;
+                default:
+                    // Impossible
+                    area = null;
+            }
+
+            areas.put(areaPojo.getAreaId(), area);
+        }
+        if (areas.isEmpty()) {
+            log.log(Level.SEVERE, String.format("No area for this land [land=%s]", landName));
             return null;
         }
-
-        // Create land
-        for (final Map.Entry<Integer, Area> entry : areas.entrySet()) {
-            if (!isLandCreated) {
-                try {
-                    land = secuboid.getLands().createLand(landName, isApproved, owner, entry.getValue(), null,
-                            entry.getKey(), uuid, secuboid.getTypes().addOrGetType(type));
-                } catch (final SecuboidLandException ex) {
-                    secuboid.getLogger().severe("Error on loading land " + landName + ":" + ex.getLocalizedMessage());
-                    return null;
-                }
-                isLandCreated = true;
+        // Residents
+        for (final int id : residentIds) {
+            residents.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
+        }
+        // Banneds
+        for (final int id : bannedIds) {
+            banneds.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
+        }
+        // Create permissions
+        for (final PermissionPojo permissionPojo : permissionPojos) {
+            TreeMap<PermissionType, Permission> permPlayer;
+            final PlayerContainer pc = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType,
+                    permissionPojo.getPlayerContainerId());
+            final String permissionTypeStr = idToPermissionType.get(permissionPojo.getPermissionId());
+            final PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(permissionTypeStr);
+            if (!permissions.containsKey(pc)) {
+                permPlayer = new TreeMap<>();
+                permissions.put(pc, permPlayer);
             } else {
-                if (land == null) {
-                    secuboid.getLogger().severe("Error: Land not created: " + landName);
-                    return null;
-                }
-                land.addArea(entry.getValue(), entry.getKey());
+                permPlayer = permissions.get(pc);
+            }
+            permPlayer.put(permType, secuboid.getPermissionsFlags().newPermission(permType, permissionPojo.getValue(),
+                    permissionPojo.isInheritance()));
+        }
+        // Create flags
+        for (final FlagPojo flagPojo : flagPojos) {
+            final String flagTypeStr = idToFlagType.get(flagPojo.getFlagId());
+            final FlagType flagType = secuboid.getPermissionsFlags().getFlagTypeNoValid(flagTypeStr);
+            final Object valueObj = flagPojo.getValueBooleanOpt().map(v -> (Object) new Boolean(v))
+                    .orElse(flagPojo.getValueDoubleOpt().map(v -> (Object) new Double(v))
+                            .orElse(flagPojo.getValueStringOpt().map(v -> (Object) v).orElse(null)));
+            if (valueObj == null) {
+                log.log(Level.WARNING,
+                        String.format("No value for a flag [land=%s, flagType=%s]", landName, flagTypeStr));
+                continue;
+            }
+            flags.add(secuboid.getPermissionsFlags().newFlag(flagType, valueObj, flagPojo.isInheritance()));
+        }
+        // Players Notify
+        for (final UUID playerUUID : playerNotifyUUIDs) {
+            pNotifs.add((PlayerContainerPlayer) secuboid.getNewInstance()
+                    .createPlayerContainer(PlayerContainerType.PLAYER, playerUUID.toString()));
+        }
+        // Economy
+        boolean forSale = landPojo.isForSale();
+        Location forSaleSignLocNullable = null;
+        if (forSale) {
+            forSaleSignLocNullable = landPojo.getForSaleSignLocationOpt().map(StringChanges::stringToLocation)
+                    .orElse(null);
+            if (forSaleSignLocNullable == null) {
+                log.log(Level.WARNING,
+                        String.format("Land for sale with no suitable sign location [land=%s]", landName));
+                forSale = false;
             }
         }
+        boolean forRent = landPojo.getForRent();
+        Location forRentSignLocNullable = null;
+        if (forRent) {
+            forRentSignLocNullable = landPojo.getForRentSignLocationOpt().map(StringChanges::stringToLocation)
+                    .orElse(null);
+            if (forSaleSignLocNullable == null) {
+                log.log(Level.WARNING,
+                        String.format("Land for rent with no suitable sign location [land=%s]", landName));
+                forRent = false;
+            }
+        }
+        // Create land
+        final Iterator<Entry<Integer, Area>> it = areas.entrySet().iterator();
+        final Entry<Integer, Area> firstEntry = it.next(); // Already verified
+        final Land land;
 
-        if (land == null) {
-            secuboid.getLogger().severe("Error: Land not created: " + landName);
+        // Create land with first area
+        try {
+            land = secuboid.getLands().createLand(landName, landPojo.isApproved(), owner, firstEntry.getValue(), null,
+                    firstEntry.getKey(), landUUID, secuboid.getTypes().addOrGetType(type));
+        } catch (final SecuboidLandException e) {
+            log.log(Level.SEVERE, String.format("Error on create land [land=%s]", landName), e);
             return null;
+        }
+
+        // next areas
+        while (it.hasNext()) {
+            final Entry<Integer, Area> entry = it.next();
+            land.addArea(entry.getValue(), entry.getKey());
         }
 
         // Load land params form memory
@@ -577,25 +590,28 @@ public class StorageMySql implements Storage {
         for (final Flag flag : flags) {
             land.getPermissionsFlags().addFlag(flag);
         }
-        land.setPriority(priority);
-        land.addMoney(money);
+        land.setPriority(landPojo.getPriority());
+        land.addMoney(landPojo.getMoney());
         for (final PlayerContainerPlayer pNotif : pNotifs) {
             land.addPlayerNotify(pNotif);
         }
 
         // Economy add
         if (forSale) {
-            land.setForSale(true, salePrice, forSaleSignLoc);
+            land.setForSale(true, landPojo.getSalePriceOpt().orElse(0d), forSaleSignLocNullable);
         }
         if (forRent) {
-            land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
-            if (rented) {
+            land.setForRent(landPojo.getRentPriceOpt().orElse(0d), landPojo.getRentRenewOpt().orElse(7),
+                    landPojo.getRentAutoRenewOpt().orElse(false), forRentSignLocNullable);
+            landPojo.getTenantUUIDOpt().ifPresent(tenantUUID -> {
+                final PlayerContainerPlayer tenant = (PlayerContainerPlayer) secuboid.getNewInstance()
+                        .createPlayerContainer(PlayerContainerType.PLAYER, tenantUUID.toString());
                 land.setRented(tenant);
-                land.setLastPaymentTime(lastPayment);
-            }
+                land.setLastPaymentTime(landPojo.getLastPaymentMillisOpt().orElse(0l));
+
+            });
         }
 
-        return new AbstractMap.SimpleEntry<Land, UUID>(land, parentUUID != null ? UUID.fromString(parentUUID) : null);
+        return new AbstractMap.SimpleEntry<Land, Optional<UUID>>(land, landPojo.getParentUUIDOpt());
     }
-
 }

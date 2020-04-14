@@ -86,21 +86,17 @@ public final class SecuboidDao {
         "  `type_id` INT NULL,{{LS}}" +
         "  `owner_id` INT NOT NULL,{{LS}}" +
         "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
-        "  `priority` INT NOT NULL,{{LS}}" +
+        "  `priority` SMALLINT NOT NULL,{{LS}}" +
         "  `money` DOUBLE NOT NULL,{{LS}}" +
         "  `for_sale` TINYINT NOT NULL,{{LS}}" +
-        "  `for_sale_sign_x` INT NULL,{{LS}}" +
-        "  `for_sale_sign_y` INT NULL,{{LS}}" +
-        "  `for_sale_sign_z` INT NULL,{{LS}}" +
+        "  `for_sale_sign_location` VARCHAR(200) NULL,{{LS}}" +
         "  `sale_price` DOUBLE NULL,{{LS}}" +
         "  `for_rent` TINYINT NOT NULL,{{LS}}" +
-        "  `for_rent_sign_x` INT NULL,{{LS}}" +
-        "  `for_rent_sign_y` INT NULL,{{LS}}" +
-        "  `for_rent_sign_z` INT NULL,{{LS}}" +
+        "  `for_rent_sign_location` VARCHAR(200) NULL,{{LS}}" +
         "  `rent_price` DOUBLE NULL,{{LS}}" +
-        "  `rent_renew` TINYINT NULL,{{LS}}" +
+        "  `rent_renew` INT NULL,{{LS}}" +
         "  `rent_auto_renew` TINYINT NULL,{{LS}}" +
-        "  `tenant_id` INT NULL,{{LS}}" +
+        "  `tenant_uuid` BINARY(16) NULL,{{LS}}" +
         "  `last_payment_millis` BIGINT NULL,{{LS}}" +
         "  PRIMARY KEY (`uuid`),{{LS}}" +
         "  UNIQUE KEY `uuid` (`uuid`),{{LS}}" +
@@ -124,11 +120,6 @@ public final class SecuboidDao {
         "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
-        "  CONSTRAINT `fk_lands_tenant_id`{{LS}}" +
-        "    FOREIGN KEY (`tenant_id`){{LS}}" +
-        "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-        "    ON DELETE NO ACTION{{LS}}" +
-        "    ON UPDATE NO ACTION){{LS}}" +
         "ENGINE = InnoDB{{LS}}",
         
         "CREATE TABLE IF NOT EXISTS `{{TP}}areas_types` ({{LS}}" +

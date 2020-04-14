@@ -73,6 +73,11 @@ public final class DatabaseConnection {
         return conn.prepareStatement(convertStmtStrTags(sqlWithTags));
     }
 
+    public PreparedStatement preparedStatementWithTags(final Connection conn, final String sqlWithTags,
+            int columnIndexes) throws SQLException {
+        return conn.prepareStatement(convertStmtStrTags(sqlWithTags), columnIndexes);
+    }
+
     public <I> void prepareStatementAndExecuteBatch(final Connection conn, final String sqlWithTags,
             final Collection<I> items, final SqlBiConsumer<PreparedStatement, I> consumer) throws SQLException {
         try (final PreparedStatement stmt = preparedStatementWithTags(conn, sqlWithTags)) {

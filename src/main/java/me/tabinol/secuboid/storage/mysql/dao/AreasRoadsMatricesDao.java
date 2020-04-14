@@ -45,18 +45,19 @@ public final class AreasRoadsMatricesDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<UUID, List<RoadMatrixPojo>> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
-                final int areaId = rs.getInt("area_id");
-                final int chunkX = rs.getInt("chunk_x");
-                final int chunkZ = rs.getInt("chunk_z");
-                final short[] matrix = DbUtils.getMatrix16(rs, "matrix");
-                final RoadMatrixPojo roadMatrixPojo = new RoadMatrixPojo(landUUID, areaId, chunkX, chunkZ, matrix);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
+                    final int areaId = rs.getInt("area_id");
+                    final int chunkX = rs.getInt("chunk_x");
+                    final int chunkZ = rs.getInt("chunk_z");
+                    final short[] matrix = DbUtils.getMatrix16(rs, "matrix");
+                    final RoadMatrixPojo roadMatrixPojo = new RoadMatrixPojo(landUUID, areaId, chunkX, chunkZ, matrix);
 
-                results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(roadMatrixPojo);
+                    results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(roadMatrixPojo);
+                }
+                return results;
             }
-            return results;
         }
     }
 }

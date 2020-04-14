@@ -47,20 +47,21 @@ public final class FlagsDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<UUID, List<FlagPojo>> results = new HashMap<>();
-            final ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
-                final int flagId = rs.getInt("flag_id");
-                final Optional<String> valueStringOpt = DbUtils.getOpt(rs, "value_string", rs::getString);
-                final Optional<Double> valueDoubleOpt = DbUtils.getOpt(rs, "value_double", rs::getDouble);
-                final Optional<Boolean> valueBooleanOpt = DbUtils.getOpt(rs, "value_boolean", rs::getBoolean);
-                final boolean inheritance = rs.getBoolean("inheritance");
-                final FlagPojo flagPojo = new FlagPojo(landUUID, flagId, valueStringOpt, valueDoubleOpt,
-                        valueBooleanOpt, inheritance);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
+                    final int flagId = rs.getInt("flag_id");
+                    final Optional<String> valueStringOpt = DbUtils.getOpt(rs, "value_string", rs::getString);
+                    final Optional<Double> valueDoubleOpt = DbUtils.getOpt(rs, "value_double", rs::getDouble);
+                    final Optional<Boolean> valueBooleanOpt = DbUtils.getOpt(rs, "value_boolean", rs::getBoolean);
+                    final boolean inheritance = rs.getBoolean("inheritance");
+                    final FlagPojo flagPojo = new FlagPojo(landUUID, flagId, valueStringOpt, valueDoubleOpt,
+                            valueBooleanOpt, inheritance);
 
-                results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(flagPojo);
+                    results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(flagPojo);
+                }
+                return results;
             }
-            return results;
         }
     }
 }

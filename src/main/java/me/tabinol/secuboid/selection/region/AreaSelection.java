@@ -17,12 +17,19 @@
  */
 package me.tabinol.secuboid.selection.region;
 
+import org.bukkit.entity.Player;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
+import me.tabinol.secuboid.lands.areas.CuboidArea;
+import me.tabinol.secuboid.lands.areas.CylinderArea;
+import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.selection.PlayerSelection;
 import me.tabinol.secuboid.selection.visual.VisualSelection;
-import org.bukkit.entity.Player;
+import me.tabinol.secuboid.selection.visual.VisualSelectionCuboid;
+import me.tabinol.secuboid.selection.visual.VisualSelectionCylinder;
+import me.tabinol.secuboid.selection.visual.VisualSelectionRoad;
 
 /**
  * The Class AreaSelection.
@@ -52,6 +59,8 @@ public class AreaSelection implements RegionSelection {
         MOVE
     }
 
+    private final Secuboid secuboid;
+
     private final MoveType moveType;
 
     /**
@@ -70,18 +79,16 @@ public class AreaSelection implements RegionSelection {
      * @param areaType     area type (can be null if the area is not null)
      * @param moveType     move type
      */
-    public AreaSelection(Secuboid secuboid, Player player, Area area, Area originalArea, boolean isActive,
-                         AreaType areaType, MoveType moveType) {
-
+    public AreaSelection(final Secuboid secuboid, final Player player, final Area area, final Area originalArea,
+            final boolean isActive, final AreaType areaType, final MoveType moveType) {
+        this.secuboid = secuboid;
         this.moveType = moveType;
 
         if (area == null) {
-            visualSelection = secuboid.getNewInstance().createVisualSelection(areaType,
-                    isActive, player);
+            visualSelection = createVisualSelection(areaType, isActive, player);
             visualSelection.setActiveSelection();
         } else {
-            visualSelection = secuboid.getNewInstance().createVisualSelection(area, originalArea,
-                    isActive, player);
+            visualSelection = createVisualSelection(area, originalArea, isActive, player);
             visualSelection.makeVisualSelection();
         }
     }
@@ -114,5 +121,55 @@ public class AreaSelection implements RegionSelection {
      */
     public void playerMove() {
         visualSelection.playerMove(moveType);
+    }
+
+    /**
+     * Create a new visual selection from default
+     *
+     * @param areaType   areaType
+     * @param isFromLand is from land or must be false
+     * @param player     the player
+     * @return visual selection
+     */
+    private VisualSelection createVisualSelection(final AreaType areaType, final boolean isFromLand,
+            final Player player) {
+
+        switch (areaType) {
+            case CUBOID:
+                return new VisualSelectionCuboid(secuboid, null, null, isFromLand, player);
+            case CYLINDER:
+                return new VisualSelectionCylinder(secuboid, null, null, isFromLand, player);
+            case ROAD:
+                return new VisualSelectionRoad(secuboid, null, null, isFromLand, player);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Create a visual selection from an area
+     *
+     * @param area         area
+     * @param originalArea the original area from a land for expand (in this case,
+     *                     area must be a copy of)
+     * @param isFromLand   is from land or must be false
+     * @param player       the player
+     * @return visual selection
+     */
+    private VisualSelection createVisualSelection(final Area area, final Area originalArea, final boolean isFromLand,
+            final Player player) {
+
+        switch (area.getAreaType()) {
+            case CUBOID:
+                return new VisualSelectionCuboid(secuboid, (CuboidArea) area, (CuboidArea) originalArea, isFromLand,
+                        player);
+            case CYLINDER:
+                return new VisualSelectionCylinder(secuboid, (CylinderArea) area, (CylinderArea) originalArea,
+                        isFromLand, player);
+            case ROAD:
+                return new VisualSelectionRoad(secuboid, (RoadArea) area, (RoadArea) originalArea, isFromLand, player);
+            default:
+                return null;
+        }
     }
 }

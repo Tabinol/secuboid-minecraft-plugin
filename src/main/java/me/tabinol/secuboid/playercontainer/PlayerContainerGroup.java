@@ -35,7 +35,7 @@ public final class PlayerContainerGroup implements PlayerContainer {
     private final Secuboid secuboid;
     private final String groupName;
 
-    public PlayerContainerGroup(final Secuboid secuboid, final String groupName) {
+    PlayerContainerGroup(final Secuboid secuboid, final String groupName) {
         this.secuboid = secuboid;
         this.groupName = groupName;
     }

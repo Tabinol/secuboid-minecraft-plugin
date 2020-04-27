@@ -29,13 +29,7 @@ import me.tabinol.secuboid.lands.LandPermissionsFlags;
  */
 public final class PlayerContainerResident implements PlayerContainer {
 
-    private static final PlayerContainerResident instance = new PlayerContainerResident();
-
-    private PlayerContainerResident() {
-    }
-
-    public static PlayerContainerResident getInstance() {
-        return instance;
+    PlayerContainerResident() {
     }
 
     @Override

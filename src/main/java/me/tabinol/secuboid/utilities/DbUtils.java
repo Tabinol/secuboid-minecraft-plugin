@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -74,9 +75,18 @@ public final class DbUtils {
         return matrix;
     }
 
+    public static <U> void setOpt(final PreparedStatement stmt, final int parameterIndex, final Optional<U> uOpt,
+            final SqlBiConsumer<Integer, U> consumer) throws SQLException {
+        if (uOpt.isPresent()) {
+            consumer.accept(parameterIndex, uOpt.get());
+        } else {
+            stmt.setNull(parameterIndex, Types.NULL);
+        }
+    }
+
     public static <R> Optional<R> getOpt(final ResultSet rs, final String columnLabel,
-            final SqlFunction<String, R> supplier) throws SQLException {
-        final R r = supplier.apply(columnLabel);
+            final SqlFunction<String, R> function) throws SQLException {
+        final R r = function.apply(columnLabel);
         if (rs.wasNull()) {
             return null;
         }

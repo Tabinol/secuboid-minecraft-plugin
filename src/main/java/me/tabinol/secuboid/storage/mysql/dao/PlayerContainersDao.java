@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public final class PlayerContainersDao {
 
     public Map<Integer, PlayerContainerPojo> getIdToPlayerContainer(final Connection conn) throws SQLException {
         final String sql = "SELECT `id`, `player_container_type_id`, `player_uuid`, `parameter` " //
-                + "FROM `{{TP}}lands`";
+                + "FROM `{{TP}}player_containers`";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<Integer, PlayerContainerPojo> results = new HashMap<>();
@@ -54,6 +55,25 @@ public final class PlayerContainersDao {
                     results.put(id, new PlayerContainerPojo(id, playerContainerTypeId, playerUUIDOpt, parameterOpt));
                 }
                 return results;
+            }
+        }
+    }
+
+    public int insertOrGetPlayerContainer(final Connection conn, final int playerContainerTypeId,
+            final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}player_containers` " //
+                + "(`player_container_type_id`, `player_uuid`, `parameter`) VALUES (?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE `id`=LAST_INSERT_ID(`id`)";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
+                Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, playerContainerTypeId);
+            DbUtils.setOpt(stmt, 2, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setOpt(stmt, 3, parameterOpt, (i, u) -> stmt.setString(i, u));
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                rs.next();
+                return rs.getInt("id");
             }
         }
     }

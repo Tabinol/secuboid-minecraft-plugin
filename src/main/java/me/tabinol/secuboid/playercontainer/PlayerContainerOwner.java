@@ -30,13 +30,7 @@ import me.tabinol.secuboid.permissionsflags.PermissionList;
  */
 public final class PlayerContainerOwner implements PlayerContainer {
 
-    private static final PlayerContainerOwner instance = new PlayerContainerOwner();
-
-    private PlayerContainerOwner() {
-    }
-
-    public static PlayerContainerOwner getInstance() {
-        return instance;
+    PlayerContainerOwner() {
     }
 
     @Override

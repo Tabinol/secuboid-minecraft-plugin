@@ -47,7 +47,7 @@ import me.tabinol.secuboid.utilities.StringChanges;
 /**
  * ApprovesFlat
  */
-public class ApprovesFlat {
+public final class ApprovesFlat {
 
     private final String PARAM_NAME_ACTION = "approveAction";
     private final String PARAM_NAME_REMOVED_AREA_ID = "removedAreaId";
@@ -144,8 +144,8 @@ public class ApprovesFlat {
         }
 
         final String[] ownerS = StringChanges.splitAddVoid(section.getString(PARAM_NAME_OWNER), ":");
-        final PlayerContainer pc = secuboid.getNewInstance()
-                .createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        final PlayerContainer pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(
+                PlayerContainerType.getFromString(ownerS[0]), Optional.ofNullable(ownerS[1]), Optional.empty());
         Optional<Land> parentOpt = Optional.empty();
         Optional<Integer> newAreaIdOpt = Optional.empty();
         Optional<Integer> removedAreaIdOpt = Optional.empty();
@@ -209,8 +209,8 @@ public class ApprovesFlat {
         }
 
         final String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
-        final PlayerContainer pc = secuboid.getNewInstance()
-                .createPlayerContainer(PlayerContainerType.getFromString(ownerS[0]), ownerS[1]);
+        final PlayerContainer pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(
+                PlayerContainerType.getFromString(ownerS[0]), Optional.ofNullable(ownerS[1]), Optional.empty());
         Land parent = null;
         Area newArea = null;
 

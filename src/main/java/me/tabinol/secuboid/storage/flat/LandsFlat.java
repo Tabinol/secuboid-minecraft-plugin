@@ -34,24 +34,26 @@ import java.util.logging.Level;
 
 import org.bukkit.Location;
 
-import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.FlagType;
+import me.tabinol.secuboid.permissionsflags.FlagValue;
 import me.tabinol.secuboid.permissionsflags.Permission;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.playercontainer.PlayerContainers;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
  * LandsFlat
  */
-public class LandsFlat {
+public final class LandsFlat {
 
     /**
      * The Constant EXT_CONF.
@@ -151,8 +153,8 @@ public class LandsFlat {
      * @return a map with a land (if success) and the parent (if exists)
      */
     private Entry<Land, UUID> loadLand(final File file) {
+        final PlayerContainers playerContainers = secuboid.getPlayerContainers();
 
-        final NewInstance newInstance = secuboid.getNewInstance();
         int version;
         ConfLoaderFlat cf = null;
         UUID uuid;
@@ -201,7 +203,7 @@ public class LandsFlat {
             final String ownerS = cf.getValueString();
 
             // create owner (PlayerContainer)
-            owner = newInstance.getPlayerContainerFromFileFormat(ownerS);
+            owner = playerContainers.getPlayerContainerFromFileFormat(ownerS);
             if (owner == null) {
                 throw new FileLoadException(secuboid, file.getName(), cf.getLine(), cf.getLineNb(), "Invalid owner.");
             }
@@ -225,13 +227,13 @@ public class LandsFlat {
 
             // Residents
             while ((str = cf.getNextString()) != null) {
-                residents.add(newInstance.getPlayerContainerFromFileFormat(str));
+                residents.add(playerContainers.getPlayerContainerFromFileFormat(str));
             }
             cf.readParam();
 
             // Banneds
             while ((str = cf.getNextString()) != null) {
-                banneds.add(newInstance.getPlayerContainerFromFileFormat(str));
+                banneds.add(playerContainers.getPlayerContainerFromFileFormat(str));
             }
             cf.readParam();
 
@@ -239,7 +241,7 @@ public class LandsFlat {
             while ((str = cf.getNextString()) != null) {
                 final String[] multiStr = str.split(":");
                 TreeMap<PermissionType, Permission> permPlayer;
-                final PlayerContainer pc = newInstance
+                final PlayerContainer pc = playerContainers
                         .getPlayerContainerFromFileFormat(multiStr[0] + ":" + multiStr[1]);
                 final PermissionType permType = secuboid.getPermissionsFlags().getPermissionTypeNoValid(multiStr[2]);
                 if (!permissions.containsKey(pc)) {
@@ -255,7 +257,7 @@ public class LandsFlat {
 
             // Create flags
             while ((str = cf.getNextString()) != null) {
-                flags.add(secuboid.getNewInstance().getFlagFromFileFormat(str));
+                flags.add(getFlagFromFileFormat(str));
             }
             cf.readParam();
 
@@ -269,7 +271,7 @@ public class LandsFlat {
 
             // Players Notify
             while ((str = cf.getNextString()) != null) {
-                pNotifs.add((PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(str));
+                pNotifs.add((PlayerContainerPlayer) playerContainers.getPlayerContainerFromFileFormat(str));
             }
 
             // Economy
@@ -296,7 +298,8 @@ public class LandsFlat {
                 rented = Boolean.parseBoolean(cf.getValueString());
                 if (rented) {
                     cf.readParam();
-                    tenant = (PlayerContainerPlayer) newInstance.getPlayerContainerFromFileFormat(cf.getValueString());
+                    tenant = (PlayerContainerPlayer) playerContainers
+                            .getPlayerContainerFromFileFormat(cf.getValueString());
                     cf.readParam();
                     lastPayment = cf.getValueLong();
                 }
@@ -479,5 +482,14 @@ public class LandsFlat {
         if (!getLandFile(land).delete()) {
             secuboid.getLogger().severe("Enable to delete the land " + land.getName());
         }
+    }
+
+    private Flag getFlagFromFileFormat(final String str) {
+
+        final String[] multiStr = StringChanges.splitKeepQuote(str, ":");
+        final FlagType ft = secuboid.getPermissionsFlags().getFlagTypeNoValid(multiStr[0]);
+        final Object value = FlagValue.getFlagValueFromFileFormat(multiStr[1], ft);
+
+        return secuboid.getPermissionsFlags().newFlag(ft, value, Boolean.parseBoolean(multiStr[2]));
     }
 }

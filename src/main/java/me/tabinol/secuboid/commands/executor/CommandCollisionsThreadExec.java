@@ -42,7 +42,7 @@ import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 
 /**
@@ -275,7 +275,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
         // If the player is adminmode, the owner is nobody, and set type
         if (playerConf.isAdminMode()) {
-            landCheckValues.localOwner = PlayerContainerNobody.getInstance();
+            landCheckValues.localOwner = secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.NOBODY);
             landCheckValues.localType = secuboid.getConf().getTypeAdminMode();
         } else {
             landCheckValues.localOwner = playerConf.getPlayerContainer();

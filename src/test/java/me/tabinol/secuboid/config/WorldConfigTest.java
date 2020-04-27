@@ -24,20 +24,20 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import me.tabinol.secuboid.NewInstance;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.bukkit.LogHandler;
 import me.tabinol.secuboid.config.WorldConfig.FileType;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerEverybody;
-import me.tabinol.secuboid.playercontainer.PlayerContainerGroup;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.playercontainer.PlayerContainers;
 
 /**
  * WorldConfigTest
@@ -45,6 +45,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerGroup;
 public final class WorldConfigTest {
 
     Secuboid secuboid;
+    PlayerContainers playerContainers;
     WorldConfig worldConfig;
     Logger logger;
     LogHandler logHandler;
@@ -52,8 +53,8 @@ public final class WorldConfigTest {
     @Before
     public void init() {
         secuboid = mock(Secuboid.class);
-        final NewInstance newInstance = new NewInstance(secuboid);
-        when(secuboid.getNewInstance()).thenReturn(newInstance);
+        playerContainers = new PlayerContainers(secuboid);
+        when(secuboid.getPlayerContainers()).thenReturn(playerContainers);
 
         // Logger
         logHandler = new LogHandler(this.getClass());
@@ -61,7 +62,7 @@ public final class WorldConfigTest {
         when(secuboid.getLogger()).thenReturn(logger);
 
         // Permissions flags
-        final PermissionsFlags permissionsFlags = new PermissionsFlags(secuboid);
+        final PermissionsFlags permissionsFlags = new PermissionsFlags();
         when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
 
         worldConfig = new WorldConfig(secuboid);
@@ -232,10 +233,14 @@ public final class WorldConfigTest {
         final InputStream inputStream = new ByteArrayInputStream(yml.getBytes());
         worldConfig.loadDataYml(inputStream, FileType.LAND_DEFAULT);
 
-        assertTrue(permissionValueCheck(new PlayerContainerGroup(secuboid, "new"), "BUILD", false));
-        assertTrue(permissionValueCheck(PlayerContainerEverybody.getInstance(), "BUILD", false));
-        assertTrue(permissionValueCheck(new PlayerContainerGroup(secuboid, "new"), "OPEN", false));
-        assertTrue(permissionValueCheck(PlayerContainerEverybody.getInstance(), "OPEN", false));
+        assertTrue(permissionValueCheck(playerContainers.getOrAddPlayerContainer(PlayerContainerType.GROUP,
+                Optional.of("new"), Optional.empty()), "BUILD", false));
+        assertTrue(permissionValueCheck(playerContainers.getPlayerContainer(PlayerContainerType.EVERYBODY), "BUILD",
+                false));
+        assertTrue(permissionValueCheck(playerContainers.getOrAddPlayerContainer(PlayerContainerType.GROUP,
+                Optional.of("new"), Optional.empty()), "OPEN", false));
+        assertTrue(permissionValueCheck(playerContainers.getPlayerContainer(PlayerContainerType.EVERYBODY), "OPEN",
+                false));
     }
 
     @After

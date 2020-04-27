@@ -49,6 +49,7 @@ import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
+import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.permissionsflags.Permission;
@@ -77,7 +78,7 @@ import me.tabinol.secuboid.utilities.StringChanges;
 /**
  * StorageMySql
  */
-public class StorageMySql implements Storage {
+public final class StorageMySql implements Storage {
 
     private final Secuboid secuboid;
     private final Logger log;
@@ -221,8 +222,32 @@ public class StorageMySql implements Storage {
 
     @Override
     public void saveLand(final Land land) {
-        // TODO Auto-generated method stub
 
+        try (final Connection conn = dbConn.openConnection()) {
+
+            // Get landType
+            final Type type = land.getType();
+            final Optional<Integer> typeIdOpt;
+            if (type != null) {
+                typeIdOpt = Optional.of(landsTypesDao.insertOrGetId(conn, type.getName()));
+            } else {
+                typeIdOpt = Optional.empty();
+            }
+
+            // Get ownerId
+
+            // Update land table
+            // TODO Ccontinue
+            // final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(),
+            // land.isApproved(), typeIdOpt, ownerId, parentUUIDOpt, priority, money,
+            // forSale, forSaleSignLocationOpt, salePriceOpt, forRent,
+            // forRentSignLocationOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
+            // tenantUUIDOpt, lastPaymentMillisOpt)
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to save land to database [landUUID=%s, landName=%s]",
+                    land.getUUID(), land.getName()), e);
+            return;
+        }
     }
 
     @Override
@@ -413,8 +438,20 @@ public class StorageMySql implements Storage {
         final String PlayerContainerTypeStr = idToPlayerContainerType
                 .get(playerContainerPojo.getPlayerContainerTypeId());
         final PlayerContainerType playerContainerType = PlayerContainerType.getFromString(PlayerContainerTypeStr);
-        return secuboid.getNewInstance().createPlayerContainer(playerContainerType,
-                playerContainerPojo.getParameterOpt().orElse(null));
+        // TODO Change for PlayerContainerPlayer (UUID)
+        return secuboid.getPlayerContainers().getOrAddPlayerContainer(playerContainerType,
+                playerContainerPojo.getParameterOpt(), Optional.empty());
+    }
+
+    private int getOrAddPlayerContainer(final Connection conn, final PlayerContainer playerContainer)
+            throws SQLException {
+        final int playerContainerTypeId = playerContainersTypesDao.insertOrGetId(conn,
+                playerContainer.getContainerType().name());
+        // final int playerContainerId =
+        // playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId,
+        // playerUUIDOpt, parameterOpt)
+        // TODO Contineu
+        return 0;
     }
 
     /**
@@ -529,8 +566,8 @@ public class StorageMySql implements Storage {
         }
         // Players Notify
         for (final UUID playerUUID : playerNotifyUUIDs) {
-            pNotifs.add((PlayerContainerPlayer) secuboid.getNewInstance()
-                    .createPlayerContainer(PlayerContainerType.PLAYER, playerUUID.toString()));
+            pNotifs.add(
+                    (PlayerContainerPlayer) secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(playerUUID));
         }
         // Economy
         boolean forSale = landPojo.isForSale();
@@ -604,8 +641,8 @@ public class StorageMySql implements Storage {
             land.setForRent(landPojo.getRentPriceOpt().orElse(0d), landPojo.getRentRenewOpt().orElse(7),
                     landPojo.getRentAutoRenewOpt().orElse(false), forRentSignLocNullable);
             landPojo.getTenantUUIDOpt().ifPresent(tenantUUID -> {
-                final PlayerContainerPlayer tenant = (PlayerContainerPlayer) secuboid.getNewInstance()
-                        .createPlayerContainer(PlayerContainerType.PLAYER, tenantUUID.toString());
+                final PlayerContainerPlayer tenant = (PlayerContainerPlayer) secuboid.getPlayerContainers()
+                        .getOrAddPlayerContainerPlayer(tenantUUID);
                 land.setRented(tenant);
                 land.setLastPaymentTime(landPojo.getLastPaymentMillisOpt().orElse(0l));
 

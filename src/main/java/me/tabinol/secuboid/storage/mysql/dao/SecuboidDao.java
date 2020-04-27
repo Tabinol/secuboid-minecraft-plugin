@@ -65,6 +65,7 @@ public final class SecuboidDao {
         "  `parameter` VARCHAR(200) NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`),{{LS}}" +
+        "  UNIQUE KEY `player_container_type_id` (`player_container_type_id`, `player_uuid`, `parameter`),{{LS}}" +
         "  INDEX `fk_player_containers_name_id_idx` (`player_container_type_id`),{{LS}}" +
         "  INDEX `fk_player_containers_player_uuid_idx` (`player_uuid`),{{LS}}" +
         "  CONSTRAINT `fk_player_containers_type_id`{{LS}}" +

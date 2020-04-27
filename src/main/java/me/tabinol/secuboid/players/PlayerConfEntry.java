@@ -135,7 +135,7 @@ public final class PlayerConfEntry {
         if (sender instanceof Player) {
             player = (Player) sender;
             playerSelection = new PlayerSelection(secuboid, this);
-            pcp = new PlayerContainerPlayer(secuboid, player.getUniqueId());
+            pcp = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(player.getUniqueId());
         } else {
             player = null;
             playerSelection = null;

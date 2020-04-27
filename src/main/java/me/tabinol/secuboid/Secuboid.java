@@ -44,6 +44,7 @@ import me.tabinol.secuboid.listeners.PlayerListener;
 import me.tabinol.secuboid.listeners.PvpListener;
 import me.tabinol.secuboid.listeners.WorldListener;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
+import me.tabinol.secuboid.playercontainer.PlayerContainers;
 import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.playerscache.PlayersCache;
 import me.tabinol.secuboid.storage.Storage;
@@ -67,9 +68,9 @@ public final class Secuboid extends JavaPlugin {
     private MavenAppProperties mavenAppProperties;
 
     /**
-     * the new instance.
+     * the player containers.
      */
-    private NewInstance newInstance;
+    private PlayerContainers playerContainers;
 
     /**
      * The types.
@@ -168,9 +169,10 @@ public final class Secuboid extends JavaPlugin {
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
-        permissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
+        permissionsFlags = new PermissionsFlags(); // Must be before the configuration!
         types = new Types();
         conf = new Config(this);
+        playerContainers = new PlayerContainers(this);
 
         // For inventory config
         if (conf.isMultipleInventories()) {
@@ -182,7 +184,6 @@ public final class Secuboid extends JavaPlugin {
             inventoriesOpt = Optional.empty();
         }
 
-        newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
             playerMoneyOpt = Optional.of(new PlayerMoney(dependPlugin.getVaultEconomy()));
@@ -286,12 +287,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Gets the new instance to create some objects.
+     * Gets the player containers.
      *
-     * @return the new instance
+     * @return the player containers
      */
-    public NewInstance getNewInstance() {
-        return newInstance;
+    public PlayerContainers getPlayerContainers() {
+        return playerContainers;
     }
 
     /**

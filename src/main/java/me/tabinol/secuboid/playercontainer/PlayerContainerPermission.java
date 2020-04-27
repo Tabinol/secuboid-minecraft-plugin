@@ -37,7 +37,7 @@ public final class PlayerContainerPermission implements PlayerContainer {
      */
     private final String perm;
 
-    public PlayerContainerPermission(final String bukkitPermission) {
+    PlayerContainerPermission(final String bukkitPermission) {
         perm = bukkitPermission;
     }
 

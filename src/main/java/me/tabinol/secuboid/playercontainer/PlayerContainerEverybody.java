@@ -28,13 +28,7 @@ import me.tabinol.secuboid.lands.LandPermissionsFlags;
  */
 public final class PlayerContainerEverybody implements PlayerContainer {
 
-    private static final PlayerContainerEverybody instance = new PlayerContainerEverybody();
-
-    private PlayerContainerEverybody() {
-    }
-
-    public static PlayerContainerEverybody getInstance() {
-        return instance;
+    PlayerContainerEverybody() {
     }
 
     @Override

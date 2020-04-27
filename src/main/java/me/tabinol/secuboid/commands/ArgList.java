@@ -17,6 +17,8 @@
  */
 package me.tabinol.secuboid.commands;
 
+import java.util.Optional;
+
 import org.bukkit.command.CommandSender;
 
 import me.tabinol.secuboid.Secuboid;
@@ -32,7 +34,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 /**
  * The Class ArgList. Works with command arguments.
  */
-public class ArgList {
+public final class ArgList {
 
     private final Secuboid secuboid;
 
@@ -179,7 +181,7 @@ public class ArgList {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "GENERAL.MISSINGINFO");
         }
 
-        final FlagValue flagValue = secuboid.getNewInstance().getFlagValueFromFileFormat(getNextToEnd(), flagType);
+        final FlagValue flagValue = FlagValue.getFlagValueFromFileFormat(getNextToEnd(), flagType);
 
         if (flagValue != null) {
             return secuboid.getPermissionsFlags().newFlag(flagType, flagValue, true);
@@ -242,9 +244,9 @@ public class ArgList {
                 throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
                         "COMMAND.CONTAINER.CONTAINERNULL");
             }
-            pc = secuboid.getNewInstance().createPlayerContainer(pcType, param);
+            pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(pcType, Optional.of(param), Optional.empty());
         } else {
-            pc = secuboid.getNewInstance().createPlayerContainer(pcType, "");
+            pc = secuboid.getPlayerContainers().getPlayerContainer(pcType);
         }
 
         if (pcType == PlayerContainerType.PLAYER && pc == null) {

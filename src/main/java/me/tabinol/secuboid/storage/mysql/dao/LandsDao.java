@@ -81,4 +81,59 @@ public final class LandsDao {
             }
         }
     }
+
+    public void insertOrUpdateLand(final Connection conn, final LandPojo landPojo) throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands`(" //
+                + "`uuid`, `name`, `approved`, `type_id`, `owner_id`, " //
+                + "`parent_uuid`, `priority`, `money`, `for_sale`, `for_sale_sign_location`, " //
+                + "`sale_price`, `for_rent`, `for_rent_sign_location`, `rent_price`, " //
+                + "`rent_renew`, `rent_auto_renew`, `tenant_uuid`, `last_payment_millis`) " //
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`name`=?, `approved`=?, `type_id`=?, `owner_id`=?, " //
+                + "`parent_uuid`=?, `priority`=?, `money`=?, `for_sale`=?, `for_sale_sign_location`=?, " //
+                + "`sale_price`=?, `for_rent`=?, `for_rent_sign_location`=?, `rent_price`=?, " //
+                + "`rent_renew`=?, `rent_auto_renew`=?, `tenant_uuid`=?, `last_payment_millis`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landPojo.getUUID());
+            stmt.setString(2, landPojo.getName());
+            stmt.setBoolean(3, landPojo.isApproved());
+            DbUtils.setOpt(stmt, 4, landPojo.getTypeIdOpt(), (i, u) -> stmt.setInt(i, u));
+            stmt.setInt(5, landPojo.getOwnerId());
+            DbUtils.setOpt(stmt, 6, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            stmt.setShort(7, landPojo.getPriority());
+            stmt.setDouble(8, landPojo.getMoney());
+            stmt.setBoolean(9, landPojo.isForSale());
+            DbUtils.setOpt(stmt, 10, landPojo.getForSaleSignLocationOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 11, landPojo.getSalePriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            stmt.setBoolean(12, landPojo.isForRent());
+            DbUtils.setOpt(stmt, 13, landPojo.getForRentSignLocationOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 14, landPojo.getRentPriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 15, landPojo.getRentRenewOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 16, landPojo.getRentAutoRenewOpt(), (i, u) -> stmt.setBoolean(i, u));
+            DbUtils.setOpt(stmt, 17, landPojo.getTenantUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setOpt(stmt, 18, landPojo.getLastPaymentMillisOpt(), (i, u) -> stmt.setLong(i, u));
+
+            stmt.setString(19, landPojo.getName());
+            stmt.setBoolean(20, landPojo.isApproved());
+            DbUtils.setOpt(stmt, 21, landPojo.getTypeIdOpt(), (i, u) -> stmt.setInt(i, u));
+            stmt.setInt(22, landPojo.getOwnerId());
+            DbUtils.setOpt(stmt, 23, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            stmt.setShort(24, landPojo.getPriority());
+            stmt.setDouble(25, landPojo.getMoney());
+            stmt.setBoolean(26, landPojo.isForSale());
+            DbUtils.setOpt(stmt, 27, landPojo.getForSaleSignLocationOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 28, landPojo.getSalePriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            stmt.setBoolean(29, landPojo.isForRent());
+            DbUtils.setOpt(stmt, 30, landPojo.getForRentSignLocationOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 31, landPojo.getRentPriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 32, landPojo.getRentRenewOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 33, landPojo.getRentAutoRenewOpt(), (i, u) -> stmt.setBoolean(i, u));
+            DbUtils.setOpt(stmt, 34, landPojo.getTenantUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setOpt(stmt, 35, landPojo.getLastPaymentMillisOpt(), (i, u) -> stmt.setLong(i, u));
+
+            stmt.executeUpdate();
+        }
+    }
 }

@@ -39,7 +39,7 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 	private final UUID minecraftUUID;
 	private final String name;
 
-	public PlayerContainerPlayer(final Secuboid secuboid, final UUID minecraftUUID) {
+	PlayerContainerPlayer(final Secuboid secuboid, final UUID minecraftUUID) {
 		this.secuboid = secuboid;
 		name = "ID-" + minecraftUUID.toString();
 		this.minecraftUUID = minecraftUUID;

@@ -43,11 +43,8 @@ import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerResident;
-import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.storage.Savable;
 import me.tabinol.secuboid.storage.SavableParameter;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
@@ -294,7 +291,7 @@ public final class Land implements Savable, Approvable {
      * Sets the land default values.
      */
     public void setDefault() {
-        owner = PlayerContainerNobody.getInstance();
+        owner = secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.NOBODY);
         residents.clear();
         doSave(SaveActionEnum.LAND_RESIDENT_REMOVE_ALL, SaveOn.DATABASE);
         playerNotify.clear();
@@ -656,7 +653,8 @@ public final class Land implements Savable, Approvable {
      * @return true, if is owner
      */
     public boolean isOwner(final Player player) {
-        if (PlayerContainerOwner.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.OWNER).hasAccess(player,
+                landPermissionsFlags)) {
             return true;
         }
         return parent != null
@@ -734,7 +732,8 @@ public final class Land implements Savable, Approvable {
      * @return true, if is resident
      */
     public boolean isResident(final Player player) {
-        if (PlayerContainerResident.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.RESIDENT).hasAccess(player,
+                landPermissionsFlags)) {
             return true;
         }
         return parent != null
@@ -1342,7 +1341,8 @@ public final class Land implements Savable, Approvable {
      * @return true, if is tenant
      */
     public boolean isTenant(final Player player) {
-        if (tenant != null && PlayerContainerTenant.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (tenant != null && secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.TENANT)
+                .hasAccess(player, landPermissionsFlags)) {
             return true;
         }
         return parent != null

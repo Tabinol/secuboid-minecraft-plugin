@@ -29,6 +29,7 @@ import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
 /**
  * Tests for lands.
@@ -43,18 +44,18 @@ public final class LandsTest {
 
     @Before
     public void initLands() throws SecuboidLandException {
-        lands = new InitLands().getLands();
+        final InitLands initLands = new InitLands();
+        lands = initLands.getLands();
+        final PlayerContainerNobody playerContainerNobody = (PlayerContainerNobody) initLands.getPlayerContainers()
+                .getPlayerContainer(PlayerContainerType.NOBODY);
 
         // Create lands for test
-        lands.createLand(TEST_CUBOID, PlayerContainerNobody.getInstance(),
-                new CuboidArea(true, WORLD, 0, 0, 0, 99, 255, 99));
-        lands.createLand(TEST_CYLINDER, PlayerContainerNobody.getInstance(),
-                new CylinderArea(true, WORLD, 9, 9, 9, 120, 255, 100));
+        lands.createLand(TEST_CUBOID, playerContainerNobody, new CuboidArea(true, WORLD, 0, 0, 0, 99, 255, 99));
+        lands.createLand(TEST_CYLINDER, playerContainerNobody, new CylinderArea(true, WORLD, 9, 9, 9, 120, 255, 100));
         final RegionMatrix regionMatrix = new RegionMatrix();
         regionMatrix.addPoint(200, 200);
         regionMatrix.addPoint(-200, -200);
-        lands.createLand(TEST_ROAD, PlayerContainerNobody.getInstance(),
-                new RoadArea(true, WORLD, 0, 255, regionMatrix));
+        lands.createLand(TEST_ROAD, playerContainerNobody, new RoadArea(true, WORLD, 0, 255, regionMatrix));
     }
 
     @Test

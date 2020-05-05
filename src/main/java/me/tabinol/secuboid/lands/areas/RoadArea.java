@@ -238,7 +238,16 @@ public final class RoadArea implements Area {
     }
 
     /**
-     * Gets de point value.
+     * Gets all points.
+     *
+     * @return all point values
+     */
+    public Map<Integer, Map<Integer, ChunkMatrix>> getPoints() {
+        return regionMatrix.getPoints();
+    }
+
+    /**
+     * Gets the point value.
      *
      * @param x the x position
      * @param z the z position

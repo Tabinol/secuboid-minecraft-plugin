@@ -64,4 +64,49 @@ public final class FlagsDao {
             }
         }
     }
+
+    public void insertOrUpdateFlag(final Connection conn, final FlagPojo flagPojo) throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
+                + "`land_uuid`, `flag_id`, `value_string`, `value_double`, " //
+                + "`value_boolean`, `inheritance`) " //
+                + "VALUES(?, ?, ?, ?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`value_string`=?, `value_double`=?, " //
+                + "`value_boolean`=?, `inheritance`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, flagPojo.getLandUUID());
+            stmt.setInt(2, flagPojo.getFlagId());
+            DbUtils.setOpt(stmt, 3, flagPojo.getValueStringOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 4, flagPojo.getValueDoubleOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 5, flagPojo.getValueBooleanOpt(), (i, u) -> stmt.setBoolean(i, u));
+            stmt.setBoolean(6, flagPojo.getInheritance());
+
+            DbUtils.setOpt(stmt, 7, flagPojo.getValueStringOpt(), (i, u) -> stmt.setString(i, u));
+            DbUtils.setOpt(stmt, 8, flagPojo.getValueDoubleOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 9, flagPojo.getValueBooleanOpt(), (i, u) -> stmt.setBoolean(i, u));
+            stmt.setBoolean(10, flagPojo.getInheritance());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteFlag(final Connection conn, final UUID landUUID, final int flagId) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_flags` WHERE `land_uuid`=? AND `flag_id`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setInt(2, flagId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteAllLandFlags(final Connection conn, final UUID landUUID) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_flags` WHERE `land_uuid`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.executeUpdate();
+        }
+    }
 }

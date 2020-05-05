@@ -300,31 +300,30 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}approves` ({{LS}}" +
-        "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
-        "  `approve_action_id` INT NOT NULL,{{LS}}" +
         "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `approve_action_id` INT NOT NULL,{{LS}}" +
         "  `removed_area_id` INT NULL,{{LS}}" +
         "  `new_area_id` INT NULL,{{LS}}" +
         "  `owner_id` INT NOT NULL,{{LS}}" +
         "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
-        "  `price` DOUBLE NULL,{{LS}}" +
+        "  `price` DOUBLE NOT NULL,{{LS}}" +
         "  `transaction_datetime` DATETIME NOT NULL,{{LS}}" +
-        "  PRIMARY KEY (`id`),{{LS}}" +
-        "  UNIQUE KEY `id` (`id`),{{LS}}" +
-        "  INDEX `fk_approves_approve_action_id_idx` (`approve_action_id`),{{LS}}" +
+        "  PRIMARY KEY (`land_uuid`),{{LS}}" +
+        "  UNIQUE KEY `land_uuid` (`land_uuid`),{{LS}}" +
         "  INDEX `fk_approves_land_uuid_idx` (`land_uuid`),{{LS}}" +
+        "  INDEX `fk_approves_approve_action_id_idx` (`approve_action_id`),{{LS}}" +
         "  INDEX `fk_approves_removed_area_id_idx` (`id` ASC, `land_uuid`),{{LS}}" +
         "  INDEX `fk_approves_new_area_id_idx` (`new_area_id`),{{LS}}" +
         "  INDEX `fk_approves_owner_id_idx` (`owner_id`),{{LS}}" +
         "  INDEX `fk_approves_parent_id_idx` (`parent_uuid`),{{LS}}" +
-        "  CONSTRAINT `fk_approves_approve_action_id`{{LS}}" +
-        "    FOREIGN KEY (`approve_action_id`){{LS}}" +
-        "    REFERENCES `{{TP}}approves_actions` (`id`){{LS}}" +
-        "    ON DELETE NO ACTION{{LS}}" +
-        "    ON UPDATE NO ACTION,{{LS}}" +
         "  CONSTRAINT `fk_approves_land_uuid`{{LS}}" +
         "    FOREIGN KEY (`land_uuid`){{LS}}" +
         "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
+        "    ON DELETE NO ACTION{{LS}}" +
+        "    ON UPDATE NO ACTION,{{LS}}" +
+        "  CONSTRAINT `fk_approves_approve_action_id`{{LS}}" +
+        "    FOREIGN KEY (`approve_action_id`){{LS}}" +
+        "    REFERENCES `{{TP}}approves_actions` (`id`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
         "    ON UPDATE NO ACTION,{{LS}}" +
         "  CONSTRAINT `fk_approves_removed_area_id`{{LS}}" +

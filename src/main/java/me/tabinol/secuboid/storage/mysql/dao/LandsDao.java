@@ -136,4 +136,13 @@ public final class LandsDao {
             stmt.executeUpdate();
         }
     }
+
+    public void deleteLand(final Connection conn, final UUID uuid) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands` WHERE `uuid`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, uuid);
+            stmt.executeUpdate();
+        }
+    }
 }

@@ -43,6 +43,15 @@ public final class ChunkMatrix {
     }
 
     /**
+     * Gets the matrix in short[16] format.
+     * 
+     * @return the matrix
+     */
+    public short[] getMatrix() {
+        return matrix;
+    }
+
+    /**
      * Adds a point in chunk matrix.
      *
      * @param chunkX the chunk x position

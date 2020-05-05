@@ -68,4 +68,50 @@ public final class AreasDao {
             }
         }
     }
+
+    public void insertOrUpdateArea(final Connection conn, final AreaPojo areaPojo) throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands_areas`(" //
+                + "`land_uuid`, `area_id`, `approved`, `world_name`, `area_type_id`, " //
+                + "`x1`, `y1`, `z1`, `x2`, `y2`, `z2`) " //
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`approved`=?, `world_name`=?, `area_type_id`=?, " //
+                + "`x1`=?, `y1`=?, `z1`=?, `x2`=?, `y2`=?, `z2`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, areaPojo.getLandUUID());
+            stmt.setInt(2, areaPojo.getAreaId());
+            stmt.setBoolean(3, areaPojo.getApproved());
+            stmt.setString(4, areaPojo.getWorldName());
+            stmt.setInt(5, areaPojo.getAreaTypeId());
+            stmt.setInt(6, areaPojo.getX1());
+            stmt.setInt(7, areaPojo.getY1());
+            stmt.setInt(8, areaPojo.getZ1());
+            stmt.setInt(9, areaPojo.getX2());
+            stmt.setInt(10, areaPojo.getY2());
+            stmt.setInt(11, areaPojo.getZ2());
+
+            stmt.setBoolean(12, areaPojo.getApproved());
+            stmt.setString(13, areaPojo.getWorldName());
+            stmt.setInt(14, areaPojo.getAreaTypeId());
+            stmt.setInt(15, areaPojo.getX1());
+            stmt.setInt(16, areaPojo.getY1());
+            stmt.setInt(17, areaPojo.getZ1());
+            stmt.setInt(18, areaPojo.getX2());
+            stmt.setInt(19, areaPojo.getY2());
+            stmt.setInt(20, areaPojo.getZ2());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteArea(final Connection conn, final UUID landUUID, final int areaId) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_areas` WHERE `land_uuid`=? AND `area_id`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setInt(2, areaId);
+            stmt.executeUpdate();
+        }
+    }
 }

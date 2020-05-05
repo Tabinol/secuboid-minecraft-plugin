@@ -61,4 +61,49 @@ public final class PermissionsDao {
             }
         }
     }
+
+    public void insertOrUpdatePermission(final Connection conn, final PermissionPojo permissionPojo)
+            throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands_permissions`(" //
+                + "`land_uuid`, `player_container_id`, `permission_id`, `value`, `inheritance`) " //
+                + "VALUES(?, ?, ?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`value`=?, `inheritance`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, permissionPojo.getLandUUID());
+            stmt.setInt(2, permissionPojo.getPlayerContainerId());
+            stmt.setInt(3, permissionPojo.getPermissionId());
+            stmt.setBoolean(4, permissionPojo.getValue());
+            stmt.setBoolean(5, permissionPojo.getInheritance());
+
+            stmt.setBoolean(6, permissionPojo.getValue());
+            stmt.setBoolean(7, permissionPojo.getInheritance());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deletePermission(final Connection conn, final UUID landUUID, final int playerContainerId,
+            final int permissionId) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_permissions` " //
+                + "WHERE `land_uuid`=? AND `player_container_id`=? AND `permission_id`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setInt(2, playerContainerId);
+            stmt.setInt(3, permissionId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteAllLandPermissions(final Connection conn, final UUID landUUID) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_permissions` " //
+                + "WHERE `land_uuid`";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.executeUpdate();
+        }
+    }
 }

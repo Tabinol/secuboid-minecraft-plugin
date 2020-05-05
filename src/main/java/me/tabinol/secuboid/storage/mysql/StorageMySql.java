@@ -20,6 +20,7 @@ package me.tabinol.secuboid.storage.mysql;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +34,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 
@@ -41,6 +43,7 @@ import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaType;
@@ -49,6 +52,7 @@ import me.tabinol.secuboid.lands.areas.CuboidArea;
 import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
+import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -59,6 +63,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
+import me.tabinol.secuboid.storage.mysql.dao.ApprovesDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasRoadsMatricesDao;
 import me.tabinol.secuboid.storage.mysql.dao.FlagsDao;
@@ -67,6 +72,7 @@ import me.tabinol.secuboid.storage.mysql.dao.LandsDao;
 import me.tabinol.secuboid.storage.mysql.dao.PermissionsDao;
 import me.tabinol.secuboid.storage.mysql.dao.PlayerContainersDao;
 import me.tabinol.secuboid.storage.mysql.dao.SecuboidDao;
+import me.tabinol.secuboid.storage.mysql.pojo.ApprovePojo;
 import me.tabinol.secuboid.storage.mysql.pojo.AreaPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
@@ -99,6 +105,8 @@ public final class StorageMySql implements Storage {
     private final FlagsDao flagsDao;
     private final GenericIdValueDao<Integer, String> flagsTypesDao;
     private final GenericIdValueDao<UUID, UUID> playerNotifiesDao;
+    private final ApprovesDao approvesDao;
+    private final GenericIdValueDao<Integer, String> approvesActionsDao;
 
     public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
         this.secuboid = secuboid;
@@ -123,6 +131,9 @@ public final class StorageMySql implements Storage {
         flagsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "flags", "id", "name");
         playerNotifiesDao = new GenericIdValueDao<>(dbConn, UUID.class, UUID.class, "lands_players_notifies",
                 "land_uuid", "player_uuid");
+        approvesDao = new ApprovesDao(dbConn);
+        approvesActionsDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "approves_actions", "id",
+                "name");
     }
 
     @Override
@@ -222,7 +233,6 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void saveLand(final Land land) {
-
         try (final Connection conn = dbConn.openConnection()) {
 
             // Get landType
@@ -235,147 +245,355 @@ public final class StorageMySql implements Storage {
             }
 
             // Get ownerId
+            final int ownerId = getOrAddPlayerContainer(conn, land.getOwner());
+
+            // For sale
+            final boolean isForSale = land.isForSale();
+            final Optional<String> forSaleSignLocationOpt;
+            final Optional<Double> salePriceOpt;
+            if (isForSale) {
+                forSaleSignLocationOpt = Optional.of(StringChanges.locationToString(land.getSaleSignLoc()));
+                salePriceOpt = Optional.of(land.getSalePrice());
+            } else {
+                forSaleSignLocationOpt = Optional.empty();
+                salePriceOpt = Optional.empty();
+            }
+
+            // For rent
+            final boolean isForRent = land.isForRent();
+            final Optional<String> forRentSignLocationOpt;
+            final Optional<Double> rentPriceOpt;
+            final Optional<Integer> rentRenewOpt;
+            final Optional<Boolean> rentAutoRenewOpt;
+            final Optional<UUID> tenantUUIDOpt;
+            final Optional<Long> lastPaymentMillisOpt;
+            if (isForRent) {
+                forRentSignLocationOpt = Optional.of(StringChanges.locationToString(land.getRentSignLoc()));
+                rentPriceOpt = Optional.of(land.getRentPrice());
+                rentRenewOpt = Optional.of(land.getRentRenew());
+                rentAutoRenewOpt = Optional.of(land.getRentAutoRenew());
+                tenantUUIDOpt = Optional.of(land.getTenant().getMinecraftUUID());
+                lastPaymentMillisOpt = Optional.of(land.getLastPaymentTime());
+            } else {
+                forRentSignLocationOpt = Optional.empty();
+                rentPriceOpt = Optional.empty();
+                rentRenewOpt = Optional.empty();
+                rentAutoRenewOpt = Optional.empty();
+                tenantUUIDOpt = Optional.empty();
+                lastPaymentMillisOpt = Optional.empty();
+            }
 
             // Update land table
-            // TODO Ccontinue
-            // final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(),
-            // land.isApproved(), typeIdOpt, ownerId, parentUUIDOpt, priority, money,
-            // forSale, forSaleSignLocationOpt, salePriceOpt, forRent,
-            // forRentSignLocationOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
-            // tenantUUIDOpt, lastPaymentMillisOpt)
+            final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(), land.isApproved(), typeIdOpt,
+                    ownerId, Optional.ofNullable(land.getParent().getUUID()), land.getPriority(), land.getMoney(),
+                    isForSale, forSaleSignLocationOpt, salePriceOpt, isForRent, forRentSignLocationOpt, rentPriceOpt,
+                    rentRenewOpt, rentAutoRenewOpt, tenantUUIDOpt, lastPaymentMillisOpt);
+            landsDao.insertOrUpdateLand(conn, landPojo);
         } catch (final SQLException e) {
-            log.log(Level.SEVERE, String.format("Unable to save land to database [landUUID=%s, landName=%s]",
+            log.log(Level.SEVERE, String.format("Unable to save the land to database [landUUID=%s, landName=%s]",
                     land.getUUID(), land.getName()), e);
-            return;
         }
     }
 
     @Override
     public void removeLand(final Land land) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            landsDao.deleteLand(conn, land.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to delete the land from database [landUUID=%s, landName=%s]",
+                    land.getUUID(), land.getName()), e);
+        }
     }
 
     @Override
     public void removeLandArea(final Land land, final Area area) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final UUID landUUID = land.getUUID();
+            final int areaId = area.getKey();
+            if (area.getAreaType() == AreaType.ROAD) {
+                areasRoadsMatricesDao.deleteRoadMatrix(conn, landUUID, areaId);
+            }
+            areasDao.deleteArea(conn, landUUID, areaId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to remove the land area from database [landUUID=%s, landName=%s, areaId=%s]",
+                            land.getUUID(), land.getName(), area.getKey()),
+                    e);
+        }
     }
 
     @Override
     public void saveLandArea(final Land land, final Area area) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            if (area.getAreaType() == AreaType.ROAD) {
+                for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> pointsEntry : ((RoadArea) area).getPoints()
+                        .entrySet()) {
+                    final int chunkX = pointsEntry.getKey();
+                    for (final Map.Entry<Integer, ChunkMatrix> pointsZEntry : pointsEntry.getValue().entrySet()) {
+                        final RoadMatrixPojo roadMatrixPojo = new RoadMatrixPojo(land.getUUID(), area.getKey(), chunkX,
+                                pointsZEntry.getKey(), pointsZEntry.getValue().getMatrix());
+                        areasRoadsMatricesDao.insertOrUpdateRoadMatrix(conn, roadMatrixPojo);
+                    }
+                }
+            }
+            final int areaTypeId = areasTypesDao.insertOrGetId(conn, area.getAreaType().name());
+            final AreaPojo areaPojo = new AreaPojo(land.getUUID(), area.getKey(), area.isApproved(),
+                    area.getWorldName(), areaTypeId, area.getX1(), area.getY1(), area.getZ1(), area.getX2(),
+                    area.getY2(), area.getZ2());
+            areasDao.insertOrUpdateArea(conn, areaPojo);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to save the land area to database [landUUID=%s, landName=%s, areaId=%s]",
+                            land.getUUID(), land.getName(), area.getKey()),
+                    e);
+        }
     }
 
     @Override
     public void removeLandBanned(final Land land, final PlayerContainer playerContainer) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            landsBannedDao.delete(conn, land.getUUID(), playerContainerId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to remove the banned from the land from database [landUUID=%s, landName=%s, playerContainer=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat()), e);
+        }
     }
 
     @Override
     public void saveLandBanned(final Land land, final PlayerContainer playerContainer) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            landsBannedDao.insert(conn, land.getUUID(), playerContainerId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to add the banned to the land to database [landUUID=%s, landName=%s, playerContainer=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat()), e);
+        }
     }
 
     @Override
     public void removeLandFlag(final Land land, final Flag flag) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
+            flagsDao.deleteFlag(conn, land.getUUID(), flagId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format(
+                            "Unable to remove the flag from the land from database [landUUID=%s, landName=%s, flag=%s]",
+                            land.getUUID(), land.getName(), flag.toFileFormat()),
+                    e);
+        }
     }
 
     @Override
     public void removeAllLandFlags(final Land land) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            flagsDao.deleteAllLandFlags(conn, land.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to remove all flags from the land from database [landUUID=%s, landName=%s]",
+                            land.getUUID(), land.getName()),
+                    e);
+        }
     }
 
     @Override
     public void saveLandFlag(final Land land, final Flag flag) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
+            final Object flagValueObj = flag.getValue().getValue();
+            final Optional<String> valueStringOpt = flagValueObj instanceof String ? Optional.of((String) flagValueObj)
+                    : Optional.empty();
+            final Optional<Double> valueDoubleOpt = flagValueObj instanceof Double ? Optional.of((Double) flagValueObj)
+                    : Optional.empty();
+            final Optional<Boolean> valueBooleanOpt = flagValueObj instanceof Boolean
+                    ? Optional.of((Boolean) flagValueObj)
+                    : Optional.empty();
+            final FlagPojo flagPojo = new FlagPojo(land.getUUID(), flagId, valueStringOpt, valueDoubleOpt,
+                    valueBooleanOpt, flag.isInheritable());
+            flagsDao.insertOrUpdateFlag(conn, flagPojo);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to add the flag to the land to database [landUUID=%s, landName=%s, flag=%s]",
+                            land.getUUID(), land.getName(), flag.toFileFormat()),
+                    e);
+        }
     }
 
     @Override
     public void removeLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final int permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
+            permissionsDao.deletePermission(conn, land.getUUID(), playerContainerId, permissionId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to remove the permission from the land from database [landUUID=%s, landName=%s, playerContainer=%s, permission=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat(), permission.toFileFormat()), e);
+        }
     }
 
     @Override
     public void removeAllLandPermissions(final Land land) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            permissionsDao.deleteAllLandPermissions(conn, land.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format(
+                            "Unable to remove all permissions from the land from database [landUUID=%s, landName=%s]",
+                            land.getUUID(), land.getName()),
+                    e);
+        }
     }
 
     @Override
     public void saveLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final int permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
+            final PermissionPojo permissionPojo = new PermissionPojo(land.getUUID(), playerContainerId, permissionId,
+                    permission.getValue(), permission.isInheritable());
+            permissionsDao.insertOrUpdatePermission(conn, permissionPojo);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to add the permission to the land to database [landUUID=%s, landName=%s, playerContainer=%s, permission=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat(), permission.toFileFormat()), e);
+        }
     }
 
     @Override
     public void removeLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            playerNotifiesDao.delete(conn, land.getUUID(), pcp.getMinecraftUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to remove the player notify from the land from database [landUUID=%s, landName=%s, playerUUID=%s]",
+                    land.getUUID(), land.getName(), pcp.getMinecraftUUID()), e);
+        }
     }
 
     @Override
     public void removeAllLandPlayerNotify(final Land land) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            playerNotifiesDao.deleteAll(conn, land.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to delete all player notifies from the land from database [landUUID=%s, landName=%s]",
+                    land.getUUID(), land.getName()), e);
+        }
     }
 
     @Override
     public void saveLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            playerNotifiesDao.insert(conn, land.getUUID(), pcp.getMinecraftUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to add the player notify to the land to database [landUUID=%s, landName=%s, playerUUID=%s]",
+                    land.getUUID(), land.getName(), pcp.getMinecraftUUID()), e);
+        }
     }
 
     @Override
     public void removeLandResident(final Land land, final PlayerContainer playerContainer) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            landsResidentsDao.delete(conn, land.getUUID(), playerContainerId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to remove the resident from the land from database [landUUID=%s, landName=%s, playerContainer=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat()), e);
+        }
     }
 
     @Override
     public void removeAllLandResidents(final Land land) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            landsResidentsDao.deleteAll(conn, land.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format(
+                            "Unable to remove all the residents from the land from database [landUUID=%s, landName=%s]",
+                            land.getUUID(), land.getName()),
+                    e);
+        }
     }
 
     @Override
     public void saveLandResident(final Land land, final PlayerContainer playerContainer) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            landsResidentsDao.insert(conn, land.getUUID(), playerContainerId);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format(
+                    "Unable to add the resident to the land to database [landUUID=%s, landName=%s, playerContainer=%s]",
+                    land.getUUID(), land.getName(), playerContainer.toFileFormat()), e);
+        }
     }
 
     @Override
     public void loadApproves() {
-        // TODO Auto-generated method stub
+        try (final Connection conn = dbConn.openConnection()) {
+            final Lands lands = secuboid.getLands();
+            final Map<Integer, LandAction> idToActionName = approvesActionsDao.getIdToName(conn).entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> LandAction.valueOf(e.getValue())));
+            final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo = playerContainersDao
+                    .getIdToPlayerContainer(conn);
+            final Map<Integer, String> idToPlayerContainerType = playerContainersTypesDao.getIdToName(conn);
 
+            final List<Approve> approves = new ArrayList<>();
+            for (final ApprovePojo approvePojo : approvesDao.getApproves(conn)) {
+                final Land land = lands.getLand(approvePojo.getLandUUID());
+                final LandAction action = idToActionName.get(approvePojo.getApproveActionId());
+                final PlayerContainer owner = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType,
+                        approvePojo.getOwnerId());
+                final Optional<Land> parentOpt = approvePojo.getParentUUIDOpt().map(lands::getLand);
+                approves.add(new Approve(land, action, approvePojo.getRemovedAreaIdOpt(), approvePojo.getNewAreaIdOpt(),
+                        owner, parentOpt, approvePojo.getPrice(), approvePojo.getTransactionDatetime()));
+            }
+            lands.getApproves().loadApproves(approves);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, "Unable to load the approves from database", e);
+        }
     }
 
     @Override
     public void saveApprove(final Approve approve) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int approveActionId = approvesActionsDao.insertOrGetId(conn, approve.getAction().name());
+            final int ownerId = getOrAddPlayerContainer(conn, approve.getOwner());
+            final Optional<UUID> parentUUIDOpt = approve.getParentOpt().map(Land::getUUID);
+            final ApprovePojo approvePojo = new ApprovePojo(approve.getUUID(), approveActionId,
+                    approve.getRemovedAreaIdOpt(), approve.getNewAreaIdOpt(), ownerId, parentUUIDOpt,
+                    approve.getPrice(), approve.getDateTime());
+            approvesDao.insertOrUpdateApprove(conn, approvePojo);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to save the approve to database [landUUID=%s]", approve.getUUID()), e);
+        }
     }
 
     @Override
     public void removeApprove(final Approve approve) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            approvesDao.deleteApprove(conn, approve.getUUID());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to delete the approve from database [landUUID=%s]", approve.getUUID()), e);
+        }
     }
 
     @Override
     public void removeAllApproves() {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            approvesDao.deleteAllApproves(conn);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, "Unable to delete the all approves from database", e);
+        }
     }
 
     @Override
@@ -438,20 +656,26 @@ public final class StorageMySql implements Storage {
         final String PlayerContainerTypeStr = idToPlayerContainerType
                 .get(playerContainerPojo.getPlayerContainerTypeId());
         final PlayerContainerType playerContainerType = PlayerContainerType.getFromString(PlayerContainerTypeStr);
-        // TODO Change for PlayerContainerPlayer (UUID)
+
         return secuboid.getPlayerContainers().getOrAddPlayerContainer(playerContainerType,
-                playerContainerPojo.getParameterOpt(), Optional.empty());
+                playerContainerPojo.getParameterOpt(), playerContainerPojo.getPlayerUUIDOpt());
     }
 
     private int getOrAddPlayerContainer(final Connection conn, final PlayerContainer playerContainer)
             throws SQLException {
-        final int playerContainerTypeId = playerContainersTypesDao.insertOrGetId(conn,
-                playerContainer.getContainerType().name());
-        // final int playerContainerId =
-        // playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId,
-        // playerUUIDOpt, parameterOpt)
-        // TODO Contineu
-        return 0;
+        final PlayerContainerType playerContainerType = playerContainer.getContainerType();
+        final int playerContainerTypeId = playerContainersTypesDao.insertOrGetId(conn, playerContainerType.name());
+
+        if (playerContainerType.hasParameter()) {
+            if (playerContainerType == PlayerContainerType.PLAYER) {
+                return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId,
+                        Optional.of(((PlayerContainerPlayer) playerContainer).getMinecraftUUID()), Optional.empty());
+            }
+            return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, Optional.empty(),
+                    Optional.of(playerContainer.getName()));
+        }
+        return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, Optional.empty(),
+                Optional.empty());
     }
 
     /**

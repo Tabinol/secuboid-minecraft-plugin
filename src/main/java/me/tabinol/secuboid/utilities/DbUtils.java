@@ -21,7 +21,9 @@ import java.nio.ByteBuffer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +40,19 @@ public final class DbUtils {
     }
 
     private DbUtils() {
+    }
+
+    public static void setCalendar(final PreparedStatement stmt, final int parameterIndex, final Calendar calendar)
+            throws SQLException {
+        final Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+        stmt.setTimestamp(parameterIndex, timestamp);
+    }
+
+    public static Calendar getCalendar(final ResultSet rs, final String columnLabel) throws SQLException {
+        final Timestamp timestamp = rs.getTimestamp(columnLabel);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        return calendar;
     }
 
     public static void setUUID(final PreparedStatement stmt, final int parameterIndex, final UUID uuid)

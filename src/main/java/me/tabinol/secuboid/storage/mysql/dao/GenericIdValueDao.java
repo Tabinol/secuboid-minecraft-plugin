@@ -104,6 +104,20 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
+    public void insertOrUpdate(final Connection conn, final I i, final V v) throws SQLException {
+        final String sql = String.format("INSERT INTO `{{TP}}%s`(`%s`, `%s`) " //
+                + "VALUES(?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`%s`=?", tableSuffix, idColumnLabel, valueColumnLabel, valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            setFromClass(valueClazz, stmt, 2, v);
+            setFromClass(valueClazz, stmt, 3, v);
+            stmt.executeUpdate();
+        }
+    }
+
     public I insertOrGetId(final Connection conn, final V v) throws SQLException {
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=? " //
                 + "ON DUPLICATE KEY UPDATE `%s`=LAST_INSERT_ID(`%s`)", tableSuffix, valueColumnLabel, idColumnLabel,

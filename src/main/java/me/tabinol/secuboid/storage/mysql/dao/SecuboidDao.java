@@ -22,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
-import java.util.Set;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
@@ -53,7 +52,7 @@ public final class SecuboidDao {
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}players` ({{LS}}" +
         "  `uuid` BINARY(16) NOT NULL,{{LS}}" +
-        "  `name` VARCHAR(45) NULL,{{LS}}" +
+        "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`uuid`),{{LS}}" +
         "  UNIQUE KEY `uuid` (`uuid`)){{LS}}" +
         "ENGINE = InnoDB",
@@ -530,15 +529,5 @@ public final class SecuboidDao {
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.executeUpdate();
         }
-    }
-
-    // TODO remove?
-    public void setApproveActions(final Connection conn, final Set<String> names) throws SQLException {
-        final String sql = "INSERT IGNORE INTO `{{TP}}approves_actions` (`name`) " //
-                + "VALUES(?)";
-
-        dbConn.prepareStatementAndExecuteBatch(conn, sql, names, (s, o) -> {
-            s.setString(1, o);
-        });
     }
 }

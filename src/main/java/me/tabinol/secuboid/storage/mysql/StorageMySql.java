@@ -107,6 +107,7 @@ public final class StorageMySql implements Storage {
     private final GenericIdValueDao<UUID, UUID> playerNotifiesDao;
     private final ApprovesDao approvesDao;
     private final GenericIdValueDao<Integer, String> approvesActionsDao;
+    private final GenericIdValueDao<UUID, String> playersDao;
 
     public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
         this.secuboid = secuboid;
@@ -134,6 +135,7 @@ public final class StorageMySql implements Storage {
         approvesDao = new ApprovesDao(dbConn);
         approvesActionsDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "approves_actions", "id",
                 "name");
+        playersDao = new GenericIdValueDao<>(dbConn, UUID.class, String.class, "players", "uuid", "name");
     }
 
     @Override
@@ -592,7 +594,7 @@ public final class StorageMySql implements Storage {
         try (final Connection conn = dbConn.openConnection()) {
             approvesDao.deleteAllApproves(conn);
         } catch (final SQLException e) {
-            log.log(Level.SEVERE, "Unable to delete the all approves from database", e);
+            log.log(Level.SEVERE, "Unable to delete all approves from database", e);
         }
     }
 
@@ -640,14 +642,24 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void loadPlayersCache() {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final Map<UUID, String> idToName = playersDao.getIdToName(conn);
+            final List<PlayerCacheEntry> playerCacheEntries = idToName.entrySet().stream()
+                    .map(e -> new PlayerCacheEntry(e.getKey(), e.getValue())).collect(Collectors.toList());
+            secuboid.getPlayersCache().loadPlayerscache(playerCacheEntries);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, "Unable to load the player cache from database", e);
+        }
     }
 
     @Override
     public void savePlayerCacheEntry(final PlayerCacheEntry playerCacheEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            playersDao.insertOrUpdate(conn, playerCacheEntry.getUUID(), playerCacheEntry.getName());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to save the player cache to database [uuid=%s, name=%s]",
+                    playerCacheEntry.getUUID(), playerCacheEntry.getName()), e);
+        }
     }
 
     private PlayerContainer getPlayerContainer(final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo,

@@ -93,6 +93,17 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
+    public void insert(final Connection conn, final I i, final V v) throws SQLException {
+        final String sql = String.format("INSERT INTO `{{TP}}%s`(`%s`, `%s`) " //
+                + "VALUES(?, ?)", tableSuffix, idColumnLabel, valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            setFromClass(valueClazz, stmt, 2, v);
+            stmt.executeUpdate();
+        }
+    }
+
     public I insertOrGetId(final Connection conn, final V v) throws SQLException {
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=? " //
                 + "ON DUPLICATE KEY UPDATE `%s`=LAST_INSERT_ID(`%s`)", tableSuffix, valueColumnLabel, idColumnLabel,
@@ -106,6 +117,26 @@ public final class GenericIdValueDao<I, V> {
                 rs.next();
                 return getFromClass(idClazz, rs, idColumnLabel);
             }
+        }
+    }
+
+    public void delete(final Connection conn, final I i, final V v) throws SQLException {
+        final String sql = String.format("DELETE FROM `{{TP}}%s` WHERE `%s`=? AND `%s`=?", tableSuffix, idColumnLabel,
+                valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            setFromClass(valueClazz, stmt, 2, v);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteAll(final Connection conn, final I i) throws SQLException {
+        final String sql = String.format("DELETE FROM `{{TP}}%s` WHERE `%s`=?", tableSuffix, idColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            stmt.executeUpdate();
         }
     }
 

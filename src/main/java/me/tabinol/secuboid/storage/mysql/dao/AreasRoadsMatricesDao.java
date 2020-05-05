@@ -60,4 +60,35 @@ public final class AreasRoadsMatricesDao {
             }
         }
     }
+
+    public void insertOrUpdateRoadMatrix(final Connection conn, final RoadMatrixPojo roadMatrixPojo)
+            throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands_areas_roads_matrices`(" //
+                + "`land_uuid`, `area_id`, `chunk_x`, `chunk_z`, `matrix`) " //
+                + "VALUES(?, ?, ?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`matrix`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, roadMatrixPojo.getLandUUID());
+            stmt.setInt(2, roadMatrixPojo.getAreaId());
+            stmt.setInt(3, roadMatrixPojo.getChunkX());
+            stmt.setInt(4, roadMatrixPojo.getChunkZ());
+            DbUtils.setMatrixs16(stmt, 5, roadMatrixPojo.getMatrix());
+
+            DbUtils.setMatrixs16(stmt, 6, roadMatrixPojo.getMatrix());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteRoadMatrix(final Connection conn, final UUID landUUID, final int areaId) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}lands_areas_roads_matrices` WHERE `land_uuid`=? AND `area_id`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setInt(2, areaId);
+            stmt.executeUpdate();
+        }
+    }
 }

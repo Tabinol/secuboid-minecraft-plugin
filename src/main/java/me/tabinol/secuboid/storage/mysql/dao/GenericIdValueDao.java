@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -57,7 +58,7 @@ public final class GenericIdValueDao<I, V> {
         this.valueColumnLabel = valueColumnLabel;
     }
 
-    public Map<I, V> getIdToName(final Connection conn) throws SQLException {
+    public Map<I, V> getIdToValue(final Connection conn) throws SQLException {
         final String sql = String.format("SELECT `%s`, `%s` FROM `{{TP}}%s`", idColumnLabel, valueColumnLabel,
                 tableSuffix);
 
@@ -75,7 +76,7 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
-    public Map<I, List<V>> getIdToNames(final Connection conn) throws SQLException {
+    public Map<I, List<V>> getIdToValues(final Connection conn) throws SQLException {
         final String sql = String.format("SELECT `%s`, `%s` FROM `{{TP}}%s`", idColumnLabel, valueColumnLabel,
                 tableSuffix);
 
@@ -118,6 +119,21 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
+    public Optional<V> getValueOpt(final Connection conn, final I i) throws SQLException {
+        final String sql = String.format("SELECT `%s` FROM `{{TP}}%s` WHERE `%s`=?", valueColumnLabel, tableSuffix,
+                idColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    return Optional.of(getFromClass(valueClazz, rs, valueColumnLabel));
+                }
+                return Optional.empty();
+            }
+        }
+    }
+
     public I insertOrGetId(final Connection conn, final V v) throws SQLException {
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=? " //
                 + "ON DUPLICATE KEY UPDATE `%s`=LAST_INSERT_ID(`%s`)", tableSuffix, valueColumnLabel, idColumnLabel,
@@ -145,7 +161,7 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
-    public void deleteAll(final Connection conn, final I i) throws SQLException {
+    public void delete(final Connection conn, final I i) throws SQLException {
         final String sql = String.format("DELETE FROM `{{TP}}%s` WHERE `%s`=?", tableSuffix, idColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

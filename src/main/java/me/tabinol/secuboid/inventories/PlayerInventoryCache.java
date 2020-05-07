@@ -64,7 +64,15 @@ public class PlayerInventoryCache implements Savable {
         curInvEntry = null;
     }
 
-    public void addInventorySurvival(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
+    void addInventory(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
+        if (playerInvEntry.isCreativeInv()) {
+            addInventoryCreative(inventorySpec, playerInvEntry);
+        } else {
+            addInventorySurvival(inventorySpec, playerInvEntry);
+        }
+    }
+
+    private void addInventorySurvival(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
         inventorySpecToSurvivalInvEntry.put(inventorySpec, playerInvEntry);
     }
 
@@ -72,7 +80,7 @@ public class PlayerInventoryCache implements Savable {
         return inventorySpecToSurvivalInvEntry.get(inventorySpec);
     }
 
-    public void addInventoryCreative(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
+    private void addInventoryCreative(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
         inventorySpecToCreativeInvEntry.put(inventorySpec, playerInvEntry);
     }
 
@@ -80,8 +88,11 @@ public class PlayerInventoryCache implements Savable {
         return inventorySpecToCreativeInvEntry.get(inventorySpec);
     }
 
-    public void addInventoryDeath(final int deathVersion, final PlayerInvEntry playerInvEntry) {
-        deathInvEntries.add(deathVersion - 1, playerInvEntry);
+    void addInventoryDeath(final PlayerInvEntry playerInvEntry) {
+        deathInvEntries.add(0, playerInvEntry);
+        if (deathInvEntries.size() > DEATH_SAVE_MAX_NBR) {
+            deathInvEntries.remove(DEATH_SAVE_MAX_NBR);
+        }
     }
 
     PlayerInvEntry getInventoryDeath(final int deathVersion) {

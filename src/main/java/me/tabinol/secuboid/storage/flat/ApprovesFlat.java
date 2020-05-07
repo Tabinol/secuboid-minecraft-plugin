@@ -76,7 +76,7 @@ public final class ApprovesFlat {
         approveFile = new File(secuboid.getDataFolder() + "/approvelist.yml");
     }
 
-    void loadApproves() {
+    public void loadApproves() {
         loadApproveYml();
         secuboid.getLands().getApproves().loadApproves(getApproveList());
     }

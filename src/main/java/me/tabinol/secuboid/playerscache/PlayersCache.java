@@ -113,10 +113,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
     public void loadPlayerscache(final List<PlayerCacheEntry> playerCacheEntries) {
         playersCacheList.clear();
         playersRevCacheList.clear();
-        playerCacheEntries.forEach(playerCacheEntry -> {
-            playersCacheList.put(playerCacheEntry.getName(), playerCacheEntry);
-            playersRevCacheList.put(playerCacheEntry.getUUID(), playerCacheEntry);
-        });
+        playerCacheEntries.forEach(this::updatePlayerInlist);
     }
 
     /**

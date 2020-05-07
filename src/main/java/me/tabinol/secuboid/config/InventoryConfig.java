@@ -123,4 +123,8 @@ public final class InventoryConfig {
     public Collection<InventorySpec> getInvSpecs() {
         return invNameToInvSpec.values();
     }
+
+    public InventorySpec getInvSpec(final String invName) {
+        return invNameToInvSpec.get(invName);
+    }
 }

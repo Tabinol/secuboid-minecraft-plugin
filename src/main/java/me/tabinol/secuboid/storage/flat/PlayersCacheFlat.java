@@ -61,7 +61,7 @@ public class PlayersCacheFlat {
     /**
      * Load all.
      */
-    void loadPlayersCache() {
+    public void loadPlayersCache() {
         final List<PlayerCacheEntry> playerCacheEntries = new ArrayList<>();
 
         try {

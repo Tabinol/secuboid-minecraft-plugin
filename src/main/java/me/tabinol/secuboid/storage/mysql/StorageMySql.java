@@ -37,9 +37,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
+import me.tabinol.secuboid.inventories.Inventories;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -68,6 +73,10 @@ import me.tabinol.secuboid.storage.mysql.dao.AreasDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasRoadsMatricesDao;
 import me.tabinol.secuboid.storage.mysql.dao.FlagsDao;
 import me.tabinol.secuboid.storage.mysql.dao.GenericIdValueDao;
+import me.tabinol.secuboid.storage.mysql.dao.InventoriesDeathsDao;
+import me.tabinol.secuboid.storage.mysql.dao.InventoriesEntriesDao;
+import me.tabinol.secuboid.storage.mysql.dao.InventoriesPotionEffectsDao;
+import me.tabinol.secuboid.storage.mysql.dao.InventoriesSavesDao;
 import me.tabinol.secuboid.storage.mysql.dao.LandsDao;
 import me.tabinol.secuboid.storage.mysql.dao.PermissionsDao;
 import me.tabinol.secuboid.storage.mysql.dao.PlayerContainersDao;
@@ -75,10 +84,14 @@ import me.tabinol.secuboid.storage.mysql.dao.SecuboidDao;
 import me.tabinol.secuboid.storage.mysql.pojo.ApprovePojo;
 import me.tabinol.secuboid.storage.mysql.pojo.AreaPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
+import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo;
+import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo.ItemStackOut;
+import me.tabinol.secuboid.storage.mysql.pojo.InventoryPotionEffectPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
+import me.tabinol.secuboid.utilities.DbUtils.SqlConsumer;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -108,6 +121,13 @@ public final class StorageMySql implements Storage {
     private final ApprovesDao approvesDao;
     private final GenericIdValueDao<Integer, String> approvesActionsDao;
     private final GenericIdValueDao<UUID, String> playersDao;
+    private final GenericIdValueDao<Integer, String> inventoriesDao;
+    private final InventoriesEntriesDao inventoriesEntriesDao;
+    private final GenericIdValueDao<Integer, Integer> inventoriesDefaultsDao;
+    private final GenericIdValueDao<Integer, String> gameModesDao;
+    private final InventoriesSavesDao inventoriesSavesDao;
+    private final InventoriesDeathsDao inventoriesDeathsDao;
+    private final InventoriesPotionEffectsDao inventoriesPotionEffectsDao;
 
     public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
         this.secuboid = secuboid;
@@ -136,22 +156,38 @@ public final class StorageMySql implements Storage {
         approvesActionsDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "approves_actions", "id",
                 "name");
         playersDao = new GenericIdValueDao<>(dbConn, UUID.class, String.class, "players", "uuid", "name");
+        inventoriesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "inventories", "id", "name");
+        inventoriesEntriesDao = new InventoriesEntriesDao(dbConn);
+        inventoriesDefaultsDao = new GenericIdValueDao<>(dbConn, Integer.class, Integer.class, "inventories_defaults",
+                "`inventory_id", "inventories_entries_id");
+        gameModesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "game_modes", "id", "name");
+        inventoriesSavesDao = new InventoriesSavesDao(dbConn);
+        inventoriesDeathsDao = new InventoriesDeathsDao(dbConn);
+        inventoriesPotionEffectsDao = new InventoriesPotionEffectsDao(dbConn);
     }
 
     @Override
-    public void loadAll() {
+    public boolean loadAll() {
+        final boolean newDatabase;
         try {
-            initDatabase();
+            newDatabase = initDatabase();
         } catch (ClassNotFoundException | SQLException e) {
-            log.log(Level.SEVERE, "Unable to create or access the database", e);
+            throw new SecuboidRuntimeException(
+                    "Unable to create or access the database. Is the database up and running, user and password created and added in Secuboid configuration?",
+                    e);
         }
+
+        // Load all
         loadLands();
         loadApproves();
         loadPlayersCache();
         loadInventories();
+
+        // Conversion needed?
+        return newDatabase;
     }
 
-    private void initDatabase() throws ClassNotFoundException, SQLException {
+    private boolean initDatabase() throws ClassNotFoundException, SQLException {
         dbConn.loadDriver();
         try (final Connection conn = dbConn.openConnection()) {
             // Verify if the database is empty
@@ -162,8 +198,11 @@ public final class StorageMySql implements Storage {
                 // Create database
                 secuboidDao.initDatabase(conn);
                 secuboidDao.setVersion(conn);
+
+                return true;
             }
         }
+        return false;
     }
 
     @Override
@@ -190,18 +229,18 @@ public final class StorageMySql implements Storage {
         try (final Connection conn = dbConn.openConnection()) {
             landUUIDToAreas = areasDao.getLandUUIDToAreas(conn);
             landUUIDToMatrices = areasRoadsMatricesDao.getLandUUIDToMatrices(conn);
-            idToAreaType = areasTypesDao.getIdToName(conn);
+            idToAreaType = areasTypesDao.getIdToValue(conn);
             landPojos = landsDao.getLands(conn);
-            idToType = landsTypesDao.getIdToName(conn);
+            idToType = landsTypesDao.getIdToValue(conn);
             idToPlayerContainerPojo = playerContainersDao.getIdToPlayerContainer(conn);
-            idToPlayerContainerType = playerContainersTypesDao.getIdToName(conn);
-            landUUIDToResidentIds = landsResidentsDao.getIdToNames(conn);
-            landUUIDToBannedIds = landsBannedDao.getIdToNames(conn);
+            idToPlayerContainerType = playerContainersTypesDao.getIdToValue(conn);
+            landUUIDToResidentIds = landsResidentsDao.getIdToValues(conn);
+            landUUIDToBannedIds = landsBannedDao.getIdToValues(conn);
             landUUIDToPermissionPojos = permissionsDao.getLandUUIDToPermissions(conn);
-            idToPermissionType = permissionsTypesDao.getIdToName(conn);
+            idToPermissionType = permissionsTypesDao.getIdToValue(conn);
             landUUIDToFlagPojos = flagsDao.getLandUUIDToFlags(conn);
-            idToFlagType = flagsTypesDao.getIdToName(conn);
-            landUUIDToPlayerNotifyUUIDs = playerNotifiesDao.getIdToNames(conn);
+            idToFlagType = flagsTypesDao.getIdToValue(conn);
+            landUUIDToPlayerNotifyUUIDs = playerNotifiesDao.getIdToValues(conn);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, "Unable to load lands from database", e);
             return;
@@ -481,7 +520,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeAllLandPlayerNotify(final Land land) {
         try (final Connection conn = dbConn.openConnection()) {
-            playerNotifiesDao.deleteAll(conn, land.getUUID());
+            playerNotifiesDao.delete(conn, land.getUUID());
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
                     "Unable to delete all player notifies from the land from database [landUUID=%s, landName=%s]",
@@ -515,7 +554,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeAllLandResidents(final Land land) {
         try (final Connection conn = dbConn.openConnection()) {
-            landsResidentsDao.deleteAll(conn, land.getUUID());
+            landsResidentsDao.delete(conn, land.getUUID());
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format(
@@ -541,11 +580,11 @@ public final class StorageMySql implements Storage {
     public void loadApproves() {
         try (final Connection conn = dbConn.openConnection()) {
             final Lands lands = secuboid.getLands();
-            final Map<Integer, LandAction> idToActionName = approvesActionsDao.getIdToName(conn).entrySet().stream()
+            final Map<Integer, LandAction> idToActionName = approvesActionsDao.getIdToValue(conn).entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> LandAction.valueOf(e.getValue())));
             final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo = playerContainersDao
                     .getIdToPlayerContainer(conn);
-            final Map<Integer, String> idToPlayerContainerType = playerContainersTypesDao.getIdToName(conn);
+            final Map<Integer, String> idToPlayerContainerType = playerContainersTypesDao.getIdToValue(conn);
 
             final List<Approve> approves = new ArrayList<>();
             for (final ApprovePojo approvePojo : approvesDao.getApproves(conn)) {
@@ -600,50 +639,130 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void loadInventories() {
-        // TODO Auto-generated method stub
+        final Inventories inventories = secuboid.getInventoriesOpt().get();
+        try (final Connection conn = dbConn.openConnection()) {
+            final Map<Integer, String> idToInventoryName = inventoriesDao.getIdToValue(conn);
+            for (final Map.Entry<Integer, Integer> inventoryIdToEntryIdEntry : inventoriesDefaultsDao.getIdToValue(conn)
+                    .entrySet()) {
+                final int inventoryId = inventoryIdToEntryIdEntry.getKey();
+                final int inventoryEntryId = inventoryIdToEntryIdEntry.getValue();
+                final InventoryEntryPojo inventoryEntryPojo = inventoriesEntriesDao.getInventoryEntry(conn,
+                        inventoryEntryId);
+                final String inventoryName = idToInventoryName.get(inventoryId);
+                final InventorySpec inventorySpec = inventories.getInvSpec(inventoryName);
+                final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos = inventoriesPotionEffectsDao
+                        .getPotionEffectsFromEntryId(conn, inventoryEntryId);
+                final PlayerInvEntry playerInvEntry = loadInventoryFromPojo(inventoryEntryPojo,
+                        inventoryPotionEffectPojos, Optional.empty(), inventorySpec, false);
 
+                inventories.saveInventory(Optional.empty(), playerInvEntry, false, true, false);
+            }
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, "Unable to load the inventories from database", e);
+        }
     }
 
     @Override
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to save the inventory default to database %s", playerInvEntry.getName()), e);
+        }
     }
 
     @Override
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            final int inventoryId = inventoriesDao.insertOrGetId(conn,
+                    playerInvEntry.getInventorySpec().getInventoryName());
+            final Optional<Integer> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
+            if (inventoryEntryIdOpt.isPresent()) {
+                inventoriesDefaultsDao.delete(conn, inventoryId);
+                final int inventoryEntryId = inventoryEntryIdOpt.get();
+                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId);
+            }
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to remove the inventory default from database %s", playerInvEntry.getName()),
+                    e);
+        }
     }
 
     @Override
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
-        // TODO Auto-generated method stub
+        final Inventories inventories = secuboid.getInventoriesOpt().get();
+        final UUID playerUUID = playerInventoryCache.getUUID();
+        final Thread preLoginThread = secuboid.getStorageThread().preloginRemoveThread(playerUUID);
 
+        try (final Connection conn = dbConn.openConnection()) {
+            for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
+                final int inventoryId = inventoriesDao.insertOrGetId(conn, inventorySpec.getInventoryName());
+
+                // Survival
+                createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, false,
+                        Optional.empty())
+                                .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, false, false, false));
+
+                // Creative
+                createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, true,
+                        Optional.empty())
+                                .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, false, false, false));
+
+                // Death
+                for (int deathVersion = PlayerInventoryCache.DEATH_SAVE_MAX_NBR; deathVersion > 0; deathVersion--) {
+                    createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, false,
+                            Optional.of(deathVersion))
+                                    .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, true, false, false));
+                }
+            }
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to load the inventory from database [name=%s]",
+                    playerInventoryCache.getName()), e);
+        }
+
+        // Notify pre login thread
+        synchronized (preLoginThread) {
+            preLoginThread.notify();
+        }
     }
 
     @Override
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to save the player inventory to database %s", playerInvEntry.getName()), e);
+        }
     }
 
     @Override
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, true);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE,
+                    String.format("Unable to save the player death inventory to database %s", playerInvEntry.getName()),
+                    e);
+        }
     }
 
     @Override
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
-        // TODO Auto-generated method stub
-
+        try (final Connection conn = dbConn.openConnection()) {
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), true, false);
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to save the player death inventory history to database %s",
+                    playerInvEntry.getName()), e);
+        }
     }
 
     @Override
     public void loadPlayersCache() {
         try (final Connection conn = dbConn.openConnection()) {
-            final Map<UUID, String> idToName = playersDao.getIdToName(conn);
+            final Map<UUID, String> idToName = playersDao.getIdToValue(conn);
             final List<PlayerCacheEntry> playerCacheEntries = idToName.entrySet().stream()
                     .map(e -> new PlayerCacheEntry(e.getKey(), e.getValue())).collect(Collectors.toList());
             secuboid.getPlayersCache().loadPlayerscache(playerCacheEntries);
@@ -886,5 +1005,182 @@ public final class StorageMySql implements Storage {
         }
 
         return new AbstractMap.SimpleEntry<Land, Optional<UUID>>(land, landPojo.getParentUUIDOpt());
+    }
+
+    private PlayerInvEntry loadInventoryFromPojo(final InventoryEntryPojo inventoryEntryPojo,
+            final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos,
+            final Optional<PlayerInventoryCache> playerInventoryCacheOpt, final InventorySpec inventorySpec,
+            final boolean isCreative) {
+        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerInventoryCacheOpt, inventorySpec, isCreative);
+
+        playerInvEntry.setLevel(inventoryEntryPojo.getLevel());
+        playerInvEntry.setExp(inventoryEntryPojo.getExp());
+
+        playerInvEntry.setHealth(inventoryEntryPojo.getHealth());
+        playerInvEntry.setFoodLevel(inventoryEntryPojo.getFoodLevel());
+
+        final ItemStackOut itemStackOut = InventoryEntryPojo.textToItemStack(inventoryEntryPojo.getItemStackStr());
+        playerInvEntry.setSlotItems(itemStackOut.slotItems);
+        playerInvEntry.setArmorItems(itemStackOut.armorItems);
+        playerInvEntry.setEnderChestItems(itemStackOut.enderChestItems);
+        playerInvEntry.setItemOffhand(itemStackOut.itemOffhand);
+
+        // PotionsEffects
+        for (final InventoryPotionEffectPojo inventoryPotionEffectPojo : inventoryPotionEffectPojos) {
+            final PotionEffectType type = PotionEffectType.getByName(inventoryPotionEffectPojo.getName());
+            playerInvEntry.addPotionEffect(new PotionEffect(type, inventoryPotionEffectPojo.getDuration(),
+                    inventoryPotionEffectPojo.getAmplifier(), inventoryPotionEffectPojo.isAmbient()));
+
+        }
+
+        return playerInvEntry;
+    }
+
+    public void saveInventory(final Connection conn, final PlayerInvEntry playerInvEntry,
+            final Optional<UUID> playerUUIDOpt, final boolean isDeathHistory, final boolean enderChestOnly)
+            throws SQLException {
+        final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
+
+        // If for some reasons whe have to skip save (ex: SaveInventory = false)
+        if (!playerUUIDOpt.isPresent() && !inventorySpec.isSaveInventory()) {
+            return;
+        }
+
+        // Get the suffix name
+        final int gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(playerInvEntry.isCreativeInv()));
+        final int inventoryId = inventoriesDao.insertOrGetId(conn,
+                playerInvEntry.getInventorySpec().getInventoryName());
+
+        if (isDeathHistory && playerUUIDOpt.isPresent()) {
+            // Save death inventory
+            final UUID playerUUID = playerUUIDOpt.get();
+
+            // Death rename
+            final Optional<Integer> inventoryEntryId9Opt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
+                    inventoryId, gameModeId, 9);
+            inventoriesDeathsDao.deleteNinth(conn, playerUUID, inventoryId, gameModeId);
+            if (inventoryEntryId9Opt.isPresent()) {
+                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9Opt.get());
+            }
+            for (int t = 8; t >= 1; t--) {
+                inventoriesDeathsDao.incrementDeathNumber(conn, playerUUID, inventoryId, gameModeId, t);
+            }
+            final Optional<Integer> inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
+                    inventoryId, gameModeId, 1);
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
+                    i -> inventoriesDeathsDao.insertInventoryDeath(conn, playerUUID, inventoryId, gameModeId, 1, i));
+
+        } else if (!playerUUIDOpt.isPresent()) {
+            // Save default inventory
+            final Optional<Integer> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
+                    i -> inventoriesDefaultsDao.insert(conn, inventoryId, i));
+
+        } else {
+            // Save normal inventory
+            final UUID playerUUID = playerUUIDOpt.get();
+            final Optional<Integer> inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID,
+                    inventoryId, gameModeId);
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
+                    i -> inventoriesSavesDao.insertInventorySave(conn, playerUUID, inventoryId, gameModeId, i));
+        }
+    }
+
+    private void saveInventoryEntry(final Connection conn, final PlayerInvEntry playerInvEntry,
+            final boolean enderChestOnly, final Optional<Integer> inventoryEntryIdOpt,
+            final SqlConsumer<Integer> updateInvEntryIdConsumer) throws SQLException {
+
+        final String itemStackStr = InventoryEntryPojo.itemStackToText(playerInvEntry.getSlotItems(),
+                playerInvEntry.getArmorItems(), playerInvEntry.getEnderChestItems(), playerInvEntry.getItemOffhand(),
+                enderChestOnly);
+
+        final int level;
+        final float exp;
+        final double health;
+        final int foodLevel;
+
+        if (enderChestOnly) {
+            // Save Only ender chest (Death)
+            level = 0;
+            exp = 0f;
+            health = PlayerInvEntry.MAX_HEALTH;
+            foodLevel = PlayerInvEntry.MAX_FOOD_LEVEL;
+        } else {
+            // Save all
+            level = playerInvEntry.getLevel();
+            exp = playerInvEntry.getExp();
+            health = playerInvEntry.getHealth();
+            foodLevel = playerInvEntry.getFoodLevel();
+        }
+
+        // If the entry id does not exist, a new entry will be created.
+        final int inventoryEntryId;
+        if (inventoryEntryIdOpt.isPresent()) {
+            inventoryEntryId = inventoryEntryIdOpt.get();
+
+            // Remove potions
+            inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId);
+
+            // Update inventory entry
+            final InventoryEntryPojo inventoryEntryPojo = new InventoryEntryPojo(inventoryEntryId, level, exp, health,
+                    foodLevel, itemStackStr);
+            inventoriesEntriesDao.updateInventoryEntry(conn, inventoryEntryPojo);
+        } else {
+            // Create inventory entry
+            inventoryEntryId = inventoriesEntriesDao.insertInventoryEntry(conn, level, exp, health, foodLevel,
+                    itemStackStr);
+
+            // Insert a new entry in upstream table
+            updateInvEntryIdConsumer.accept(inventoryEntryId);
+        }
+
+        // PotionsEffects
+        if (inventoryEntryIdOpt.isPresent()) {
+            inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryIdOpt.get());
+        }
+        if (!enderChestOnly) {
+            final List<PotionEffect> activePotionEffects = playerInvEntry.getPotionEffects();
+            for (final PotionEffect effect : activePotionEffects) {
+                final InventoryPotionEffectPojo inventoryPotionEffectPojo = new InventoryPotionEffectPojo(
+                        inventoryEntryId, effect.getType().getName(), effect.getDuration(), effect.getAmplifier(),
+                        effect.isAmbient());
+                inventoriesPotionEffectsDao.addPotionEffectsFromEntryId(conn, inventoryPotionEffectPojo);
+            }
+        }
+    }
+
+    private Optional<PlayerInvEntry> createInventoriesEntryPlayerOpt(final Connection conn,
+            final PlayerInventoryCache playerInventoryCache, final int inventoryId, final InventorySpec inventorySpec,
+            final boolean isCreative, final Optional<Integer> deathVersionOpt) throws SQLException {
+        final int gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(isCreative));
+        final UUID playerUUID = playerInventoryCache.getUUID();
+
+        final Optional<Integer> inventoryEntryIdOpt;
+        if (deathVersionOpt.isPresent()) {
+            // Death load
+            final int deathVersion = deathVersionOpt.get();
+            inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID, inventoryId, gameModeId,
+                    deathVersion);
+
+        } else {
+            // Normal load
+            inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID, inventoryId, gameModeId);
+        }
+
+        if (inventoryEntryIdOpt.isPresent()) {
+            final int inventoryEntryId = inventoryEntryIdOpt.get();
+            final InventoryEntryPojo inventoryEntryPojo = inventoriesEntriesDao.getInventoryEntry(conn,
+                    inventoryEntryId);
+            final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos = inventoriesPotionEffectsDao
+                    .getPotionEffectsFromEntryId(conn, inventoryEntryId);
+
+            return Optional.of(loadInventoryFromPojo(inventoryEntryPojo, inventoryPotionEffectPojos,
+                    Optional.of(playerInventoryCache), inventorySpec, isCreative));
+        }
+        return Optional.empty();
+    }
+
+    private String getGameModeFromBoolean(final boolean isCreative) {
+        return isCreative ? "CREATIVE" : "SURVIVAL";
     }
 }

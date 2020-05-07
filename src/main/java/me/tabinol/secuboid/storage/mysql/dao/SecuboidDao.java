@@ -357,12 +357,11 @@ public final class SecuboidDao {
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_entries` ({{LS}}" +
         "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
-        "  `total_experience` INT NOT NULL,{{LS}}" +
         "  `level` INT NOT NULL,{{LS}}" +
         "  `exp` FLOAT NOT NULL,{{LS}}" +
-        "  `healt` DOUBLE NULL,{{LS}}" +
-        "  `food_level` INT NULL,{{LS}}" +
-        "  `item_stacks` TEXT NULL,{{LS}}" +
+        "  `health` DOUBLE NOT NULL,{{LS}}" +
+        "  `food_level` INT NOT NULL,{{LS}}" +
+        "  `item_stacks` TEXT NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`)){{LS}}" +
         "ENGINE = InnoDB",

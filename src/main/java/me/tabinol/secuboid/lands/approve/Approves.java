@@ -52,7 +52,7 @@ public class Approves {
      */
     public void loadApproves(final List<Approve> approves) {
         landNameToApprove.clear();
-        approves.stream().forEach(approve -> landNameToApprove.put(approve.getName(), approve));
+        approves.stream().forEach(this::addApprove);
     }
 
     /**

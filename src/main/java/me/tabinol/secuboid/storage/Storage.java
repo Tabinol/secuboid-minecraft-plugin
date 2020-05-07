@@ -75,8 +75,10 @@ public interface Storage {
 
     /**
      * Load all.
+     * 
+     * @return true if the the database need to be converted
      */
-    void loadAll();
+    boolean loadAll();
 
     /**
      * Load lands.

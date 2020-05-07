@@ -37,16 +37,16 @@ public class PlayerInvEntry implements Savable {
 
     public final static int MAX_FOOD_LEVEL = 20;
     public final static double MAX_HEALTH = 20d;
-    private final static int INVENTORY_LIST_SIZE = 27;
-    private final static int ARMOR_SIZE = 4;
-    private final static int ENDER_CHEST_SIZE = 27;
+    public final static int INVENTORY_LIST_SIZE = 27;
+    public final static int ARMOR_SIZE = 4;
+    public final static int ENDER_CHEST_SIZE = 27;
 
-    private final Optional<UUID> playerUUIDOpt;
+    private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
     private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
-    private final ItemStack[] slotItems;
-    private final ItemStack[] armorItems;
-    private final ItemStack[] enderChestItems;
+    private ItemStack[] slotItems;
+    private ItemStack[] armorItems;
+    private ItemStack[] enderChestItems;
     private int level;
     private float exp;
     private double health;
@@ -54,18 +54,19 @@ public class PlayerInvEntry implements Savable {
     private ItemStack itemOffhand;
     private final List<PotionEffect> potionEffects;
 
-    public PlayerInvEntry(final Optional<UUID> playerUUIDOpt, final InventorySpec inventorySpec,
-            final boolean isCreativeInv) {
-        this.playerUUIDOpt = playerUUIDOpt;
+    public PlayerInvEntry(final Optional<PlayerInventoryCache> playerInventoryCacheOpt,
+            final InventorySpec inventorySpec, final boolean isCreativeInv) {
+        this.playerInventoryCacheOpt = playerInventoryCacheOpt;
         this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
-        slotItems = new ItemStack[INVENTORY_LIST_SIZE];
-        armorItems = new ItemStack[ARMOR_SIZE];
-        enderChestItems = new ItemStack[ENDER_CHEST_SIZE];
+
         potionEffects = new ArrayList<>();
     }
 
     public PlayerInvEntry setDefault() {
+        slotItems = new ItemStack[INVENTORY_LIST_SIZE];
+        armorItems = new ItemStack[ARMOR_SIZE];
+        enderChestItems = new ItemStack[ENDER_CHEST_SIZE];
         level = 0;
         exp = 0f;
         health = MAX_HEALTH;
@@ -81,8 +82,12 @@ public class PlayerInvEntry implements Savable {
         Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
     }
 
+    Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
+        return playerInventoryCacheOpt;
+    }
+
     public Optional<UUID> getPlayerUUIDOpt() {
-        return playerUUIDOpt;
+        return playerInventoryCacheOpt.map(PlayerInventoryCache::getUUID);
     }
 
     public InventorySpec getInventorySpec() {
@@ -97,12 +102,27 @@ public class PlayerInvEntry implements Savable {
         return this.slotItems;
     }
 
+    public PlayerInvEntry setSlotItems(final ItemStack[] slotItems) {
+        this.slotItems = slotItems;
+        return this;
+    }
+
     public ItemStack[] getArmorItems() {
         return this.armorItems;
     }
 
+    public PlayerInvEntry setArmorItems(final ItemStack[] armorItems) {
+        this.armorItems = armorItems;
+        return this;
+    }
+
     public ItemStack[] getEnderChestItems() {
         return this.enderChestItems;
+    }
+
+    public PlayerInvEntry setEnderChestItems(final ItemStack[] enderChestItems) {
+        this.enderChestItems = enderChestItems;
+        return this;
     }
 
     public int getLevel() {
@@ -167,11 +187,11 @@ public class PlayerInvEntry implements Savable {
     @Override
     public String getName() {
         return String.format("[invName=%s, isCreativeInv=%s, playerUUID=%s]", inventorySpec.getInventoryName(),
-                isCreativeInv, playerUUIDOpt.orElse(null));
+                isCreativeInv, getPlayerUUIDOpt().orElse(null));
     }
 
     @Override
     public UUID getUUID() {
-        return playerUUIDOpt.orElse(null);
+        return getPlayerUUIDOpt().orElse(null);
     }
 }

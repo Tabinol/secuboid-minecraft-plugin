@@ -82,7 +82,7 @@ public final class LandsFlat {
      * Creates the dir files.
      */
     private void createDirFiles() {
-        landsDir = secuboid.getDataFolder() + "/" + "lands" + "/";
+        landsDir = secuboid.getDataFolder() + "/lands/";
         createDir(landsDir);
     }
 
@@ -110,7 +110,7 @@ public final class LandsFlat {
         return new File(landsDir + "/" + land.getUUID() + EXT_CONF);
     }
 
-    void loadLands() {
+    public void loadLands() {
         final Map<Land, UUID> orphanToParentUUID = new HashMap<>();
         final File[] files = new File(landsDir).listFiles();
         int loadedlands = 0;

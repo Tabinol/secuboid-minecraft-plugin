@@ -67,6 +67,10 @@ public final class Inventories {
         return inventoryConfig.getInvSpecs();
     }
 
+    public InventorySpec getInvSpec(final String invName) {
+        return inventoryConfig.getInvSpec(invName);
+    }
+
     public boolean loadDeathInventory(final Player player, final int deathVersion) {
         final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
         final InventorySpec invSpec = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry()
@@ -75,13 +79,10 @@ public final class Inventories {
                 deathVersion);
     }
 
-    public void addDefaultInventory(final PlayerInvEntry playerInvEntry) {
-        inventorySpecToDefaultInvEntry.put(playerInvEntry.getInventorySpec(), playerInvEntry);
-    }
-
     public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {
         final Player player = playerConfEntry.getPlayer();
-        saveInventory(player, playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry(), false, true, false);
+        saveInventory(Optional.of(player), playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry(), false,
+                true, false);
     }
 
     /**
@@ -98,7 +99,7 @@ public final class Inventories {
             final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCacheOpt()
                     .get().getCurInvEntry();
             if (!player.isDead()) {
-                saveInventory(player, playerInvEntry, false, false, false);
+                saveInventory(Optional.of(player), playerInvEntry, false, false, false);
             }
         }
     }
@@ -110,8 +111,8 @@ public final class Inventories {
                 PlayerAction.QUIT);
     }
 
-    public void saveInventory(final Player player, final PlayerInvEntry playerInvEntry, final boolean isDeath,
-            final boolean isDefaultInv, final boolean isEnderChestOnly) {
+    public void saveInventory(final Optional<Player> playerOpt, final PlayerInvEntry playerInvEntry,
+            final boolean isDeath, final boolean isDefaultInv, final boolean isEnderChestOnly) {
 
         // Il a player is just connected before the inventory load
         if (playerInvEntry == null) {
@@ -126,20 +127,26 @@ public final class Inventories {
         }
 
         // Update playerInvEntry from player (if there is a player)
-        updateFromPlayer(player, playerInvEntry, isEnderChestOnly);
+        playerOpt.ifPresent(p -> updateFromPlayer(p, playerInvEntry, isEnderChestOnly));
 
         // Request save
         if (isDeath) {
+            playerInvEntry.getPlayerInventoryCacheOpt().get().addInventoryDeath(playerInvEntry);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else if (isDefaultInv) {
+            inventorySpecToDefaultInvEntry.put(playerInvEntry.getInventorySpec(), playerInvEntry);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else if (isEnderChestOnly) {
+            playerInvEntry.getPlayerInventoryCacheOpt().get().addInventory(playerInvEntry.getInventorySpec(),
+                    playerInvEntry);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         } else {
             // Normal save
+            playerInvEntry.getPlayerInventoryCacheOpt().get().addInventory(playerInvEntry.getInventorySpec(),
+                    playerInvEntry);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE, SaveOn.BOTH,
                     Optional.of(playerInvEntry));
         }
@@ -180,7 +187,7 @@ public final class Inventories {
         }
     }
 
-    public boolean loadInventoryToPlayer(final PlayerConfEntry playerConfEntry, final InventorySpec inventorySpec,
+    private boolean loadInventoryToPlayer(final PlayerConfEntry playerConfEntry, final InventorySpec inventorySpec,
             final boolean isCreative, final boolean fromDeath, final int deathVersion) {
         final Player player = playerConfEntry.getPlayer();
         final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCacheOpt().get();
@@ -304,7 +311,7 @@ public final class Inventories {
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
             playerInventoryCache
-                    .setCurInvEntry(new PlayerInvEntry(Optional.of(player.getUniqueId()), toInv, toIsCreative));
+                    .setCurInvEntry(new PlayerInvEntry(Optional.of(playerInventoryCache), toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same
@@ -315,12 +322,12 @@ public final class Inventories {
 
         // If the player is death, save a renamed file
         if (playerAction == PlayerAction.DEATH && fromInvEntry != null) {
-            saveInventory(player, fromInvEntry, true, false, false);
+            saveInventory(Optional.of(player), fromInvEntry, true, false, false);
         }
 
         // Save last inventory (only EnderChest if death)
         if (playerAction != PlayerAction.JOIN && fromInvEntry != null) {
-            saveInventory(player, fromInvEntry, false, false, playerAction == PlayerAction.DEATH);
+            saveInventory(Optional.of(player), fromInvEntry, false, false, playerAction == PlayerAction.DEATH);
         }
 
         // Don't load a new inventory if the player quit

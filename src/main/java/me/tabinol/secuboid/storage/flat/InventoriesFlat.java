@@ -67,7 +67,7 @@ public class InventoriesFlat {
                 if (invDefaultFile.isFile()) {
                     final PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, Optional.empty(),
                             inventorySpec, false);
-                    inventories.addDefaultInventory(playerInvEntry);
+                    inventories.saveInventory(Optional.empty(), playerInvEntry, false, true, false);
                 }
             }
         }
@@ -75,7 +75,6 @@ public class InventoriesFlat {
 
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
         saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
-
     }
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
@@ -100,28 +99,28 @@ public class InventoriesFlat {
             final File survivalFile = new File(invDir,
                     String.format("%s.%s%s", playerUUID, getGameModeFromBoolean(false), INV_EXT));
             if (survivalFile.exists()) {
-                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(survivalFile, Optional.of(playerUUID),
-                        inventorySpec, false);
-                playerInventoryCache.addInventorySurvival(inventorySpec, playerInvEntry);
+                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(survivalFile,
+                        Optional.of(playerInventoryCache), inventorySpec, false);
+                inventories.saveInventory(Optional.empty(), playerInvEntry, false, false, false);
             }
 
             // Creative
             final File creativeFile = new File(invDir,
                     String.format("%s.%s%s", playerUUID, getGameModeFromBoolean(true), INV_EXT));
             if (creativeFile.exists()) {
-                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(creativeFile, Optional.of(playerUUID),
-                        inventorySpec, true);
-                playerInventoryCache.addInventorySurvival(inventorySpec, playerInvEntry);
+                final PlayerInvEntry playerInvEntry = loadInventoryFromFile(creativeFile,
+                        Optional.of(playerInventoryCache), inventorySpec, true);
+                inventories.saveInventory(Optional.empty(), playerInvEntry, false, false, false);
             }
 
             // Death
-            for (int deathVersion = 1; deathVersion <= PlayerInventoryCache.DEATH_SAVE_MAX_NBR; deathVersion++) {
+            for (int deathVersion = PlayerInventoryCache.DEATH_SAVE_MAX_NBR; deathVersion > 0; deathVersion--) {
                 final File deathFile = new File(invDir, String.format("%s.%s.%s.%s%s", playerUUID,
                         getGameModeFromBoolean(true), DEATH, deathVersion, INV_EXT));
                 if (deathFile.exists()) {
-                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(deathFile, Optional.of(playerUUID),
-                            inventorySpec, false);
-                    playerInventoryCache.addInventoryDeath(deathVersion, playerInvEntry);
+                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(deathFile,
+                            Optional.of(playerInventoryCache), inventorySpec, false);
+                    inventories.saveInventory(Optional.empty(), playerInvEntry, true, false, false);
                 }
             }
         }
@@ -145,10 +144,11 @@ public class InventoriesFlat {
         saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), true, false);
     }
 
-    private PlayerInvEntry loadInventoryFromFile(final File playerItemFile, final Optional<UUID> playerUUIDOpt,
-            final InventorySpec inventorySpec, final boolean isCreative) {
+    private PlayerInvEntry loadInventoryFromFile(final File playerItemFile,
+            final Optional<PlayerInventoryCache> playerInventoryCacheOpt, final InventorySpec inventorySpec,
+            final boolean isCreative) {
         final YamlConfiguration configPlayerItemFile = new YamlConfiguration();
-        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerUUIDOpt, inventorySpec, isCreative);
+        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerInventoryCacheOpt, inventorySpec, isCreative);
 
         try {
             // load Inventory
@@ -163,18 +163,21 @@ public class InventoriesFlat {
             playerInvEntry.setHealth(configPlayerItemFile.getDouble("Health"));
             playerInvEntry.setFoodLevel(configPlayerItemFile.getInt("FoodLevel"));
 
-            final ItemStack[] itemListLoad = playerInvEntry.getSlotItems();
-            final ItemStack[] itemArmorLoad = playerInvEntry.getArmorItems();
-            final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
+            final ItemStack[] itemListLoad = new ItemStack[PlayerInvEntry.INVENTORY_LIST_SIZE];
+            final ItemStack[] itemArmorLoad = new ItemStack[PlayerInvEntry.ARMOR_SIZE];
+            final ItemStack[] itemEnderChest = new ItemStack[PlayerInvEntry.ENDER_CHEST_SIZE];
             for (int t = 0; t < itemListLoad.length; t++) {
                 itemListLoad[t] = configPlayerItemFile.getItemStack("Slot." + t, new ItemStack(Material.AIR));
             }
+            playerInvEntry.setSlotItems(itemListLoad);
             for (int t = 0; t < itemArmorLoad.length; t++) {
                 itemArmorLoad[t] = configPlayerItemFile.getItemStack("Armor." + t, new ItemStack(Material.AIR));
             }
+            playerInvEntry.setArmorItems(itemArmorLoad);
             for (int t = 0; t < itemEnderChest.length; t++) {
                 itemEnderChest[t] = configPlayerItemFile.getItemStack("EnderChest." + t, new ItemStack(Material.AIR));
             }
+            playerInvEntry.setEnderChestItems(itemEnderChest);
             playerInvEntry.setItemOffhand(configPlayerItemFile.getItemStack("OffHand.0", new ItemStack(Material.AIR)));
 
             // PotionsEffects
@@ -238,7 +241,7 @@ public class InventoriesFlat {
                     secuboid.getLogger().severe("Unable to delete the file: " + actFile.getPath());
                 }
             }
-            for (int t = 8; t >= 1; t--) {
+            for (int t = PlayerInventoryCache.DEATH_SAVE_MAX_NBR - 1; t >= 1; t--) {
                 actFile = new File(invDirFile, fileDeathPrefix + t + INV_EXT);
                 if (actFile.exists()) {
                     if (!actFile.renameTo(new File(invDirFile, fileDeathPrefix + (t + 1) + INV_EXT))) {
@@ -271,9 +274,6 @@ public class InventoriesFlat {
                 configPlayerItemFile.set("FoodLevel", PlayerInvEntry.MAX_FOOD_LEVEL);
 
                 final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
-                for (int t = 0; t < 4; t++) {
-                    configPlayerItemFile.set("Armor." + t, new ItemStack(Material.AIR));
-                }
                 for (int t = 0; t < itemEnderChest.length; t++) {
                     configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
                 }

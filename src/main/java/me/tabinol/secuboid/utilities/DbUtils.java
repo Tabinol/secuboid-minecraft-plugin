@@ -39,6 +39,11 @@ public final class DbUtils {
         R apply(T t) throws SQLException;
     }
 
+    @FunctionalInterface
+    public interface SqlConsumer<T> {
+        void accept(T t) throws SQLException;
+    }
+
     private DbUtils() {
     }
 

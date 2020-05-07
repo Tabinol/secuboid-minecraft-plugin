@@ -94,9 +94,18 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      */
     public void loadAllAndStart() {
         isQueueActive = false;
-        storage.loadAll();
+        final boolean conversionNeeded = storage.loadAll();
         isQueueActive = true;
         this.start();
+
+        // Conversion Flat to MySQL
+        if (conversionNeeded) {
+            final FlatToMySql flatToMySql = new FlatToMySql(secuboid);
+            flatToMySql.landConversion();
+            flatToMySql.approveConversion();
+            flatToMySql.playersCacheConversion();
+            flatToMySql.inventoriesConversion();
+        }
     }
 
     /**

@@ -48,11 +48,13 @@ public class StorageFlat implements Storage {
     }
 
     @Override
-    public void loadAll() {
+    public boolean loadAll() {
         loadLands();
         loadApproves();
         loadPlayersCache();
         loadInventories();
+
+        return false;
     }
 
     @Override

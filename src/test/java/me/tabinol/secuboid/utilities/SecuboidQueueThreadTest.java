@@ -45,10 +45,11 @@ public final class SecuboidQueueThreadTest {
         }
 
         @Override
-        protected void doElement(final Long sleepTimeMillis) throws InterruptedException {
+        protected boolean doElement(final Long sleepTimeMillis) throws InterruptedException {
             if (sleepTimeMillis != 0l) {
                 sleep(sleepTimeMillis);
             }
+            return true;
         }
     }
 

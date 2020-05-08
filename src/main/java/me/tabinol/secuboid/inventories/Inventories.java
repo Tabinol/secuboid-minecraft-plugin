@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -163,13 +162,11 @@ public final class Inventories {
 
         // Normal save
         replaceAllInArray(player.getInventory().getContents(), playerInvEntry.getSlotItems());
-        replaceAllInArray(player.getInventory().getArmorContents(), playerInvEntry.getArmorItems());
         replaceAllInArray(player.getEnderChest().getStorageContents(), playerInvEntry.getEnderChestItems());
         playerInvEntry.setLevel(player.getLevel()) //
                 .setExp(player.getExp()) //
                 .setHealth(player.getHealth()) //
-                .setFoodLevel(player.getFoodLevel()) //
-                .setItemOffhand(player.getInventory().getItemInOffHand());
+                .setFoodLevel(player.getFoodLevel());
         replaceAllPotionEffects(player, playerInvEntry);
 
     }
@@ -226,9 +223,7 @@ public final class Inventories {
                 }
             }
             player.getInventory().setContents(playerInvEntry.getSlotItems());
-            player.getInventory().setArmorContents(playerInvEntry.getArmorItems());
             player.getEnderChest().setContents(playerInvEntry.getEnderChestItems());
-            player.getInventory().setItemInOffHand(playerInvEntry.getItemOffhand());
 
             // PotionsEffects
             replaceAllPotionEffectsToPlayer(playerInvEntry, player);
@@ -242,10 +237,10 @@ public final class Inventories {
             player.setHealth(PlayerInvEntry.MAX_HEALTH);
             player.setFoodLevel(PlayerInvEntry.MAX_FOOD_LEVEL);
             player.getInventory().clear();
-            player.getInventory().setBoots(new ItemStack(Material.AIR));
-            player.getInventory().setChestplate(new ItemStack(Material.AIR));
-            player.getInventory().setHelmet(new ItemStack(Material.AIR));
-            player.getInventory().setLeggings(new ItemStack(Material.AIR));
+            player.getInventory().setBoots(null);
+            player.getInventory().setChestplate(null);
+            player.getInventory().setHelmet(null);
+            player.getInventory().setLeggings(null);
             player.getEnderChest().clear();
             removePotionEffects(player);
         }

@@ -74,9 +74,9 @@ public final class AreasRoadsMatricesDao {
             stmt.setInt(2, roadMatrixPojo.getAreaId());
             stmt.setInt(3, roadMatrixPojo.getChunkX());
             stmt.setInt(4, roadMatrixPojo.getChunkZ());
-            DbUtils.setMatrixs16(stmt, 5, roadMatrixPojo.getMatrix());
+            DbUtils.setMatrix16(stmt, 5, roadMatrixPojo.getMatrix());
 
-            DbUtils.setMatrixs16(stmt, 6, roadMatrixPojo.getMatrix());
+            DbUtils.setMatrix16(stmt, 6, roadMatrixPojo.getMatrix());
 
             stmt.executeUpdate();
         }

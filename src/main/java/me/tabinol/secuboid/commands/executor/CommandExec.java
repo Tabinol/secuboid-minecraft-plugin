@@ -19,11 +19,9 @@ package me.tabinol.secuboid.commands.executor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -250,7 +248,7 @@ public abstract class CommandExec {
         if (player.getGameMode() != GameMode.CREATIVE) {
             final EntityEquipment equipment = player.getEquipment();
             if (equipment.getItemInMainHand().getAmount() == 1) {
-                equipment.setItemInMainHand(new ItemStack(Material.AIR));
+                equipment.setItemInMainHand(null);
             } else {
                 equipment.getItemInMainHand().setAmount(equipment.getItemInMainHand().getAmount() - 1);
             }

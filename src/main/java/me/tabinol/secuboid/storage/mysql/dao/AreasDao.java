@@ -41,7 +41,7 @@ public final class AreasDao {
 
     public Map<UUID, List<AreaPojo>> getLandUUIDToAreas(final Connection conn) throws SQLException {
         final String sql = "SELECT `land_uuid`, `area_id`, `approved`, `world_name`, `area_type_id`, " //
-                + "`x1`, `y1`, `z1`, `x2`, `y2`, `z2`, " //
+                + "`x1`, `y1`, `z1`, `x2`, `y2`, `z2` " //
                 + "FROM `{{TP}}lands_areas`";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

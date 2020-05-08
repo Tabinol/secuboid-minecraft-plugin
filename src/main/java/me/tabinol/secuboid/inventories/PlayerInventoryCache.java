@@ -96,7 +96,12 @@ public class PlayerInventoryCache implements Savable {
     }
 
     PlayerInvEntry getInventoryDeath(final int deathVersion) {
-        return deathInvEntries.get(deathVersion);
+        try {
+            return deathInvEntries.get(deathVersion - 1);
+        } catch (IndexOutOfBoundsException e) {
+            // Not found!
+            return null;
+        }
     }
 
     public PlayerInvEntry getCurInvEntry() {

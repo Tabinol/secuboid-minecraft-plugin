@@ -69,7 +69,7 @@ public final class InventoryListener extends CommonListener implements Listener 
                 player.getGameMode() == GameMode.CREATIVE, Inventories.PlayerAction.JOIN);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST) // Before Connection listener
     public void onPlayerQuit(final PlayerQuitEvent event) {
         inventories.removePlayer(event.getPlayer());
     }

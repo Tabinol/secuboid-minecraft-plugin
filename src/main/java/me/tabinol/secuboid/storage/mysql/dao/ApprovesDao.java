@@ -40,7 +40,7 @@ public final class ApprovesDao {
     }
 
     public List<ApprovePojo> getApproves(final Connection conn) throws SQLException {
-        final String sql = "SELECT  `id`, `approve_action_id`, `land_uuid`, `removed_area_id`, `new_area_id`, " //
+        final String sql = "SELECT  `land_uuid`, `approve_action_id`, `removed_area_id`, `new_area_id`, " //
                 + "`owner_id`, `parent_uuid`, `price`, `transaction_datetime` " //
                 + "FROM `{{TP}}approves`";
 

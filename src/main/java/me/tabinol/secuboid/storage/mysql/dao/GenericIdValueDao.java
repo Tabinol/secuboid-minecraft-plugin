@@ -95,8 +95,8 @@ public final class GenericIdValueDao<I, V> {
     }
 
     public void insert(final Connection conn, final I i, final V v) throws SQLException {
-        final String sql = String.format("INSERT INTO `{{TP}}%s`(`%s`, `%s`) " //
-                + "VALUES(?, ?)", tableSuffix, idColumnLabel, valueColumnLabel);
+        final String sql = String.format("INSERT INTO `{{TP}}%s` (`%s`, `%s`) " //
+                + "VALUES (?, ?)", tableSuffix, idColumnLabel, valueColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             setFromClass(idClazz, stmt, 1, i);
@@ -106,8 +106,8 @@ public final class GenericIdValueDao<I, V> {
     }
 
     public void insertOrUpdate(final Connection conn, final I i, final V v) throws SQLException {
-        final String sql = String.format("INSERT INTO `{{TP}}%s`(`%s`, `%s`) " //
-                + "VALUES(?, ?) " //
+        final String sql = String.format("INSERT INTO `{{TP}}%s` (`%s`, `%s`) " //
+                + "VALUES (?, ?) " //
                 + "ON DUPLICATE KEY UPDATE " //
                 + "`%s`=?", tableSuffix, idColumnLabel, valueColumnLabel, valueColumnLabel);
 
@@ -116,6 +116,21 @@ public final class GenericIdValueDao<I, V> {
             setFromClass(valueClazz, stmt, 2, v);
             setFromClass(valueClazz, stmt, 3, v);
             stmt.executeUpdate();
+        }
+    }
+
+    public Optional<I> getIdOpt(final Connection conn, final V v) throws SQLException {
+        final String sql = String.format("SELECT `%s` FROM `{{TP}}%s` WHERE `%s`=?", idColumnLabel, tableSuffix,
+                valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(valueClazz, stmt, 1, v);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    return Optional.of(getFromClass(idClazz, rs, idColumnLabel));
+                }
+                return Optional.empty();
+            }
         }
     }
 
@@ -134,10 +149,15 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
-    public I insertOrGetId(final Connection conn, final V v) throws SQLException {
-        final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=? " //
-                + "ON DUPLICATE KEY UPDATE `%s`=LAST_INSERT_ID(`%s`)", tableSuffix, valueColumnLabel, idColumnLabel,
-                idColumnLabel);
+    public int insertOrGetId(final Connection conn, final V v) throws SQLException {
+        assert idClazz.isAssignableFrom(Integer.class);
+
+        final Optional<I> idOpt = getIdOpt(conn, v);
+        if (idOpt.isPresent()) {
+            return (int) idOpt.get();
+        }
+
+        final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=?", tableSuffix, valueColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -145,7 +165,7 @@ public final class GenericIdValueDao<I, V> {
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return getFromClass(idClazz, rs, idColumnLabel);
+                return rs.getInt(1);
             }
         }
     }

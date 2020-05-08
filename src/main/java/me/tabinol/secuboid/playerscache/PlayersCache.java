@@ -181,7 +181,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
     }
 
     @Override
-    protected void doElement(final PlayerCacheable outputRequestObj) {
+    protected boolean doElement(final PlayerCacheable outputRequestObj) {
         // Check if the object is an output request
         if (outputRequestObj instanceof OutputRequest) {
             final OutputRequest outputRequest = (OutputRequest) outputRequestObj;
@@ -227,7 +227,11 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
         } else if (outputRequestObj instanceof PlayerCacheEntry) {
             // Update playerList
             updatePlayerInlist((PlayerCacheEntry) outputRequestObj);
+        } else {
+            // Error!
+            return false;
         }
+        return true;
     }
 
     private void updatePlayerInlist(final PlayerCacheEntry entry) {

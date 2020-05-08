@@ -1,8 +1,8 @@
 package me.tabinol.secuboid.storage;
 
+import java.io.File;
 import java.util.logging.Logger;
 
-import de.schlichtherle.io.File;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;

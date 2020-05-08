@@ -17,39 +17,27 @@
  */
 package me.tabinol.secuboid.storage.mysql.pojo;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-
-import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
-import me.tabinol.secuboid.inventories.PlayerInvEntry;
-
 public final class InventoryEntryPojo {
-
-    private static final String PATH_PREFIX_SLOT = "slot.";
-    private static final String PATH_PREFIX_ARMOR = "armor.";
-    private static final String PATH_PREFIX_ENDER_CHEST = "enderchest.";
-    private static final String PATH_OFF_HAND = "offhand.0";
 
     private final int id;
     private final int level;
     private final float exp;
     private final double health;
     private final int foodLevel;
-    private final String itemStackStr;
+    private final ItemStack[] contents;
+    private final ItemStack[] enderChestContents;
 
     public InventoryEntryPojo(final int id, final int level, final float exp, final double health, final int foodLevel,
-            final String itemStackStr) {
+            final ItemStack[] contents, final ItemStack[] enderChestContents) {
         this.id = id;
         this.level = level;
         this.exp = exp;
         this.health = health;
         this.foodLevel = foodLevel;
-        this.itemStackStr = itemStackStr;
+        this.contents = contents;
+        this.enderChestContents = enderChestContents;
     }
 
     public int getId() {
@@ -72,73 +60,11 @@ public final class InventoryEntryPojo {
         return this.foodLevel;
     }
 
-    public String getItemStackStr() {
-        return this.itemStackStr;
+    public ItemStack[] getContents() {
+        return this.contents;
     }
 
-    public static String itemStackToText(final ItemStack[] slotItems, final ItemStack[] armorItems,
-            final ItemStack[] enderChestItems, final ItemStack itemOffhand, final boolean enderChestOnly) {
-        final YamlConfiguration itemStackYaml = new YamlConfiguration();
-
-        if (enderChestOnly) {
-            for (int t = 0; t < enderChestItems.length; t++) {
-                itemStackYaml.set(PATH_PREFIX_ENDER_CHEST + t, enderChestItems[t]);
-            }
-        } else {
-            for (int t = 0; t < slotItems.length; t++) {
-                itemStackYaml.set(PATH_PREFIX_SLOT + t, slotItems[t]);
-            }
-            for (int t = 0; t < armorItems.length; t++) {
-                itemStackYaml.set(PATH_PREFIX_ARMOR + t, armorItems[t]);
-            }
-            for (int t = 0; t < enderChestItems.length; t++) {
-                itemStackYaml.set(PATH_PREFIX_ENDER_CHEST + t, enderChestItems[t]);
-            }
-            itemStackYaml.set(PATH_OFF_HAND, itemOffhand);
-        }
-
-        return itemStackYaml.saveToString();
-    }
-
-    public static ItemStackOut textToItemStack(final String itemStackStr) {
-        final YamlConfiguration itemStackYaml;
-
-        try (final Reader reader = new StringReader(itemStackStr)) {
-            itemStackYaml = YamlConfiguration.loadConfiguration(reader);
-        } catch (final IOException e) {
-            // This error should never happend!
-            throw new SecuboidRuntimeException(e);
-        }
-
-        final ItemStack[] slotItems = new ItemStack[PlayerInvEntry.INVENTORY_LIST_SIZE];
-        for (int t = 0; t < PlayerInvEntry.INVENTORY_LIST_SIZE; t++) {
-            slotItems[t] = itemStackYaml.getItemStack(PATH_PREFIX_SLOT + t, new ItemStack(Material.AIR));
-        }
-        final ItemStack[] armorItems = new ItemStack[PlayerInvEntry.ARMOR_SIZE];
-        for (int t = 0; t < PlayerInvEntry.ARMOR_SIZE; t++) {
-            armorItems[t] = itemStackYaml.getItemStack(PATH_PREFIX_ARMOR + t, new ItemStack(Material.AIR));
-        }
-        final ItemStack[] enderChestItems = new ItemStack[PlayerInvEntry.ENDER_CHEST_SIZE];
-        for (int t = 0; t < PlayerInvEntry.ENDER_CHEST_SIZE; t++) {
-            armorItems[t] = itemStackYaml.getItemStack(PATH_PREFIX_ENDER_CHEST + t, new ItemStack(Material.AIR));
-        }
-        final ItemStack itemOffhand = itemStackYaml.getItemStack(PATH_OFF_HAND, new ItemStack(Material.AIR));
-
-        return new ItemStackOut(slotItems, armorItems, enderChestItems, itemOffhand);
-    }
-
-    public static final class ItemStackOut {
-        public final ItemStack[] slotItems;
-        public final ItemStack[] armorItems;
-        public final ItemStack[] enderChestItems;
-        public final ItemStack itemOffhand;
-
-        private ItemStackOut(final ItemStack[] slotItems, final ItemStack[] armorItems,
-                final ItemStack[] enderChestItems, final ItemStack itemOffhand) {
-            this.slotItems = slotItems;
-            this.armorItems = armorItems;
-            this.enderChestItems = enderChestItems;
-            this.itemOffhand = itemOffhand;
-        }
+    public ItemStack[] getEnderChestContents() {
+        return this.enderChestContents;
     }
 }

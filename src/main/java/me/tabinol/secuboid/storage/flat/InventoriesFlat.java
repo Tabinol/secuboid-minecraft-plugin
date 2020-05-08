@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,6 +38,7 @@ import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
+import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * InventoriesFlat
@@ -59,6 +59,10 @@ public class InventoriesFlat {
     }
 
     public void loadInventories() {
+        if (!secuboid.getInventoriesOpt().isPresent()) {
+            return;
+        }
+
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
             final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
@@ -90,7 +94,6 @@ public class InventoriesFlat {
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         final UUID playerUUID = playerInventoryCache.getUUID();
-        final Thread preLoginThread = secuboid.getStorageThread().preloginRemoveThread(playerUUID);
 
         for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
             final File invDir = getInventoryDir(inventorySpec.getInventoryName());
@@ -126,8 +129,9 @@ public class InventoriesFlat {
         }
 
         // Notify pre login thread
-        synchronized (preLoginThread) {
-            preLoginThread.notify();
+        secuboid.getStorageThread().removePlayerUUIDPreLogin(playerUUID);
+        synchronized (SecuboidQueueThread.LOCK) {
+            SecuboidQueueThread.LOCK.notify();
         }
     }
 
@@ -164,21 +168,15 @@ public class InventoriesFlat {
             playerInvEntry.setFoodLevel(configPlayerItemFile.getInt("FoodLevel"));
 
             final ItemStack[] itemListLoad = new ItemStack[PlayerInvEntry.INVENTORY_LIST_SIZE];
-            final ItemStack[] itemArmorLoad = new ItemStack[PlayerInvEntry.ARMOR_SIZE];
             final ItemStack[] itemEnderChest = new ItemStack[PlayerInvEntry.ENDER_CHEST_SIZE];
             for (int t = 0; t < itemListLoad.length; t++) {
-                itemListLoad[t] = configPlayerItemFile.getItemStack("Slot." + t, new ItemStack(Material.AIR));
+                itemListLoad[t] = configPlayerItemFile.getItemStack("Slot." + t, null);
             }
             playerInvEntry.setSlotItems(itemListLoad);
-            for (int t = 0; t < itemArmorLoad.length; t++) {
-                itemArmorLoad[t] = configPlayerItemFile.getItemStack("Armor." + t, new ItemStack(Material.AIR));
-            }
-            playerInvEntry.setArmorItems(itemArmorLoad);
             for (int t = 0; t < itemEnderChest.length; t++) {
-                itemEnderChest[t] = configPlayerItemFile.getItemStack("EnderChest." + t, new ItemStack(Material.AIR));
+                itemEnderChest[t] = configPlayerItemFile.getItemStack("EnderChest." + t, null);
             }
             playerInvEntry.setEnderChestItems(itemEnderChest);
-            playerInvEntry.setItemOffhand(configPlayerItemFile.getItemStack("OffHand.0", new ItemStack(Material.AIR)));
 
             // PotionsEffects
             final ConfigurationSection effectSection = configPlayerItemFile.getConfigurationSection("PotionEffect");
@@ -285,19 +283,13 @@ public class InventoriesFlat {
                 configPlayerItemFile.set("FoodLevel", playerInvEntry.getFoodLevel());
 
                 final ItemStack[] itemListSave = playerInvEntry.getSlotItems();
-                final ItemStack[] itemArmorSave = playerInvEntry.getArmorItems();
                 final ItemStack[] itemEnderChest = playerInvEntry.getEnderChestItems();
-                final ItemStack itemOffhand = playerInvEntry.getItemOffhand();
                 for (int t = 0; t < itemListSave.length; t++) {
                     configPlayerItemFile.set("Slot." + t, itemListSave[t]);
-                }
-                for (int t = 0; t < itemArmorSave.length; t++) {
-                    configPlayerItemFile.set("Armor." + t, itemArmorSave[t]);
                 }
                 for (int t = 0; t < itemEnderChest.length; t++) {
                     configPlayerItemFile.set("EnderChest." + t, itemEnderChest[t]);
                 }
-                configPlayerItemFile.set("OffHand.0", itemOffhand);
 
                 // PotionsEffects
                 final List<PotionEffect> activePotionEffects = playerInvEntry.getPotionEffects();

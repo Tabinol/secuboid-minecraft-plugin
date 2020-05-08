@@ -24,11 +24,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 
 /**
  * Abstract class for task queue in a thread.
  */
 public abstract class SecuboidQueueThread<T> extends Thread {
+
+    /**
+     * A lock object for thread synchronization.
+     */
+    public static final Object LOCK = new Object();
 
     private static final long TIME_WAITING_THREAD_MILLIS = Duration.ofSeconds(10).toMillis();
 
@@ -72,7 +78,9 @@ public abstract class SecuboidQueueThread<T> extends Thread {
         Optional<T> tOpt;
         // Loop unit there is no empty (stop thread request) element.
         while ((tOpt = taskQueue.take()).isPresent()) {
-            doElement(tOpt.get());
+            if (!doElement(tOpt.get())) {
+                throw new SecuboidRuntimeException(tOpt.get().getClass().getName() + " is not a valid class");
+            }
         }
     }
 
@@ -86,8 +94,9 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      * Execute what it should execute inside the loop.
      * 
      * @param t the element
+     * @return true if the correct class is found, false throws an exception.
      */
-    protected abstract void doElement(T t) throws InterruptedException;
+    protected abstract boolean doElement(T t) throws InterruptedException;
 
     /**
      * Stop next run.

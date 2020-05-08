@@ -51,7 +51,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}players` ({{LS}}" +
-        "  `uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`uuid`),{{LS}}" +
         "  UNIQUE KEY `uuid` (`uuid`)){{LS}}" +
@@ -60,7 +60,7 @@ public final class SecuboidDao {
         "CREATE TABLE IF NOT EXISTS `{{TP}}player_containers` ({{LS}}" +
         "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
         "  `player_container_type_id` INT NOT NULL,{{LS}}" +
-        "  `player_uuid` BINARY(16) NULL,{{LS}}" +
+        "  `player_uuid` VARCHAR(255) CHARACTER SET ascii NULL,{{LS}}" +
         "  `parameter` VARCHAR(200) NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`),{{LS}}" +
@@ -80,12 +80,12 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands` ({{LS}}" +
-        "  `uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
         "  `approved` TINYINT NOT NULL,{{LS}}" +
         "  `type_id` INT NULL,{{LS}}" +
         "  `owner_id` INT NOT NULL,{{LS}}" +
-        "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
+        "  `parent_uuid` VARCHAR(255) CHARACTER SET ascii NULL,{{LS}}" +
         "  `priority` SMALLINT NOT NULL,{{LS}}" +
         "  `money` DOUBLE NOT NULL,{{LS}}" +
         "  `for_sale` TINYINT NOT NULL,{{LS}}" +
@@ -96,14 +96,14 @@ public final class SecuboidDao {
         "  `rent_price` DOUBLE NULL,{{LS}}" +
         "  `rent_renew` INT NULL,{{LS}}" +
         "  `rent_auto_renew` TINYINT NULL,{{LS}}" +
-        "  `tenant_uuid` BINARY(16) NULL,{{LS}}" +
+        "  `tenant_uuid` VARCHAR(255) CHARACTER SET ascii NULL,{{LS}}" +
         "  `last_payment_millis` BIGINT NULL,{{LS}}" +
         "  PRIMARY KEY (`uuid`),{{LS}}" +
         "  UNIQUE KEY `uuid` (`uuid`),{{LS}}" +
         "  INDEX `fk_lands_type_id_idx` (`type_id`),{{LS}}" +
         "  INDEX `fk_lands_owner_id_idx` (`owner_id`),{{LS}}" +
         "  INDEX `fk_lands_parent_uuid_idx` (`parent_uuid`),{{LS}}" +
-        "  INDEX `fk_lands_tenant_id_idx` (`tenant_id`),{{LS}}" +
+        "  INDEX `fk_lands_tenant_uuid_idx` (`tenant_uuid`),{{LS}}" +
         "  UNIQUE KEY `name` (`name`),{{LS}}" +
         "  CONSTRAINT `fk_lands_type_id`{{LS}}" +
         "    FOREIGN KEY (`type_id`){{LS}}" +
@@ -119,8 +119,8 @@ public final class SecuboidDao {
         "    FOREIGN KEY (`parent_uuid`){{LS}}" +
         "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
         "    ON DELETE NO ACTION{{LS}}" +
-        "    ON UPDATE NO ACTION,{{LS}}" +
-        "ENGINE = InnoDB{{LS}}",
+        "    ON UPDATE NO ACTION){{LS}}" +
+        "ENGINE = InnoDB",
         
         "CREATE TABLE IF NOT EXISTS `{{TP}}areas_types` ({{LS}}" +
         "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
@@ -131,7 +131,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
         
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `area_id` INT NOT NULL,{{LS}}" +
         "  `approved` TINYINT NOT NULL,{{LS}}" +
         "  `world_name` VARCHAR(45) NOT NULL,{{LS}}" +
@@ -157,7 +157,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
         
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas_roads_matrices` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `area_id` INT NOT NULL,{{LS}}" +
         "  `chunk_x` INT NOT NULL,{{LS}}" +
         "  `chunk_z` INT NOT NULL,{{LS}}" +
@@ -177,7 +177,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_residents` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `player_container_id` INT NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`land_uuid`, `player_container_id`),{{LS}}" +
         "  INDEX `fk_lands_residents_player_container_id_idx` (`player_container_id`),{{LS}}" +
@@ -194,7 +194,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_banneds` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `player_container_id` INT NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`land_uuid`, `player_container_id`),{{LS}}" +
         "  INDEX `fk_lands_banneds_player_container_id_idx` (`player_container_id`),{{LS}}" +
@@ -219,7 +219,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_permissions` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `player_container_id` INT NOT NULL,{{LS}}" +
         "  `permission_id` INT NOT NULL,{{LS}}" +
         "  `value` TINYINT NOT NULL,{{LS}}" +
@@ -253,7 +253,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `flag_id` INT NOT NULL,{{LS}}" +
         "  `value_string` VARCHAR(200) NULL,{{LS}}" +
         "  `value_double` DOUBLE NULL,{{LS}}" +
@@ -274,8 +274,8 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_players_notifies` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-        "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
+        "  `player_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`land_uuid`, `player_uuid`),{{LS}}" +
         "  INDEX `fk_lands_players_notifies_player_uuid_idx` (`player_uuid`),{{LS}}" +
         "  CONSTRAINT `fk_lands_players_notifies_land_uuid`{{LS}}" +
@@ -299,19 +299,19 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}approves` ({{LS}}" +
-        "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `land_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `approve_action_id` INT NOT NULL,{{LS}}" +
         "  `removed_area_id` INT NULL,{{LS}}" +
         "  `new_area_id` INT NULL,{{LS}}" +
         "  `owner_id` INT NOT NULL,{{LS}}" +
-        "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
+        "  `parent_uuid` VARCHAR(255) CHARACTER SET ascii NULL,{{LS}}" +
         "  `price` DOUBLE NOT NULL,{{LS}}" +
         "  `transaction_datetime` DATETIME NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`land_uuid`),{{LS}}" +
         "  UNIQUE KEY `land_uuid` (`land_uuid`),{{LS}}" +
         "  INDEX `fk_approves_land_uuid_idx` (`land_uuid`),{{LS}}" +
         "  INDEX `fk_approves_approve_action_id_idx` (`approve_action_id`),{{LS}}" +
-        "  INDEX `fk_approves_removed_area_id_idx` (`id` ASC, `land_uuid`),{{LS}}" +
+        "  INDEX `fk_approves_removed_area_id_idx` (`removed_area_id`),{{LS}}" +
         "  INDEX `fk_approves_new_area_id_idx` (`new_area_id`),{{LS}}" +
         "  INDEX `fk_approves_owner_id_idx` (`owner_id`),{{LS}}" +
         "  INDEX `fk_approves_parent_id_idx` (`parent_uuid`),{{LS}}" +
@@ -348,7 +348,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}inventories` ({{LS}}" +
-        "  `id` INT NOT NULL,{{LS}}" +
+        "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
         "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`),{{LS}}" +
@@ -361,7 +361,8 @@ public final class SecuboidDao {
         "  `exp` FLOAT NOT NULL,{{LS}}" +
         "  `health` DOUBLE NOT NULL,{{LS}}" +
         "  `food_level` INT NOT NULL,{{LS}}" +
-        "  `item_stacks` TEXT NOT NULL,{{LS}}" +
+        "  `contents` TEXT NOT NULL,{{LS}}" +
+        "  `ender_chest_contents` TEXT NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`)){{LS}}" +
         "ENGINE = InnoDB",
@@ -385,7 +386,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}game_modes` ({{LS}}" +
-        "  `id` INT NOT NULL,{{LS}}" +
+        "  `id` INT NOT NULL AUTO_INCREMENT,{{LS}}" +
         "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
         "  PRIMARY KEY (`id`),{{LS}}" +
         "  UNIQUE KEY `id` (`id`),{{LS}}" +
@@ -393,7 +394,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_saves` ({{LS}}" +
-        "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `player_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `inventory_id` INT NOT NULL,{{LS}}" +
         "  `game_mode_id` INT NOT NULL,{{LS}}" +
         "  `inventories_entries_id` INT NOT NULL,{{LS}}" +
@@ -425,7 +426,7 @@ public final class SecuboidDao {
         "ENGINE = InnoDB",
 
         "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_deaths` ({{LS}}" +
-        "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
+        "  `player_uuid` VARCHAR(255) CHARACTER SET ascii NOT NULL,{{LS}}" +
         "  `inventory_id` INT NOT NULL,{{LS}}" +
         "  `game_mode_id` INT NOT NULL,{{LS}}" +
         "  `death_number` INT NOT NULL,{{LS}}" +

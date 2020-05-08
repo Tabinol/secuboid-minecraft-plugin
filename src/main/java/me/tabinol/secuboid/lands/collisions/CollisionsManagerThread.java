@@ -69,7 +69,7 @@ public class CollisionsManagerThread extends SecuboidQueueThread<CollisionsManag
     }
 
     @Override
-    protected void doElement(final OutputRequest outputRequest) {
+    protected boolean doElement(final OutputRequest outputRequest) {
         // Do collision and price check
         try {
             outputRequest.collisions.doCollisionCheck();
@@ -83,6 +83,8 @@ public class CollisionsManagerThread extends SecuboidQueueThread<CollisionsManag
         final ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(secuboid,
                 outputRequest.commandExec, outputRequest.collisions);
         Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
+
+        return true;
     }
 
     /**

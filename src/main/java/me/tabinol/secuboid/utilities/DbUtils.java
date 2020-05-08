@@ -17,7 +17,11 @@
  */
 package me.tabinol.secuboid.utilities;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +30,11 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 
 public final class DbUtils {
 
@@ -62,21 +71,15 @@ public final class DbUtils {
 
     public static void setUUID(final PreparedStatement stmt, final int parameterIndex, final UUID uuid)
             throws SQLException {
-        final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
-        byteBuffer.putLong(uuid.getMostSignificantBits());
-        byteBuffer.putLong(uuid.getLeastSignificantBits());
-        stmt.setBytes(parameterIndex, byteBuffer.array());
+        stmt.setString(parameterIndex, uuid.toString());
     }
 
     public static UUID getUUID(final ResultSet rs, final String columnLabel) throws SQLException {
-        final byte[] bytes = rs.getBytes(columnLabel);
-        final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        final Long high = byteBuffer.getLong();
-        final Long low = byteBuffer.getLong();
-        return new UUID(high, low);
+        // TODO Find the bug with UUIDs in database
+        return UUID.fromString(new String(rs.getString(columnLabel).getBytes(), StandardCharsets.US_ASCII));
     }
 
-    public static void setMatrixs16(final PreparedStatement stmt, final int parameterIndex, final short[] matrix)
+    public static void setMatrix16(final PreparedStatement stmt, final int parameterIndex, final short[] matrix)
             throws SQLException {
         final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
         for (final short elem : matrix) {
@@ -93,6 +96,34 @@ public final class DbUtils {
             matrix[i] = byteBuffer.getShort();
         }
         return matrix;
+    }
+
+    public static void setItemStacks(final PreparedStatement stmt, final int parameterIndex,
+            final ItemStack[] itemStacks) throws SQLException {
+        final YamlConfiguration itemStackYaml = new YamlConfiguration();
+        for (int t = 0; t < itemStacks.length; t++) {
+            itemStackYaml.set(Integer.toString(t), itemStacks[t]);
+        }
+        stmt.setString(parameterIndex, itemStackYaml.saveToString());
+    }
+
+    public static ItemStack[] getItemStacks(final ResultSet rs, final String columnLabel, final int length)
+            throws SQLException {
+        final String itemStackStr = rs.getString(columnLabel);
+
+        final YamlConfiguration itemStackYaml;
+        try (final Reader reader = new StringReader(itemStackStr)) {
+            itemStackYaml = YamlConfiguration.loadConfiguration(reader);
+        } catch (final IOException e) {
+            // This error should never happend!
+            throw new SecuboidRuntimeException(e);
+        }
+
+        final ItemStack[] itemStacks = new ItemStack[length];
+        for (int t = 0; t < length; t++) {
+            itemStacks[t] = itemStackYaml.getItemStack(Integer.toString(t), null);
+        }
+        return itemStacks;
     }
 
     public static <U> void setOpt(final PreparedStatement stmt, final int parameterIndex, final Optional<U> uOpt,

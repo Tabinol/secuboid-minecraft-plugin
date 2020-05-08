@@ -921,7 +921,8 @@ public final class PlayerListener extends CommonListener implements Listener {
         final Player player = (Player) event.getPlayer();
         final PlayerConfEntry entry;
 
-        if ((entry = playerConf.get(player)) != null && !entry.isAdminMode()) {
+        if (event.getFrom() != null && event.getTo() != null && (entry = playerConf.get(player)) != null
+                && !entry.isAdminMode()) {
 
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(event.getFrom());
             final World.Environment worldEnvFrom = event.getFrom().getWorld().getEnvironment();

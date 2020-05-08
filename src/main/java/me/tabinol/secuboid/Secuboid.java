@@ -193,6 +193,8 @@ public final class Secuboid extends JavaPlugin {
         playerConf = new PlayerConfig(this);
         playerConf.addConsoleSender();
         language = new Lang(this);
+        playersCache = new PlayersCache(this);
+        playersCache.start();
         storage = Storage.getStorageFromConfig(this, getConf().getStorage());
         storageThread = new StorageThread(this, storage);
         worldConfig = new WorldConfig(this);
@@ -216,8 +218,6 @@ public final class Secuboid extends JavaPlugin {
             final EcoScheduler ecoScheduler = new EcoScheduler(this);
             ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         }
-        playersCache = new PlayersCache(this);
-        playersCache.start();
         getServer().getPluginManager().registerEvents(worldListener, this);
         getServer().getPluginManager().registerEvents(connectionListener, this);
         getServer().getPluginManager().registerEvents(playerListener, this);

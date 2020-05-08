@@ -59,11 +59,33 @@ public final class PlayerContainersDao {
         }
     }
 
+    public Optional<Integer> getIdOpt(final Connection conn, final int playerContainerTypeId,
+            final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
+        final String sql = "SELECT `id` FROM `{{TP}}player_containers` " //
+                + "WHERE `player_container_type_id`=? AND `player_uuid`=? AND `parameter`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            stmt.setInt(1, playerContainerTypeId);
+            DbUtils.setOpt(stmt, 2, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setOpt(stmt, 3, parameterOpt, (i, u) -> stmt.setString(i, u));
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    return Optional.of(rs.getInt("id"));
+                }
+                return Optional.empty();
+            }
+        }
+    }
+
     public int insertOrGetPlayerContainer(final Connection conn, final int playerContainerTypeId,
             final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
+        final Optional<Integer> idOpt = getIdOpt(conn, playerContainerTypeId, playerUUIDOpt, parameterOpt);
+        if (idOpt.isPresent()) {
+            return idOpt.get();
+        }
+
         final String sql = "INSERT INTO `{{TP}}player_containers` " //
-                + "(`player_container_type_id`, `player_uuid`, `parameter`) VALUES (?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE `id`=LAST_INSERT_ID(`id`)";
+                + "(`player_container_type_id`, `player_uuid`, `parameter`) VALUES (?, ?, ?)";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +95,7 @@ public final class PlayerContainersDao {
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return rs.getInt("id");
+                return rs.getInt(1);
             }
         }
     }

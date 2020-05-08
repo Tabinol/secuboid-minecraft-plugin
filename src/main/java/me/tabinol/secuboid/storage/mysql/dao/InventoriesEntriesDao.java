@@ -23,9 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.bukkit.inventory.ItemStack;
+
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo;
+import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class InventoriesEntriesDao {
 
@@ -36,7 +40,8 @@ public final class InventoriesEntriesDao {
     }
 
     public InventoryEntryPojo getInventoryEntry(final Connection conn, final int id) throws SQLException {
-        final String sql = "SELECT `level`, `exp`, `health`, `food_level`, `item_stacks` " //
+        final String sql = "SELECT `level`, `exp`, `health`, `food_level`, `contents`, " //
+                + "`ender_chest_contents` " //
                 + "FROM `{{TP}}inventories_entries` " //
                 + "WHERE `id`=?";
 
@@ -48,8 +53,11 @@ public final class InventoriesEntriesDao {
                     final float exp = rs.getFloat("exp");
                     final double health = rs.getFloat("health");
                     final int foodLevel = rs.getInt("food_level");
-                    final String itemStackStr = rs.getString("item_stacks");
-                    return new InventoryEntryPojo(id, level, exp, health, foodLevel, itemStackStr);
+                    final ItemStack[] contents = DbUtils.getItemStacks(rs, "contents",
+                            PlayerInvEntry.INVENTORY_LIST_SIZE);
+                    final ItemStack[] enderChestContents = DbUtils.getItemStacks(rs, "ender_chest_contents",
+                            PlayerInvEntry.ENDER_CHEST_SIZE);
+                    return new InventoryEntryPojo(id, level, exp, health, foodLevel, contents, enderChestContents);
                 }
             }
         }
@@ -58,9 +66,10 @@ public final class InventoriesEntriesDao {
     }
 
     public int insertInventoryEntry(final Connection conn, final int level, final float exp, final double health,
-            final int foodLevel, final String itemStackStr) throws SQLException {
+            final int foodLevel, final ItemStack[] contents, final ItemStack[] enderChestContents) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}inventories_entries` " //
-                + "(`level`, `exp`, `health`, `food_level`, `item_stacks`) " + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "(`level`, `exp`, `health`, `food_level`, `contents`, `ender_chest_contents`) " //
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -68,11 +77,12 @@ public final class InventoriesEntriesDao {
             stmt.setFloat(2, exp);
             stmt.setDouble(3, health);
             stmt.setInt(4, foodLevel);
-            stmt.setString(5, itemStackStr);
+            DbUtils.setItemStacks(stmt, 5, contents);
+            DbUtils.setItemStacks(stmt, 6, enderChestContents);
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return rs.getInt("id");
+                return rs.getInt(1);
             }
         }
     }
@@ -80,15 +90,17 @@ public final class InventoriesEntriesDao {
     public void updateInventoryEntry(final Connection conn, final InventoryEntryPojo inventoryEntryPojo)
             throws SQLException {
         final String sql = "UPDATE `{{TP}}inventories_entries` SET " //
-                + "`level`=?, `exp`=?, `health`=?, `food_level`=?, `item_stacks`=? " + "WHERE `id`=?";
+                + "`level`=?, `exp`=?, `health`=?, `food_level`=?, " //
+                + "`contents`=?, `ender_chest_contents`=? WHERE `id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.setInt(1, inventoryEntryPojo.getLevel());
             stmt.setFloat(2, inventoryEntryPojo.getExp());
             stmt.setDouble(3, inventoryEntryPojo.getHealth());
             stmt.setInt(4, inventoryEntryPojo.getFoodLevel());
-            stmt.setString(5, inventoryEntryPojo.getItemStackStr());
-            stmt.setInt(6, inventoryEntryPojo.getId());
+            DbUtils.setItemStacks(stmt, 5, inventoryEntryPojo.getContents());
+            DbUtils.setItemStacks(stmt, 6, inventoryEntryPojo.getEnderChestContents());
+            stmt.setInt(7, inventoryEntryPojo.getId());
             stmt.executeUpdate();
         }
     }

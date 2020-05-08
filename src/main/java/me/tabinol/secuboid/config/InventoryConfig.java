@@ -38,7 +38,7 @@ import me.tabinol.secuboid.permissionsflags.FlagValue;
  */
 public final class InventoryConfig {
 
-    public static final String GLOBAL = "_default_"; // Means it is assigned to all
+    public static final String GLOBAL = "Default"; // Means it is assigned to all
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
     public static final String PERM_DEFAULT = "secuboid.inv.default";
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";

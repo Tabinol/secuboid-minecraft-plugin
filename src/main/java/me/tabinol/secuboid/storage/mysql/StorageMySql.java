@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -85,13 +86,13 @@ import me.tabinol.secuboid.storage.mysql.pojo.ApprovePojo;
 import me.tabinol.secuboid.storage.mysql.pojo.AreaPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo.ItemStackOut;
 import me.tabinol.secuboid.storage.mysql.pojo.InventoryPotionEffectPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
 import me.tabinol.secuboid.utilities.DbUtils.SqlConsumer;
+import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -159,7 +160,7 @@ public final class StorageMySql implements Storage {
         inventoriesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "inventories", "id", "name");
         inventoriesEntriesDao = new InventoriesEntriesDao(dbConn);
         inventoriesDefaultsDao = new GenericIdValueDao<>(dbConn, Integer.class, Integer.class, "inventories_defaults",
-                "`inventory_id", "inventories_entries_id");
+                "inventory_id", "inventories_entries_id");
         gameModesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "game_modes", "id", "name");
         inventoriesSavesDao = new InventoriesSavesDao(dbConn);
         inventoriesDeathsDao = new InventoriesDeathsDao(dbConn);
@@ -639,6 +640,10 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void loadInventories() {
+        if (!secuboid.getInventoriesOpt().isPresent()) {
+            return;
+        }
+
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         try (final Connection conn = dbConn.openConnection()) {
             final Map<Integer, String> idToInventoryName = inventoriesDao.getIdToValue(conn);
@@ -694,7 +699,6 @@ public final class StorageMySql implements Storage {
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         final UUID playerUUID = playerInventoryCache.getUUID();
-        final Thread preLoginThread = secuboid.getStorageThread().preloginRemoveThread(playerUUID);
 
         try (final Connection conn = dbConn.openConnection()) {
             for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
@@ -723,8 +727,9 @@ public final class StorageMySql implements Storage {
         }
 
         // Notify pre login thread
-        synchronized (preLoginThread) {
-            preLoginThread.notify();
+        secuboid.getStorageThread().removePlayerUUIDPreLogin(playerUUID);
+        synchronized (SecuboidQueueThread.LOCK) {
+            SecuboidQueueThread.LOCK.notify();
         }
     }
 
@@ -1019,11 +1024,8 @@ public final class StorageMySql implements Storage {
         playerInvEntry.setHealth(inventoryEntryPojo.getHealth());
         playerInvEntry.setFoodLevel(inventoryEntryPojo.getFoodLevel());
 
-        final ItemStackOut itemStackOut = InventoryEntryPojo.textToItemStack(inventoryEntryPojo.getItemStackStr());
-        playerInvEntry.setSlotItems(itemStackOut.slotItems);
-        playerInvEntry.setArmorItems(itemStackOut.armorItems);
-        playerInvEntry.setEnderChestItems(itemStackOut.enderChestItems);
-        playerInvEntry.setItemOffhand(itemStackOut.itemOffhand);
+        playerInvEntry.setSlotItems(inventoryEntryPojo.getContents());
+        playerInvEntry.setEnderChestItems(inventoryEntryPojo.getEnderChestContents());
 
         // PotionsEffects
         for (final InventoryPotionEffectPojo inventoryPotionEffectPojo : inventoryPotionEffectPojos) {
@@ -1090,14 +1092,12 @@ public final class StorageMySql implements Storage {
             final boolean enderChestOnly, final Optional<Integer> inventoryEntryIdOpt,
             final SqlConsumer<Integer> updateInvEntryIdConsumer) throws SQLException {
 
-        final String itemStackStr = InventoryEntryPojo.itemStackToText(playerInvEntry.getSlotItems(),
-                playerInvEntry.getArmorItems(), playerInvEntry.getEnderChestItems(), playerInvEntry.getItemOffhand(),
-                enderChestOnly);
-
         final int level;
         final float exp;
         final double health;
         final int foodLevel;
+        final ItemStack[] contents;
+        final ItemStack[] enderChestContents = playerInvEntry.getEnderChestItems();
 
         if (enderChestOnly) {
             // Save Only ender chest (Death)
@@ -1105,12 +1105,14 @@ public final class StorageMySql implements Storage {
             exp = 0f;
             health = PlayerInvEntry.MAX_HEALTH;
             foodLevel = PlayerInvEntry.MAX_FOOD_LEVEL;
+            contents = new ItemStack[PlayerInvEntry.INVENTORY_LIST_SIZE];
         } else {
             // Save all
             level = playerInvEntry.getLevel();
             exp = playerInvEntry.getExp();
             health = playerInvEntry.getHealth();
             foodLevel = playerInvEntry.getFoodLevel();
+            contents = playerInvEntry.getSlotItems();
         }
 
         // If the entry id does not exist, a new entry will be created.
@@ -1123,12 +1125,12 @@ public final class StorageMySql implements Storage {
 
             // Update inventory entry
             final InventoryEntryPojo inventoryEntryPojo = new InventoryEntryPojo(inventoryEntryId, level, exp, health,
-                    foodLevel, itemStackStr);
+                    foodLevel, contents, enderChestContents);
             inventoriesEntriesDao.updateInventoryEntry(conn, inventoryEntryPojo);
         } else {
             // Create inventory entry
-            inventoryEntryId = inventoriesEntriesDao.insertInventoryEntry(conn, level, exp, health, foodLevel,
-                    itemStackStr);
+            inventoryEntryId = inventoriesEntriesDao.insertInventoryEntry(conn, level, exp, health, foodLevel, contents,
+                    enderChestContents);
 
             // Insert a new entry in upstream table
             updateInvEntryIdConsumer.accept(inventoryEntryId);

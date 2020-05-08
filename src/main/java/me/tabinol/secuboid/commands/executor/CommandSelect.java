@@ -246,6 +246,10 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             areatest = secuboid.getLands().getArea(player.getLocation());
         }
 
+        if (areatest == null) {
+            return null;
+        }
+
         return areatest.getLand() == landtest ? areatest : null;
     }
 
@@ -350,16 +354,16 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         // Price (economy)
         if (price > 0d) {
             switch (collisions.getAction()) {
-            case AREA_MODIFY:
-            case AREA_ADD:
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                        .getMessage("COMMAND.SELECT.INFO.INFO4", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
-                break;
-            case LAND_ADD:
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                        .getMessage("COMMAND.SELECT.INFO.INFO3", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
-                break;
-            default:
+                case AREA_MODIFY:
+                case AREA_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                            "COMMAND.SELECT.INFO.INFO4", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
+                    break;
+                case LAND_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                            "COMMAND.SELECT.INFO.INFO3", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
+                    break;
+                default:
             }
         }
     }

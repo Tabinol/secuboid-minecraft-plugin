@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -37,21 +36,18 @@ public class PlayerInvEntry implements Savable {
 
     public final static int MAX_FOOD_LEVEL = 20;
     public final static double MAX_HEALTH = 20d;
-    public final static int INVENTORY_LIST_SIZE = 27;
-    public final static int ARMOR_SIZE = 4;
+    public final static int INVENTORY_LIST_SIZE = 41;
     public final static int ENDER_CHEST_SIZE = 27;
 
     private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
     private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
-    private ItemStack[] slotItems;
-    private ItemStack[] armorItems;
-    private ItemStack[] enderChestItems;
+    private final ItemStack[] slotItems;
+    private final ItemStack[] enderChestItems;
     private int level;
     private float exp;
     private double health;
     private int foodLevel;
-    private ItemStack itemOffhand;
     private final List<PotionEffect> potionEffects;
 
     public PlayerInvEntry(final Optional<PlayerInventoryCache> playerInventoryCacheOpt,
@@ -60,26 +56,23 @@ public class PlayerInvEntry implements Savable {
         this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
 
+        slotItems = new ItemStack[INVENTORY_LIST_SIZE];
+        enderChestItems = new ItemStack[ENDER_CHEST_SIZE];
         potionEffects = new ArrayList<>();
     }
 
     public PlayerInvEntry setDefault() {
-        slotItems = new ItemStack[INVENTORY_LIST_SIZE];
-        armorItems = new ItemStack[ARMOR_SIZE];
-        enderChestItems = new ItemStack[ENDER_CHEST_SIZE];
         level = 0;
         exp = 0f;
         health = MAX_HEALTH;
         foodLevel = MAX_FOOD_LEVEL;
         resetItemStacks(slotItems);
-        resetItemStacks(armorItems);
         resetItemStacks(enderChestItems);
-        itemOffhand = new ItemStack(Material.AIR);
         return this;
     }
 
     private void resetItemStacks(final ItemStack[] itemStacks) {
-        Arrays.stream(itemStacks).forEach(itemStack -> itemStack = new ItemStack(Material.AIR));
+        Arrays.fill(itemStacks, null);
     }
 
     Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
@@ -103,16 +96,7 @@ public class PlayerInvEntry implements Savable {
     }
 
     public PlayerInvEntry setSlotItems(final ItemStack[] slotItems) {
-        this.slotItems = slotItems;
-        return this;
-    }
-
-    public ItemStack[] getArmorItems() {
-        return this.armorItems;
-    }
-
-    public PlayerInvEntry setArmorItems(final ItemStack[] armorItems) {
-        this.armorItems = armorItems;
+        System.arraycopy(slotItems, 0, this.slotItems, 0, slotItems.length);
         return this;
     }
 
@@ -121,7 +105,7 @@ public class PlayerInvEntry implements Savable {
     }
 
     public PlayerInvEntry setEnderChestItems(final ItemStack[] enderChestItems) {
-        this.enderChestItems = enderChestItems;
+        System.arraycopy(enderChestItems, 0, this.enderChestItems, 0, enderChestItems.length);
         return this;
     }
 
@@ -159,15 +143,6 @@ public class PlayerInvEntry implements Savable {
 
     public PlayerInvEntry setFoodLevel(final int foodLevel) {
         this.foodLevel = foodLevel;
-        return this;
-    }
-
-    public ItemStack getItemOffhand() {
-        return this.itemOffhand;
-    }
-
-    public PlayerInvEntry setItemOffhand(final ItemStack itemOffhand) {
-        this.itemOffhand = itemOffhand;
         return this;
     }
 

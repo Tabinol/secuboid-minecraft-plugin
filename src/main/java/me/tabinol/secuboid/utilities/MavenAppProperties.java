@@ -35,6 +35,8 @@ import org.bukkit.Bukkit;
  */
 public final class MavenAppProperties {
 
+    private static final String APP_PROPERTIES_FILENAME = "app.properties";
+
     /**
      * The properties.
      */
@@ -48,13 +50,24 @@ public final class MavenAppProperties {
             final File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                     .getCanonicalFile();
             try (JarFile jar = new JarFile(jarloc)) {
-                final JarEntry entry = jar.getJarEntry("app.properties");
+                final JarEntry entry = jar.getJarEntry(APP_PROPERTIES_FILENAME);
                 try (final InputStream resource = jar.getInputStream(entry)) {
                     properties.load(resource);
                 }
             }
         } catch (URISyntaxException | IOException ex) {
             Bukkit.getLogger().log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Load properties from resources when the file is not inside a jar (ex: tests).
+     * 
+     * @throws IOException
+     */
+    public void loadPropertiesFromResources() throws IOException {
+        try (final InputStream resource = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILENAME)) {
+            properties.load(resource);
         }
     }
 

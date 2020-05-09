@@ -61,13 +61,19 @@ public final class PlayerContainersDao {
 
     public Optional<Integer> getIdOpt(final Connection conn, final int playerContainerTypeId,
             final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
-        final String sql = "SELECT `id` FROM `{{TP}}player_containers` " //
-                + "WHERE `player_container_type_id`=? AND `player_uuid`=? AND `parameter`=?";
+        final String sql = String.format("SELECT `id` FROM `{{TP}}player_containers` " //
+                + "WHERE `player_container_type_id`=? AND `player_uuid`%s AND `parameter`%s",
+                DbUtils.isNullOrEquals(playerUUIDOpt), DbUtils.isNullOrEquals(parameterOpt));
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, playerContainerTypeId);
-            DbUtils.setOpt(stmt, 2, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
-            DbUtils.setOpt(stmt, 3, parameterOpt, (i, u) -> stmt.setString(i, u));
+            int parameterIndex = 1;
+            stmt.setInt(parameterIndex++, playerContainerTypeId);
+            if (playerUUIDOpt.isPresent()) {
+                DbUtils.setOpt(stmt, parameterIndex++, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
+            }
+            if (parameterOpt.isPresent()) {
+                DbUtils.setOpt(stmt, parameterIndex++, parameterOpt, (i, u) -> stmt.setString(i, u));
+            }
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     return Optional.of(rs.getInt("id"));

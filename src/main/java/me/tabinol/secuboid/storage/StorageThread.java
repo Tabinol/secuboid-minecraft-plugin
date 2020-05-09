@@ -132,7 +132,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
             final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
             secuboid.getLogger().log(Level.SEVERE,
-                    String.format("Unable to save \"%s\" for \"%s\" on disk, UUID \"%s\". Possible data loss!",
+                    String.format("Unable to save \"%s\" for \"%s\", UUID \"%s\". Possible data loss!",
                             saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
                     e);
         }

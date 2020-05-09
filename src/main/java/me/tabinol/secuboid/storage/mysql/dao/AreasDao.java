@@ -73,7 +73,7 @@ public final class AreasDao {
         final String sql = "INSERT INTO `{{TP}}lands_areas`(" //
                 + "`land_uuid`, `area_id`, `approved`, `world_name`, `area_type_id`, " //
                 + "`x1`, `y1`, `z1`, `x2`, `y2`, `z2`) " //
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " //
+                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " //
                 + "ON DUPLICATE KEY UPDATE " //
                 + "`approved`=?, `world_name`=?, `area_type_id`=?, " //
                 + "`x1`=?, `y1`=?, `z1`=?, `x2`=?, `y2`=?, `z2`=?";

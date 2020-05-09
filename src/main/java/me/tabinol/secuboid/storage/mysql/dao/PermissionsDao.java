@@ -50,7 +50,7 @@ public final class PermissionsDao {
                     final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
                     final int playerContainerId = rs.getInt("player_container_id");
                     final int permissionId = rs.getInt("permission_id");
-                    final boolean value = rs.getBoolean("value_boolean");
+                    final boolean value = rs.getBoolean("value");
                     final boolean inheritance = rs.getBoolean("inheritance");
                     final PermissionPojo permissionPojo = new PermissionPojo(landUUID, playerContainerId, permissionId,
                             value, inheritance);

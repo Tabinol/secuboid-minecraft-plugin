@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
 import me.tabinol.secuboid.utilities.DbUtils;
 
@@ -154,7 +155,7 @@ public final class GenericIdValueDao<I, V> {
 
         final Optional<I> idOpt = getIdOpt(conn, v);
         if (idOpt.isPresent()) {
-            return (int) idOpt.get();
+            return ((Integer) idOpt.get()).intValue();
         }
 
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=?", tableSuffix, valueColumnLabel);
@@ -207,26 +208,30 @@ public final class GenericIdValueDao<I, V> {
         if (clazz.isAssignableFrom(String.class)) {
             return (C) rs.getString(columnLabel);
         }
-        return rs.getObject(columnLabel, clazz);
+
+        classNotSupported(clazz);
+        return null;
     }
 
     private <C> void setFromClass(final Class<C> clazz, final PreparedStatement stmt, final int parameterIndex,
             final C c) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {
             stmt.setInt(parameterIndex, (Integer) c);
-        }
-        if (clazz.isAssignableFrom(Long.class)) {
+        } else if (clazz.isAssignableFrom(Long.class)) {
             stmt.setLong(parameterIndex, (Long) c);
-        }
-        if (clazz.isAssignableFrom(Double.class)) {
+        } else if (clazz.isAssignableFrom(Double.class)) {
             stmt.setDouble(parameterIndex, (Double) c);
-        }
-        if (clazz.isAssignableFrom(UUID.class)) {
+        } else if (clazz.isAssignableFrom(UUID.class)) {
             DbUtils.setUUID(stmt, parameterIndex, (UUID) c);
-        }
-        if (clazz.isAssignableFrom(String.class)) {
+        } else if (clazz.isAssignableFrom(String.class)) {
             stmt.setString(parameterIndex, (String) c);
+        } else {
+            classNotSupported(clazz);
         }
-        stmt.setObject(parameterIndex, c);
+    }
+
+    private <C> void classNotSupported(final Class<C> clazz) {
+        throw new SecuboidRuntimeException(
+                String.format("Class %s not supported by Generic id/value dao", clazz.getName()));
     }
 }

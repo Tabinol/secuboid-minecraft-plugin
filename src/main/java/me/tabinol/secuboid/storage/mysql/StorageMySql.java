@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -252,10 +253,13 @@ public final class StorageMySql implements Storage {
             final UUID landUUID = landPojo.getUUID();
             try {
                 orphanToParentUUIDOptEntry = loadLand(landPojo, idToType, idToPlayerContainerPojo,
-                        idToPlayerContainerType, landUUIDToAreas.get(landUUID), landUUIDToMatrices, idToAreaType,
-                        landUUIDToResidentIds.get(landUUID), landUUIDToBannedIds.get(landUUID),
-                        landUUIDToPermissionPojos.get(landUUID), idToPermissionType, landUUIDToFlagPojos.get(landUUID),
-                        idToFlagType, landUUIDToPlayerNotifyUUIDs.get(landUUID));
+                        idToPlayerContainerType, landUUIDToAreas.getOrDefault(landUUID, Collections.emptyList()),
+                        landUUIDToMatrices, idToAreaType,
+                        landUUIDToResidentIds.getOrDefault(landUUID, Collections.emptyList()),
+                        landUUIDToBannedIds.getOrDefault(landUUID, Collections.emptyList()),
+                        landUUIDToPermissionPojos.getOrDefault(landUUID, Collections.emptyList()), idToPermissionType,
+                        landUUIDToFlagPojos.getOrDefault(landUUID, Collections.emptyList()), idToFlagType,
+                        landUUIDToPlayerNotifyUUIDs.getOrDefault(landUUID, Collections.emptyList()));
             } catch (final RuntimeException e) {
                 secuboid.getLogger().log(Level.SEVERE,
                         String.format("Unable to load the land from database: %s", landPojo.getName()), e);
@@ -326,10 +330,11 @@ public final class StorageMySql implements Storage {
             }
 
             // Update land table
+            final Optional<UUID> parentUUIDOpt = Optional.ofNullable(land.getParent()).map(l -> l.getUUID());
             final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(), land.isApproved(), typeIdOpt,
-                    ownerId, Optional.ofNullable(land.getParent().getUUID()), land.getPriority(), land.getMoney(),
-                    isForSale, forSaleSignLocationOpt, salePriceOpt, isForRent, forRentSignLocationOpt, rentPriceOpt,
-                    rentRenewOpt, rentAutoRenewOpt, tenantUUIDOpt, lastPaymentMillisOpt);
+                    ownerId, parentUUIDOpt, land.getPriority(), land.getMoney(), isForSale, forSaleSignLocationOpt,
+                    salePriceOpt, isForRent, forRentSignLocationOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
+                    tenantUUIDOpt, lastPaymentMillisOpt);
             landsDao.insertOrUpdateLand(conn, landPojo);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to save the land to database [landUUID=%s, landName=%s]",

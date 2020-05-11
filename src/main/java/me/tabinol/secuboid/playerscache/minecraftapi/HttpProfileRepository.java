@@ -27,32 +27,32 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class HttpProfileRepository {
+public final class HttpProfileRepository {
 
     // You're not allowed to request more than 100 profiles per go.
     private static final int PROFILES_PER_REQUEST = 100;
 
     private final String agent;
-    private HttpClient client;
+    private final HttpClient client;
 
-    public HttpProfileRepository(String agent) {
+    public HttpProfileRepository(final String agent) {
         this(agent, HttpClient.getInstance());
     }
 
-    private HttpProfileRepository(String agent, HttpClient client) {
+    private HttpProfileRepository(final String agent, final HttpClient client) {
         this.agent = agent;
         this.client = client;
     }
 
-    public Profile[] findProfilesByNames(String... names) {
+    public Profile[] findProfilesByNames(final String... names) {
 
-        List<Profile> profiles = new ArrayList<Profile>();
+        final List<Profile> profiles = new ArrayList<Profile>();
         try {
 
-            List<HttpHeader> headers = new ArrayList<HttpHeader>();
+            final List<HttpHeader> headers = new ArrayList<HttpHeader>();
             headers.add(new HttpHeader("Content-Type", "application/json"));
 
-            int namesCount = names.length;
+            final int namesCount = names.length;
             int start = 0;
             int i = 0;
             do {
@@ -60,17 +60,17 @@ public class HttpProfileRepository {
                 if (end > namesCount) {
                     end = namesCount;
                 }
-                List<String> namesBatch = new ArrayList<String>();
+                final List<String> namesBatch = new ArrayList<String>();
                 namesBatch.addAll(Arrays.asList(names).subList(start, end));
-                String body = JSONArray.toJSONString(namesBatch);
+                final String body = JSONArray.toJSONString(namesBatch);
                 profiles.addAll(post(getProfilesUrl(), body, headers));
 
                 start = end;
                 i++;
             } while (start < namesCount);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             e.printStackTrace();
         }
 
@@ -82,13 +82,14 @@ public class HttpProfileRepository {
         return new URL("https://api.mojang.com/profiles/" + agent);
     }
 
-    private Collection<Profile> post(URL url, String body, List<HttpHeader> headers) throws IOException, ParseException {
+    private Collection<Profile> post(final URL url, final String body, final List<HttpHeader> headers)
+            throws IOException, ParseException {
 
-        String response = client.post(url, body, headers);
-        JSONParser parser = new JSONParser();
-        JSONArray array = (JSONArray) parser.parse(response);
-        List<Profile> profiles = new ArrayList<Profile>();
-        for (Object object : array) {
+        final String response = client.post(url, body, headers);
+        final JSONParser parser = new JSONParser();
+        final JSONArray array = (JSONArray) parser.parse(response);
+        final List<Profile> profiles = new ArrayList<Profile>();
+        for (final Object object : array) {
             profiles.add(new Profile(((JSONObject) object).get("id").toString(), ((JSONObject) object).get("name").toString()));
         }
         return profiles;

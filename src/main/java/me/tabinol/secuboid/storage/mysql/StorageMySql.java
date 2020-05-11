@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,6 +49,7 @@ import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.lands.Lands;
 import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.areas.Area;
@@ -93,8 +93,6 @@ import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
 import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
 import me.tabinol.secuboid.utilities.DbUtils.SqlConsumer;
-import me.tabinol.secuboid.utilities.SecuboidQueueThread;
-import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
  * StorageMySql
@@ -180,9 +178,9 @@ public final class StorageMySql implements Storage {
         }
 
         // Load all
+        loadPlayersCache();
         loadLands();
         loadApproves();
-        loadPlayersCache();
         loadInventories();
 
         // Conversion needed?
@@ -298,7 +296,7 @@ public final class StorageMySql implements Storage {
             final Optional<String> forSaleSignLocationOpt;
             final Optional<Double> salePriceOpt;
             if (isForSale) {
-                forSaleSignLocationOpt = Optional.of(StringChanges.locationToString(land.getSaleSignLoc()));
+                forSaleSignLocationOpt = Optional.of(land.getSaleSignLoc().toFileFormat());
                 salePriceOpt = Optional.of(land.getSalePrice());
             } else {
                 forSaleSignLocationOpt = Optional.empty();
@@ -314,12 +312,19 @@ public final class StorageMySql implements Storage {
             final Optional<UUID> tenantUUIDOpt;
             final Optional<Long> lastPaymentMillisOpt;
             if (isForRent) {
-                forRentSignLocationOpt = Optional.of(StringChanges.locationToString(land.getRentSignLoc()));
+                forRentSignLocationOpt = Optional.of(land.getRentSignLoc().toFileFormat());
                 rentPriceOpt = Optional.of(land.getRentPrice());
                 rentRenewOpt = Optional.of(land.getRentRenew());
                 rentAutoRenewOpt = Optional.of(land.getRentAutoRenew());
-                tenantUUIDOpt = Optional.of(land.getTenant().getMinecraftUUID());
-                lastPaymentMillisOpt = Optional.of(land.getLastPaymentTime());
+                if (land.isRented()) {
+                    final UUID tenantUUID = land.getTenant().getMinecraftUUID();
+                    addUserInDatabaseIfNeeded(conn, tenantUUID);
+                    tenantUUIDOpt = Optional.of(tenantUUID);
+                    lastPaymentMillisOpt = Optional.of(land.getLastPaymentTime());
+                } else {
+                    tenantUUIDOpt = Optional.empty();
+                    lastPaymentMillisOpt = Optional.empty();
+                }
             } else {
                 forRentSignLocationOpt = Optional.empty();
                 rentPriceOpt = Optional.empty();
@@ -372,6 +377,13 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveLandArea(final Land land, final Area area) {
         try (final Connection conn = dbConn.openConnection()) {
+            final int areaTypeId = areasTypesDao.insertOrGetId(conn, area.getAreaType().name());
+            final AreaPojo areaPojo = new AreaPojo(land.getUUID(), area.getKey(), area.isApproved(),
+                    area.getWorldName(), areaTypeId, area.getX1(), area.getY1(), area.getZ1(), area.getX2(),
+                    area.getY2(), area.getZ2());
+            areasDao.insertOrUpdateArea(conn, areaPojo);
+
+            // For road matrices
             if (area.getAreaType() == AreaType.ROAD) {
                 for (final Map.Entry<Integer, Map<Integer, ChunkMatrix>> pointsEntry : ((RoadArea) area).getPoints()
                         .entrySet()) {
@@ -383,11 +395,6 @@ public final class StorageMySql implements Storage {
                     }
                 }
             }
-            final int areaTypeId = areasTypesDao.insertOrGetId(conn, area.getAreaType().name());
-            final AreaPojo areaPojo = new AreaPojo(land.getUUID(), area.getKey(), area.isApproved(),
-                    area.getWorldName(), areaTypeId, area.getX1(), area.getY1(), area.getZ1(), area.getX2(),
-                    area.getY2(), area.getZ2());
-            areasDao.insertOrUpdateArea(conn, areaPojo);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the land area to database [landUUID=%s, landName=%s, areaId=%s]",
@@ -536,12 +543,14 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void saveLandPlayerNotify(final Land land, final PlayerContainerPlayer pcp) {
+        final UUID playerUUID = pcp.getMinecraftUUID();
         try (final Connection conn = dbConn.openConnection()) {
-            playerNotifiesDao.insert(conn, land.getUUID(), pcp.getMinecraftUUID());
+            addUserInDatabaseIfNeeded(conn, playerUUID);
+            playerNotifiesDao.insert(conn, land.getUUID(), playerUUID);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
                     "Unable to add the player notify to the land to database [landUUID=%s, landName=%s, playerUUID=%s]",
-                    land.getUUID(), land.getName(), pcp.getMinecraftUUID()), e);
+                    land.getUUID(), land.getName(), playerUUID), e);
         }
     }
 
@@ -703,7 +712,6 @@ public final class StorageMySql implements Storage {
     @Override
     public void loadInventoriesPlayer(final PlayerInventoryCache playerInventoryCache) {
         final Inventories inventories = secuboid.getInventoriesOpt().get();
-        final UUID playerUUID = playerInventoryCache.getUUID();
 
         try (final Connection conn = dbConn.openConnection()) {
             for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
@@ -729,12 +737,6 @@ public final class StorageMySql implements Storage {
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to load the inventory from database [name=%s]",
                     playerInventoryCache.getName()), e);
-        }
-
-        // Notify pre login thread
-        secuboid.getStorageThread().removePlayerUUIDPreLogin(playerUUID);
-        synchronized (SecuboidQueueThread.LOCK) {
-            SecuboidQueueThread.LOCK.notify();
         }
     }
 
@@ -809,8 +811,10 @@ public final class StorageMySql implements Storage {
 
         if (playerContainerType.hasParameter()) {
             if (playerContainerType == PlayerContainerType.PLAYER) {
+                final UUID playerUUID = ((PlayerContainerPlayer) playerContainer).getMinecraftUUID();
+                addUserInDatabaseIfNeeded(conn, playerUUID);
                 return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId,
-                        Optional.of(((PlayerContainerPlayer) playerContainer).getMinecraftUUID()), Optional.empty());
+                        Optional.of(playerUUID), Optional.empty());
             }
             return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, Optional.empty(),
                     Optional.of(playerContainer.getName()));
@@ -936,9 +940,9 @@ public final class StorageMySql implements Storage {
         }
         // Economy
         boolean forSale = landPojo.isForSale();
-        Location forSaleSignLocNullable = null;
+        LandLocation forSaleSignLocNullable = null;
         if (forSale) {
-            forSaleSignLocNullable = landPojo.getForSaleSignLocationOpt().map(StringChanges::stringToLocation)
+            forSaleSignLocNullable = landPojo.getForSaleSignLocationOpt().map(LandLocation::fromFileFormat)
                     .orElse(null);
             if (forSaleSignLocNullable == null) {
                 log.log(Level.WARNING,
@@ -947,11 +951,11 @@ public final class StorageMySql implements Storage {
             }
         }
         boolean forRent = landPojo.getForRent();
-        Location forRentSignLocNullable = null;
+        LandLocation forRentSignLocNullable = null;
         if (forRent) {
-            forRentSignLocNullable = landPojo.getForRentSignLocationOpt().map(StringChanges::stringToLocation)
+            forRentSignLocNullable = landPojo.getForRentSignLocationOpt().map(LandLocation::fromFileFormat)
                     .orElse(null);
-            if (forSaleSignLocNullable == null) {
+            if (forRentSignLocNullable == null) {
                 log.log(Level.WARNING,
                         String.format("Land for rent with no suitable sign location [land=%s]", landName));
                 forRent = false;
@@ -1048,9 +1052,13 @@ public final class StorageMySql implements Storage {
             throws SQLException {
         final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
-        // If for some reasons whe have to skip save (ex: SaveInventory = false)
-        if (!playerUUIDOpt.isPresent() && !inventorySpec.isSaveInventory()) {
-            return;
+        if (playerUUIDOpt.isPresent()) {
+            addUserInDatabaseIfNeeded(conn, playerUUIDOpt.get());
+        } else {
+            // If for some reasons whe have to skip save (ex: SaveInventory = false)
+            if (!inventorySpec.isSaveInventory()) {
+                return;
+            }
         }
 
         // Get the suffix name
@@ -1189,5 +1197,13 @@ public final class StorageMySql implements Storage {
 
     private String getGameModeFromBoolean(final boolean isCreative) {
         return isCreative ? "CREATIVE" : "SURVIVAL";
+    }
+
+    private void addUserInDatabaseIfNeeded(Connection conn, UUID playerUUID) throws SQLException {
+        Optional<String> playerNameOpt = playersDao.getValueOpt(conn, playerUUID);
+        if (!playerNameOpt.isPresent()) {
+            log.warning("Player " + playerUUID + " is not present in players cache. Adding the UUID as player name.");
+            playersDao.insert(conn, playerUUID, playerUUID.toString());
+        }
     }
 }

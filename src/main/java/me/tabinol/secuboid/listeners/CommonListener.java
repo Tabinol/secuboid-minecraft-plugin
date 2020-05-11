@@ -39,6 +39,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
@@ -46,7 +47,6 @@ import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.selection.region.AreaSelection;
 import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
 import me.tabinol.secuboid.selection.region.RegionSelection;
-import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
  * Common methods for Listeners
@@ -134,7 +134,8 @@ abstract class CommonListener {
      * @param ecoSignLoc the eco sign location
      * @return true if the sign is attached
      */
-    private boolean hasEcoSign(final Block block, final Location ecoSignLoc) {
+    private boolean hasEcoSign(final Block block, final LandLocation ecoSignLandLoc) {
+        final Location ecoSignLoc = ecoSignLandLoc.toLocation();
         return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc)
                 && Sign.class.isAssignableFrom(block.getRelative(BlockFace.UP).getType().data))
                 || isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)
@@ -162,13 +163,15 @@ abstract class CommonListener {
      */
     final Location getLandSpawnPoint(final LandPermissionsFlags landPermissionsFlags) {
         String strLoc;
+        LandLocation landLoc;
         Location loc;
 
         // Check for land spawn
         final Land landNullable = landPermissionsFlags.getLandNullable();
         if (landNullable != null) {
             if (!(strLoc = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType())
-                    .getValueString()).isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+                    .getValueString()).isEmpty() && (landLoc = LandLocation.fromFileFormat(strLoc)) != null
+                    && (loc = landLoc.toLocation()) != null) {
                 return loc;
             }
             secuboid.getLogger()

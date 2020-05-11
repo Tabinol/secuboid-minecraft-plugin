@@ -163,7 +163,7 @@ public final class Land implements Savable, Approvable {
     /**
      * The for sale sign location
      */
-    private Location forSaleSignLoc = null;
+    private LandLocation forSaleSignLoc = null;
 
     /**
      * The sale price.
@@ -178,7 +178,7 @@ public final class Land implements Savable, Approvable {
     /**
      * The for rent sign location
      */
-    private Location forRentSignLoc = null;
+    private LandLocation forRentSignLoc = null;
 
     /**
      * The rent price.
@@ -1161,7 +1161,7 @@ public final class Land implements Savable, Approvable {
      * @param salePrice the sale price
      * @param signLoc   the sign location
      */
-    public void setForSale(final boolean isForSale, final double salePrice, final Location signLoc) {
+    public void setForSale(final boolean isForSale, final double salePrice, final LandLocation signLoc) {
         forSale = isForSale;
         if (forSale) {
             this.salePrice = salePrice;
@@ -1180,7 +1180,7 @@ public final class Land implements Savable, Approvable {
      *
      * @return the location
      */
-    public Location getSaleSignLoc() {
+    public LandLocation getSaleSignLoc() {
         return forSaleSignLoc;
     }
 
@@ -1189,7 +1189,7 @@ public final class Land implements Savable, Approvable {
      *
      * @param forSaleSignLoc the sale sign location
      */
-    public void setSaleSignLoc(final Location forSaleSignLoc) {
+    public void setSaleSignLoc(final LandLocation forSaleSignLoc) {
         this.forSaleSignLoc = forSaleSignLoc;
         doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
@@ -1221,7 +1221,7 @@ public final class Land implements Savable, Approvable {
      * @param signLoc       the sign location
      */
     public void setForRent(final double rentPrice, final int rentRenew, final boolean rentAutoRenew,
-            final Location signLoc) {
+            final LandLocation signLoc) {
         forRent = true;
         this.rentPrice = rentPrice;
         this.rentRenew = rentRenew;
@@ -1236,7 +1236,7 @@ public final class Land implements Savable, Approvable {
      *
      * @return the location
      */
-    public Location getRentSignLoc() {
+    public LandLocation getRentSignLoc() {
         return forRentSignLoc;
     }
 
@@ -1245,7 +1245,7 @@ public final class Land implements Savable, Approvable {
      *
      * @param forRentSignLoc the rent sign location
      */
-    public void setRentSignLoc(final Location forRentSignLoc) {
+    public void setRentSignLoc(final LandLocation forRentSignLoc) {
         this.forRentSignLoc = forRentSignLoc;
         doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }

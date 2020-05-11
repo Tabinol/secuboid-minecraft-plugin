@@ -31,7 +31,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 /**
  * Economy scheduler.
  */
-public class EcoScheduler extends BukkitRunnable {
+public final class EcoScheduler extends BukkitRunnable {
 
     private final Secuboid secuboid;
 
@@ -77,8 +77,8 @@ public class EcoScheduler extends BukkitRunnable {
                     secuboid.getLogger().info(
                             offlineTenant.getName() + " lost land '" + land.getName() + "' rent. (Not enough money)");
                     try {
-                        new EcoSign(secuboid, land, land.getRentSignLoc()).createSignForRent(land.getRentPrice(),
-                                land.getRentRenew(), land.getRentAutoRenew(), null);
+                        new EcoSign(secuboid, land, land.getRentSignLoc().toLocation()).createSignForRent(
+                                land.getRentPrice(), land.getRentRenew(), land.getRentAutoRenew(), null);
                     } catch (final SignException e) {
                         secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
                     }

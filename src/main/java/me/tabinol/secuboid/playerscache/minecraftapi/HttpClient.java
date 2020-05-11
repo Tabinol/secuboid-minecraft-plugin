@@ -26,7 +26,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.List;
 
-class HttpClient {
+final class HttpClient {
 
     private static HttpClient instance;
 
@@ -40,16 +40,18 @@ class HttpClient {
         return instance;
     }
 
-    String post(URL url, String body, List<HttpHeader> headers) throws IOException {
+    String post(final URL url, final String body, final List<HttpHeader> headers) throws IOException {
         return post(url, null, body, headers);
     }
 
-    private String post(URL url, Proxy proxy, String body, List<HttpHeader> headers) throws IOException {
-        if (proxy == null) proxy = Proxy.NO_PROXY;
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+    private String post(final URL url, Proxy proxy, final String body, final List<HttpHeader> headers)
+            throws IOException {
+        if (proxy == null)
+            proxy = Proxy.NO_PROXY;
+        final HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
         connection.setRequestMethod("POST");
 
-        for (HttpHeader header : headers) {
+        for (final HttpHeader header : headers) {
             connection.setRequestProperty(header.getName(), header.getValue());
         }
 
@@ -57,14 +59,14 @@ class HttpClient {
         connection.setDoInput(true);
         connection.setDoOutput(true);
 
-        DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
+        final DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
         writer.write(body.getBytes());
         writer.flush();
         writer.close();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String line;
-        StringBuilder response = new StringBuilder();
+        final StringBuilder response = new StringBuilder();
 
         while ((line = reader.readLine()) != null) {
             response.append(line);

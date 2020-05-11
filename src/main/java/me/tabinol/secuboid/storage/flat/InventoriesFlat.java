@@ -38,7 +38,6 @@ import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
-import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * InventoriesFlat
@@ -126,12 +125,6 @@ public class InventoriesFlat {
                     inventories.saveInventory(Optional.empty(), playerInvEntry, true, false, false);
                 }
             }
-        }
-
-        // Notify pre login thread
-        secuboid.getStorageThread().removePlayerUUIDPreLogin(playerUUID);
-        synchronized (SecuboidQueueThread.LOCK) {
-            SecuboidQueueThread.LOCK.notify();
         }
     }
 

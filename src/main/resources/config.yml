@@ -3,6 +3,9 @@
 ##################################################################
 General:                             # ----General Config----
   Lang: english                      # english, french for now (or your own)
+  # "flat" files or "mysql" (included and recommended Maria) are supported.
+  # If you want to switch from flat file to MySQL/Maria, just stop the server, change
+  # the value to "mysql" and on server restart, Secuboid will convert to MySQL.
   Storage: flat                      # flat or mysql
   MySQL:
     HostName: localhost

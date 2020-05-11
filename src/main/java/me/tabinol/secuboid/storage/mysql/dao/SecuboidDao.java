@@ -255,7 +255,7 @@ public final class SecuboidDao {
         "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags` ({{LS}}" +
         "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
         "  `flag_id` INT NOT NULL,{{LS}}" +
-        "  `value_string` VARCHAR(200) NULL,{{LS}}" +
+        "  `value_string` VARCHAR(512) NULL,{{LS}}" +
         "  `value_double` DOUBLE NULL,{{LS}}" +
         "  `value_boolean` TINYINT NULL,{{LS}}" +
         "  `inheritance` TINYINT NOT NULL,{{LS}}" +

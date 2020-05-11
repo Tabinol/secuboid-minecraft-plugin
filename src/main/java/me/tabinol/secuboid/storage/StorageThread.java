@@ -17,8 +17,8 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -49,7 +49,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      */
     private final Storage storage;
 
-    private final Set<UUID> playerUUIDPreLogins;
+    private final Map<UUID, Object> playerUUIDToLock;
 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_REMOVE, INVENTORY_DEFAULT_SAVE,
@@ -57,7 +57,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         LAND_AREA_REMOVE, LAND_AREA_SAVE, LAND_BANNED_REMOVE, LAND_BANNED_SAVE, LAND_FLAG_REMOVE, LAND_FLAG_REMOVE_ALL,
         LAND_FLAG_SAVE, LAND_PERMISSION_REMOVE, LAND_PERMISSION_REMOVE_ALL, LAND_PERMISSION_SAVE,
         LAND_PLAYER_NOTIFY_REMOVE, LAND_PLAYER_NOTIFY_REMOVE_ALL, LAND_PLAYER_NOTIFY_SAVE, LAND_REMOVE,
-        LAND_RESIDENT_REMOVE, LAND_RESIDENT_REMOVE_ALL, LAND_RESIDENT_SAVE, LAND_SAVE, PLAYERS_CACHE_SAVE
+        LAND_RESIDENT_REMOVE, LAND_RESIDENT_REMOVE_ALL, LAND_RESIDENT_SAVE, LAND_SAVE, PLAYERS_CACHE_SAVE, THREAD_NOTIFY
     }
 
     public enum SaveOn {
@@ -88,7 +88,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public StorageThread(final Secuboid secuboid, final Storage storage) {
         super(secuboid, "Secuboid Storage");
         this.storage = storage;
-        playerUUIDPreLogins = ConcurrentHashMap.newKeySet();
+        playerUUIDToLock = new ConcurrentHashMap<>();
     }
 
     /**
@@ -102,10 +102,11 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
 
         // Conversion Flat to MySQL
         if (conversionNeeded) {
+            secuboid.getLogger().info("Converting flat files to MySQL. This may take several minutes!");
             final FlatToMySql flatToMySql = new FlatToMySql(secuboid);
+            flatToMySql.playersCacheConversion();
             flatToMySql.landConversion();
             flatToMySql.approveConversion();
-            flatToMySql.playersCacheConversion();
             flatToMySql.inventoriesConversion();
         }
     }
@@ -132,7 +133,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
             final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
             secuboid.getLogger().log(Level.SEVERE,
-                    String.format("Unable to save \"%s\" for \"%s\", UUID \"%s\". Possible data loss!",
+                    String.format("Unable to save or load \"%s\" for \"%s\", UUID \"%s\". Possible data loss!",
                             saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
                     e);
         }
@@ -158,8 +159,11 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             case INVENTORY_DEFAULT_SAVE:
                 storage.saveInventoryDefault((PlayerInvEntry) savableNullable);
                 break;
-            case INVENTORY_PLAYER_LOAD:
-                storage.loadInventoriesPlayer((PlayerInventoryCache) savableNullable);
+            case INVENTORY_PLAYER_LOAD: {
+                final PlayerInventoryCache playerInventoryCache = (PlayerInventoryCache) savableNullable;
+                storage.loadInventoriesPlayer(playerInventoryCache);
+                preLoginThreadNotify(playerInventoryCache.getUUID());
+            }
                 break;
             case INVENTORY_PLAYER_SAVE:
                 storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
@@ -229,6 +233,9 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
             case PLAYERS_CACHE_SAVE:
                 storage.savePlayerCacheEntry((PlayerCacheEntry) savableNullable);
                 break;
+            case THREAD_NOTIFY:
+                threadNotify();
+                break;
             default:
                 throw new SecuboidRuntimeException("Enum case not in list");
         }
@@ -248,11 +255,27 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         addElement(new SaveEntry(saveActionEnum, saveOn, savableOpt, savableParameters));
     }
 
-    public void addPlayerUUIDPreLogin(final UUID uuid) {
-        playerUUIDPreLogins.add(uuid);
+    public void addPlayerUUIDPreLogin(final UUID uuid, final Object lock) {
+        playerUUIDToLock.put(uuid, lock);
     }
 
-    public boolean removePlayerUUIDPreLogin(final UUID uuid) {
-        return playerUUIDPreLogins.remove(uuid);
+    public Object removePlayerUUIDPreLogin(final UUID uuid) {
+        return playerUUIDToLock.remove(uuid);
+    }
+
+    private void preLoginThreadNotify(final UUID uuid) {
+        final Object lock = removePlayerUUIDPreLogin(uuid);
+        if (lock != null) {
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
+    }
+
+    private void threadNotify() {
+        final Object lock = getLock();
+        synchronized (lock) {
+            lock.notify();
+        }
     }
 }

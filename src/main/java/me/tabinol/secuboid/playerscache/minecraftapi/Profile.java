@@ -17,12 +17,12 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-public class Profile {
+public final class Profile {
 
     private final String id;
     private final String name;
 
-    Profile(String id, String name) {
+    Profile(final String id, final String name) {
         this.id = id;
         this.name = name;
     }

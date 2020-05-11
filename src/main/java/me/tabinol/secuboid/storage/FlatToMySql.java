@@ -1,11 +1,18 @@
 package me.tabinol.secuboid.storage;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
+import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 import me.tabinol.secuboid.storage.flat.ApprovesFlat;
 import me.tabinol.secuboid.storage.flat.InventoriesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
@@ -38,11 +45,17 @@ public final class FlatToMySql {
         // load lands
         log.info("Starting flat to MySQL lands conversion...");
 
+        // Load the lands without parent first because the async process to MySQL saves
+        // the parent UUID before the parent is added.
         final LandsFlat landsFlat = new LandsFlat(secuboid);
-        landsFlat.loadLands();
+        final Map<Land, UUID> orphanToParentUUID = landsFlat.loadLandsOrphanToParentUUID();
+        waitforSave();
+
+        landsFlat.findLandParents(orphanToParentUUID);
+        waitforSave();
 
         moveToBackup(landsFile, NAME_LANDS);
-        log.info("conversion done...");
+        log.info("Lands conversion done...");
     }
 
     public void approveConversion() {
@@ -56,9 +69,10 @@ public final class FlatToMySql {
 
         final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
         approvesFlat.loadApproves();
+        waitforSave();
 
         moveToBackup(approvesFile, NAME_APPROVE_LIST);
-        log.info("conversion done...");
+        log.info("Approves conversion done...");
     }
 
     public void playersCacheConversion() {
@@ -72,9 +86,10 @@ public final class FlatToMySql {
 
         final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
         playersCacheFlat.loadPlayersCache();
+        waitforSave();
 
         moveToBackup(playersCacheFile, NAME_PLAYERS_CACHE);
-        log.info("conversion done...");
+        log.info("Players cache conversion done...");
     }
 
     public void inventoriesConversion() {
@@ -95,9 +110,10 @@ public final class FlatToMySql {
                     playerCacheEntry.getName());
             inventoriesFlat.loadInventoriesPlayer(playerInventoryCache);
         }
+        waitforSave();
 
         moveToBackup(inventoriesFile, NAME_INVENTORIES);
-        log.info("conversion done...");
+        log.info("Inventories conversion done...");
     }
 
     private void moveToBackup(final File fileToMove, final String fileName) {
@@ -106,5 +122,21 @@ public final class FlatToMySql {
             backupFile.mkdir();
         }
         fileToMove.renameTo(new File(backupFile, fileName));
+    }
+
+    private void waitforSave() {
+        // Send the wake up signal at the end of the queue
+        final StorageThread storageThread = secuboid.getStorageThread();
+        storageThread.addSaveAction(SaveActionEnum.THREAD_NOTIFY, SaveOn.DATABASE, Optional.empty());
+
+        // Wait!
+        final Object lock = storageThread.getLock();
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (final InterruptedException e) {
+                throw new SecuboidRuntimeException("Interruption on Secuboid conversion");
+            }
+        }
     }
 }

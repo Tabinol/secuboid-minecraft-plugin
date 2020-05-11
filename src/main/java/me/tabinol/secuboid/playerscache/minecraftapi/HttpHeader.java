@@ -17,12 +17,12 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-class HttpHeader {
+final class HttpHeader {
 
     private String name;
     private String value;
 
-    HttpHeader(String name, String value) {
+    HttpHeader(final String name, final String value) {
         this.name = name;
         this.value = value;
     }
@@ -31,7 +31,7 @@ class HttpHeader {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -39,7 +39,7 @@ class HttpHeader {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 }

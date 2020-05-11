@@ -17,16 +17,17 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagList;
-import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 
 /**
  * Set spawn command (for land teleports)
@@ -45,8 +46,8 @@ public final class CommandSetspawn extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandSetspawn(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandSetspawn(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -57,7 +58,7 @@ public final class CommandSetspawn extends CommandExec {
         checkSelections(true, null);
         checkPermission(true, true, null, null);
 
-        Location loc = player.getLocation();
+        final Location loc = player.getLocation();
 
         // If the player is not inside the land
         if (!landSelectNullable.isLocationInside(loc)) {
@@ -65,10 +66,10 @@ public final class CommandSetspawn extends CommandExec {
         }
 
         // put player position to String
-        String posStr = StringChanges.locationToString(loc);
+        final String posStr = LandLocation.fromLocation(loc).toFileFormat();
 
         // Set flag
-        Flag flag = secuboid.getPermissionsFlags().newFlag(FlagList.SPAWN.getFlagType(), posStr, true);
+        final Flag flag = secuboid.getPermissionsFlags().newFlag(FlagList.SPAWN.getFlagType(), posStr, true);
         landSelectNullable.getPermissionsFlags().addFlag(flag);
 
         player.sendMessage(ChatColor.GREEN + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.TP.CREATED"));

@@ -17,11 +17,11 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -43,14 +43,13 @@ import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 import me.tabinol.secuboid.storage.StorageThread.SaveOn;
-import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * ConnectionListener
  */
 public class ConnectionListener extends CommonListener implements Listener {
 
-    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = Duration.ofSeconds(20).toMillis();
 
     /**
      * The player conf.
@@ -95,6 +94,8 @@ public class ConnectionListener extends CommonListener implements Listener {
 
         // Put the new login thread in the map for wake up after inventories load
         final StorageThread storageThread = secuboid.getStorageThread();
+        final Object lock = new Object();
+        storageThread.addPlayerUUIDPreLogin(playerUUID, lock);
 
         // Load inventories from save thread
         final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
@@ -102,9 +103,9 @@ public class ConnectionListener extends CommonListener implements Listener {
                 Optional.of(playerInventoryCache));
 
         // Waiting for inventory load
-        synchronized (SecuboidQueueThread.LOCK) {
+        synchronized (lock) {
             try {
-                SecuboidQueueThread.LOCK.wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
+                lock.wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
             } catch (final InterruptedException e) {
                 throw new SecuboidRuntimeException(
                         String.format("Interruption on player connexion [uuid=%s, name=%s]", playerUUID, playerName),
@@ -113,7 +114,7 @@ public class ConnectionListener extends CommonListener implements Listener {
         }
 
         // Check if the inventory load is completed
-        if (storageThread.removePlayerUUIDPreLogin(playerUUID)) {
+        if (storageThread.removePlayerUUIDPreLogin(playerUUID) != null) {
             secuboid.getLogger().log(Level.WARNING,
                     String.format("Unable to load the inventoy of player [uuid=%s, name=%s]", playerUUID, playerName));
             event.disallow(Result.KICK_OTHER, "Problem with Secuboid inventory. Contact an administrator.");

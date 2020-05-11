@@ -108,7 +108,8 @@ public final class CommandEcosign extends CommandExec {
                     }
                 }
                 try {
-                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getSaleSignLoc()).removeSign();
+                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getSaleSignLoc().toLocation())
+                            .removeSign();
                 } catch (final SignException e) {
                     // Real Error
                     secuboid.getLogger().severe("Sign exception in location: " + landSelectNullable.getSaleSignLoc());
@@ -130,9 +131,9 @@ public final class CommandEcosign extends CommandExec {
                 // Unrent
                 landSelectNullable.unSetRented();
                 try {
-                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc()).createSignForRent(
-                            landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(),
-                            landSelectNullable.getRentAutoRenew(), null);
+                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc().toLocation())
+                            .createSignForRent(landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(),
+                                    landSelectNullable.getRentAutoRenew(), null);
                 } catch (final SignException e) {
                     // Real Error
                     secuboid.getLogger().severe("Sign exception in location: " + landSelectNullable.getSaleSignLoc());
@@ -171,9 +172,9 @@ public final class CommandEcosign extends CommandExec {
                 }
                 landSelectNullable.setRented(playerConf.getPlayerContainer());
                 try {
-                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc()).createSignForRent(
-                            landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(),
-                            landSelectNullable.getRentAutoRenew(), player.getName());
+                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc().toLocation())
+                            .createSignForRent(landSelectNullable.getRentPrice(), landSelectNullable.getRentRenew(),
+                                    landSelectNullable.getRentAutoRenew(), player.getName());
                 } catch (final SignException e) {
                     // Real Error
                     secuboid.getLogger().severe("Sign exception in location: " + landSelectNullable.getSaleSignLoc());
@@ -193,7 +194,8 @@ public final class CommandEcosign extends CommandExec {
 
                 // Destroy sale sign
                 try {
-                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getSaleSignLoc()).removeSign();
+                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getSaleSignLoc().toLocation())
+                            .removeSign();
                 } catch (final SignException e) {
                     // Real Error
                     secuboid.getLogger().severe("Sign exception in location: " + landSelectNullable.getSaleSignLoc());
@@ -205,7 +207,8 @@ public final class CommandEcosign extends CommandExec {
 
                 // Destroy rent sign
                 try {
-                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc()).removeSign();
+                    new EcoSign(secuboid, landSelectNullable, landSelectNullable.getRentSignLoc().toLocation())
+                            .removeSign();
                 } catch (final SignException e) {
                     // Real Error
                     secuboid.getLogger().severe("Sign exception in location: " + landSelectNullable.getSaleSignLoc());

@@ -100,7 +100,7 @@ public final class CommandList extends CommandPlayerThreadExec {
             }
         }
 
-        secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+        secuboid.getPlayersCache().getUUIDWithNameAsync(this, pc);
     }
 
     @Override

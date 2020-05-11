@@ -32,12 +32,11 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Location;
-
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.FileLoadException;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.Flag;
 import me.tabinol.secuboid.permissionsflags.FlagType;
@@ -111,14 +110,18 @@ public final class LandsFlat {
     }
 
     public void loadLands() {
+        final Map<Land, UUID> orphanToParentUUID = loadLandsOrphanToParentUUID();
+        findLandParents(orphanToParentUUID);
+    }
+
+    public Map<Land, UUID> loadLandsOrphanToParentUUID() {
         final Map<Land, UUID> orphanToParentUUID = new HashMap<>();
         final File[] files = new File(landsDir).listFiles();
-        int loadedlands = 0;
 
         assert files != null;
         if (files.length == 0) {
             // No land yet
-            return;
+            return null;
         }
 
         // Pass 1: load lands
@@ -133,7 +136,6 @@ public final class LandsFlat {
                     continue;
                 }
                 if (orphanToParentUUIDEntry != null) {
-                    loadedlands++;
                     if (orphanToParentUUIDEntry.getValue() != null) {
                         orphanToParentUUID.put(orphanToParentUUIDEntry.getKey(), orphanToParentUUIDEntry.getValue());
                     }
@@ -141,9 +143,13 @@ public final class LandsFlat {
             }
         }
 
+        return orphanToParentUUID;
+    }
+
+    public void findLandParents(final Map<Land, UUID> orphanToParentUUID) {
         // Pass 2: find parents
         secuboid.getLands().setParents(orphanToParentUUID);
-        secuboid.getLogger().info(loadedlands + " land(s) loaded.");
+        secuboid.getLogger().info(secuboid.getLands().getLands().size() + " land(s) loaded.");
     }
 
     /**
@@ -176,10 +182,10 @@ public final class LandsFlat {
 
         // For economy
         boolean forSale;
-        Location forSaleSignLoc = null;
+        LandLocation forSaleSignLoc = null;
         double salePrice = 0;
         boolean forRent;
-        Location forRentSignLoc = null;
+        LandLocation forRentSignLoc = null;
         double rentPrice = 0;
         int rentRenew = 0;
         boolean rentAutoRenew = false;
@@ -279,7 +285,7 @@ public final class LandsFlat {
             forSale = Boolean.parseBoolean(cf.getValueString());
             if (forSale) {
                 cf.readParam();
-                forSaleSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                forSaleSignLoc = LandLocation.fromFileFormat(cf.getValueString());
                 cf.readParam();
                 salePrice = cf.getValueDouble();
             }
@@ -287,7 +293,7 @@ public final class LandsFlat {
             forRent = Boolean.parseBoolean(cf.getValueString());
             if (forRent) {
                 cf.readParam();
-                forRentSignLoc = StringChanges.stringToLocation(cf.getValueString());
+                forRentSignLoc = LandLocation.fromFileFormat(cf.getValueString());
                 cf.readParam();
                 rentPrice = cf.getValueDouble();
                 cf.readParam();
@@ -456,12 +462,12 @@ public final class LandsFlat {
             // Economy
             cb.writeParam("ForSale", land.isForSale() + "");
             if (land.isForSale()) {
-                cb.writeParam("ForSaleSignLoc", StringChanges.locationToString(land.getSaleSignLoc()));
+                cb.writeParam("ForSaleSignLoc", land.getSaleSignLoc().toFileFormat());
                 cb.writeParam("SalePrice", land.getSalePrice());
             }
             cb.writeParam("ForRent", land.isForRent() + "");
             if (land.isForRent()) {
-                cb.writeParam("ForRentSignLoc", StringChanges.locationToString(land.getRentSignLoc()));
+                cb.writeParam("ForRentSignLoc", land.getRentSignLoc().toFileFormat());
                 cb.writeParam("RentPrice", land.getRentPrice());
                 cb.writeParam("RentRenew", land.getRentRenew());
                 cb.writeParam("RentAutoRenew", land.getRentAutoRenew() + "");

@@ -91,10 +91,11 @@ public final class InventoriesDeathsDao {
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=? AND `death_number`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, gameModeId + 1);
+            stmt.setInt(1, deathNumber + 1);
             DbUtils.setUUID(stmt, 2, playerUUID);
             stmt.setInt(3, inventoryId);
             stmt.setInt(4, gameModeId);
+            stmt.setInt(5, deathNumber);
             stmt.executeUpdate();
         }
     }

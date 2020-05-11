@@ -160,7 +160,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
      * @param commandExec the command exec
      * @param pc          the pc
      */
-    public void getUUIDWithNames(final CommandPlayerThreadExec commandExec, final PlayerContainer pc) {
+    public void getUUIDWithNameAsync(final CommandPlayerThreadExec commandExec, final PlayerContainer pc) {
 
         if (pc != null && pc instanceof PlayerContainerPlayerName) {
             getUUIDWithNames(commandExec, pc.getName());

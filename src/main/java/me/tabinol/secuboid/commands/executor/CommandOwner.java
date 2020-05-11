@@ -59,7 +59,7 @@ public final class CommandOwner extends CommandPlayerThreadExec {
 
         pc = argList.getPlayerContainerFromArg(
                 new PlayerContainerType[] { PlayerContainerType.EVERYBODY, PlayerContainerType.OWNER });
-        secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+        secuboid.getPlayersCache().getUUIDWithNameAsync(this, pc);
     }
 
     @Override

@@ -246,12 +246,12 @@ public final class PlayerListener extends CommonListener implements Listener {
             if (trueLand != null) {
                 try {
                     if (trueLand.getSaleSignLoc() != null
-                            && trueLand.getSaleSignLoc().getBlock().equals(loc.getBlock())) {
+                            && trueLand.getSaleSignLoc().toLocation().getBlock().equals(loc.getBlock())) {
                         event.setCancelled(true);
                         new CommandEcosign(secuboid, player, trueLand, action, SignType.SALE).commandExecute();
 
                     } else if (trueLand.getRentSignLoc() != null
-                            && trueLand.getRentSignLoc().getBlock().equals(loc.getBlock())) {
+                            && trueLand.getRentSignLoc().toLocation().getBlock().equals(loc.getBlock())) {
                         event.setCancelled(true);
                         new CommandEcosign(secuboid, player, trueLand, action, SignType.RENT).commandExecute();
                     }

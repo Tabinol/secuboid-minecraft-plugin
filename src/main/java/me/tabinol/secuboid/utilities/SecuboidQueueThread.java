@@ -31,11 +31,6 @@ import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
  */
 public abstract class SecuboidQueueThread<T> extends Thread {
 
-    /**
-     * A lock object for thread synchronization.
-     */
-    public static final Object LOCK = new Object();
-
     private static final long TIME_WAITING_THREAD_MILLIS = Duration.ofSeconds(10).toMillis();
 
     protected final Secuboid secuboid;
@@ -52,6 +47,11 @@ public abstract class SecuboidQueueThread<T> extends Thread {
     protected boolean isQueueActive;
 
     /**
+     * A lock object for thread synchronization.
+     */
+    private final Object lock;
+
+    /**
      * Instantiates a new Secuboid queue thread.
      * 
      * @param secuboid   the secuboid instance
@@ -61,6 +61,7 @@ public abstract class SecuboidQueueThread<T> extends Thread {
         this.secuboid = secuboid;
         taskQueue = new LinkedBlockingQueue<>();
         isQueueActive = true;
+        lock = new Object();
         setName(threadName);
     }
 
@@ -129,5 +130,14 @@ public abstract class SecuboidQueueThread<T> extends Thread {
             secuboid.getLogger().warning(String.format("Thread \"%s\" interrupted!", getName()));
             return;
         }
+    }
+
+    /**
+     * Gets a lock object for thread synchronization.
+     * 
+     * @return a lock object
+     */
+    public final Object getLock() {
+        return lock;
     }
 }

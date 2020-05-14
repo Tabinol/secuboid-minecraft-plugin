@@ -19,14 +19,14 @@ package me.tabinol.secuboid.storage.mysql.pojo;
 
 public final class InventoryDeathPojo {
 
-    private final int playerUUID;
-    private final int inventoryId;
-    private final int gameModeId;
+    private final long playerUUID;
+    private final long inventoryId;
+    private final long gameModeId;
     private final int deathNumber;
-    private final int inventoryEntryId;
+    private final long inventoryEntryId;
 
-    public InventoryDeathPojo(final int playerUUID, final int inventoryId, final int gameModeId, final int deathNumber,
-            final int inventoryEntryId) {
+    public InventoryDeathPojo(final long playerUUID, final long inventoryId, final long gameModeId,
+            final int deathNumber, final long inventoryEntryId) {
         this.playerUUID = playerUUID;
         this.inventoryId = inventoryId;
         this.gameModeId = gameModeId;
@@ -34,15 +34,15 @@ public final class InventoryDeathPojo {
         this.inventoryEntryId = inventoryEntryId;
     }
 
-    public int getPlayerUUID() {
+    public long getPlayerUUID() {
         return this.playerUUID;
     }
 
-    public int getInventoryId() {
+    public long getInventoryId() {
         return this.inventoryId;
     }
 
-    public int getGameModeId() {
+    public long getGameModeId() {
         return this.gameModeId;
     }
 
@@ -50,7 +50,7 @@ public final class InventoryDeathPojo {
         return this.deathNumber;
     }
 
-    public int getInventoryEntryId() {
+    public long getInventoryEntryId() {
         return this.inventoryEntryId;
     }
 }

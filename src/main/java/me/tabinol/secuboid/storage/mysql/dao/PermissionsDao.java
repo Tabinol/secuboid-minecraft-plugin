@@ -48,8 +48,8 @@ public final class PermissionsDao {
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
-                    final int playerContainerId = rs.getInt("player_container_id");
-                    final int permissionId = rs.getInt("permission_id");
+                    final long playerContainerId = rs.getLong("player_container_id");
+                    final long permissionId = rs.getLong("permission_id");
                     final boolean value = rs.getBoolean("value");
                     final boolean inheritance = rs.getBoolean("inheritance");
                     final PermissionPojo permissionPojo = new PermissionPojo(landUUID, playerContainerId, permissionId,
@@ -72,8 +72,8 @@ public final class PermissionsDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, permissionPojo.getLandUUID());
-            stmt.setInt(2, permissionPojo.getPlayerContainerId());
-            stmt.setInt(3, permissionPojo.getPermissionId());
+            stmt.setLong(2, permissionPojo.getPlayerContainerId());
+            stmt.setLong(3, permissionPojo.getPermissionId());
             stmt.setBoolean(4, permissionPojo.getValue());
             stmt.setBoolean(5, permissionPojo.getInheritance());
 
@@ -84,15 +84,15 @@ public final class PermissionsDao {
         }
     }
 
-    public void deletePermission(final Connection conn, final UUID landUUID, final int playerContainerId,
-            final int permissionId) throws SQLException {
+    public void deletePermission(final Connection conn, final UUID landUUID, final long playerContainerId,
+            final long permissionId) throws SQLException {
         final String sql = "DELETE FROM `{{TP}}lands_permissions` " //
                 + "WHERE `land_uuid`=? AND `player_container_id`=? AND `permission_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, landUUID);
-            stmt.setInt(2, playerContainerId);
-            stmt.setInt(3, permissionId);
+            stmt.setLong(2, playerContainerId);
+            stmt.setLong(3, permissionId);
             stmt.executeUpdate();
         }
     }

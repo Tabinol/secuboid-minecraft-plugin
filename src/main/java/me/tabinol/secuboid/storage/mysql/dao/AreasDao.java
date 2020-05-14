@@ -52,7 +52,7 @@ public final class AreasDao {
                     final int areaId = rs.getInt("area_id");
                     final boolean approved = rs.getBoolean("approved");
                     final String worldName = rs.getString("world_name");
-                    final int areaTypeId = rs.getInt("area_type_id");
+                    final long areaTypeId = rs.getLong("area_type_id");
                     final int x1 = rs.getInt("x1");
                     final int y1 = rs.getInt("y1");
                     final int z1 = rs.getInt("z1");
@@ -83,7 +83,7 @@ public final class AreasDao {
             stmt.setInt(2, areaPojo.getAreaId());
             stmt.setBoolean(3, areaPojo.getApproved());
             stmt.setString(4, areaPojo.getWorldName());
-            stmt.setInt(5, areaPojo.getAreaTypeId());
+            stmt.setLong(5, areaPojo.getAreaTypeId());
             stmt.setInt(6, areaPojo.getX1());
             stmt.setInt(7, areaPojo.getY1());
             stmt.setInt(8, areaPojo.getZ1());
@@ -93,7 +93,7 @@ public final class AreasDao {
 
             stmt.setBoolean(12, areaPojo.getApproved());
             stmt.setString(13, areaPojo.getWorldName());
-            stmt.setInt(14, areaPojo.getAreaTypeId());
+            stmt.setLong(14, areaPojo.getAreaTypeId());
             stmt.setInt(15, areaPojo.getX1());
             stmt.setInt(16, areaPojo.getY1());
             stmt.setInt(17, areaPojo.getZ1());

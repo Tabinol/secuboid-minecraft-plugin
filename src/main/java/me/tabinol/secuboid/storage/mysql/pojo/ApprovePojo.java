@@ -24,16 +24,16 @@ import java.util.UUID;
 public final class ApprovePojo {
 
     private final UUID landUUID;
-    private final int approveActionId;
+    private final long approveActionId;
     private final Optional<Integer> removedAreaIdOpt;
     private final Optional<Integer> newAreaIdOpt;
-    private final Integer ownerId;
+    private final long ownerId;
     private final Optional<UUID> parentUUIDOpt;
     private final double price;
     private final Calendar transactionDatetime;
 
-    public ApprovePojo(final UUID landUUID, final int approveActionId, final Optional<Integer> removedAreaIdOpt,
-            final Optional<Integer> newAreaIdOpt, final Integer ownerId, final Optional<UUID> parentUUIDOpt,
+    public ApprovePojo(final UUID landUUID, final long approveActionId, final Optional<Integer> removedAreaIdOpt,
+            final Optional<Integer> newAreaIdOpt, final long ownerId, final Optional<UUID> parentUUIDOpt,
             final double price, final Calendar transactionDatetime) {
         this.approveActionId = approveActionId;
         this.landUUID = landUUID;
@@ -49,7 +49,7 @@ public final class ApprovePojo {
         return this.landUUID;
     }
 
-    public int getApproveActionId() {
+    public long getApproveActionId() {
         return this.approveActionId;
     }
 
@@ -61,7 +61,7 @@ public final class ApprovePojo {
         return this.newAreaIdOpt;
     }
 
-    public Integer getOwnerId() {
+    public long getOwnerId() {
         return this.ownerId;
     }
 

@@ -41,22 +41,18 @@ public final class FlagsDao {
     }
 
     public Map<UUID, List<FlagPojo>> getLandUUIDToFlags(final Connection conn) throws SQLException {
-        final String sql = "SELECT `land_uuid`, `flag_id`, `value_string`, `value_double`, "
-                + "`value_boolean`, `inheritance` " //
+        final String sql = "SELECT `id`, `land_uuid`, `flag_id`, `inheritance` " //
                 + "FROM `{{TP}}lands_flags`";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             final Map<UUID, List<FlagPojo>> results = new HashMap<>();
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    final long id = rs.getLong("id");
                     final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
-                    final int flagId = rs.getInt("flag_id");
-                    final Optional<String> valueStringOpt = DbUtils.getOpt(rs, "value_string", rs::getString);
-                    final Optional<Double> valueDoubleOpt = DbUtils.getOpt(rs, "value_double", rs::getDouble);
-                    final Optional<Boolean> valueBooleanOpt = DbUtils.getOpt(rs, "value_boolean", rs::getBoolean);
+                    final long flagId = rs.getLong("flag_id");
                     final boolean inheritance = rs.getBoolean("inheritance");
-                    final FlagPojo flagPojo = new FlagPojo(landUUID, flagId, valueStringOpt, valueDoubleOpt,
-                            valueBooleanOpt, inheritance);
+                    final FlagPojo flagPojo = new FlagPojo(id, landUUID, flagId, inheritance);
 
                     results.computeIfAbsent(landUUID, k -> new ArrayList<>()).add(flagPojo);
                 }
@@ -65,38 +61,68 @@ public final class FlagsDao {
         }
     }
 
-    public void insertOrUpdateFlag(final Connection conn, final FlagPojo flagPojo) throws SQLException {
-        final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
-                + "`land_uuid`, `flag_id`, `value_string`, `value_double`, " //
-                + "`value_boolean`, `inheritance`) " //
-                + "VALUES(?, ?, ?, ?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
-                + "`value_string`=?, `value_double`=?, " //
-                + "`value_boolean`=?, `inheritance`=?";
+    public Optional<Long> getLandFlagIdOpt(final Connection conn, final UUID landUUID, final long flagId)
+            throws SQLException {
+        final String sql = "SELECT `id` FROM `{{TP}}lands_flags` " //
+                + "WHERE `land_uuid`=?, `flag_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            DbUtils.setUUID(stmt, 1, flagPojo.getLandUUID());
-            stmt.setInt(2, flagPojo.getFlagId());
-            DbUtils.setOpt(stmt, 3, flagPojo.getValueStringOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 4, flagPojo.getValueDoubleOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 5, flagPojo.getValueBooleanOpt(), (i, u) -> stmt.setBoolean(i, u));
-            stmt.setBoolean(6, flagPojo.getInheritance());
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setLong(2, flagId);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    return Optional.of(rs.getLong("id"));
+                }
+                return Optional.empty();
+            }
+        }
+    }
 
-            DbUtils.setOpt(stmt, 7, flagPojo.getValueStringOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 8, flagPojo.getValueDoubleOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 9, flagPojo.getValueBooleanOpt(), (i, u) -> stmt.setBoolean(i, u));
-            stmt.setBoolean(10, flagPojo.getInheritance());
+    public void updateLandFlagIdInheritance(final Connection conn, final UUID landUUID, final long flagId,
+            boolean inheritance) throws SQLException {
+        final String sql = "UPDATE `{{TP}}lands_flags` SET `inheritance`=?" //
+                + "WHERE `land_uuid`=?, `flag_id`=?";
 
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            stmt.setBoolean(1, inheritance);
+            DbUtils.setUUID(stmt, 2, landUUID);
+            stmt.setLong(3, flagId);
             stmt.executeUpdate();
         }
     }
 
-    public void deleteFlag(final Connection conn, final UUID landUUID, final int flagId) throws SQLException {
+    public long insertFlagOrUpdateGetId(final Connection conn, final UUID landUUID, final long flagId,
+            final boolean inheritance) throws SQLException {
+        final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
+                + "`land_uuid`, `flag_id`, `inheritance`) " //
+                + "VALUES(?, ?, ?) " //
+                + "ON DUPLICATE KEY UPDATE " //
+                + "`inheritance`=?";
+
+        final Optional<Long> idOpt = getLandFlagIdOpt(conn, landUUID, flagId);
+        if (idOpt.isPresent()) {
+            updateLandFlagIdInheritance(conn, landUUID, flagId, inheritance);
+            return idOpt.get();
+        }
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            DbUtils.setUUID(stmt, 1, landUUID);
+            stmt.setLong(2, flagId);
+            stmt.setBoolean(3, inheritance);
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                rs.next();
+                return rs.getLong(1);
+            }
+        }
+    }
+
+    public void deleteLandFlag(final Connection conn, final UUID landUUID, final long flagId) throws SQLException {
         final String sql = "DELETE FROM `{{TP}}lands_flags` WHERE `land_uuid`=? AND `flag_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, landUUID);
-            stmt.setInt(2, flagId);
+            stmt.setLong(2, flagId);
             stmt.executeUpdate();
         }
     }

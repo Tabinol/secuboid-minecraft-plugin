@@ -39,14 +39,14 @@ public final class InventoriesEntriesDao {
         this.dbConn = dbConn;
     }
 
-    public InventoryEntryPojo getInventoryEntry(final Connection conn, final int id) throws SQLException {
+    public InventoryEntryPojo getInventoryEntry(final Connection conn, final long id) throws SQLException {
         final String sql = "SELECT `level`, `exp`, `health`, `food_level`, `contents`, " //
                 + "`ender_chest_contents` " //
                 + "FROM `{{TP}}inventories_entries` " //
                 + "WHERE `id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     final int level = rs.getInt("level");
@@ -65,7 +65,7 @@ public final class InventoriesEntriesDao {
         throw new SecuboidRuntimeException();
     }
 
-    public int insertInventoryEntry(final Connection conn, final int level, final float exp, final double health,
+    public long insertInventoryEntry(final Connection conn, final int level, final float exp, final double health,
             final int foodLevel, final ItemStack[] contents, final ItemStack[] enderChestContents) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}inventories_entries` " //
                 + "(`level`, `exp`, `health`, `food_level`, `contents`, `ender_chest_contents`) " //
@@ -82,7 +82,7 @@ public final class InventoriesEntriesDao {
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return rs.getInt(1);
+                return rs.getLong(1);
             }
         }
     }
@@ -100,16 +100,16 @@ public final class InventoriesEntriesDao {
             stmt.setInt(4, inventoryEntryPojo.getFoodLevel());
             DbUtils.setItemStacks(stmt, 5, inventoryEntryPojo.getContents());
             DbUtils.setItemStacks(stmt, 6, inventoryEntryPojo.getEnderChestContents());
-            stmt.setInt(7, inventoryEntryPojo.getId());
+            stmt.setLong(7, inventoryEntryPojo.getId());
             stmt.executeUpdate();
         }
     }
 
-    public void deleteInventoryEntry(final Connection conn, final int id) throws SQLException {
+    public void deleteInventoryEntry(final Connection conn, final long id) throws SQLException {
         final String sql = "DELETE FROM `{{TP}}inventories_entries WHERE `id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             stmt.executeUpdate();
         }
     }

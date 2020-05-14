@@ -28,8 +28,8 @@ public final class LandPojo {
     private final UUID uuid;
     private final String name;
     private final boolean approved;
-    private final Optional<Integer> typeIdOpt;
-    private final int ownerId;
+    private final Optional<Long> typeIdOpt;
+    private final long ownerId;
     private final Optional<UUID> parentUUIDOpt;
     private final short priority;
     private final double money;
@@ -44,8 +44,8 @@ public final class LandPojo {
     private final Optional<UUID> tenantUUIDOpt;
     private final Optional<Long> lastPaymentMillisOpt;
 
-    public LandPojo(final UUID uuid, final String name, final boolean approved, final Optional<Integer> typeIdOpt,
-            final int ownerId, final Optional<UUID> parentUUIDOpt, final short priority, final double money,
+    public LandPojo(final UUID uuid, final String name, final boolean approved, final Optional<Long> typeIdOpt,
+            final long ownerId, final Optional<UUID> parentUUIDOpt, final short priority, final double money,
             final boolean forSale, final Optional<String> forSaleSignLocationOpt, final Optional<Double> salePriceOpt,
             final boolean forRent, final Optional<String> forRentSignLocationOpt, final Optional<Double> rentPriceOpt,
             final Optional<Integer> rentRenewOpt, final Optional<Boolean> rentAutoRenewOpt,
@@ -86,11 +86,11 @@ public final class LandPojo {
         return this.approved;
     }
 
-    public Optional<Integer> getTypeIdOpt() {
+    public Optional<Long> getTypeIdOpt() {
         return this.typeIdOpt;
     }
 
-    public int getOwnerId() {
+    public long getOwnerId() {
         return this.ownerId;
     }
 

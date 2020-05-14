@@ -39,16 +39,16 @@ public final class PlayerContainersDao {
         this.dbConn = dbConn;
     }
 
-    public Map<Integer, PlayerContainerPojo> getIdToPlayerContainer(final Connection conn) throws SQLException {
+    public Map<Long, PlayerContainerPojo> getIdToPlayerContainer(final Connection conn) throws SQLException {
         final String sql = "SELECT `id`, `player_container_type_id`, `player_uuid`, `parameter` " //
                 + "FROM `{{TP}}player_containers`";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            final Map<Integer, PlayerContainerPojo> results = new HashMap<>();
+            final Map<Long, PlayerContainerPojo> results = new HashMap<>();
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    final int id = rs.getInt("id");
-                    final int playerContainerTypeId = rs.getInt("player_container_type_id");
+                    final long id = rs.getLong("id");
+                    final long playerContainerTypeId = rs.getLong("player_container_type_id");
                     final Optional<UUID> playerUUIDOpt = DbUtils.getOpt(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
                     final Optional<String> parameterOpt = DbUtils.getOpt(rs, "parameter", rs::getString);
 
@@ -59,7 +59,7 @@ public final class PlayerContainersDao {
         }
     }
 
-    public Optional<Integer> getIdOpt(final Connection conn, final int playerContainerTypeId,
+    public Optional<Long> getIdOpt(final Connection conn, final long playerContainerTypeId,
             final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
         final String sql = String.format("SELECT `id` FROM `{{TP}}player_containers` " //
                 + "WHERE `player_container_type_id`=? AND `player_uuid`%s AND `parameter`%s",
@@ -67,7 +67,7 @@ public final class PlayerContainersDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             int parameterIndex = 1;
-            stmt.setInt(parameterIndex++, playerContainerTypeId);
+            stmt.setLong(parameterIndex++, playerContainerTypeId);
             if (playerUUIDOpt.isPresent()) {
                 DbUtils.setOpt(stmt, parameterIndex++, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
             }
@@ -76,16 +76,16 @@ public final class PlayerContainersDao {
             }
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    return Optional.of(rs.getInt("id"));
+                    return Optional.of(rs.getLong("id"));
                 }
                 return Optional.empty();
             }
         }
     }
 
-    public int insertOrGetPlayerContainer(final Connection conn, final int playerContainerTypeId,
+    public long insertOrGetPlayerContainer(final Connection conn, final long playerContainerTypeId,
             final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
-        final Optional<Integer> idOpt = getIdOpt(conn, playerContainerTypeId, playerUUIDOpt, parameterOpt);
+        final Optional<Long> idOpt = getIdOpt(conn, playerContainerTypeId, playerUUIDOpt, parameterOpt);
         if (idOpt.isPresent()) {
             return idOpt.get();
         }
@@ -95,13 +95,13 @@ public final class PlayerContainersDao {
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, playerContainerTypeId);
+            stmt.setLong(1, playerContainerTypeId);
             DbUtils.setOpt(stmt, 2, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
             DbUtils.setOpt(stmt, 3, parameterOpt, (i, u) -> stmt.setString(i, u));
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return rs.getInt(1);
+                return rs.getLong(1);
             }
         }
     }

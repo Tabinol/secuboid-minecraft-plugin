@@ -22,12 +22,12 @@ import java.util.UUID;
 
 public final class PlayerContainerPojo {
 
-    private final int id;
-    private final int playerContainerTypeId;
+    private final long id;
+    private final long playerContainerTypeId;
     private final Optional<UUID> playerUUIDOpt;
     private final Optional<String> parameterOpt;
 
-    public PlayerContainerPojo(final int id, final int playerContainerTypeId, final Optional<UUID> playerUUIDOpt,
+    public PlayerContainerPojo(final long id, final long playerContainerTypeId, final Optional<UUID> playerUUIDOpt,
             final Optional<String> parameterOpt) {
         this.id = id;
         this.playerContainerTypeId = playerContainerTypeId;
@@ -35,11 +35,11 @@ public final class PlayerContainerPojo {
         this.parameterOpt = parameterOpt;
     }
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 
-    public int getPlayerContainerTypeId() {
+    public long getPlayerContainerTypeId() {
         return this.playerContainerTypeId;
     }
 

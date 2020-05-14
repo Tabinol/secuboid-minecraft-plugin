@@ -74,6 +74,7 @@ import me.tabinol.secuboid.storage.mysql.dao.ApprovesDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasDao;
 import me.tabinol.secuboid.storage.mysql.dao.AreasRoadsMatricesDao;
 import me.tabinol.secuboid.storage.mysql.dao.FlagsDao;
+import me.tabinol.secuboid.storage.mysql.dao.FlagsValuesListDao;
 import me.tabinol.secuboid.storage.mysql.dao.GenericIdValueDao;
 import me.tabinol.secuboid.storage.mysql.dao.InventoriesDeathsDao;
 import me.tabinol.secuboid.storage.mysql.dao.InventoriesEntriesDao;
@@ -106,25 +107,29 @@ public final class StorageMySql implements Storage {
     // DAO
     private final AreasDao areasDao;
     private final AreasRoadsMatricesDao areasRoadsMatricesDao;
-    private final GenericIdValueDao<Integer, String> areasTypesDao;
+    private final GenericIdValueDao<Long, String> areasTypesDao;
     private final LandsDao landsDao;
-    private final GenericIdValueDao<Integer, String> landsTypesDao;
+    private final GenericIdValueDao<Long, String> landsTypesDao;
     private final PlayerContainersDao playerContainersDao;
-    private final GenericIdValueDao<Integer, String> playerContainersTypesDao;
-    private final GenericIdValueDao<UUID, Integer> landsResidentsDao;
-    private final GenericIdValueDao<UUID, Integer> landsBannedDao;
+    private final GenericIdValueDao<Long, String> playerContainersTypesDao;
+    private final GenericIdValueDao<UUID, Long> landsResidentsDao;
+    private final GenericIdValueDao<UUID, Long> landsBannedDao;
     private final PermissionsDao permissionsDao;
-    private final GenericIdValueDao<Integer, String> permissionsTypesDao;
+    private final GenericIdValueDao<Long, String> permissionsTypesDao;
     private final FlagsDao flagsDao;
-    private final GenericIdValueDao<Integer, String> flagsTypesDao;
+    private final GenericIdValueDao<Long, String> flagsTypesDao;
+    private final GenericIdValueDao<Long, String> flagsValuesStringDao;
+    private final GenericIdValueDao<Long, Double> flagsValuesDoubleDao;
+    private final GenericIdValueDao<Long, Boolean> flagsValuesBooleanDao;
+    private final FlagsValuesListDao flagsValuesListDao;
     private final GenericIdValueDao<UUID, UUID> playerNotifiesDao;
     private final ApprovesDao approvesDao;
-    private final GenericIdValueDao<Integer, String> approvesActionsDao;
+    private final GenericIdValueDao<Long, String> approvesActionsDao;
     private final GenericIdValueDao<UUID, String> playersDao;
-    private final GenericIdValueDao<Integer, String> inventoriesDao;
+    private final GenericIdValueDao<Long, String> inventoriesDao;
     private final InventoriesEntriesDao inventoriesEntriesDao;
-    private final GenericIdValueDao<Integer, Integer> inventoriesDefaultsDao;
-    private final GenericIdValueDao<Integer, String> gameModesDao;
+    private final GenericIdValueDao<Long, Long> inventoriesDefaultsDao;
+    private final GenericIdValueDao<Long, String> gameModesDao;
     private final InventoriesSavesDao inventoriesSavesDao;
     private final InventoriesDeathsDao inventoriesDeathsDao;
     private final InventoriesPotionEffectsDao inventoriesPotionEffectsDao;
@@ -136,31 +141,38 @@ public final class StorageMySql implements Storage {
 
         areasDao = new AreasDao(dbConn);
         areasRoadsMatricesDao = new AreasRoadsMatricesDao(dbConn);
-        areasTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "areas_types", "id", "name");
+        areasTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "areas_types", "id", "name");
         landsDao = new LandsDao(dbConn);
-        landsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "lands_types", "id", "name");
+        landsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "lands_types", "id", "name");
         playerContainersDao = new PlayerContainersDao(dbConn);
-        playerContainersTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class,
-                "player_containers_types", "id", "name");
-        landsResidentsDao = new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_residents", "land_uuid",
+        playerContainersTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "player_containers_types",
+                "id", "name");
+        landsResidentsDao = new GenericIdValueDao<>(dbConn, UUID.class, Long.class, "lands_residents", "land_uuid",
                 "player_container_id");
-        landsBannedDao = new GenericIdValueDao<>(dbConn, UUID.class, Integer.class, "lands_banneds", "land_uuid",
+        landsBannedDao = new GenericIdValueDao<>(dbConn, UUID.class, Long.class, "lands_banneds", "land_uuid",
                 "player_container_id");
         permissionsDao = new PermissionsDao(dbConn);
-        permissionsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "permissions", "id", "name");
+        permissionsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "permissions", "id", "name");
         flagsDao = new FlagsDao(dbConn);
-        flagsTypesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "flags", "id", "name");
+        flagsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "flags", "id", "name");
+        flagsValuesStringDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "lands_flags_values_string",
+                "land_flag_id", "value_string");
+        flagsValuesDoubleDao = new GenericIdValueDao<>(dbConn, Long.class, Double.class, "lands_flags_values_double",
+                "land_flag_id", "value_double");
+        flagsValuesBooleanDao = new GenericIdValueDao<>(dbConn, Long.class, Boolean.class, "lands_flags_values_boolean",
+                "land_flag_id", "value_boolean");
+        flagsValuesListDao = new FlagsValuesListDao(dbConn);
         playerNotifiesDao = new GenericIdValueDao<>(dbConn, UUID.class, UUID.class, "lands_players_notifies",
                 "land_uuid", "player_uuid");
         approvesDao = new ApprovesDao(dbConn);
-        approvesActionsDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "approves_actions", "id",
+        approvesActionsDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "approves_actions", "id",
                 "name");
         playersDao = new GenericIdValueDao<>(dbConn, UUID.class, String.class, "players", "uuid", "name");
-        inventoriesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "inventories", "id", "name");
+        inventoriesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "inventories", "id", "name");
         inventoriesEntriesDao = new InventoriesEntriesDao(dbConn);
-        inventoriesDefaultsDao = new GenericIdValueDao<>(dbConn, Integer.class, Integer.class, "inventories_defaults",
+        inventoriesDefaultsDao = new GenericIdValueDao<>(dbConn, Long.class, Long.class, "inventories_defaults",
                 "inventory_id", "inventories_entries_id");
-        gameModesDao = new GenericIdValueDao<>(dbConn, Integer.class, String.class, "game_modes", "id", "name");
+        gameModesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "game_modes", "id", "name");
         inventoriesSavesDao = new InventoriesSavesDao(dbConn);
         inventoriesDeathsDao = new InventoriesDeathsDao(dbConn);
         inventoriesPotionEffectsDao = new InventoriesPotionEffectsDao(dbConn);
@@ -213,17 +225,21 @@ public final class StorageMySql implements Storage {
         // Pass 1: load lands
         final Map<UUID, List<AreaPojo>> landUUIDToAreas;
         final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices;
-        final Map<Integer, String> idToAreaType;
+        final Map<Long, String> idToAreaType;
         final List<LandPojo> landPojos;
-        final Map<Integer, String> idToType;
-        final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo;
-        final Map<Integer, String> idToPlayerContainerType;
-        final Map<UUID, List<Integer>> landUUIDToResidentIds;
-        final Map<UUID, List<Integer>> landUUIDToBannedIds;
+        final Map<Long, String> idToType;
+        final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo;
+        final Map<Long, String> idToPlayerContainerType;
+        final Map<UUID, List<Long>> landUUIDToResidentIds;
+        final Map<UUID, List<Long>> landUUIDToBannedIds;
         final Map<UUID, List<PermissionPojo>> landUUIDToPermissionPojos;
-        final Map<Integer, String> idToPermissionType;
+        final Map<Long, String> idToPermissionType;
         final Map<UUID, List<FlagPojo>> landUUIDToFlagPojos;
-        final Map<Integer, String> idToFlagType;
+        final Map<Long, String> landFlagIdtoValueString;
+        final Map<Long, Double> landFlagIdtoValueDouble;
+        final Map<Long, Boolean> landFlagIdtoValueBoolean;
+        final Map<Long, List<String>> landFlagIdtoValueList;
+        final Map<Long, String> idToFlagType;
         final Map<UUID, List<UUID>> landUUIDToPlayerNotifyUUIDs;
 
         try (final Connection conn = dbConn.openConnection()) {
@@ -239,6 +255,10 @@ public final class StorageMySql implements Storage {
             landUUIDToPermissionPojos = permissionsDao.getLandUUIDToPermissions(conn);
             idToPermissionType = permissionsTypesDao.getIdToValue(conn);
             landUUIDToFlagPojos = flagsDao.getLandUUIDToFlags(conn);
+            landFlagIdtoValueString = flagsValuesStringDao.getIdToValue(conn);
+            landFlagIdtoValueDouble = flagsValuesDoubleDao.getIdToValue(conn);
+            landFlagIdtoValueBoolean = flagsValuesBooleanDao.getIdToValue(conn);
+            landFlagIdtoValueList = flagsValuesListDao.getLandFlagIdToValueList(conn);
             idToFlagType = flagsTypesDao.getIdToValue(conn);
             landUUIDToPlayerNotifyUUIDs = playerNotifiesDao.getIdToValues(conn);
         } catch (final SQLException e) {
@@ -256,7 +276,8 @@ public final class StorageMySql implements Storage {
                         landUUIDToResidentIds.getOrDefault(landUUID, Collections.emptyList()),
                         landUUIDToBannedIds.getOrDefault(landUUID, Collections.emptyList()),
                         landUUIDToPermissionPojos.getOrDefault(landUUID, Collections.emptyList()), idToPermissionType,
-                        landUUIDToFlagPojos.getOrDefault(landUUID, Collections.emptyList()), idToFlagType,
+                        landUUIDToFlagPojos.getOrDefault(landUUID, Collections.emptyList()), landFlagIdtoValueString,
+                        landFlagIdtoValueDouble, landFlagIdtoValueBoolean, landFlagIdtoValueList, idToFlagType,
                         landUUIDToPlayerNotifyUUIDs.getOrDefault(landUUID, Collections.emptyList()));
             } catch (final RuntimeException e) {
                 secuboid.getLogger().log(Level.SEVERE,
@@ -281,7 +302,7 @@ public final class StorageMySql implements Storage {
 
             // Get landType
             final Type type = land.getType();
-            final Optional<Integer> typeIdOpt;
+            final Optional<Long> typeIdOpt;
             if (type != null) {
                 typeIdOpt = Optional.of(landsTypesDao.insertOrGetId(conn, type.getName()));
             } else {
@@ -289,7 +310,7 @@ public final class StorageMySql implements Storage {
             }
 
             // Get ownerId
-            final int ownerId = getOrAddPlayerContainer(conn, land.getOwner());
+            final long ownerId = getOrAddPlayerContainer(conn, land.getOwner());
 
             // For sale
             final boolean isForSale = land.isForSale();
@@ -377,7 +398,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveLandArea(final Land land, final Area area) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int areaTypeId = areasTypesDao.insertOrGetId(conn, area.getAreaType().name());
+            final long areaTypeId = areasTypesDao.insertOrGetId(conn, area.getAreaType().name());
             final AreaPojo areaPojo = new AreaPojo(land.getUUID(), area.getKey(), area.isApproved(),
                     area.getWorldName(), areaTypeId, area.getX1(), area.getY1(), area.getZ1(), area.getX2(),
                     area.getY2(), area.getZ2());
@@ -406,7 +427,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeLandBanned(final Land land, final PlayerContainer playerContainer) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             landsBannedDao.delete(conn, land.getUUID(), playerContainerId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
@@ -418,7 +439,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveLandBanned(final Land land, final PlayerContainer playerContainer) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             landsBannedDao.insert(conn, land.getUUID(), playerContainerId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
@@ -430,8 +451,26 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeLandFlag(final Land land, final Flag flag) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
-            flagsDao.deleteFlag(conn, land.getUUID(), flagId);
+            final long flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
+            final Object flagValueObj = flag.getValue().getValue();
+
+            // Delete flag before (foreign key)
+            final Optional<Long> landFlagIdOpt = flagsDao.getLandFlagIdOpt(conn, land.getUUID(), flagId);
+            if (landFlagIdOpt.isPresent()) {
+                final long landFlagId = landFlagIdOpt.get();
+                if (flagValueObj instanceof String) {
+                    flagsValuesStringDao.delete(conn, landFlagId);
+                } else if (flagValueObj instanceof Double) {
+                    flagsValuesDoubleDao.delete(conn, landFlagId);
+                } else if (flagValueObj instanceof Boolean) {
+                    flagsValuesBooleanDao.delete(conn, landFlagId);
+                } else if (flagValueObj instanceof String[]) {
+                    flagsValuesListDao.deleteLandFlagValueList(conn, landFlagId);
+                }
+            }
+
+            // Delete flag
+            flagsDao.deleteLandFlag(conn, land.getUUID(), flagId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format(
@@ -456,18 +495,24 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveLandFlag(final Land land, final Flag flag) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
+            final long flagId = flagsTypesDao.insertOrGetId(conn, flag.getFlagType().getName());
+
+            // Insert flag first (foreign key)
+            final long landFlagId = flagsDao.insertFlagOrUpdateGetId(conn, land.getUUID(), flagId,
+                    flag.isInheritable());
+
+            // Add flag value
             final Object flagValueObj = flag.getValue().getValue();
-            final Optional<String> valueStringOpt = flagValueObj instanceof String ? Optional.of((String) flagValueObj)
-                    : Optional.empty();
-            final Optional<Double> valueDoubleOpt = flagValueObj instanceof Double ? Optional.of((Double) flagValueObj)
-                    : Optional.empty();
-            final Optional<Boolean> valueBooleanOpt = flagValueObj instanceof Boolean
-                    ? Optional.of((Boolean) flagValueObj)
-                    : Optional.empty();
-            final FlagPojo flagPojo = new FlagPojo(land.getUUID(), flagId, valueStringOpt, valueDoubleOpt,
-                    valueBooleanOpt, flag.isInheritable());
-            flagsDao.insertOrUpdateFlag(conn, flagPojo);
+            if (flagValueObj instanceof String) {
+                flagsValuesStringDao.insertOrUpdate(conn, landFlagId, (String) flagValueObj);
+            } else if (flagValueObj instanceof Double) {
+                flagsValuesDoubleDao.insertOrUpdate(conn, landFlagId, (Double) flagValueObj);
+            } else if (flagValueObj instanceof Boolean) {
+                flagsValuesBooleanDao.insertOrUpdate(conn, landFlagId, (Boolean) flagValueObj);
+            } else if (flagValueObj instanceof String[]) {
+                flagsValuesListDao.deleteLandFlagValueList(conn, landFlagId);
+                flagsValuesListDao.insertLandFlagValueListItem(conn, landFlagId, (String[]) flagValueObj);
+            }
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to add the flag to the land to database [landUUID=%s, landName=%s, flag=%s]",
@@ -480,8 +525,8 @@ public final class StorageMySql implements Storage {
     public void removeLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
-            final int permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
             permissionsDao.deletePermission(conn, land.getUUID(), playerContainerId, permissionId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
@@ -507,8 +552,8 @@ public final class StorageMySql implements Storage {
     public void saveLandPermission(final Land land, final PlayerContainer playerContainer,
             final Permission permission) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
-            final int permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
             final PermissionPojo permissionPojo = new PermissionPojo(land.getUUID(), playerContainerId, permissionId,
                     permission.getValue(), permission.isInheritable());
             permissionsDao.insertOrUpdatePermission(conn, permissionPojo);
@@ -557,7 +602,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeLandResident(final Land land, final PlayerContainer playerContainer) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             landsResidentsDao.delete(conn, land.getUUID(), playerContainerId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
@@ -582,7 +627,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveLandResident(final Land land, final PlayerContainer playerContainer) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
+            final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             landsResidentsDao.insert(conn, land.getUUID(), playerContainerId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
@@ -595,11 +640,11 @@ public final class StorageMySql implements Storage {
     public void loadApproves() {
         try (final Connection conn = dbConn.openConnection()) {
             final Lands lands = secuboid.getLands();
-            final Map<Integer, LandAction> idToActionName = approvesActionsDao.getIdToValue(conn).entrySet().stream()
+            final Map<Long, LandAction> idToActionName = approvesActionsDao.getIdToValue(conn).entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> LandAction.valueOf(e.getValue())));
-            final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo = playerContainersDao
+            final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo = playerContainersDao
                     .getIdToPlayerContainer(conn);
-            final Map<Integer, String> idToPlayerContainerType = playerContainersTypesDao.getIdToValue(conn);
+            final Map<Long, String> idToPlayerContainerType = playerContainersTypesDao.getIdToValue(conn);
 
             final List<Approve> approves = new ArrayList<>();
             for (final ApprovePojo approvePojo : approvesDao.getApproves(conn)) {
@@ -620,8 +665,8 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveApprove(final Approve approve) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int approveActionId = approvesActionsDao.insertOrGetId(conn, approve.getAction().name());
-            final int ownerId = getOrAddPlayerContainer(conn, approve.getOwner());
+            final long approveActionId = approvesActionsDao.insertOrGetId(conn, approve.getAction().name());
+            final long ownerId = getOrAddPlayerContainer(conn, approve.getOwner());
             final Optional<UUID> parentUUIDOpt = approve.getParentOpt().map(Land::getUUID);
             final ApprovePojo approvePojo = new ApprovePojo(approve.getUUID(), approveActionId,
                     approve.getRemovedAreaIdOpt(), approve.getNewAreaIdOpt(), ownerId, parentUUIDOpt,
@@ -660,11 +705,11 @@ public final class StorageMySql implements Storage {
 
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         try (final Connection conn = dbConn.openConnection()) {
-            final Map<Integer, String> idToInventoryName = inventoriesDao.getIdToValue(conn);
-            for (final Map.Entry<Integer, Integer> inventoryIdToEntryIdEntry : inventoriesDefaultsDao.getIdToValue(conn)
+            final Map<Long, String> idToInventoryName = inventoriesDao.getIdToValue(conn);
+            for (final Map.Entry<Long, Long> inventoryIdToEntryIdEntry : inventoriesDefaultsDao.getIdToValue(conn)
                     .entrySet()) {
-                final int inventoryId = inventoryIdToEntryIdEntry.getKey();
-                final int inventoryEntryId = inventoryIdToEntryIdEntry.getValue();
+                final long inventoryId = inventoryIdToEntryIdEntry.getKey();
+                final long inventoryEntryId = inventoryIdToEntryIdEntry.getValue();
                 final InventoryEntryPojo inventoryEntryPojo = inventoriesEntriesDao.getInventoryEntry(conn,
                         inventoryEntryId);
                 final String inventoryName = idToInventoryName.get(inventoryId);
@@ -694,12 +739,12 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            final int inventoryId = inventoriesDao.insertOrGetId(conn,
+            final long inventoryId = inventoriesDao.insertOrGetId(conn,
                     playerInvEntry.getInventorySpec().getInventoryName());
-            final Optional<Integer> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
+            final Optional<Long> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
             if (inventoryEntryIdOpt.isPresent()) {
                 inventoriesDefaultsDao.delete(conn, inventoryId);
-                final int inventoryEntryId = inventoryEntryIdOpt.get();
+                final long inventoryEntryId = inventoryEntryIdOpt.get();
                 inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId);
             }
         } catch (final SQLException e) {
@@ -715,7 +760,7 @@ public final class StorageMySql implements Storage {
 
         try (final Connection conn = dbConn.openConnection()) {
             for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
-                final int inventoryId = inventoriesDao.insertOrGetId(conn, inventorySpec.getInventoryName());
+                final long inventoryId = inventoriesDao.insertOrGetId(conn, inventorySpec.getInventoryName());
 
                 // Survival
                 createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, false,
@@ -793,8 +838,8 @@ public final class StorageMySql implements Storage {
         }
     }
 
-    private PlayerContainer getPlayerContainer(final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo,
-            final Map<Integer, String> idToPlayerContainerType, final int id) {
+    private PlayerContainer getPlayerContainer(final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo,
+            final Map<Long, String> idToPlayerContainerType, final long id) {
         final PlayerContainerPojo playerContainerPojo = idToPlayerContainerPojo.get(id);
         final String PlayerContainerTypeStr = idToPlayerContainerType
                 .get(playerContainerPojo.getPlayerContainerTypeId());
@@ -804,10 +849,10 @@ public final class StorageMySql implements Storage {
                 playerContainerPojo.getParameterOpt(), playerContainerPojo.getPlayerUUIDOpt());
     }
 
-    private int getOrAddPlayerContainer(final Connection conn, final PlayerContainer playerContainer)
+    private long getOrAddPlayerContainer(final Connection conn, final PlayerContainer playerContainer)
             throws SQLException {
         final PlayerContainerType playerContainerType = playerContainer.getContainerType();
-        final int playerContainerTypeId = playerContainersTypesDao.insertOrGetId(conn, playerContainerType.name());
+        final long playerContainerTypeId = playerContainersTypesDao.insertOrGetId(conn, playerContainerType.name());
 
         if (playerContainerType.hasParameter()) {
             if (playerContainerType == PlayerContainerType.PLAYER) {
@@ -828,13 +873,15 @@ public final class StorageMySql implements Storage {
      *
      * @return a map with a land (if success) and the parent (if exists)
      */
-    private Entry<Land, Optional<UUID>> loadLand(final LandPojo landPojo, final Map<Integer, String> idToType,
-            final Map<Integer, PlayerContainerPojo> idToPlayerContainerPojo,
-            final Map<Integer, String> idToPlayerContainerType, final List<AreaPojo> areaPojos,
-            final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, final Map<Integer, String> idToAreaType,
-            final List<Integer> residentIds, final List<Integer> bannedIds, final List<PermissionPojo> permissionPojos,
-            final Map<Integer, String> idToPermissionType, final List<FlagPojo> flagPojos,
-            final Map<Integer, String> idToFlagType, final List<UUID> playerNotifyUUIDs) {
+    private Entry<Land, Optional<UUID>> loadLand(final LandPojo landPojo, final Map<Long, String> idToType,
+            final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo,
+            final Map<Long, String> idToPlayerContainerType, final List<AreaPojo> areaPojos,
+            final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, final Map<Long, String> idToAreaType,
+            final List<Long> residentIds, final List<Long> bannedIds, final List<PermissionPojo> permissionPojos,
+            final Map<Long, String> idToPermissionType, final List<FlagPojo> flagPojos,
+            final Map<Long, String> landFlagIdtoValueString, final Map<Long, Double> landFlagIdtoValueDouble,
+            final Map<Long, Boolean> landFlagIdtoValueBoolean, final Map<Long, List<String>> landFlagIdtoValueList,
+            final Map<Long, String> idToFlagType, final List<UUID> playerNotifyUUIDs) {
 
         final String type = landPojo.getTypeIdOpt().map(idToType::get).orElse(null);
         final UUID landUUID = landPojo.getUUID();
@@ -896,11 +943,11 @@ public final class StorageMySql implements Storage {
             return null;
         }
         // Residents
-        for (final int id : residentIds) {
+        for (final long id : residentIds) {
             residents.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
         }
         // Banneds
-        for (final int id : bannedIds) {
+        for (final long id : bannedIds) {
             banneds.add(getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType, id));
         }
         // Create permissions
@@ -923,9 +970,18 @@ public final class StorageMySql implements Storage {
         for (final FlagPojo flagPojo : flagPojos) {
             final String flagTypeStr = idToFlagType.get(flagPojo.getFlagId());
             final FlagType flagType = secuboid.getPermissionsFlags().getFlagTypeNoValid(flagTypeStr);
-            final Object valueObj = flagPojo.getValueBooleanOpt().map(v -> (Object) new Boolean(v))
-                    .orElse(flagPojo.getValueDoubleOpt().map(v -> (Object) new Double(v))
-                            .orElse(flagPojo.getValueStringOpt().map(v -> (Object) v).orElse(null)));
+            Object valueObj = null;
+            final Object flagTypeDefaultValue = flagType.getDefaultValue();
+            final long landFlagId = flagPojo.getId();
+            if (flagTypeDefaultValue instanceof String) {
+                valueObj = landFlagIdtoValueString.get(landFlagId);
+            } else if (flagTypeDefaultValue instanceof Double) {
+                valueObj = landFlagIdtoValueDouble.get(landFlagId);
+            } else if (flagTypeDefaultValue instanceof Boolean) {
+                valueObj = landFlagIdtoValueBoolean.get(landFlagId);
+            } else if (flagTypeDefaultValue instanceof String[]) {
+                valueObj = landFlagIdtoValueList.get(landFlagId).toArray(new String[0]);
+            }
             if (valueObj == null) {
                 log.log(Level.WARNING,
                         String.format("No value for a flag [land=%s, flagType=%s]", landName, flagTypeStr));
@@ -1062,8 +1118,9 @@ public final class StorageMySql implements Storage {
         }
 
         // Get the suffix name
-        final int gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(playerInvEntry.isCreativeInv()));
-        final int inventoryId = inventoriesDao.insertOrGetId(conn,
+        final long gameModeId = gameModesDao.insertOrGetId(conn,
+                getGameModeFromBoolean(playerInvEntry.isCreativeInv()));
+        final long inventoryId = inventoriesDao.insertOrGetId(conn,
                 playerInvEntry.getInventorySpec().getInventoryName());
 
         if (isDeathHistory && playerUUIDOpt.isPresent()) {
@@ -1071,7 +1128,7 @@ public final class StorageMySql implements Storage {
             final UUID playerUUID = playerUUIDOpt.get();
 
             // Death rename
-            final Optional<Integer> inventoryEntryId9Opt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
+            final Optional<Long> inventoryEntryId9Opt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
                     inventoryId, gameModeId, 9);
             inventoriesDeathsDao.deleteNinth(conn, playerUUID, inventoryId, gameModeId);
             if (inventoryEntryId9Opt.isPresent()) {
@@ -1080,30 +1137,30 @@ public final class StorageMySql implements Storage {
             for (int t = 8; t >= 1; t--) {
                 inventoriesDeathsDao.incrementDeathNumber(conn, playerUUID, inventoryId, gameModeId, t);
             }
-            final Optional<Integer> inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
-                    inventoryId, gameModeId, 1);
+            final Optional<Long> inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID, inventoryId,
+                    gameModeId, 1);
             saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
                     i -> inventoriesDeathsDao.insertInventoryDeath(conn, playerUUID, inventoryId, gameModeId, 1, i));
 
         } else if (!playerUUIDOpt.isPresent()) {
             // Save default inventory
-            final Optional<Integer> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
+            final Optional<Long> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
             saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
                     i -> inventoriesDefaultsDao.insert(conn, inventoryId, i));
 
         } else {
             // Save normal inventory
             final UUID playerUUID = playerUUIDOpt.get();
-            final Optional<Integer> inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID,
-                    inventoryId, gameModeId);
+            final Optional<Long> inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID, inventoryId,
+                    gameModeId);
             saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
                     i -> inventoriesSavesDao.insertInventorySave(conn, playerUUID, inventoryId, gameModeId, i));
         }
     }
 
     private void saveInventoryEntry(final Connection conn, final PlayerInvEntry playerInvEntry,
-            final boolean enderChestOnly, final Optional<Integer> inventoryEntryIdOpt,
-            final SqlConsumer<Integer> updateInvEntryIdConsumer) throws SQLException {
+            final boolean enderChestOnly, final Optional<Long> inventoryEntryIdOpt,
+            final SqlConsumer<Long> updateInvEntryIdConsumer) throws SQLException {
 
         final int level;
         final float exp;
@@ -1129,7 +1186,7 @@ public final class StorageMySql implements Storage {
         }
 
         // If the entry id does not exist, a new entry will be created.
-        final int inventoryEntryId;
+        final long inventoryEntryId;
         if (inventoryEntryIdOpt.isPresent()) {
             inventoryEntryId = inventoryEntryIdOpt.get();
 
@@ -1165,12 +1222,12 @@ public final class StorageMySql implements Storage {
     }
 
     private Optional<PlayerInvEntry> createInventoriesEntryPlayerOpt(final Connection conn,
-            final PlayerInventoryCache playerInventoryCache, final int inventoryId, final InventorySpec inventorySpec,
+            final PlayerInventoryCache playerInventoryCache, final long inventoryId, final InventorySpec inventorySpec,
             final boolean isCreative, final Optional<Integer> deathVersionOpt) throws SQLException {
-        final int gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(isCreative));
+        final long gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(isCreative));
         final UUID playerUUID = playerInventoryCache.getUUID();
 
-        final Optional<Integer> inventoryEntryIdOpt;
+        final Optional<Long> inventoryEntryIdOpt;
         if (deathVersionOpt.isPresent()) {
             // Death load
             final int deathVersion = deathVersionOpt.get();
@@ -1183,7 +1240,7 @@ public final class StorageMySql implements Storage {
         }
 
         if (inventoryEntryIdOpt.isPresent()) {
-            final int inventoryEntryId = inventoryEntryIdOpt.get();
+            final long inventoryEntryId = inventoryEntryIdOpt.get();
             final InventoryEntryPojo inventoryEntryPojo = inventoriesEntriesDao.getInventoryEntry(conn,
                     inventoryEntryId);
             final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos = inventoriesPotionEffectsDao

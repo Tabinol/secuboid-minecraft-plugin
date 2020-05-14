@@ -35,57 +35,57 @@ public final class InventoriesDeathsDao {
         this.dbConn = dbConn;
     }
 
-    public Optional<Integer> getEntryIdOpt(final Connection conn, final UUID playerUUID, final int inventoryId,
-            final int gameModeId, final int deathNumber) throws SQLException {
+    public Optional<Long> getEntryIdOpt(final Connection conn, final UUID playerUUID, final long inventoryId,
+            final long gameModeId, final int deathNumber) throws SQLException {
         final String sql = "SELECT `inventories_entries_id` FROM `{{TP}}inventories_deaths` " //
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=? AND `death_number`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, playerUUID);
-            stmt.setInt(2, inventoryId);
-            stmt.setInt(3, gameModeId);
+            stmt.setLong(2, inventoryId);
+            stmt.setLong(3, gameModeId);
             stmt.setInt(4, deathNumber);
 
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    return Optional.of(rs.getInt("inventories_entries_id"));
+                    return Optional.of(rs.getLong("inventories_entries_id"));
                 }
                 return Optional.empty();
             }
         }
     }
 
-    public void insertInventoryDeath(final Connection conn, final UUID playerUUID, final int inventoryId,
-            final int gameModeId, final int deathNumber, final int inventoryEntryId) throws SQLException {
+    public void insertInventoryDeath(final Connection conn, final UUID playerUUID, final long inventoryId,
+            final long gameModeId, final int deathNumber, final long inventoryEntryId) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}inventories_deaths` " //
                 + "(`player_uuid`, `inventory_id`, `game_mode_id`, `death_number`, `inventories_entries_id`) " //
                 + "VALUES (?, ?, ?, ?, ?)";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, playerUUID);
-            stmt.setInt(2, inventoryId);
-            stmt.setInt(3, gameModeId);
+            stmt.setLong(2, inventoryId);
+            stmt.setLong(3, gameModeId);
             stmt.setInt(4, deathNumber);
-            stmt.setInt(5, inventoryEntryId);
+            stmt.setLong(5, inventoryEntryId);
             stmt.executeUpdate();
         }
     }
 
-    public void deleteNinth(final Connection conn, final UUID playerUUID, final int inventoryId, final int gameModeId)
+    public void deleteNinth(final Connection conn, final UUID playerUUID, final long inventoryId, final long gameModeId)
             throws SQLException {
         final String sql = "DELETE FROM `{{TP}}inventories_deaths` " //
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=? AND `death_number`=9";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, playerUUID);
-            stmt.setInt(2, inventoryId);
-            stmt.setInt(3, gameModeId);
+            stmt.setLong(2, inventoryId);
+            stmt.setLong(3, gameModeId);
             stmt.executeUpdate();
         }
     }
 
-    public void incrementDeathNumber(final Connection conn, final UUID playerUUID, final int inventoryId,
-            final int gameModeId, final int deathNumber) throws SQLException {
+    public void incrementDeathNumber(final Connection conn, final UUID playerUUID, final long inventoryId,
+            final long gameModeId, final int deathNumber) throws SQLException {
         final String sql = "UPDATE IGNORE `{{TP}}inventories_deaths` " //
                 + "SET  `death_number`=? " //
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=? AND `death_number`=?";
@@ -93,8 +93,8 @@ public final class InventoriesDeathsDao {
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.setInt(1, deathNumber + 1);
             DbUtils.setUUID(stmt, 2, playerUUID);
-            stmt.setInt(3, inventoryId);
-            stmt.setInt(4, gameModeId);
+            stmt.setLong(3, inventoryId);
+            stmt.setLong(4, gameModeId);
             stmt.setInt(5, deathNumber);
             stmt.executeUpdate();
         }

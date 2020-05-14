@@ -17,46 +17,32 @@
  */
 package me.tabinol.secuboid.storage.mysql.pojo;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public final class FlagPojo {
 
+    private final long id;
     private final UUID landUUID;
-    private final int flagId;
-    private final Optional<String> valueStringOpt;
-    private final Optional<Double> valueDoubleOpt;
-    private final Optional<Boolean> valueBooleanOpt;
+    private final long flagId;
     private final boolean inheritance;
 
-    public FlagPojo(final UUID landUUID, final int flagId, final Optional<String> valueStringOpt,
-            final Optional<Double> valueDoubleOpt, final Optional<Boolean> valueBooleanOpt, final boolean inheritance) {
+    public FlagPojo(final long id, final UUID landUUID, final long flagId, final boolean inheritance) {
+        this.id = id;
         this.landUUID = landUUID;
         this.flagId = flagId;
-        this.valueStringOpt = valueStringOpt;
-        this.valueDoubleOpt = valueDoubleOpt;
-        this.valueBooleanOpt = valueBooleanOpt;
         this.inheritance = inheritance;
+    }
+
+    public long getId() {
+        return this.id;
     }
 
     public UUID getLandUUID() {
         return this.landUUID;
     }
 
-    public int getFlagId() {
+    public long getFlagId() {
         return this.flagId;
-    }
-
-    public Optional<String> getValueStringOpt() {
-        return this.valueStringOpt;
-    }
-
-    public Optional<Double> getValueDoubleOpt() {
-        return this.valueDoubleOpt;
-    }
-
-    public Optional<Boolean> getValueBooleanOpt() {
-        return this.valueBooleanOpt;
     }
 
     public boolean getInheritance() {

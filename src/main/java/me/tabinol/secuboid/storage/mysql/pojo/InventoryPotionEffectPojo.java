@@ -19,13 +19,13 @@ package me.tabinol.secuboid.storage.mysql.pojo;
 
 public final class InventoryPotionEffectPojo {
 
-    private final int inventoryEntryId;
+    private final long inventoryEntryId;
     private final String name;
     private final int duration;
     private final int amplifier;
     private final boolean ambient;
 
-    public InventoryPotionEffectPojo(final int inventoryEntryId, final String name, final int duration,
+    public InventoryPotionEffectPojo(final long inventoryEntryId, final String name, final int duration,
             final int amplifier, final boolean ambient) {
         this.inventoryEntryId = inventoryEntryId;
         this.name = name;
@@ -34,7 +34,7 @@ public final class InventoryPotionEffectPojo {
         this.ambient = ambient;
     }
 
-    public int getInventoryEntryId() {
+    public long getInventoryEntryId() {
         return this.inventoryEntryId;
     }
 

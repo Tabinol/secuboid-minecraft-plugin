@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 public final class InventoryEntryPojo {
 
-    private final int id;
+    private final long id;
     private final int level;
     private final float exp;
     private final double health;
@@ -29,7 +29,7 @@ public final class InventoryEntryPojo {
     private final ItemStack[] contents;
     private final ItemStack[] enderChestContents;
 
-    public InventoryEntryPojo(final int id, final int level, final float exp, final double health, final int foodLevel,
+    public InventoryEntryPojo(final long id, final int level, final float exp, final double health, final int foodLevel,
             final ItemStack[] contents, final ItemStack[] enderChestContents) {
         this.id = id;
         this.level = level;
@@ -40,7 +40,7 @@ public final class InventoryEntryPojo {
         this.enderChestContents = enderChestContents;
     }
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 

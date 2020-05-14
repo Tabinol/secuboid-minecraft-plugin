@@ -35,36 +35,36 @@ public final class InventoriesSavesDao {
         this.dbConn = dbConn;
     }
 
-    public Optional<Integer> getEntryIdOpt(final Connection conn, final UUID playerUUID, final int inventoryId,
-            final int gameModeId) throws SQLException {
+    public Optional<Long> getEntryIdOpt(final Connection conn, final UUID playerUUID, final long inventoryId,
+            final long gameModeId) throws SQLException {
         final String sql = "SELECT `inventories_entries_id` FROM `{{TP}}inventories_saves` " //
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, playerUUID);
-            stmt.setInt(2, inventoryId);
-            stmt.setInt(3, gameModeId);
+            stmt.setLong(2, inventoryId);
+            stmt.setLong(3, gameModeId);
 
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    return Optional.of(rs.getInt("inventories_entries_id"));
+                    return Optional.of(rs.getLong("inventories_entries_id"));
                 }
                 return Optional.empty();
             }
         }
     }
 
-    public void insertInventorySave(final Connection conn, final UUID playerUUID, final int inventoryId,
-            final int gameModeId, final int inventoryEntryId) throws SQLException {
+    public void insertInventorySave(final Connection conn, final UUID playerUUID, final long inventoryId,
+            final long gameModeId, final long inventoryEntryId) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}inventories_saves` " //
                 + "(`player_uuid`, `inventory_id`, `game_mode_id`, `inventories_entries_id`) " //
                 + "VALUES (?, ?, ?, ?)";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, playerUUID);
-            stmt.setInt(2, inventoryId);
-            stmt.setInt(3, gameModeId);
-            stmt.setInt(4, inventoryEntryId);
+            stmt.setLong(2, inventoryId);
+            stmt.setLong(3, gameModeId);
+            stmt.setLong(4, inventoryEntryId);
             stmt.executeUpdate();
         }
     }

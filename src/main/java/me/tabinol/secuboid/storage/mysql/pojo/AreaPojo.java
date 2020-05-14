@@ -25,7 +25,7 @@ public final class AreaPojo {
     private final int areaId;
     private final boolean approved;
     private final String worldName;
-    private final int areaTypeId;
+    private final long areaTypeId;
     private final int x1;
     private final int y1;
     private final int z1;
@@ -34,7 +34,7 @@ public final class AreaPojo {
     private final int z2;
 
     public AreaPojo(final UUID landUUID, final int areaId, final boolean approved, final String worldName,
-            final int areaTypeId, final int x1, final int y1, final int z1, final int x2, final int y2, final int z2) {
+            final long areaTypeId, final int x1, final int y1, final int z1, final int x2, final int y2, final int z2) {
         this.landUUID = landUUID;
         this.areaId = areaId;
         this.approved = approved;
@@ -68,7 +68,7 @@ public final class AreaPojo {
         return this.worldName;
     }
 
-    public int getAreaTypeId() {
+    public long getAreaTypeId() {
         return this.areaTypeId;
     }
 

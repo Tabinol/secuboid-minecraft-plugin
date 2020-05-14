@@ -22,12 +22,12 @@ import java.util.UUID;
 public final class InventorySavePojo {
 
     private final UUID playerUUID;
-    private final int inventoryId;
-    private final int gameModeId;
-    private final int inventoryEntryId;
+    private final long inventoryId;
+    private final long gameModeId;
+    private final long inventoryEntryId;
 
-    public InventorySavePojo(final UUID playerUUID, final int inventoryId, final int gameModeId,
-            final int inventoryEntryId) {
+    public InventorySavePojo(final UUID playerUUID, final long inventoryId, final long gameModeId,
+            final long inventoryEntryId) {
         this.playerUUID = playerUUID;
         this.inventoryId = inventoryId;
         this.gameModeId = gameModeId;
@@ -38,15 +38,15 @@ public final class InventorySavePojo {
         return this.playerUUID;
     }
 
-    public int getInventoryId() {
+    public long getInventoryId() {
         return this.inventoryId;
     }
 
-    public int getGameModeId() {
+    public long getGameModeId() {
         return this.gameModeId;
     }
 
-    public int getInventoryEntryId() {
+    public long getInventoryEntryId() {
         return this.inventoryEntryId;
     }
 }

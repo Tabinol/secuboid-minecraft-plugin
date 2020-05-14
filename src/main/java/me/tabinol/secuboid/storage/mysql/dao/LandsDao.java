@@ -55,8 +55,8 @@ public final class LandsDao {
                     final UUID uuid = DbUtils.getUUID(rs, "uuid");
                     final String name = rs.getString("name");
                     final boolean approved = rs.getBoolean("approved");
-                    final Optional<Integer> typeIdOpt = DbUtils.getOpt(rs, "type_id", rs::getInt);
-                    final int ownerId = rs.getInt("owner_id");
+                    final Optional<Long> typeIdOpt = DbUtils.getOpt(rs, "type_id", rs::getLong);
+                    final long ownerId = rs.getLong("owner_id");
                     final Optional<UUID> parentUUIDOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
                     final short priority = rs.getShort("priority");
                     final double money = rs.getDouble("money");
@@ -99,8 +99,8 @@ public final class LandsDao {
             DbUtils.setUUID(stmt, 1, landPojo.getUUID());
             stmt.setString(2, landPojo.getName());
             stmt.setBoolean(3, landPojo.isApproved());
-            DbUtils.setOpt(stmt, 4, landPojo.getTypeIdOpt(), (i, u) -> stmt.setInt(i, u));
-            stmt.setInt(5, landPojo.getOwnerId());
+            DbUtils.setOpt(stmt, 4, landPojo.getTypeIdOpt(), (i, u) -> stmt.setLong(i, u));
+            stmt.setLong(5, landPojo.getOwnerId());
             DbUtils.setOpt(stmt, 6, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setShort(7, landPojo.getPriority());
             stmt.setDouble(8, landPojo.getMoney());
@@ -117,8 +117,8 @@ public final class LandsDao {
 
             stmt.setString(19, landPojo.getName());
             stmt.setBoolean(20, landPojo.isApproved());
-            DbUtils.setOpt(stmt, 21, landPojo.getTypeIdOpt(), (i, u) -> stmt.setInt(i, u));
-            stmt.setInt(22, landPojo.getOwnerId());
+            DbUtils.setOpt(stmt, 21, landPojo.getTypeIdOpt(), (i, u) -> stmt.setLong(i, u));
+            stmt.setLong(22, landPojo.getOwnerId());
             DbUtils.setOpt(stmt, 23, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setShort(24, landPojo.getPriority());
             stmt.setDouble(25, landPojo.getMoney());
@@ -128,7 +128,7 @@ public final class LandsDao {
             stmt.setBoolean(29, landPojo.isForRent());
             DbUtils.setOpt(stmt, 30, landPojo.getForRentSignLocationOpt(), (i, u) -> stmt.setString(i, u));
             DbUtils.setOpt(stmt, 31, landPojo.getRentPriceOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 32, landPojo.getRentRenewOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setOpt(stmt, 32, landPojo.getRentRenewOpt(), (i, u) -> stmt.setInt(i, u));
             DbUtils.setOpt(stmt, 33, landPojo.getRentAutoRenewOpt(), (i, u) -> stmt.setBoolean(i, u));
             DbUtils.setOpt(stmt, 34, landPojo.getTenantUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             DbUtils.setOpt(stmt, 35, landPojo.getLastPaymentMillisOpt(), (i, u) -> stmt.setLong(i, u));

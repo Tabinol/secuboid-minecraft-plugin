@@ -36,13 +36,13 @@ public final class InventoriesPotionEffectsDao {
     }
 
     public List<InventoryPotionEffectPojo> getPotionEffectsFromEntryId(final Connection conn,
-            final int inventoryEntryId) throws SQLException {
+            final long inventoryEntryId) throws SQLException {
         final String sql = "SELECT `name`, `duration`, `amplifier`, `ambient` " //
                 + "FROM `{{TP}}inventories_potion_effects` " //
                 + "WHERE `inventories_entries_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, inventoryEntryId);
+            stmt.setLong(1, inventoryEntryId);
             try (final ResultSet rs = stmt.executeQuery()) {
                 final List<InventoryPotionEffectPojo> results = new ArrayList<>();
                 while (rs.next()) {
@@ -57,12 +57,12 @@ public final class InventoriesPotionEffectsDao {
         }
     }
 
-    public void deletePotionEffectsFromEntryId(final Connection conn, final int inventoryEntryId) throws SQLException {
+    public void deletePotionEffectsFromEntryId(final Connection conn, final long inventoryEntryId) throws SQLException {
         final String sql = "DELETE FROM `{{TP}}inventories_potion_effects` " //
                 + "WHERE `inventories_entries_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, inventoryEntryId);
+            stmt.setLong(1, inventoryEntryId);
             stmt.executeUpdate();
         }
     }
@@ -74,7 +74,7 @@ public final class InventoriesPotionEffectsDao {
                 + "VALUES (?, ?, ?, ?, ?)";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
-            stmt.setInt(1, inventoryPotionEffectPojo.getInventoryEntryId());
+            stmt.setLong(1, inventoryPotionEffectPojo.getInventoryEntryId());
             stmt.setString(2, inventoryPotionEffectPojo.getName());
             stmt.setInt(3, inventoryPotionEffectPojo.getDuration());
             stmt.setInt(4, inventoryPotionEffectPojo.getAmplifier());

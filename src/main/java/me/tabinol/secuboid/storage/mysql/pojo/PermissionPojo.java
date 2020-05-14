@@ -22,13 +22,13 @@ import java.util.UUID;
 public final class PermissionPojo {
 
     private final UUID landUUID;
-    private final int playerContainerId;
-    private final int permissionId;
+    private final long playerContainerId;
+    private final long permissionId;
     private final boolean value;
     private final boolean inheritance;
 
-    public PermissionPojo(final UUID landUUID, final int playerContainerId, final int permissionId, final boolean value,
-            final boolean inheritance) {
+    public PermissionPojo(final UUID landUUID, final long playerContainerId, final long permissionId,
+            final boolean value, final boolean inheritance) {
         this.landUUID = landUUID;
         this.playerContainerId = playerContainerId;
         this.permissionId = permissionId;
@@ -40,11 +40,11 @@ public final class PermissionPojo {
         return this.landUUID;
     }
 
-    public int getPlayerContainerId() {
+    public long getPlayerContainerId() {
         return this.playerContainerId;
     }
 
-    public int getPermissionId() {
+    public long getPermissionId() {
         return this.permissionId;
     }
 

@@ -150,12 +150,12 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
-    public int insertOrGetId(final Connection conn, final V v) throws SQLException {
-        assert idClazz.isAssignableFrom(Integer.class);
+    public long insertOrGetId(final Connection conn, final V v) throws SQLException {
+        assert idClazz.isAssignableFrom(Long.class);
 
         final Optional<I> idOpt = getIdOpt(conn, v);
         if (idOpt.isPresent()) {
-            return ((Integer) idOpt.get()).intValue();
+            return ((Long) idOpt.get()).longValue();
         }
 
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=?", tableSuffix, valueColumnLabel);
@@ -166,7 +166,7 @@ public final class GenericIdValueDao<I, V> {
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
-                return rs.getInt(1);
+                return rs.getLong(1);
             }
         }
     }

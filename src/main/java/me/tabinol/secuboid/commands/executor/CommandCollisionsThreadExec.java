@@ -193,7 +193,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                     final Optional<Integer> newAreaIdOpt = Optional
                             .ofNullable(Optional.ofNullable(newArea).map(newArea -> newArea.getKey()).orElse(null));
                     secuboid.getLands().getApproves()
-                            .addApprove(new Approve(landLocal, action, Optional.of(removeId), newAreaIdOpt, owner,
+                            .addApprove(new Approve(landLocal, action,
+                                    removeId != 0 ? Optional.of(removeId) : Optional.empty(), newAreaIdOpt, owner,
                                     Optional.ofNullable(parent), collisions.getPrice(), Calendar.getInstance()));
                     // new Approve(land, action, removedAreaIdOpt, newAreaIdOpt, owner, parentOpt,
                     // price, dateTime)

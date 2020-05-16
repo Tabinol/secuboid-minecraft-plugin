@@ -125,6 +125,11 @@ public final class CommandList extends CommandPlayerThreadExec {
             if (((worldName != null && worldName.equals(land.getWorldName()))
                     || (type != null && type == land.getType()) || (worldName == null && type == null))
                     && (pc == null || land.getOwner().equals(pc))) {
+                if (land.isApproved()) {
+                    stList.append(ChatColor.YELLOW);
+                } else {
+                    stList.append(ChatColor.RED);
+                }
                 stList.append(land.getName()).append(" ");
             }
         }

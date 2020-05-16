@@ -36,6 +36,13 @@ public final class FlatToMySql {
         log = secuboid.getLogger();
     }
 
+    public boolean isConversionNeeded() {
+        final File dataFolder = secuboid.getDataFolder();
+        return new File(dataFolder, NAME_LANDS).isDirectory() || new File(dataFolder, NAME_APPROVE_LIST).isFile()
+                || new File(dataFolder, NAME_PLAYERS_CACHE).isFile()
+                || new File(dataFolder, NAME_INVENTORIES).isDirectory();
+    }
+
     public void landConversion() {
         final File landsFile = new File(secuboid.getDataFolder(), NAME_LANDS);
         if (!landsFile.isDirectory()) {
@@ -55,7 +62,7 @@ public final class FlatToMySql {
         waitforSave();
 
         moveToBackup(landsFile, NAME_LANDS);
-        log.info("Lands conversion done...");
+        log.info("Lands conversion done.");
     }
 
     public void approveConversion() {
@@ -72,7 +79,7 @@ public final class FlatToMySql {
         waitforSave();
 
         moveToBackup(approvesFile, NAME_APPROVE_LIST);
-        log.info("Approves conversion done...");
+        log.info("Approves conversion done.");
     }
 
     public void playersCacheConversion() {
@@ -89,7 +96,7 @@ public final class FlatToMySql {
         waitforSave();
 
         moveToBackup(playersCacheFile, NAME_PLAYERS_CACHE);
-        log.info("Players cache conversion done...");
+        log.info("Players cache conversion done.");
     }
 
     public void inventoriesConversion() {
@@ -113,7 +120,7 @@ public final class FlatToMySql {
         waitforSave();
 
         moveToBackup(inventoriesFile, NAME_INVENTORIES);
-        log.info("Inventories conversion done...");
+        log.info("Inventories conversion done.");
     }
 
     private void moveToBackup(final File fileToMove, final String fileName) {

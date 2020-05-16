@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,7 @@ public final class FlagsDao {
     public Optional<Long> getLandFlagIdOpt(final Connection conn, final UUID landUUID, final long flagId)
             throws SQLException {
         final String sql = "SELECT `id` FROM `{{TP}}lands_flags` " //
-                + "WHERE `land_uuid`=?, `flag_id`=?";
+                + "WHERE `land_uuid`=? AND `flag_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, landUUID);
@@ -81,7 +82,7 @@ public final class FlagsDao {
     public void updateLandFlagIdInheritance(final Connection conn, final UUID landUUID, final long flagId,
             boolean inheritance) throws SQLException {
         final String sql = "UPDATE `{{TP}}lands_flags` SET `inheritance`=?" //
-                + "WHERE `land_uuid`=?, `flag_id`=?";
+                + "WHERE `land_uuid`=? AND `flag_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.setBoolean(1, inheritance);
@@ -93,19 +94,19 @@ public final class FlagsDao {
 
     public long insertFlagOrUpdateGetId(final Connection conn, final UUID landUUID, final long flagId,
             final boolean inheritance) throws SQLException {
-        final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
-                + "`land_uuid`, `flag_id`, `inheritance`) " //
-                + "VALUES(?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
-                + "`inheritance`=?";
-
         final Optional<Long> idOpt = getLandFlagIdOpt(conn, landUUID, flagId);
+
         if (idOpt.isPresent()) {
             updateLandFlagIdInheritance(conn, landUUID, flagId, inheritance);
             return idOpt.get();
         }
 
-        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+        final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
+                + "`land_uuid`, `flag_id`, `inheritance`) " //
+                + "VALUES(?, ?, ?)";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
+                Statement.RETURN_GENERATED_KEYS)) {
             DbUtils.setUUID(stmt, 1, landUUID);
             stmt.setLong(2, flagId);
             stmt.setBoolean(3, inheritance);

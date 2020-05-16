@@ -208,8 +208,10 @@ public final class StorageMySql implements Storage {
             final Optional<Integer> versionOpt = secuboidDao.getVersionOpt(conn);
             if (!versionOpt.isPresent() || versionOpt.get() < 1) {
                 // Create database
+                log.info("Creating tables...");
                 secuboidDao.initDatabase(conn);
                 secuboidDao.setVersion(conn);
+                log.info("Creating tables done.");
 
                 return true;
             }

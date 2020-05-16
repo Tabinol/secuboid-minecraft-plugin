@@ -166,10 +166,13 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                 String worldNameLocal;
 
                 // Print area and get world
+                final Area newAreaLocalNullable;
                 if (newAreaIdOptLocal.isPresent()) {
-                    worldNameLocal = newArea.getWorldName();
-                    sender.sendMessage(newArea.getPrint());
+                    newAreaLocalNullable = landLocal.getArea(newAreaIdOptLocal.get());
+                    worldNameLocal = newAreaLocalNullable.getWorldName();
+                    sender.sendMessage(newAreaLocalNullable.getPrint());
                 } else {
+                    newAreaLocalNullable = null;
                     worldNameLocal = landSelectNullable.getWorldName();
                 }
 
@@ -178,7 +181,6 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                     confirm = true;
                 }
                 // Info on the specified land (Collision)
-                final Area newAreaLocalNullable = newAreaIdOptLocal.map(landLocal::getArea).orElse(null);
                 checkCollision(worldNameLocal, param, landLocal, null, actionLocal, removeAreaIdOptLocal.orElse(0),
                         newAreaLocalNullable, parentOptLocal.orElse(null), ownerLocal, false);
 

@@ -102,12 +102,14 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
 
         // Conversion Flat to MySQL
         if (conversionNeeded) {
-            secuboid.getLogger().info("Converting flat files to MySQL. This may take several minutes!");
             final FlatToMySql flatToMySql = new FlatToMySql(secuboid);
-            flatToMySql.playersCacheConversion();
-            flatToMySql.landConversion();
-            flatToMySql.approveConversion();
-            flatToMySql.inventoriesConversion();
+            if (flatToMySql.isConversionNeeded()) {
+                secuboid.getLogger().info("Converting flat files to MySQL. This may take several minutes!");
+                flatToMySql.playersCacheConversion();
+                flatToMySql.landConversion();
+                flatToMySql.approveConversion();
+                flatToMySql.inventoriesConversion();
+            }
         }
     }
 

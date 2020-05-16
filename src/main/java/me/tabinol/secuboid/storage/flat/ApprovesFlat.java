@@ -51,7 +51,7 @@ public final class ApprovesFlat {
 
     private final String PARAM_NAME_ACTION = "approveAction";
     private final String PARAM_NAME_REMOVED_AREA_ID = "removedAreaId";
-    private final String PARAM_NAME_NEW_AREA_ID = "parentUUID";
+    private final String PARAM_NAME_NEW_AREA_ID = "newAreaId";
     private final String PARAM_NAME_OWNER = "owner";
     private final String PARAM_NAME_PARENT_UUID = "parentUUID";
     private final String PARAM_NAME_PRICE = "price";

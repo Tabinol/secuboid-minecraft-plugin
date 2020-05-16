@@ -368,7 +368,7 @@ public final class Collisions {
      * Check if name exist.
      */
     private void checkIfNameExist() {
-        if (lands.isNameExist(landName)) {
+        if (lands.isNameExist(landName) && !lands.getLand(landName).equals(land)) {
             collisionsEntries.add(new CollisionsEntry(secuboid, NAME_IN_USE, null, 0));
         }
     }

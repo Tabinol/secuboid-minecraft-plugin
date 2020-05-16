@@ -208,6 +208,9 @@ public final class GenericIdValueDao<I, V> {
         if (clazz.isAssignableFrom(String.class)) {
             return (C) rs.getString(columnLabel);
         }
+        if (clazz.isAssignableFrom(Boolean.class)) {
+            return (C) new Boolean(rs.getBoolean(columnLabel));
+        }
 
         classNotSupported(clazz);
         return null;
@@ -225,6 +228,8 @@ public final class GenericIdValueDao<I, V> {
             DbUtils.setUUID(stmt, parameterIndex, (UUID) c);
         } else if (clazz.isAssignableFrom(String.class)) {
             stmt.setString(parameterIndex, (String) c);
+        } else if (clazz.isAssignableFrom(Boolean.class)) {
+            stmt.setBoolean(parameterIndex, (Boolean) c);
         } else {
             classNotSupported(clazz);
         }

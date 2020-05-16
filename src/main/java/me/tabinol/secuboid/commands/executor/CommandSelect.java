@@ -156,7 +156,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         } else {
             landtest = secuboid.getLands().getLand(curArg);
         }
-        if (landtest == null) {
+        if (landtest == null || !landtest.isApproved()) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
 
         }
@@ -202,7 +202,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             areaSelect = doSelectAreaHere(landtest);
         }
 
-        if (areaSelect == null) {
+        if (areaSelect == null || !areaSelect.isApproved()) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
         }
 

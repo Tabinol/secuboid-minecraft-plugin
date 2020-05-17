@@ -224,7 +224,7 @@ public final class ApprovesFlat {
         }
 
         if (section.contains("NewArea")) {
-            newArea = Area.getFromFileFormat(section.getString("NewArea"));
+            newArea = Area.getFromFileFormat(section.getString("NewArea"), false);
         }
 
         final LandAction action = LandAction.valueOf(section.getString("Action"));
@@ -246,6 +246,8 @@ public final class ApprovesFlat {
                 secuboid.getLogger().log(Level.SEVERE,
                         String.format("Unable to create non approved land \"%s\"", landName), e);
             }
+        } else if (newArea != null) {
+            land.addArea(newArea);
         }
 
         final Optional<Integer> newAreaIdOpt = Optional

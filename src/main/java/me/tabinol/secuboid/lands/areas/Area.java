@@ -33,12 +33,24 @@ import me.tabinol.secuboid.storage.SavableParameter;
 public interface Area extends Comparable<Area>, Approvable, SavableParameter {
 
     /**
-     * Gets the Area from string file format.
+     * Gets the Area from string file format. LEGACY USAGE ONLY!
      *
-     * @param str the str
+     * @param str        the str
+     * @param isApproved sets the area approved or not
      * @return the from string
      */
     static Area getFromFileFormat(final String str) {
+        return getFromFileFormat(str, true);
+    }
+
+    /**
+     * Gets the Area from string file format.
+     *
+     * @param str                 the str
+     * @param isApprovedForLegacy sets the area approved or not FOR LEGACY ONLY.
+     * @return the from string
+     */
+    static Area getFromFileFormat(final String str, final boolean isApprovedForLegacy) {
         final String[] multiStr = str.split(":");
         final String areaTypeStr = multiStr[0];
 
@@ -47,18 +59,18 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
         final boolean isApproved;
         final int firstIdx;
         switch (multiStr[1]) {
-        case "true":
-            isApproved = true;
-            firstIdx = 2;
-            break;
-        case "false":
-            isApproved = false;
-            firstIdx = 2;
-            break;
-        default:
-            // Legacy
-            isApproved = true;
-            firstIdx = 1;
+            case "true":
+                isApproved = true;
+                firstIdx = 2;
+                break;
+            case "false":
+                isApproved = false;
+                firstIdx = 2;
+                break;
+            default:
+                // Legacy
+                isApproved = isApprovedForLegacy;
+                firstIdx = 1;
         }
 
         // Create cuboid area

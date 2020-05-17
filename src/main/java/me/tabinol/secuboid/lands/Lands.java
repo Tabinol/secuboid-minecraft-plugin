@@ -37,6 +37,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.events.LandDeleteEvent;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
+import me.tabinol.secuboid.lands.approve.Approve;
 import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaIndex;
@@ -265,14 +266,21 @@ public final class Lands {
         }
 
         final LandDeleteEvent landEvent = new LandDeleteEvent(land);
+        final String landName = land.getName();
 
-        if (!landList.containsKey(land.getName())) {
+        if (!landList.containsKey(landName)) {
             return false;
+        }
+
+        // Remove approves if exist
+        final Approve approve = approves.getApprove(landName);
+        if (approve != null) {
+            approves.removeApprove(approve, false);
         }
 
         // If the land has children
         if (!land.getChildren().isEmpty()) {
-            throw new SecuboidLandException(secuboid, land.getName(), null, LandAction.LAND_REMOVE,
+            throw new SecuboidLandException(secuboid, landName, null, LandAction.LAND_REMOVE,
                     LandError.HAS_CHILDREN);
         }
 

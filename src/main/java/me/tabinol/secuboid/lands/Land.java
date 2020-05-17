@@ -38,6 +38,8 @@ import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.approve.Approvable;
+import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagList;
@@ -390,6 +392,17 @@ public final class Land implements Savable, Approvable {
         Area area;
 
         if ((area = areas.remove(key)) != null) {
+            // Remove approves if exist
+            final Approves approves = secuboid.getLands().getApproves();
+            final Approve approve = approves.getApprove(name);
+            if (approve != null) {
+                approve.getRemovedAreaIdOpt().ifPresent(removedAreaId -> {
+                    if (removedAreaId == area.getKey()) {
+                        approves.removeApprove(approve, false);
+                    }
+                });
+            }
+
             secuboid.getLands().removeAreaFromList(area);
             doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.BOTH, area);
 

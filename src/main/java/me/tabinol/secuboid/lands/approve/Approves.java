@@ -61,7 +61,18 @@ public class Approves {
      * @param approve the approve
      */
     public void addApprove(final Approve approve) {
+        final Land land = approve.getLand();
+
+        // Verify if the areas still exist
+        if ((approve.getRemovedAreaIdOpt().isPresent() && land.getArea(approve.getRemovedAreaIdOpt().get()) == null)
+                || (approve.getNewAreaIdOpt().isPresent() && land.getArea(approve.getNewAreaIdOpt().get()) == null)) {
+            secuboid.getLogger().log(Level.WARNING,
+                    "Skipping the approve because it referes to a non existing area [name=" + approve.getName() + "]");
+            return;
+        }
+
         landNameToApprove.put(approve.getName(), approve);
+
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, SaveOn.BOTH, Optional.of(approve));
     }
 
@@ -103,7 +114,7 @@ public class Approves {
         removeApprove(approve, true);
     }
 
-    private void removeApprove(final Approve approve, final boolean removeLandAndArea) {
+    public void removeApprove(final Approve approve, final boolean removeLandAndArea) {
         landNameToApprove.remove(approve.getName());
         if (removeLandAndArea) {
             removeLandAndAreaIfNeeded(approve);

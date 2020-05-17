@@ -3,11 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.tabinol.secuboid</groupId>
     <artifactId>secuboid</artifactId>
-<<<<<<< HEAD
-    <version>1.4.2-SNAPSHOT</version>
-=======
     <version>1.5.0-SNAPSHOT</version>
->>>>>>> pre-mysql-steps
     <name>Secuboid</name>
     <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
 
@@ -98,11 +94,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-<<<<<<< HEAD
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-=======
             <version>${spigot.version}${spigot.suffixversion}</version>
->>>>>>> pre-mysql-steps
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -116,11 +108,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-<<<<<<< HEAD
-            <version>1.15.2-R0.1-SNAPSHOT</version>
-=======
             <version>${spigot.version}${spigot.suffixversion}</version>
->>>>>>> pre-mysql-steps
             <scope>provided</scope>
         </dependency>
 

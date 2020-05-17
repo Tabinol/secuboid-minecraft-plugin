@@ -40,7 +40,7 @@ public class SecuboidCommandException extends Exception {
      * @param logMsg   the log msg
      * @param sender   the sender
      * @param langMsg  the lang msg
-     * @param param    the param
+     * @param params   the params
      */
     public SecuboidCommandException(final Secuboid secuboid, final String logMsg, final CommandSender sender,
             final String langMsg, final String... params) {

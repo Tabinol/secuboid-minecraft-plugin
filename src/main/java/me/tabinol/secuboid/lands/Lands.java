@@ -104,7 +104,7 @@ public final class Lands {
      *
      * @param secuboid    secuboid instance
      * @param worldConfig the world config
-     * @param approveList the approve list
+     * @param approves    the approves
      */
     public Lands(final Secuboid secuboid, final WorldConfig worldConfig, final Approves approves) {
 

@@ -354,7 +354,7 @@ public final class Land implements Savable, Approvable {
      *
      * @param areaId the area id
      * @param price  the price
-     * @throws SecuboidLandException
+     * @throws SecuboidLandException SecuboidLandException
      */
     public void approveArea(final int areaId, final double price) throws SecuboidLandException {
         final Area area = getArea(areaId);
@@ -459,11 +459,11 @@ public final class Land implements Savable, Approvable {
     /**
      * Replace approve replace area.
      *
-     * @param key        the key
-     * @param newAreaKey the new area id
-     * @param price      the price
+     * @param key       the key
+     * @param newAreaId the new area id
+     * @param price     the price
      * @return true, if successful
-     * @throws SecuboidLandException
+     * @throws SecuboidLandException SecuboidLandException
      */
     public boolean approveReplaceArea(final int key, final int newAreaId, final double price)
             throws SecuboidLandException {

@@ -96,6 +96,7 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      * 
      * @param t the element
      * @return true if the correct class is found, false throws an exception.
+     * @throws InterruptedException InterruptedException
      */
     protected abstract boolean doElement(T t) throws InterruptedException;
 

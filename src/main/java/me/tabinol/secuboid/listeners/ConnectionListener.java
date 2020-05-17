@@ -73,7 +73,7 @@ public class ConnectionListener extends CommonListener implements Listener {
      * On async player prelogin. This method is async, do not call bukkit/Secuboid
      * direct methods here.
      * 
-     * @param event
+     * @param event the event
      */
     @EventHandler(priority = EventPriority.NORMAL)
     public void onAsyncPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {

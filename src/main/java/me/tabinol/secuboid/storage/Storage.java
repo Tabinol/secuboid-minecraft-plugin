@@ -240,7 +240,7 @@ public interface Storage {
     /**
      * Removes the approve.
      *
-     * @param landUUID the approve
+     * @param approve the approve
      */
     void removeApprove(Approve approve);
 

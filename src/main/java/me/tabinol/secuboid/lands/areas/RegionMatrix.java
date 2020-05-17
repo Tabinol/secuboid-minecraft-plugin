@@ -39,6 +39,8 @@ public final class RegionMatrix {
 
     /**
      * Creates a new region. Only for copyOf() and from save files.
+     * 
+     * @param points the map map points
      */
     public RegionMatrix(final Map<Integer, Map<Integer, ChunkMatrix>> points) {
         this.points = points;

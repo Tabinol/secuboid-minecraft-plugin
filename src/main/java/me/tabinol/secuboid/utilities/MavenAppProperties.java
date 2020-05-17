@@ -63,7 +63,7 @@ public final class MavenAppProperties {
     /**
      * Load properties from resources when the file is not inside a jar (ex: tests).
      * 
-     * @throws IOException
+     * @throws IOException IOException
      */
     public void loadPropertiesFromResources() throws IOException {
         try (final InputStream resource = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILENAME)) {

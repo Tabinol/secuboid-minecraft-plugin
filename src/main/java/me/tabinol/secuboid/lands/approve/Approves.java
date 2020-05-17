@@ -67,7 +67,8 @@ public class Approves {
 
     /**
      * Gets the approve from name.
-     *
+     * 
+     * @param name the name
      * @return the approve instance
      */
     public Approve getApprove(final String name) {
@@ -137,6 +138,8 @@ public class Approves {
 
     /**
      * Creates the action (approve and execute).
+     * 
+     * @param approve the approve
      */
     public void createAction(final Approve approve) throws SecuboidLandException {
         final LandAction action = approve.getAction();

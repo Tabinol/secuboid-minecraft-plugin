@@ -66,11 +66,12 @@ public class PlayerConfig {
     /**
      * Adds the static configuration.
      *
-     * @param sender               the sender
-     * @param playerInventoryCache the player inventory cache
+     * @param sender                  the sender
+     * @param playerInventoryCacheOpt the player inventory cache optional
      * @return the player conf entry
      */
-    public PlayerConfEntry add(final CommandSender sender, final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
+    public PlayerConfEntry add(final CommandSender sender,
+            final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
         final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCacheOpt);
         playerConfList.put(sender, entry);
 

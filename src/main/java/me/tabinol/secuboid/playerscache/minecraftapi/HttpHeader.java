@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,12 +17,12 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-class HttpHeader {
+final class HttpHeader {
 
     private String name;
     private String value;
 
-    HttpHeader(String name, String value) {
+    HttpHeader(final String name, final String value) {
         this.name = name;
         this.value = value;
     }
@@ -32,7 +31,7 @@ class HttpHeader {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -40,7 +39,7 @@ class HttpHeader {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 }

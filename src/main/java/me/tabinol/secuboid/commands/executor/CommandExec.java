@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,19 +19,17 @@ package me.tabinol.secuboid.commands.executor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 
 /**
  * The Class CommandExec.
@@ -251,10 +248,14 @@ public abstract class CommandExec {
         if (player.getGameMode() != GameMode.CREATIVE) {
             final EntityEquipment equipment = player.getEquipment();
             if (equipment.getItemInMainHand().getAmount() == 1) {
-                equipment.setItemInMainHand(new ItemStack(Material.AIR));
+                equipment.setItemInMainHand(null);
             } else {
                 equipment.getItemInMainHand().setAmount(equipment.getItemInMainHand().getAmount() - 1);
             }
         }
+    }
+
+    public final CommandSender getSender() {
+        return sender;
     }
 }

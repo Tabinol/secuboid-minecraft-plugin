@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -36,23 +36,26 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.events.LandModifyEvent;
 import me.tabinol.secuboid.events.PlayerContainerLandBanEvent;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
+import me.tabinol.secuboid.lands.approve.Approvable;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
-import me.tabinol.secuboid.playercontainer.PlayerContainerOwner;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerResident;
-import me.tabinol.secuboid.playercontainer.PlayerContainerTenant;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.storage.Savable;
+import me.tabinol.secuboid.storage.SavableParameter;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * Represents a land with a number of areas.
  *
  * @author tabinol
  */
-public final class Land {
+public final class Land implements Savable, Approvable {
 
     /**
      * The Constant DEFAULT_PRIORITY.
@@ -81,6 +84,8 @@ public final class Land {
      */
     private String name;
 
+    private boolean isApproved;
+
     /**
      * The type.
      */
@@ -100,11 +105,6 @@ public final class Land {
      * The priority.
      */
     private short priority = DEFAULT_PRIORITY; // Do not put more then 100000!!!!
-
-    /**
-     * The genealogy.
-     */
-    private int genealogy = 0; // 0 = first, 1 = child, 2 = child of child, ...
 
     /**
      * The parent.
@@ -128,7 +128,7 @@ public final class Land {
     /**
      * The residents. TreeSet because it is ordered.
      */
-    private Set<PlayerContainer> residents = new TreeSet<>();
+    private final Set<PlayerContainer> residents = new TreeSet<>();
 
     /**
      * The banneds. TreeSet because it is ordered.
@@ -148,7 +148,7 @@ public final class Land {
     /**
      * The player notify. TreeSet because it is ordered.
      */
-    private Set<PlayerContainerPlayer> playerNotify = new TreeSet<>();
+    private final Set<PlayerContainerPlayer> playerNotify = new TreeSet<>();
 
     /**
      * The players in land.
@@ -163,7 +163,7 @@ public final class Land {
     /**
      * The for sale sign location
      */
-    private Location forSaleSignLoc = null;
+    private LandLocation forSaleSignLoc = null;
 
     /**
      * The sale price.
@@ -178,7 +178,7 @@ public final class Land {
     /**
      * The for rent sign location
      */
-    private Location forRentSignLoc = null;
+    private LandLocation forRentSignLoc = null;
 
     /**
      * The rent price.
@@ -213,33 +213,46 @@ public final class Land {
     /**
      * Instantiates a new real land. <br>
      * IMPORTANT: Please use createLand in Lands class to create a Land or it will
-     * not be accessible.
+     * not be accessible and saved.
      *
-     * @param secuboid  secuboid instance
-     * @param landName  the land name
-     * @param uuid      the uuid
-     * @param owner     the owner
-     * @param area      the area
-     * @param genealogy the genealogy
-     * @param parent    the parent
-     * @param areaId    the area id
-     * @param type      the type
+     * @param secuboid   secuboid instance
+     * @param landName   the land name
+     * @param uuid       the uuid
+     * @param isApproved is this land is approved or in approve list
+     * @param owner      the owner
+     * @param type       the type
+     * @param worldName  the worldName
      */
-    public Land(final Secuboid secuboid, final String landName, final UUID uuid, final PlayerContainer owner,
-            final Area area, final int genealogy, final Land parent, final int areaId, final Type type) {
-
+    Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
+            final PlayerContainer owner, final Type type, final String worldName) {
         this.secuboid = secuboid;
         this.uuid = uuid;
+        this.isApproved = isApproved;
         name = landName.toLowerCase();
         this.type = type;
-        if (parent != null) {
+        this.owner = owner;
+        this.worldName = worldName;
+        landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
+    }
+
+    /**
+     * Inits a land.
+     *
+     * @param area   the area
+     * @param parent the parent
+     * @param areaId the area id
+     */
+    void init(final Area area, final int areaId, final Land parent) {
+        if (parent != null && isApproved) {
             this.parent = parent;
             parent.addChild(this);
         }
-        this.owner = owner;
-        this.genealogy = genealogy;
-        worldName = area.getWorldName();
-        landPermissionsFlags = new LandPermissionsFlags(secuboid, this, worldName);
+        if (isApproved) {
+            // A approved should have only an approved area.
+            area.setApproved();
+        }
+        // Flat will be save on add area
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.DATABASE);
         addArea(area, areaId);
     }
 
@@ -247,15 +260,44 @@ public final class Land {
         return landPermissionsFlags;
     }
 
+    @Override
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    @Override
+    public void setApproved() {
+        // Set approved
+        isApproved = true;
+
+        // Add to parent
+        if (parent != null) {
+            parent.addChild(this);
+        }
+
+        // Activate new area (should has only one)
+        for (final Area area : areas.values()) {
+            area.setApproved();
+            activateArea(area);
+        }
+    }
+
+    public void setApproved(final double price) {
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        setApproved();
+    }
+
     /**
-     * Sets the land default values
+     * Sets the land default values.
      */
     public void setDefault() {
-        owner = PlayerContainerNobody.getInstance();
-        residents = new TreeSet<>();
-        playerNotify = new TreeSet<>();
-        landPermissionsFlags.setDefault();
-        doSave();
+        owner = secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.NOBODY);
+        residents.clear();
+        doSave(SaveActionEnum.LAND_RESIDENT_REMOVE_ALL, SaveOn.DATABASE);
+        playerNotify.clear();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_REMOVE_ALL, SaveOn.DATABASE);
+        landPermissionsFlags.setDefault(SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.FLAT);
     }
 
     /**
@@ -290,9 +332,7 @@ public final class Land {
      */
     public void addArea(final Area area, final double price) {
 
-        if (price > 0) {
-            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-        }
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
         addArea(area);
     }
 
@@ -306,14 +346,37 @@ public final class Land {
 
         area.setLand(this);
         areas.put(key, area);
-        secuboid.getLands().addAreaToList(area);
-        doSave();
+        activateArea(area);
+    }
+
+    /**
+     * Approves the area.
+     *
+     * @param areaId the area id
+     * @param price  the price
+     * @throws SecuboidLandException
+     */
+    public void approveArea(final int areaId, final double price) throws SecuboidLandException {
+        final Area area = getArea(areaId);
+        if (area == null) {
+            throw new SecuboidLandException(
+                    String.format("The area %d does not exist in land \"%s\", \"%s\"", areaId, name, uuid));
+        }
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
+        area.setApproved();
+        activateArea(area);
+    }
+
+    private void activateArea(final Area area) {
+        if (isApproved && area.isApproved()) {
+            // Add area for get location only if the land and the area are approved.
+            secuboid.getLands().addAreaToList(area);
+        }
+        doSave(SaveActionEnum.LAND_AREA_SAVE, SaveOn.BOTH, area);
 
         // Start Event
-        secuboid.getServer().getPluginManager() /*
-                                                 * .callEvent(new LandModifyEvent(this,
-                                                 * LandModifyEvent.LandModifyReason.AREA_ADD, area))
-                                                 */;
+        secuboid.getServer().getPluginManager()
+                .callEvent(new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_ADD, area));
     }
 
     /**
@@ -328,7 +391,7 @@ public final class Land {
 
         if ((area = areas.remove(key)) != null) {
             secuboid.getLands().removeAreaFromList(area);
-            doSave();
+            doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.BOTH, area);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -360,11 +423,7 @@ public final class Land {
      * @return true, if successful
      */
     public boolean replaceArea(final int key, final Area newArea, final double price) {
-
-        if (price > 0) {
-            secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
-        }
-
+        secuboid.getLands().getPriceFromPlayer(worldName, owner, price);
         return replaceArea(key, newArea);
     }
 
@@ -382,8 +441,10 @@ public final class Land {
             secuboid.getLands().removeAreaFromList(area);
             newArea.setLand(this);
             areas.put(key, newArea);
+            newArea.setApproved();
             secuboid.getLands().addAreaToList(newArea);
-            doSave();
+            doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.DATABASE, area);
+            doSave(SaveActionEnum.LAND_AREA_SAVE, SaveOn.BOTH, newArea);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -393,6 +454,34 @@ public final class Land {
         }
 
         return false;
+    }
+
+    /**
+     * Replace approve replace area.
+     *
+     * @param key        the key
+     * @param newAreaKey the new area id
+     * @param price      the price
+     * @return true, if successful
+     * @throws SecuboidLandException
+     */
+    public boolean approveReplaceArea(final int key, final int newAreaId, final double price)
+            throws SecuboidLandException {
+        if (getArea(key) == null) {
+            throw new SecuboidLandException(
+                    String.format("The area to replace %d does not exist in land \"%s\", \"%s\"", key, name, uuid));
+        }
+        final Area newArea = getArea(newAreaId);
+        if (newArea == null) {
+            throw new SecuboidLandException(
+                    String.format("The new area %d does not exist in land \"%s\", \"%s\"", newAreaId, name, uuid));
+        }
+
+        // Remove the "new" area to replace the actual area
+        setAutoSave(false);
+        removeArea(newArea);
+        setAutoSave(true);
+        return replaceArea(key, newArea, price);
     }
 
     /**
@@ -519,6 +608,7 @@ public final class Land {
      *
      * @return the name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -528,6 +618,7 @@ public final class Land {
      *
      * @return the uuid
      */
+    @Override
     public UUID getUUID() {
         return uuid;
     }
@@ -539,7 +630,7 @@ public final class Land {
      */
     protected void setName(final String newName) {
         this.name = newName;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -562,7 +653,8 @@ public final class Land {
      * @return true, if is owner
      */
     public boolean isOwner(final Player player) {
-        if (PlayerContainerOwner.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.OWNER).hasAccess(player,
+                landPermissionsFlags)) {
             return true;
         }
         return parent != null
@@ -579,10 +671,11 @@ public final class Land {
         this.owner = owner;
 
         // Reset all owner permissions and resident managers for safety
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_OWNER.getPermissionType());
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.RESIDENT_MANAGER.getPermissionType());
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_OWNER.getPermissionType(), SaveOn.DATABASE);
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.RESIDENT_MANAGER.getPermissionType(),
+                SaveOn.DATABASE);
 
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -596,7 +689,7 @@ public final class Land {
      */
     public void addResident(final PlayerContainer resident) {
         residents.add(resident);
-        doSave();
+        doSave(SaveActionEnum.LAND_RESIDENT_SAVE, SaveOn.BOTH, resident);
 
         // Start Event
         secuboid.getServer().getPluginManager()
@@ -611,7 +704,7 @@ public final class Land {
      */
     public boolean removeResident(final PlayerContainer resident) {
         if (residents.remove(resident)) {
-            doSave();
+            doSave(SaveActionEnum.LAND_RESIDENT_REMOVE, SaveOn.BOTH, resident);
 
             // Start Event
             secuboid.getServer().getPluginManager()
@@ -639,7 +732,8 @@ public final class Land {
      * @return true, if is resident
      */
     public boolean isResident(final Player player) {
-        if (PlayerContainerResident.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.RESIDENT).hasAccess(player,
+                landPermissionsFlags)) {
             return true;
         }
         return parent != null
@@ -654,7 +748,7 @@ public final class Land {
      */
     public void addBanned(final PlayerContainer banned) {
         banneds.add(banned);
-        doSave();
+        doSave(SaveActionEnum.LAND_BANNED_SAVE, SaveOn.BOTH, banned);
 
         // Start Event
         secuboid.getServer().getPluginManager().callEvent(new PlayerContainerLandBanEvent(this, banned));
@@ -668,7 +762,7 @@ public final class Land {
      */
     public boolean removeBanned(final PlayerContainer banned) {
         if (banneds.remove(banned)) {
-            doSave();
+            doSave(SaveActionEnum.LAND_BANNED_REMOVE, SaveOn.BOTH, banned);
             return true;
         }
 
@@ -713,22 +807,13 @@ public final class Land {
     }
 
     /**
-     * Gets the genealogy.
-     *
-     * @return the genealogy
-     */
-    public int getGenealogy() {
-        return genealogy;
-    }
-
-    /**
      * Sets the priority.
      *
      * @param priority the new priority
      */
     public void setPriority(final short priority) {
         this.priority = priority;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -741,19 +826,29 @@ public final class Land {
     }
 
     /**
+     * Gets the first parent in the line (or this land).
+     * 
+     * @return the first parent
+     */
+    public Land getFirstParent() {
+        Land firstParent = this;
+        Land nextParent;
+        while ((nextParent = firstParent.parent) != null) {
+            firstParent = nextParent;
+        }
+        return firstParent;
+    }
+
+    /**
      * Sets the land parent.
      *
      * @param newParent the land parent
      */
     public void setParent(final Land newParent) {
-        // Remove files
-        removeChildFiles();
-
         // remove parent (if needed)
         if (parent != null) {
             parent.removeChild(uuid);
             parent = null;
-            genealogy = 0;
         }
 
         // Add parent
@@ -761,48 +856,20 @@ public final class Land {
             newParent.addChild(this);
             parent = newParent;
             priority = parent.getPriority();
-            genealogy = parent.getGenealogy() + 1;
         }
 
         // Save
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
 
         // Save children files
-        saveChildFiles();
+        changeChildrenPriority();
     }
 
-    private void removeChildFiles() {
-        for (final Land child : children.values()) {
-            child.setAutoSave(false);
-            secuboid.getStorageThread().removeLand(child);
-            child.removeChildFiles();
-        }
-    }
-
-    private void saveChildFiles() {
+    private void changeChildrenPriority() {
         for (final Land child : children.values()) {
             child.setPriority(priority);
-            child.genealogy = genealogy + 1;
-            child.setAutoSave(true);
-            child.forceSave();
-            child.saveChildFiles();
+            child.changeChildrenPriority();
         }
-    }
-
-    /**
-     * Gets the ancestor.
-     *
-     * @param gen the genealogy
-     * @return the ancestor
-     */
-    public Land getAncestor(final int gen) { // 1 parent, 2 grand-parent, 3 ...
-        Land ancestor = this;
-
-        for (int t = 0; t < gen; t++) {
-            ancestor = ancestor.getParent();
-        }
-
-        return ancestor;
     }
 
     /**
@@ -827,13 +894,30 @@ public final class Land {
     }
 
     /**
+     * Checks if the land is parent, grand-parent or ancestor.
+     *
+     * @param land the land
+     * @return true, if is ancestor
+     */
+    public boolean isParentOrAncestor(final Land land) {
+        if (parent == null) {
+            return false;
+        }
+
+        if (parent.equals(land)) {
+            return true;
+        }
+
+        return parent.isParentOrAncestor(land);
+    }
+
+    /**
      * Adds the child.
      *
      * @param land the land
      */
     private void addChild(final Land land) {
         children.put(land.uuid, land);
-        doSave();
     }
 
     /**
@@ -843,7 +927,6 @@ public final class Land {
      */
     void removeChild(final UUID uuid) {
         children.remove(uuid);
-        doSave();
     }
 
     /**
@@ -866,6 +949,15 @@ public final class Land {
     }
 
     /**
+     * Gets the auto save.
+     *
+     * @return true if the auto save is on
+     */
+    boolean getAutoSave() {
+        return autoSave;
+    }
+
+    /**
      * Sets the auto save.
      *
      * @param autoSave the new auto save
@@ -874,16 +966,10 @@ public final class Land {
         this.autoSave = autoSave;
     }
 
-    /**
-     * Force save.
-     */
-    private void forceSave() {
-        secuboid.getStorageThread().saveLand(this);
-    }
-
-    void doSave() {
+    private void doSave(final SaveActionEnum SaveActionEnum, final SaveOn saveOn,
+            final SavableParameter... savableParameters) {
         if (autoSave) {
-            forceSave();
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum, saveOn, Optional.of(this), savableParameters);
         }
     }
 
@@ -894,7 +980,7 @@ public final class Land {
      */
     public void addMoney(final double money) {
         this.money += money;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -904,7 +990,7 @@ public final class Land {
      */
     public void subtractMoney(final double money) {
         this.money -= money;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -923,7 +1009,7 @@ public final class Land {
      */
     public void addPlayerNotify(final PlayerContainerPlayer player) {
         playerNotify.add(player);
-        doSave();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_SAVE, SaveOn.BOTH, player);
     }
 
     /**
@@ -934,7 +1020,7 @@ public final class Land {
      */
     public boolean removePlayerNotify(final PlayerContainerPlayer player) {
         final boolean ret = playerNotify.remove(player);
-        doSave();
+        doSave(SaveActionEnum.LAND_PLAYER_NOTIFY_REMOVE, SaveOn.BOTH, player);
 
         return ret;
     }
@@ -1075,7 +1161,7 @@ public final class Land {
      * @param salePrice the sale price
      * @param signLoc   the sign location
      */
-    public void setForSale(final boolean isForSale, final double salePrice, final Location signLoc) {
+    public void setForSale(final boolean isForSale, final double salePrice, final LandLocation signLoc) {
         forSale = isForSale;
         if (forSale) {
             this.salePrice = salePrice;
@@ -1086,7 +1172,7 @@ public final class Land {
             this.forSaleSignLoc = null;
             secuboid.getLands().removeForSale(this);
         }
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1094,7 +1180,7 @@ public final class Land {
      *
      * @return the location
      */
-    public Location getSaleSignLoc() {
+    public LandLocation getSaleSignLoc() {
         return forSaleSignLoc;
     }
 
@@ -1103,9 +1189,9 @@ public final class Land {
      *
      * @param forSaleSignLoc the sale sign location
      */
-    public void setSaleSignLoc(final Location forSaleSignLoc) {
+    public void setSaleSignLoc(final LandLocation forSaleSignLoc) {
         this.forSaleSignLoc = forSaleSignLoc;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1135,14 +1221,14 @@ public final class Land {
      * @param signLoc       the sign location
      */
     public void setForRent(final double rentPrice, final int rentRenew, final boolean rentAutoRenew,
-            final Location signLoc) {
+            final LandLocation signLoc) {
         forRent = true;
         this.rentPrice = rentPrice;
         this.rentRenew = rentRenew;
         this.rentAutoRenew = rentAutoRenew;
         this.forRentSignLoc = signLoc;
         secuboid.getLands().addForRent(this);
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1150,7 +1236,7 @@ public final class Land {
      *
      * @return the location
      */
-    public Location getRentSignLoc() {
+    public LandLocation getRentSignLoc() {
         return forRentSignLoc;
     }
 
@@ -1159,9 +1245,9 @@ public final class Land {
      *
      * @param forRentSignLoc the rent sign location
      */
-    public void setRentSignLoc(final Location forRentSignLoc) {
+    public void setRentSignLoc(final LandLocation forRentSignLoc) {
         this.forRentSignLoc = forRentSignLoc;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1174,7 +1260,7 @@ public final class Land {
         rentAutoRenew = false;
         forRentSignLoc = null;
         secuboid.getLands().removeForRent(this);
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1223,8 +1309,8 @@ public final class Land {
         rented = true;
         this.tenant = tenant;
         lastPayment = System.currentTimeMillis();
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
-        doSave();
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1235,8 +1321,8 @@ public final class Land {
         rented = false;
         tenant = null;
         lastPayment = 0;
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType());
-        doSave();
+        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1255,7 +1341,8 @@ public final class Land {
      * @return true, if is tenant
      */
     public boolean isTenant(final Player player) {
-        if (tenant != null && PlayerContainerTenant.getInstance().hasAccess(player, landPermissionsFlags)) {
+        if (tenant != null && secuboid.getPlayerContainers().getPlayerContainer(PlayerContainerType.TENANT)
+                .hasAccess(player, landPermissionsFlags)) {
             return true;
         }
         return parent != null
@@ -1270,7 +1357,7 @@ public final class Land {
      */
     public void setLastPaymentTime(final long lastPayment) {
         this.lastPayment = lastPayment;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     /**
@@ -1298,17 +1385,17 @@ public final class Land {
      */
     public void setType(final Type arg0) {
         type = arg0;
-        doSave();
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this)
             return true;
         if (!(o instanceof Land)) {
             return false;
         }
-        Land land = (Land) o;
+        final Land land = (Land) o;
         return Objects.equals(uuid, land.uuid);
     }
 

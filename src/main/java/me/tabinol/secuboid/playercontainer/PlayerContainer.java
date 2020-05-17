@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,13 +18,14 @@
 package me.tabinol.secuboid.playercontainer;
 
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.storage.SavableParameter;
 
 import org.bukkit.entity.Player;
 
 /**
  * The interface PlayerContainer.
  */
-public interface PlayerContainer extends Comparable<PlayerContainer> {
+public interface PlayerContainer extends Comparable<PlayerContainer>, SavableParameter {
 
     String getName();
 

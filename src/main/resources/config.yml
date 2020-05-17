@@ -3,7 +3,18 @@
 ##################################################################
 General:                             # ----General Config----
   Lang: english                      # english, french for now (or your own)
-  Storage: flat                      # Only flat is supported for now
+  # "flat" files or "mysql" (included and recommended Maria) are supported.
+  # If you want to switch from flat file to MySQL/Maria, just stop the server, change
+  # the value to "mysql" and on server restart, Secuboid will convert to MySQL.
+  Storage: flat                      # flat or mysql
+  MySQL:
+    HostName: localhost
+    Port: 3306
+    Database: secuboid
+    User: secuboid
+    Password: mypass
+    Prefix: secuboid_                # Can be '' if Secuboid uses it own
+                                     # database
 
   # The next value is if you want the Secuboid explosion protection.
   # Set it to "False" if you prefer to disable explosions from Essentials

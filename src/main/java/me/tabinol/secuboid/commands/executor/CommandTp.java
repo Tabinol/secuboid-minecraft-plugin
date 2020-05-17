@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,17 +17,18 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.FlagValue;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
-import me.tabinol.secuboid.utilities.StringChanges;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class Command teleport.
@@ -48,8 +48,8 @@ public final class CommandTp extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandTp(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandTp(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -57,7 +57,7 @@ public final class CommandTp extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        String curArg = argList.getNext();
+        final String curArg = argList.getNext();
         landSelectNullable = secuboid.getLands().getLand(curArg);
 
         // Land not found
@@ -69,13 +69,20 @@ public final class CommandTp extends CommandExec {
         checkPermission(true, false, PermissionList.TP.getPermissionType(), null);
 
         // Try to get Location
-        FlagValue value = landSelectNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType());
+        final FlagValue value = landSelectNullable.getPermissionsFlags()
+                .getFlagAndInherit(FlagList.SPAWN.getFlagType());
 
         if (value.getValueString().isEmpty()) {
             throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.NOSPAWN");
         }
 
-        Location location = StringChanges.stringToLocation(value.getValueString());
+        final LandLocation landLocation = LandLocation.fromFileFormat(value.getValueString());
+        final Location location;
+        if (landLocation != null) {
+            location = landLocation.toLocation();
+        } else {
+            location = null;
+        }
 
         if (location == null) {
             throw new SecuboidCommandException(secuboid, "On land tp player", player, "COMMAND.TP.INVALID");

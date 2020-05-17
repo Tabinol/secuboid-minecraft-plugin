@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,21 +18,18 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.Calendar;
+import java.util.Optional;
+import java.util.UUID;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
-import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The Class Approve.
  */
-public class Approve {
-
-    private final Secuboid secuboid;
+public class Approve implements Savable {
 
     /**
      * The action.
@@ -41,24 +37,19 @@ public class Approve {
     private final LandAction action;
 
     /**
-     * The land name.
+     * The land.
      */
-    private final String landName;
-
-    /**
-     * The type
-     */
-    private final Type type;
+    private final Land land;
 
     /**
      * The removed area id.
      */
-    private final int removedAreaId;
+    private final Optional<Integer> removedAreaIdOpt;
 
     /**
      * The new area.
      */
-    private final Area newArea;
+    private final Optional<Integer> newAreaIdOpt;
 
     /**
      * The owner.
@@ -68,7 +59,7 @@ public class Approve {
     /**
      * The parent.
      */
-    private final Land parent;
+    private final Optional<Land> parentOpt;
 
     /**
      * The price.
@@ -83,29 +74,25 @@ public class Approve {
     /**
      * Instantiates a new approve.
      *
-     * @param secuboid      secuboid instance
-     * @param landName      the land name
-     * @param type          the type
-     * @param action        the action
-     * @param removedAreaId the removed area id
-     * @param newArea       the new area
-     * @param owner         the owner
-     * @param parent        the parent
-     * @param price         the price
-     * @param dateTime      the date time
+     * @param land             the land (new or modified)
+     * @param action           the action
+     * @param removedAreaIdOpt the removed area id (optional)
+     * @param newAreaIdOpt     the new area id (optional)
+     * @param owner            the requestor
+     * @param parentOpt        the parent (optional)
+     * @param price            the price
+     * @param dateTime         the date time
      */
-    public Approve(Secuboid secuboid, String landName, Type type, LandAction action, int removedAreaId,
-                   Area newArea, PlayerContainer owner, Land parent, double price,
-                   Calendar dateTime) {
+    public Approve(final Land land, final LandAction action, final Optional<Integer> removedAreaIdOpt,
+            final Optional<Integer> newAreaIdOpt, final PlayerContainer owner, final Optional<Land> parentOpt,
+            final double price, final Calendar dateTime) {
 
-        this.secuboid = secuboid;
         this.action = action;
-        this.landName = landName.toLowerCase();
-        this.type = type;
-        this.removedAreaId = removedAreaId;
-        this.newArea = newArea;
+        this.land = land;
+        this.removedAreaIdOpt = removedAreaIdOpt;
+        this.newAreaIdOpt = newAreaIdOpt;
         this.owner = owner;
-        this.parent = parent;
+        this.parentOpt = parentOpt;
         this.price = price;
         this.dateTime = dateTime;
     }
@@ -120,39 +107,30 @@ public class Approve {
     }
 
     /**
-     * Gets the land name.
+     * Gets the land.
      *
-     * @return the land name
+     * @return the land
      */
-    public String getLandName() {
-        return landName;
-    }
-
-    /**
-     * Gets the type.
-     *
-     * @return the type
-     */
-    public Type getType() {
-        return type;
+    public Land getLand() {
+        return land;
     }
 
     /**
      * Gets the removed area id.
      *
-     * @return the removed area id
+     * @return the removed area id (optional)
      */
-    public int getRemovedAreaId() {
-        return removedAreaId;
+    public Optional<Integer> getRemovedAreaIdOpt() {
+        return removedAreaIdOpt;
     }
 
     /**
      * Gets the new area.
      *
-     * @return the new area
+     * @return the new area (optional)
      */
-    public Area getNewArea() {
-        return newArea;
+    public Optional<Integer> getNewAreaIdOpt() {
+        return newAreaIdOpt;
     }
 
     /**
@@ -167,10 +145,10 @@ public class Approve {
     /**
      * Gets the parent.
      *
-     * @return the parent
+     * @return the parent land (optional)
      */
-    public Land getParent() {
-        return parent;
+    public Optional<Land> getParentOpt() {
+        return parentOpt;
     }
 
     /**
@@ -191,42 +169,13 @@ public class Approve {
         return dateTime;
     }
 
-    /**
-     * Creates the action.
-     */
-    public void createAction() {
+    @Override
+    public String getName() {
+        return land.getName();
+    }
 
-        if (action != null) {
-            switch (action) {
-                case AREA_ADD:
-                    secuboid.getLands().getLand(landName).addArea(newArea, price);
-                    break;
-                case AREA_REMOVE:
-                    secuboid.getLands().getLand(landName).removeArea(removedAreaId);
-                    break;
-                case AREA_MODIFY:
-                    secuboid.getLands().getLand(landName).replaceArea(removedAreaId, newArea, price);
-                    break;
-                case LAND_ADD:
-                    try {
-                        secuboid.getLands().createLand(landName, owner, newArea, parent, price, type);
-                    } catch (SecuboidLandException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
-                case LAND_REMOVE:
-                    try {
-                        secuboid.getLands().removeLand(landName);
-                    } catch (SecuboidLandException ex) {
-                        ex.printStackTrace();
-                    }
-                    break;
-                case LAND_PARENT:
-                    secuboid.getLands().getLand(landName).setParent(parent);
-                    break;
-                default:
-                    break;
-            }
-        }
+    @Override
+    public UUID getUUID() {
+        return land.getUUID();
     }
 }

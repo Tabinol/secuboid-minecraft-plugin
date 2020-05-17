@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,15 +17,15 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
-import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandPlayerThreadExec.
@@ -44,7 +43,8 @@ public abstract class CommandPlayerThreadExec extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    CommandPlayerThreadExec(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList) throws SecuboidCommandException {
+    CommandPlayerThreadExec(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -55,22 +55,23 @@ public abstract class CommandPlayerThreadExec extends CommandExec {
      * @param playerCacheEntry the player cache entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public abstract void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry)
-            throws SecuboidCommandException;
+    public abstract void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException;
 
     /**
-     * Convert only if the PlayerContainer is a PlayerContainerPlayerName It takes the result from the UUID request.
+     * Convert only if the PlayerContainer is a PlayerContainerPlayerName It takes
+     * the result from the UUID request.
      *
      * @param playerCacheEntry the player cache entry
      * @throws SecuboidCommandException the secuboid command exception
      */
-    final void convertPcIfNeeded(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
+    final void convertPcIfNeeded(final PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
         if (pc instanceof PlayerContainerPlayerName) {
             if (playerCacheEntry.length == 1 && playerCacheEntry[0] != null) {
-                pc = new PlayerContainerPlayer(secuboid, playerCacheEntry[0].getUUID());
+                pc = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(playerCacheEntry[0].getUUID());
             } else {
-                throw new SecuboidCommandException(secuboid, "Player not exist Error", player, "COMMAND.CONTAINER.PLAYERNOTEXIST");
+                throw new SecuboidCommandException(secuboid, "Player not exist Error", player,
+                        "COMMAND.CONTAINER.PLAYERNOTEXIST");
             }
         }
     }

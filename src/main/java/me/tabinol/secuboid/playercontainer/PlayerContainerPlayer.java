@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -40,7 +39,7 @@ public final class PlayerContainerPlayer implements PlayerContainer {
 	private final UUID minecraftUUID;
 	private final String name;
 
-	public PlayerContainerPlayer(final Secuboid secuboid, final UUID minecraftUUID) {
+	PlayerContainerPlayer(final Secuboid secuboid, final UUID minecraftUUID) {
 		this.secuboid = secuboid;
 		name = "ID-" + minecraftUUID.toString();
 		this.minecraftUUID = minecraftUUID;

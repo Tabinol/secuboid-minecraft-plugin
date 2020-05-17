@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,7 +17,10 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.io.File;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
@@ -26,12 +28,8 @@ import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.inventories.InventorySpec;
-import me.tabinol.secuboid.inventories.InventoryStorage;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import me.tabinol.secuboid.inventories.Inventories;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
 
 /**
  * Represents an inventory command.
@@ -44,6 +42,8 @@ import org.bukkit.entity.Player;
         })
 public final class CommandInv extends CommandExec {
 
+    private final Inventories inventories;
+
     /**
      * Instantiates a new command inventory.
      *
@@ -53,22 +53,22 @@ public final class CommandInv extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandInv(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
-
+    public CommandInv(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
         super(secuboid, infoCommand, sender, argList);
+        inventories = secuboid.getInventoriesOpt().orElse(null);
     }
 
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
         // Verify if Multiple inventories is active
-        if (secuboid.getInventoryConf() == null) {
+        if (inventories == null) {
             throw new SecuboidCommandException(secuboid, "Multiple Inventories is not active", player,
                     "COMMAND.INV.NOTACTIVE");
         }
 
-        String function = argList.getNext();
+        final String function = argList.getNext();
 
         if (function.equalsIgnoreCase("default")) {
             checkPermission(false, false, null, InventoryConfig.PERM_DEFAULT);
@@ -92,25 +92,20 @@ public final class CommandInv extends CommandExec {
         }
 
         // Get the land name
-        InventorySpec invSpec = secuboid.getInventoryListener().getPlayerInvEntry(player).getActualInv();
-        String subCom = argList.getNext();
+        final String subCom = argList.getNext();
 
         if (subCom != null && subCom.equalsIgnoreCase("save")) {
 
             // Save the inventory
-            secuboid.getInventoryListener().saveDefaultInventory(player, invSpec);
+            inventories.saveDefaultInventory(playerConf);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTSAVE"));
 
         } else if (subCom != null && subCom.equalsIgnoreCase("remove")) {
 
             // Remove inventory
-            final String fileName = secuboid.getDataFolder() + "/" + InventoryStorage.INV_DIR + "/"
-                    + invSpec.getInventoryName() + "/" + InventoryStorage.DEFAULT_INV + ".yml";
-            final boolean isFileRemoved = new File(fileName).delete();
-            if (!isFileRemoved) {
-                secuboid.getLogger().severe("Unable to remove this file: " + fileName);
-            }
+            final PlayerInvEntry playerInvEntry = playerConf.getPlayerInventoryCacheOpt().get().getCurInvEntry();
+            inventories.removeInventoryDefault(playerInvEntry);
             player.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.DEFAULTREMOVE"));
 
@@ -124,14 +119,14 @@ public final class CommandInv extends CommandExec {
 
     private void loadDeath() throws SecuboidCommandException {
 
-        String playerName = argList.getNext();
+        final String playerName = argList.getNext();
 
         if (playerName == null) {
             throw new SecuboidCommandException(secuboid, "No player!", sender, "COMMAND.INV.ERRORNOPLAYER");
         }
 
         // Check for player
-        Player player = Bukkit.getPlayer(playerName);
+        final Player player = Bukkit.getPlayer(playerName);
 
         if (player == null) {
             throw new SecuboidCommandException(secuboid, "Player offline!", sender, "COMMAND.INV.ERRORPLAYEROFFLINE");
@@ -139,11 +134,11 @@ public final class CommandInv extends CommandExec {
 
         // Check for the last time version
         int lastTime;
-        String stNumber = argList.getNext();
+        final String stNumber = argList.getNext();
         if (stNumber != null) {
             try {
                 lastTime = Integer.parseInt(stNumber);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 // Number unreadable
                 lastTime = 1;
             }
@@ -152,7 +147,7 @@ public final class CommandInv extends CommandExec {
         }
 
         // Execute
-        if (!secuboid.getInventoryListener().loadDeathInventory(player, lastTime)) {
+        if (!inventories.loadDeathInventory(player, lastTime)) {
             throw new SecuboidCommandException(secuboid, "Death save not found!", sender,
                     "COMMAND.INV.ERRORDEATHNOTFOUND");
         }
@@ -162,7 +157,7 @@ public final class CommandInv extends CommandExec {
     }
 
     private void forceSave() {
-        secuboid.getInventoryListener().forceSave();
+        inventories.forceSave();
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.SAVEDONE"));
     }

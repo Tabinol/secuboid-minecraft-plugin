@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -22,17 +21,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+
 /**
  * The Class Lang.
  */
-public class Lang {
+public final class Lang {
 
     /**
      * The actual version of lang file.
@@ -64,9 +64,9 @@ public class Lang {
      *
      * @param secuboid secuboid instance
      */
-    public Lang(Secuboid secuboid) {
+    public Lang(final Secuboid secuboid) {
         this.secuboid = secuboid;
-        actualVersion = secuboid.getMavenAppProperties().getPropertyInt("langVersion");
+        actualVersion = MavenAppProperties.getPropertyInt("langVersion", 1);
         this.langconfig = new YamlConfiguration();
         reloadConfig();
         checkVersion();
@@ -90,11 +90,12 @@ public class Lang {
     private void copyLang() {
         if (!langFile.exists()) {
             if (!langFile.getParentFile().exists() && !langFile.getParentFile().mkdirs()) {
-                secuboid.getLogger().severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
+                secuboid.getLogger()
+                        .severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
             }
             try {
                 FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 secuboid.getLogger().severe("Unable to copy language file from jar.");
             }
         }
@@ -106,9 +107,9 @@ public class Lang {
     private void loadYamls() {
         try {
             langconfig.load(langFile);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
-        } catch (InvalidConfigurationException e) {
+        } catch (final InvalidConfigurationException e) {
             secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
         }
     }
@@ -120,7 +121,7 @@ public class Lang {
      */
     private void checkVersion() {
 
-        int fileVersion = langconfig.getInt("VERSION");
+        final int fileVersion = langconfig.getInt("VERSION");
 
         // We must rename the file and activate the new file
         if (actualVersion != fileVersion) {
@@ -128,8 +129,8 @@ public class Lang {
                 secuboid.getLogger().severe("Unable to rename the old language file.");
             }
             reloadConfig();
-            secuboid.getLogger().info("There is a new language file. Your old language file was renamed \""
-                    + lang + ".yml.v" + fileVersion + "\".");
+            secuboid.getLogger().info("There is a new language file. Your old language file was renamed \"" + lang
+                    + ".yml.v" + fileVersion + "\".");
         }
     }
 
@@ -140,7 +141,7 @@ public class Lang {
      * @param param the param
      * @return the message
      */
-    public String getMessage(String path, String... param) {
+    public String getMessage(final String path, final String... param) {
 
         String message = langconfig.getString(path);
 
@@ -148,7 +149,7 @@ public class Lang {
             return "MESSAGE NOT FOUND FOR PATH: " + path;
         }
         if (param.length >= 1) {
-            int occurence = getOccurence(message, '%');
+            final int occurence = getOccurence(message, '%');
             if (occurence == param.length) {
                 for (int i = 0; i < occurence; i++) {
                     message = replace(message, "%", param[i]);
@@ -170,7 +171,7 @@ public class Lang {
      * @param s_nouveau  the s_nouveau
      * @return the string
      */
-    public String replace(String s_original, String s_cherche, String s_nouveau) {
+    public String replace(final String s_original, final String s_cherche, final String s_nouveau) {
         if ((s_original == null) || (s_original.isEmpty())) {
             return "";
         }
@@ -179,7 +180,7 @@ public class Lang {
         }
 
         StringBuffer s_final;
-        int index = s_original.indexOf(s_cherche);
+        final int index = s_original.indexOf(s_cherche);
 
         s_final = new StringBuffer(s_original.substring(0, index));
         s_final.append(s_nouveau);
@@ -195,7 +196,7 @@ public class Lang {
      * @param r the r
      * @return the occurence
      */
-    private int getOccurence(String s, char r) {
+    private int getOccurence(final String s, final char r) {
         int counter = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == r) {
@@ -212,17 +213,18 @@ public class Lang {
      * @param commandName the command name
      * @return the help
      */
-    public String getHelp(String mainCommand, String commandName) {
+    public String getHelp(final String mainCommand, final String commandName) {
 
-        ConfigurationSection helpSec = langconfig.getConfigurationSection("HELP." + mainCommand + "." + commandName);
+        final ConfigurationSection helpSec = langconfig
+                .getConfigurationSection("HELP." + mainCommand + "." + commandName);
 
         // No help for this command?
         if (helpSec == null) {
             return null;
         }
 
-        Map<String, Object> valueList = helpSec.getValues(false);
-        StringBuilder sb = new StringBuilder();
+        final Map<String, Object> valueList = helpSec.getValues(false);
+        final StringBuilder sb = new StringBuilder();
 
         for (int t = 1; t <= valueList.size(); t++) {
             sb.append((String) valueList.get(t + "")).append(Config.NEWLINE);

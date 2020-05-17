@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +18,9 @@
 package me.tabinol.secuboid.lands;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,12 +30,15 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 
 import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.WorldConfig;
-import me.tabinol.secuboid.lands.approve.ApproveList;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
+import me.tabinol.secuboid.playercontainer.PlayerContainers;
 import me.tabinol.secuboid.storage.StorageThread;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 
 /**
  * Init lands database and methods.
@@ -47,17 +49,27 @@ public final class InitLands {
 
     private final Secuboid secuboid;
     private final Lands lands;
+    private final PlayerContainers playerContainers;
 
     public InitLands() {
         // Prepare Mock
         secuboid = mock(Secuboid.class);
+
+        // Player containers
+        playerContainers = new PlayerContainers(secuboid);
+        when(secuboid.getPlayerContainers()).thenReturn(playerContainers);
+
+        // conf
+        final Config config = mock(Config.class);
+        when(config.useEconomy()).thenReturn(false);
+        when(secuboid.getConf()).thenReturn(config);
 
         // log
         final Logger log = Logger.getLogger("Secuboid");
         when(secuboid.getLogger()).thenReturn(log);
 
         // Permissions Flags
-        final PermissionsFlags permissionsFlags = new PermissionsFlags(secuboid);
+        final PermissionsFlags permissionsFlags = new PermissionsFlags();
         when(secuboid.getPermissionsFlags()).thenReturn(permissionsFlags);
 
         // Types
@@ -72,7 +84,6 @@ public final class InitLands {
 
         // WorldConfig
 
-        
         // WorldConfig
         final WorldConfig worldConfig = mock(WorldConfig.class);
         final Map<String, LandPermissionsFlags> worldNameToPermissionsFlags = new HashMap<>();
@@ -85,15 +96,15 @@ public final class InitLands {
         when(worldConfig.getDefaultPermissionsFlags()).thenReturn(defaultPermissionsFlags);
 
         // ApproveList
-        final ApproveList approveList = mock(ApproveList.class);
+        final Approves approves = mock(Approves.class);
 
         // Lands
-        lands = new Lands(secuboid, worldConfig, approveList);
+        lands = new Lands(secuboid, worldConfig, approves);
         when(secuboid.getLands()).thenReturn(lands);
 
         // Storage
         final StorageThread storageThread = mock(StorageThread.class);
-        doNothing().when(storageThread).saveLand(any(Land.class));
+        doNothing().when(storageThread).addSaveAction(any(SaveActionEnum.class), any(), any(), any());
         when(secuboid.getStorageThread()).thenReturn(storageThread);
     }
 
@@ -103,5 +114,9 @@ public final class InitLands {
 
     public Lands getLands() {
         return lands;
+    }
+
+    public PlayerContainers getPlayerContainers() {
+        return playerContainers;
     }
 }

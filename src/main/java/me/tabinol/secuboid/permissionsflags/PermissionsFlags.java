@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import me.tabinol.secuboid.Secuboid;
 import org.bukkit.Material;
 
 /**
@@ -59,8 +57,6 @@ public final class PermissionsFlags {
         NODESTROY
     }
 
-    private final Secuboid secuboid;
-
     /**
      * The permissions.
      */
@@ -83,12 +79,9 @@ public final class PermissionsFlags {
 
     /**
      * Instantiates a new parameters.
-     *
-     * @param secuboid the secuboid instance
      */
-    public PermissionsFlags(final Secuboid secuboid) {
+    public PermissionsFlags() {
 
-        this.secuboid = secuboid;
         permissions = new TreeMap<>();
         flags = new TreeMap<>();
         unRegisteredFlags = new ArrayList<>();
@@ -208,7 +201,7 @@ public final class PermissionsFlags {
             final Flag flag = iFlag.next();
             if (flagType == flag.getFlagType()) {
                 final String str = flag.getValue().getValueString();
-                flag.setValue(secuboid.getNewInstance().getFlagValueFromFileFormat(str, flagType));
+                flag.setValue(FlagValue.getFlagValueFromFileFormat(str, flagType));
                 iFlag.remove();
             }
         }

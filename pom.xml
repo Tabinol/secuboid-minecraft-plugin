@@ -1,14 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.tabinol.secuboid</groupId>
     <artifactId>secuboid</artifactId>
+<<<<<<< HEAD
     <version>1.4.2-SNAPSHOT</version>
+=======
+    <version>1.5.0-SNAPSHOT</version>
+>>>>>>> pre-mysql-steps
     <name>Secuboid</name>
     <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
 
     <properties>
+        <spigot.version>1.15.2</spigot.version>
+        <spigot.suffixversion>-R0.1-SNAPSHOT</spigot.suffixversion>
+        <vault.version>1.7.2</vault.version>
+        <vaultapi.version>1.7</vaultapi.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -16,11 +24,13 @@
         <!-- *** Change Language version here here *** -->
         <langVersion>31</langVersion>
         <!-- *** Change land .conf version here here *** -->
-        <landVersion>7</landVersion>
+        <landVersion>8</landVersion>
         <!-- *** Change players cache .conf version here here *** -->
         <playersCacheVersion>1</playersCacheVersion>
         <!-- *** Change Inventory Storage version here *** -->
         <InventoryStorageVersion>1</InventoryStorageVersion>
+        <!-- *** Change MySQL Storage version here *** -->
+        <mySqlStorageVersion>1</mySqlStorageVersion>
     </properties>
 
     <repositories>
@@ -70,23 +80,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.29</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
             <scope>test</scope>
         </dependency>
         <!-- Test End -->
@@ -95,7 +98,11 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
+<<<<<<< HEAD
             <version>1.15.2-R0.1-SNAPSHOT</version>
+=======
+            <version>${spigot.version}${spigot.suffixversion}</version>
+>>>>>>> pre-mysql-steps
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -109,7 +116,11 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
+<<<<<<< HEAD
             <version>1.15.2-R0.1-SNAPSHOT</version>
+=======
+            <version>${spigot.version}${spigot.suffixversion}</version>
+>>>>>>> pre-mysql-steps
             <scope>provided</scope>
         </dependency>
 
@@ -139,7 +150,7 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
+            <version>${vaultapi.version}</version>
             <scope>provided</scope>
             <optional>true</optional>
             <exclusions>
@@ -283,7 +294,8 @@
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ftp</artifactId>
             </extension>
-        </extensions>    
+        </extensions>
+
     </build>
 
     <distributionManagement>
@@ -295,5 +307,4 @@
             <layout>default</layout>
         </repository>
     </distributionManagement>
-
 </project>

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,25 +19,27 @@ package me.tabinol.secuboid.permissionsflags;
 
 import org.bukkit.ChatColor;
 
+import me.tabinol.secuboid.storage.SavableParameter;
+
 /**
  * The Class Permission.
  */
-public class Permission {
+public final class Permission implements SavableParameter {
 
     /**
      * The perm type.
      */
-    private PermissionType permType;
+    private final PermissionType permType;
 
     /**
      * The value.
      */
-    private boolean value;
+    private final boolean value;
 
     /**
      * The Inheritable.
      */
-    private boolean inheritable;
+    private final boolean inheritable;
 
     /**
      * Instantiates a new permission.

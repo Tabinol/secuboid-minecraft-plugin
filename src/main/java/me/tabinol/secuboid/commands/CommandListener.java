@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -39,11 +38,11 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.executor.CommandExec;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -101,6 +100,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
             return true;
             // If error on command, send the message to the player
         } catch (final SecuboidCommandException ex) {
+            ex.notifySender();
             return true;
         }
     }
@@ -190,7 +190,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private Set<String> listApproveLandList(final CommandSender sender) {
         if (sender.hasPermission("secuboid.collisionapprove")) {
-            return secuboid.getLands().getApproveList().getApproveList().keySet();
+            return secuboid.getLands().getApproves().getApproveList().keySet();
         }
         return Collections.emptySet();
     }

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,12 +17,12 @@
  */
 package me.tabinol.secuboid.playerscache.minecraftapi;
 
-public class Profile {
+public final class Profile {
 
     private final String id;
     private final String name;
 
-    Profile(String id, String name) {
+    Profile(final String id, final String name) {
         this.id = id;
         this.name = name;
     }

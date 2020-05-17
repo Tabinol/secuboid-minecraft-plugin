@@ -1,7 +1,6 @@
 /*
 < Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -69,7 +68,7 @@ public final class Collisions {
          *
          * @param canBeApproved the can be approved
          */
-        LandError(boolean canBeApproved) {
+        LandError(final boolean canBeApproved) {
             this.canBeApproved = canBeApproved;
         }
     }
@@ -88,7 +87,7 @@ public final class Collisions {
 
         EnumSet<LandError> errorsToCheck;
 
-        LandAction(EnumSet<LandError> errorsToCheck) {
+        LandAction(final EnumSet<LandError> errorsToCheck) {
             this.errorsToCheck = errorsToCheck;
         }
     }
@@ -175,9 +174,9 @@ public final class Collisions {
      * @param isFree           if the land is free or not
      * @param checkApproveList the check approve list
      */
-    public Collisions(Secuboid secuboid, String worldName, String landName, Land land, LandAction action,
-            int removedAreaId, Area newArea, Land parent, PlayerContainer owner, boolean isFree,
-            boolean checkApproveList) {
+    public Collisions(final Secuboid secuboid, final String worldName, final String landName, final Land land,
+            final LandAction action, final int removedAreaId, final Area newArea, final Land parent,
+            final PlayerContainer owner, final boolean isFree, final boolean checkApproveList) {
 
         this.secuboid = secuboid;
         this.worldName = worldName;
@@ -224,7 +223,7 @@ public final class Collisions {
         percentDone = 50;
 
         // Pass 6 check if the name is already in Approve List (true in all actions!)
-        if (landName != null && !checkApproveList && lands.getApproveList().isInApprove(landName)) {
+        if (landName != null && !checkApproveList && lands.getApproves().isInApprove(landName)) {
             collisionsEntries.add(new CollisionsEntry(secuboid, LandError.IN_APPROVE_LIST, null, 0));
         }
         percentDone = 60;
@@ -232,10 +231,10 @@ public final class Collisions {
         if (owner.getContainerType() == PlayerContainerType.PLAYER) {
 
             // Pass 7 check if the player has enough money
-            if (secuboid.getConf().useEconomy()) {
-                double price = getPrice();
+            if (secuboid.getPlayerMoneyOpt().isPresent()) {
+                final double price = getPrice();
                 if ((price > 0) && newArea != null) {
-                    double playerBalance = secuboid.getPlayerMoney().getPlayerBalance(
+                    final double playerBalance = secuboid.getPlayerMoneyOpt().get().getPlayerBalance(
                             ((PlayerContainerPlayer) owner).getOfflinePlayer(), newArea.getWorldName());
                     if (action.errorsToCheck.contains(NOT_ENOUGH_MONEY) && playerBalance < price) {
                         collisionsEntries.add(new CollisionsEntry(secuboid, LandError.NOT_ENOUGH_MONEY, null, 0));
@@ -268,7 +267,7 @@ public final class Collisions {
 
         // End check if the action can be done or approve
         allowApprove = true;
-        for (CollisionsEntry entry : collisionsEntries) {
+        for (final CollisionsEntry entry : collisionsEntries) {
             if (!entry.getError().canBeApproved) {
                 allowApprove = false;
                 return;
@@ -299,7 +298,7 @@ public final class Collisions {
             }
         }
 
-        for (Area areaCol : landCollisionsList) {
+        for (final Area areaCol : landCollisionsList) {
             collisionsEntries.add(new CollisionsEntry(secuboid, COLLISION, areaCol.getLand(), areaCol.getKey()));
         }
 
@@ -315,7 +314,7 @@ public final class Collisions {
      * @param land2 the land2
      * @return true, if is descendants
      */
-    private boolean isDescendants(Land land1, Land land2) {
+    private boolean isDescendants(final Land land1, final Land land2) {
         return !(land1 == null || land2 == null) && land1.isDescendants(land2);
     }
 
@@ -327,7 +326,7 @@ public final class Collisions {
         final HashSet<Area> areaList = new HashSet<>();
 
         if (action != LandAction.LAND_REMOVE) {
-            for (Area area : land.getAreas()) {
+            for (final Area area : land.getAreas()) {
                 if (area.getKey() != removedAreaId) {
                     areaList.add(area);
                 }
@@ -351,7 +350,7 @@ public final class Collisions {
             }
         }
 
-        for (Land child : childOutsideLand) {
+        for (final Land child : childOutsideLand) {
             collisionsEntries.add(new CollisionsEntry(secuboid, CHILD_OUT_OF_BORDER, child, 0));
         }
     }
@@ -369,7 +368,7 @@ public final class Collisions {
      * Check if name exist.
      */
     private void checkIfNameExist() {
-        if (lands.isNameExist(landName)) {
+        if (lands.isNameExist(landName) && !lands.getLand(landName).equals(land)) {
             collisionsEntries.add(new CollisionsEntry(secuboid, NAME_IN_USE, null, 0));
         }
     }
@@ -380,7 +379,7 @@ public final class Collisions {
      * @return the prints
      */
     public String getPrints() {
-        StringBuilder str = new StringBuilder();
+        final StringBuilder str = new StringBuilder();
 
         for (final CollisionsEntry ce : collisionsEntries) {
             str.append(ce.getPrint()).append(Config.NEWLINE);
@@ -424,6 +423,10 @@ public final class Collisions {
         return isFree;
     }
 
+    public Land getLand() {
+        return land;
+    }
+
     public String getLandName() {
         return landName;
     }
@@ -441,7 +444,7 @@ public final class Collisions {
             return 0;
         }
 
-        FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
+        final FlagType flagType = FlagList.ECO_BLOCK_PRICE.getFlagType();
         if (land == null) {
             priceFlag = secuboid.getLands().getOutsideLandPermissionsFlags(newArea.getWorldName())
                     .getFlagAndInherit(flagType).getValueDouble();

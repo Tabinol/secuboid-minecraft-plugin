@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,10 +17,11 @@
  */
 package me.tabinol.secuboid.lands.areas;
 
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.utilities.LocalMath;
 import org.bukkit.Location;
 import org.bukkit.World;
+
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.utilities.LocalMath;
 
 /**
  * Represents a cylinder area.
@@ -37,18 +37,30 @@ public final class CylinderArea implements Area {
     /**
      * Instantiates a new cylinder area.
      *
-     * @param worldName the world name
-     * @param x1        the x1
-     * @param y1        the y1
-     * @param z1        the z1
-     * @param x2        the x2
-     * @param y2        the y2
-     * @param z2        the z2
+     * @param isApproved is this land is approved or in approve list
+     * @param worldName  the world name
+     * @param x1         the x1
+     * @param y1         the y1
+     * @param z1         the z1
+     * @param x2         the x2
+     * @param y2         the y2
+     * @param z2         the z2
      */
-    public CylinderArea(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
+    public CylinderArea(final boolean isApproved, final String worldName, final int x1, final int y1, final int z1,
+            final int x2, final int y2, final int z2) {
 
-        areaCommon = new AreaCommon(this, worldName, x1, y1, z1, x2, y2, z2);
+        areaCommon = new AreaCommon(this, isApproved, worldName, x1, y1, z1, x2, y2, z2);
         updatePos();
+    }
+
+    @Override
+    public boolean isApproved() {
+        return areaCommon.isApproved();
+    }
+
+    @Override
+    public void setApproved() {
+        areaCommon.setApproved();
     }
 
     /**
@@ -117,7 +129,7 @@ public final class CylinderArea implements Area {
      * @param x1 x1
      */
     @Override
-    public void setX1(int x1) {
+    public void setX1(final int x1) {
         areaCommon.setX1(x1);
         updatePos();
     }
@@ -128,7 +140,7 @@ public final class CylinderArea implements Area {
      * @param y1 y1
      */
     @Override
-    public void setY1(int y1) {
+    public void setY1(final int y1) {
         areaCommon.setY1(y1);
     }
 
@@ -138,7 +150,7 @@ public final class CylinderArea implements Area {
      * @param z1 z1
      */
     @Override
-    public void setZ1(int z1) {
+    public void setZ1(final int z1) {
         areaCommon.setZ1(z1);
         updatePos();
     }
@@ -149,7 +161,7 @@ public final class CylinderArea implements Area {
      * @param x2 x2
      */
     @Override
-    public void setX2(int x2) {
+    public void setX2(final int x2) {
         areaCommon.setX2(x2);
         updatePos();
     }
@@ -160,7 +172,7 @@ public final class CylinderArea implements Area {
      * @param y2 y2
      */
     @Override
-    public void setY2(int y2) {
+    public void setY2(final int y2) {
         areaCommon.setY2(y2);
     }
 
@@ -170,7 +182,7 @@ public final class CylinderArea implements Area {
      * @param z2 z2
      */
     @Override
-    public void setZ2(int z2) {
+    public void setZ2(final int z2) {
         areaCommon.setZ2(z2);
         updatePos();
     }
@@ -227,7 +239,7 @@ public final class CylinderArea implements Area {
      * @param x the x
      * @return the position
      */
-    public int getZPosFromX(int x) {
+    public int getZPosFromX(final int x) {
         return (int) Math.round(originK + (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
     }
 
@@ -237,7 +249,7 @@ public final class CylinderArea implements Area {
      * @param x the x
      * @return the position
      */
-    public int getZNegFromX(int x) {
+    public int getZNegFromX(final int x) {
         return (int) Math.round(originK - (rZ * Math.sqrt((rX + x - originH) * (rX - x + originH))) / rX);
     }
 
@@ -247,7 +259,7 @@ public final class CylinderArea implements Area {
      * @param z the z
      * @return the position
      */
-    public int getXPosFromZ(int z) {
+    public int getXPosFromZ(final int z) {
         return (int) Math.round(originH + (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
@@ -257,7 +269,7 @@ public final class CylinderArea implements Area {
      * @param z the z
      * @return the position
      */
-    public int getXNegFromZ(int z) {
+    public int getXNegFromZ(final int z) {
         return (int) Math.round(originH - (rX * Math.sqrt((rZ + z - originK) * (rZ - z + originK))) / rZ);
     }
 
@@ -272,38 +284,36 @@ public final class CylinderArea implements Area {
     }
 
     @Override
-    public boolean isLocationInside(String worldName, int x, int z) {
-        return getWorldName().equals(worldName)
-                && ((Math.pow((x - originH), 2) / Math.pow(rX, 2)) + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
+    public boolean isLocationInside(final String worldName, final int x, final int z) {
+        return getWorldName().equals(worldName) && ((Math.pow((x - originH), 2) / Math.pow(rX, 2))
+                + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }
 
     @Override
-    public boolean isLocationInside(String worldName, int x, int y, int z) {
-        return isLocationInside(worldName, x, z)
-                && LocalMath.isInInterval(y, getY1(), getY2());
+    public boolean isLocationInside(final String worldName, final int x, final int y, final int z) {
+        return isLocationInside(worldName, x, z) && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
     @Override
-    public boolean isLocationInside(Location loc) {
+    public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     @Override
-    public boolean isLocationInsideSquare(int x, int z) {
+    public boolean isLocationInsideSquare(final int x, final int z) {
         return areaCommon.isLocationInsideSquare(x, z);
     }
 
     @Override
     public String toFileFormat() {
-        return AreaType.CYLINDER + ":" + areaCommon.getWorldName()
-                + ":" + getX1() + ":" + getY1() + ":" + getZ1() + ":" + getX2() + ":" + getY2() + ":" + getZ2();
+        return AreaType.CYLINDER + ":" + areaCommon.isApproved() + ":" + areaCommon.getWorldName() + ":" + getX1() + ":"
+                + getY1() + ":" + getZ1() + ":" + getX2() + ":" + getY2() + ":" + getZ2();
     }
 
     @Override
     public String getPrint() {
-        return AreaType.CYLINDER.toString().substring(0, 3).toLowerCase()
-                + ":(" + getX1() + ", " + getY1() + ", " + getZ1() + ")-("
-                + getX2() + ", " + getY2() + ", " + getZ2() + ")";
+        return AreaType.CYLINDER.toString().substring(0, 3).toLowerCase() + ":(" + getX1() + ", " + getY1() + ", "
+                + getZ1() + ")-(" + getX2() + ", " + getY2() + ", " + getZ2() + ")";
     }
 
     @Override
@@ -317,7 +327,7 @@ public final class CylinderArea implements Area {
     }
 
     @Override
-    public void setLand(Land land) {
+    public void setLand(final Land land) {
         areaCommon.setLand(land);
     }
 
@@ -332,17 +342,18 @@ public final class CylinderArea implements Area {
     }
 
     @Override
-    public World getWord() {
-        return areaCommon.getWord();
+    public World getWorld() {
+        return areaCommon.getWorld();
     }
 
     @Override
-    public int compareTo(Area t) {
+    public int compareTo(final Area t) {
         return areaCommon.compareToArea(t);
     }
 
     @Override
     public Area copyOf() {
-        return new CylinderArea(getWorldName(), getX1(), getY1(), getZ1(), getX2(), getY2(), getZ2());
+        return new CylinderArea(areaCommon.isApproved(), getWorldName(), getX1(), getY1(), getZ1(), getX2(), getY2(),
+                getZ2());
     }
 }

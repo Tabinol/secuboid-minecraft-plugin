@@ -1,12 +1,7 @@
-# This is a sample build configuration for Java � Maven.
-# Check our guides at https://confluence.atlassian.com/x/zd-5Mw for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
+# Secuboid pipeline configuration
 image: maven:3.6.2-jdk-8
 
 clone:
-  depth: full # Required for sonarcloud
 pipelines:
   default:
     - step:
@@ -14,7 +9,7 @@ pipelines:
         caches:
           - maven
         script: # Modify the commands below to build your repository.
-          - mvn --batch-mode verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          - mvn --batch-mode verify
   branches:
     master:
       - step:
@@ -23,7 +18,7 @@ pipelines:
             - maven
           script:
             - bash pipelines/configure-maven.sh
-            - mvn --batch-mode source:jar javadoc:jar javadoc:javadoc deploy org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+            - mvn --batch-mode source:jar javadoc:jar javadoc:javadoc deploy
           artifacts: # defining the artifacts to be passed to each future step.
             - target/**
       - step:

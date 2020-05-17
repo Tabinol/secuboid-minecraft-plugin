@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,17 +17,73 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.util.logging.Level;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.approve.Approve;
+import me.tabinol.secuboid.lands.areas.Area;
+import me.tabinol.secuboid.permissionsflags.Flag;
+import me.tabinol.secuboid.permissionsflags.Permission;
+import me.tabinol.secuboid.playercontainer.PlayerContainer;
+import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
+import me.tabinol.secuboid.storage.flat.ApprovesFlat;
+import me.tabinol.secuboid.storage.flat.InventoriesFlat;
+import me.tabinol.secuboid.storage.flat.LandsFlat;
+import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
+import me.tabinol.secuboid.storage.flat.StorageFlat;
+import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
+import me.tabinol.secuboid.storage.mysql.StorageMySql;
 
 /**
  * The Interface Storage.
  */
 public interface Storage {
 
+    static Storage getStorageFromConfig(final Secuboid secuboid, final String configParam) {
+        final Storage storage;
+
+        switch (configParam.toLowerCase()) {
+            default: // No break because dafault execute "flat"
+                secuboid.getLogger().log(Level.WARNING, () -> String
+                        .format("The storage type \"%s\" is not available, using default \"flat\"", configParam));
+            case "flat":
+                final LandsFlat landsFlat = new LandsFlat(secuboid);
+                final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
+                final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
+                final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
+                storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
+                break;
+            case "mysql":
+                final Config config = secuboid.getConf();
+                final String hostName = config.mySqlHostName();
+                final int port = config.mySqlPort();
+                final String database = config.mySqlDatabase();
+                final String user = config.mySqlUser();
+                final String password = config.mySqlPassword();
+                final String prefix = config.mySqlPrefix();
+                final DatabaseConnection dbConn = new DatabaseConnection(hostName, port, database, user, password,
+                        prefix);
+                storage = new StorageMySql(secuboid, dbConn);
+        }
+        return storage;
+    }
+
     /**
      * Load all.
+     * 
+     * @return true if the the database need to be converted
      */
-    void loadAll();
+    boolean loadAll();
+
+    /**
+     * Load lands.
+     */
+    void loadLands();
 
     /**
      * Save land.
@@ -45,7 +100,211 @@ public interface Storage {
     void removeLand(Land land);
 
     /**
-     * Load lands.
+     * Removes land area.
+     * 
+     * @param land the land
+     * @param area the area
      */
-    void loadLands();
+    void removeLandArea(Land land, Area area);
+
+    /**
+     * Save land area.
+     * 
+     * @param land the land
+     * @param area the area
+     */
+    void saveLandArea(Land land, Area area);
+
+    /**
+     * Removes land banned.
+     * 
+     * @param land            the land
+     * @param playerContainer the banned
+     */
+    void removeLandBanned(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Save land banned.
+     * 
+     * @param land            the land
+     * @param playerContainer the banned
+     */
+    void saveLandBanned(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Removes land flag.
+     * 
+     * @param land the land
+     * @param flag the flag
+     */
+    void removeLandFlag(Land land, Flag flag);
+
+    /**
+     * Removes all land flags.
+     * 
+     * @param land the land
+     */
+    void removeAllLandFlags(Land land);
+
+    /**
+     * Save land flag.
+     * 
+     * @param land the land
+     * @param flag the flag
+     */
+    void saveLandFlag(Land land, Flag flag);
+
+    /**
+     * Removes land permission.
+     * 
+     * @param land            the land
+     * @param playerContainer the player container
+     * @param permission      the permission
+     */
+    void removeLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
+
+    /**
+     * Removes all land permissions.
+     * 
+     * @param land the land
+     */
+    void removeAllLandPermissions(Land land);
+
+    /**
+     * Save land permission.
+     * 
+     * @param land            the land
+     * @param playerContainer the player container
+     * @param permission      the permission
+     */
+    void saveLandPermission(Land land, PlayerContainer playerContainer, Permission permission);
+
+    /**
+     * Removes land notify.
+     * 
+     * @param land the land
+     * @param pcp  the player container player to notify
+     */
+    void removeLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
+
+    /**
+     * Removes all land notify.
+     * 
+     * @param land the land
+     */
+    void removeAllLandPlayerNotify(Land land);
+
+    /**
+     * Save land notify.
+     * 
+     * @param land the land
+     * @param pcp  the player container player to notify
+     */
+    void saveLandPlayerNotify(Land land, PlayerContainerPlayer pcp);
+
+    /**
+     * Removes land resident.
+     * 
+     * @param land            the land
+     * @param playerContainer the player container
+     */
+    void removeLandResident(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Removes all land residents.
+     * 
+     * @param land the land
+     */
+    void removeAllLandResidents(Land land);
+
+    /**
+     * Save land resident.
+     * 
+     * @param land            the land
+     * @param playerContainer the player container
+     */
+    void saveLandResident(Land land, PlayerContainer playerContainer);
+
+    /**
+     * Load approves.
+     */
+    void loadApproves();
+
+    /**
+     * Save approve.
+     *
+     * @param approve the approve
+     */
+    void saveApprove(Approve approve);
+
+    /**
+     * Removes the approve.
+     *
+     * @param landUUID the approve
+     */
+    void removeApprove(Approve approve);
+
+    /**
+     * Removes all approves.
+     */
+    void removeAllApproves();
+
+    /**
+     * Load all inventories (except player specific).
+     */
+    void loadInventories();
+
+    /**
+     * Save default inventory.
+     * 
+     * @param playerInvEntry the inventory
+     */
+    void saveInventoryDefault(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Remove default inventory.
+     * 
+     * @param playerInvEntry the inventory
+     */
+    void removeInventoryDefault(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Load all inventories for a specific player.
+     * 
+     * @param playerInventoryCache the player inventory chache
+     */
+    void loadInventoriesPlayer(PlayerInventoryCache playerInventoryCache);
+
+    /**
+     * Save a specific inventory for a player.
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayer(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Save a specific inventory for a death player. (Just the Ender chest)
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayerDeath(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Save a specific inventory for a death player (for restore).
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void saveInventoryPlayerDeathHistory(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Load players cache.
+     */
+    void loadPlayersCache();
+
+    /**
+     * Save the player cache entry.
+     * 
+     * @param playerCacheEntry the player cache entry
+     */
+    void savePlayerCacheEntry(PlayerCacheEntry playerCacheEntry);
 }

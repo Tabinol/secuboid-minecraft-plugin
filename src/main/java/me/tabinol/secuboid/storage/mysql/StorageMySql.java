@@ -973,7 +973,7 @@ public final class StorageMySql implements Storage {
             final String flagTypeStr = idToFlagType.get(flagPojo.getFlagId());
             final FlagType flagType = secuboid.getPermissionsFlags().getFlagTypeNoValid(flagTypeStr);
             Object valueObj = null;
-            final Object flagTypeDefaultValue = flagType.getDefaultValue();
+            final Object flagTypeDefaultValue = flagType.getDefaultValue().getValue();
             final long landFlagId = flagPojo.getId();
             if (flagTypeDefaultValue instanceof String) {
                 valueObj = landFlagIdtoValueString.get(landFlagId);

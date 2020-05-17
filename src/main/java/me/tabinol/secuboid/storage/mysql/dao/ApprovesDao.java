@@ -66,12 +66,12 @@ public final class ApprovesDao {
     }
 
     public void insertOrUpdateApprove(final Connection conn, final ApprovePojo approvePojo) throws SQLException {
-        final String sql = "INSERT INTO `{{TP}}approves`(" //
+        final String sql = "INSERT INTO `{{TP}}approves` (" //
                 + "`land_uuid`, `approve_action_id`, `removed_area_id`, `new_area_id`, " //
                 + "`owner_id`, `parent_uuid`, `price`, `transaction_datetime`) " //
-                + "VALUES(?, ?, ?, ?, ?, ?, ?, ?) " //
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " //
                 + "ON DUPLICATE KEY UPDATE " //
-                + "`approve_action_id`=?, `removed_area_id=?`, `new_area_id`=?, " //
+                + "`approve_action_id`=?, `removed_area_id`=?, `new_area_id`=?, " //
                 + "`owner_id`=?, `parent_uuid`=?, `price`=?, `transaction_datetime`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

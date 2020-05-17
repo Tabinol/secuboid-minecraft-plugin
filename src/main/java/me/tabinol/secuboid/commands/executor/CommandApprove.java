@@ -202,11 +202,9 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
     public void commandThreadExecute(final Collisions collisions) throws SecuboidCommandException {
 
         if (confirm) {
-
             // Create the action (if it is possible)
-            approves.removeApprove(approve);
             try {
-                approves.createAction(approve.getName());
+                approves.createAction(approve);
             } catch (final SecuboidLandException e) {
                 throw new SecuboidCommandException(secuboid, sender, "Error in land approve command", e);
             }

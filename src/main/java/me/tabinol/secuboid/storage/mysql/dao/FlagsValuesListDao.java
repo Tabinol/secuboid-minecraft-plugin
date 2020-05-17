@@ -44,7 +44,7 @@ public final class FlagsValuesListDao {
             final Map<Long, List<String>> results = new HashMap<>();
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    final long landFlagId = rs.getLong("land_uuid");
+                    final long landFlagId = rs.getLong("land_flag_id");
                     final String valueString = rs.getString("value_string");
 
                     results.computeIfAbsent(landFlagId, k -> new ArrayList<>()).add(valueString);

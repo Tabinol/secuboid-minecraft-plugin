@@ -196,8 +196,6 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                             .addApprove(new Approve(landLocal, action,
                                     removeId != 0 ? Optional.of(removeId) : Optional.empty(), newAreaIdOpt, owner,
                                     Optional.ofNullable(parent), collisions.getPrice(), Calendar.getInstance()));
-                    // new Approve(land, action, removedAreaIdOpt, newAreaIdOpt, owner, parentOpt,
-                    // price, dateTime)
                     new CommandCancel(secuboid, null, sender, argList).commandExecute();
 
                 } else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || !allowApprove) {

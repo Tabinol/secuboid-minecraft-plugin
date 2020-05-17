@@ -27,10 +27,10 @@ import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 /**
  * Return the collision to launched command.
  */
-class ReturnCollisionsToCommand implements Callable<Void> {
+final class ReturnCollisionsToCommand implements Callable<Void> {
 
     private final Secuboid secuboid;
-    
+
     /**
      * The command exec.
      */
@@ -44,7 +44,7 @@ class ReturnCollisionsToCommand implements Callable<Void> {
     /**
      * Instantiates a new return to command.
      *
-     * @param secuboid the secuboid instance
+     * @param secuboid    the secuboid instance
      * @param commandExec the command exec
      * @param collisions  the collisions
      */
@@ -60,7 +60,11 @@ class ReturnCollisionsToCommand implements Callable<Void> {
 
         // Return the output of the request
         try {
-            commandExec.commandThreadParentExecute(collisions);
+            try {
+                commandExec.commandThreadParentExecute(collisions);
+            } catch (final RuntimeException re) {
+                throw new SecuboidCommandException(secuboid, commandExec.getSender(), "Unknown exception", re);
+            }
         } catch (final SecuboidCommandException e) {
             secuboid.getLogger().log(Level.SEVERE, "Error in command", e);
             e.notifySender();

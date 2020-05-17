@@ -254,4 +254,8 @@ public abstract class CommandExec {
             }
         }
     }
+
+    public final CommandSender getSender() {
+        return sender;
+    }
 }

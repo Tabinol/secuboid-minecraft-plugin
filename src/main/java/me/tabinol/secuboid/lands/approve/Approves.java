@@ -99,8 +99,14 @@ public class Approves {
      * @param approve the approve
      */
     public void removeApprove(final Approve approve) {
+        removeApprove(approve, true);
+    }
+
+    private void removeApprove(final Approve approve, final boolean removeLandAndArea) {
         landNameToApprove.remove(approve.getName());
-        removeLandIfNeeded(approve);
+        if (removeLandAndArea) {
+            removeLandAndAreaIfNeeded(approve);
+        }
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, SaveOn.BOTH, Optional.of(approve));
     }
 
@@ -109,13 +115,13 @@ public class Approves {
      */
     public void removeAll() {
         for (final Approve approve : landNameToApprove.values()) {
-            removeLandIfNeeded(approve);
+            removeLandAndAreaIfNeeded(approve);
         }
         landNameToApprove.clear();
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, SaveOn.BOTH, Optional.empty());
     }
 
-    private final void removeLandIfNeeded(final Approve approve) {
+    private final void removeLandAndAreaIfNeeded(final Approve approve) {
         final Land land = approve.getLand();
         if (!land.isApproved()) {
             try {
@@ -124,15 +130,15 @@ public class Approves {
                 secuboid.getLogger().log(Level.WARNING, String.format(
                         "Unable to delete non approved land \"%s\", \"%s\"", land.getName(), land.getUUID()), e);
             }
+        } else {
+            approve.getNewAreaIdOpt().ifPresent(area -> land.removeArea(area));
         }
     }
 
     /**
      * Creates the action (approve and execute).
      */
-    public void createAction(final String landName) throws SecuboidLandException {
-        final String landNameLower = landName.toLowerCase();
-        final Approve approve = landNameToApprove.get(landNameLower);
+    public void createAction(final Approve approve) throws SecuboidLandException {
         final LandAction action = approve.getAction();
         final Land land = approve.getLand();
 
@@ -152,7 +158,7 @@ public class Approves {
                     land.setApproved(approve.getPrice());
                     break;
                 case LAND_REMOVE:
-                    secuboid.getLands().removeLand(landNameLower);
+                    secuboid.getLands().removeLand(approve.getLand());
                     break;
                 case LAND_PARENT:
                     land.setParent(approve.getParentOpt().get());
@@ -160,6 +166,7 @@ public class Approves {
                 default:
                     break;
             }
+            removeApprove(approve, false);
         }
     }
 }

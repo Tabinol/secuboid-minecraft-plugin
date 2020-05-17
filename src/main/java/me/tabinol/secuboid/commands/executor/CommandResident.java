@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -77,12 +76,12 @@ public final class CommandResident extends CommandPlayerThreadExec {
 
             pc = argList.getPlayerContainerFromArg(new PlayerContainerType[] { PlayerContainerType.EVERYBODY,
                     PlayerContainerType.OWNER, PlayerContainerType.RESIDENT });
-            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            secuboid.getPlayersCache().getUUIDWithNameAsync(this, pc);
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
             pc = argList.getPlayerContainerFromArg(null);
-            secuboid.getPlayersCache().getUUIDWithNames(this, pc);
+            secuboid.getPlayersCache().getUUIDWithNameAsync(this, pc);
 
         } else if (fonction.equalsIgnoreCase("list")) {
 

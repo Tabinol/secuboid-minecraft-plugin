@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,53 +17,24 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
-import org.bukkit.Bukkit;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * This class is for lands and cuboids calculation. It need to be threaded
  */
-public class CollisionsManagerThread extends Thread {
-
-    private final Secuboid secuboid;
-
-    /**
-     * The exit request.
-     */
-    private boolean exitRequest = false;
-
-    /**
-     * The lock.
-     */
-    private final Lock lock = new ReentrantLock();
-
-    /**
-     * The lock command request.
-     */
-    private final Condition commandRequest = lock.newCondition();
-
-    /**
-     * The lock not saved.
-     */
-    private final Condition notSaved = lock.newCondition();
-
-    /**
-     * The calculated list.
-     */
-    private final List<OutputRequest> requests;
+public class CollisionsManagerThread extends SecuboidQueueThread<CollisionsManagerThread.OutputRequest> {
 
     /**
      * The Class OutputRequest.
      */
-    private class OutputRequest {
+    protected static final class OutputRequest {
 
         /**
          * The command exec.
@@ -82,7 +52,7 @@ public class CollisionsManagerThread extends Thread {
          * @param commandExec the command exec
          * @param collisions  the collisions
          */
-        OutputRequest(CommandCollisionsThreadExec commandExec, Collisions collisions) {
+        private OutputRequest(final CommandCollisionsThreadExec commandExec, final Collisions collisions) {
 
             this.commandExec = commandExec;
             this.collisions = collisions;
@@ -94,65 +64,27 @@ public class CollisionsManagerThread extends Thread {
      *
      * @param secuboid secuboid instance
      */
-    public CollisionsManagerThread(Secuboid secuboid) {
-
-        this.secuboid = secuboid;
-        this.setName("Secuboid collisions manager");
-        requests = Collections.synchronizedList(new ArrayList<OutputRequest>());
+    public CollisionsManagerThread(final Secuboid secuboid) {
+        super(secuboid, "Secuboid collisions manager");
     }
 
     @Override
-    public void run() {
-
-        lock.lock();
+    protected boolean doElement(final OutputRequest outputRequest) {
+        // Do collision and price check
         try {
-            // Output request loop (waiting for a command)
-            while (!exitRequest) {
-
-                while (!requests.isEmpty()) {
-
-                    // Do collision and price check
-                    OutputRequest output = requests.remove(0);
-                    output.collisions.doCollisionCheck();
-
-                    // Return the result to main thread
-                    ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(output.commandExec, output.collisions);
-                    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
-
-                }
-
-                // wait!
-                try {
-                    commandRequest.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            notSaved.signal();
-        } finally {
-            lock.unlock();
+            outputRequest.collisions.doCollisionCheck();
+        } catch (final RuntimeException e) {
+            final Land land = outputRequest.collisions.getLand();
+            secuboid.getLogger().log(Level.SEVERE, String.format(
+                    "Unable to complete collision check for \"%s\", UUID \"%s\"", land.getName(), land.getUUID()), e);
         }
-    }
 
-    /**
-     * Stop next run.
-     */
-    public void stopNextRun() {
+        // Return the result to main thread
+        final ReturnCollisionsToCommand returnToCommand = new ReturnCollisionsToCommand(secuboid,
+                outputRequest.commandExec, outputRequest.collisions);
+        Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
 
-        if (!isAlive()) {
-            secuboid.getLogger().severe("Problem with collisions manager Thread. Possible data loss!");
-            return;
-        }
-        exitRequest = true;
-        lock.lock();
-        commandRequest.signal();
-        try {
-            notSaved.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
+        return true;
     }
 
     /**
@@ -161,19 +93,8 @@ public class CollisionsManagerThread extends Thread {
      * @param commandThreadExec The command instance
      * @param collisionsReq     An instance of collision
      */
-    public void lookForCollisions(CommandCollisionsThreadExec commandThreadExec, Collisions collisionsReq) {
+    public void lookForCollisions(final CommandCollisionsThreadExec commandThreadExec, final Collisions collisionsReq) {
 
-        requests.add(new OutputRequest(commandThreadExec, collisionsReq));
-        wakeUp();
-    }
-
-    private void wakeUp() {
-
-        lock.lock();
-        try {
-            commandRequest.signal();
-        } finally {
-            lock.unlock();
-        }
+        addElement(new OutputRequest(commandThreadExec, collisionsReq));
     }
 }

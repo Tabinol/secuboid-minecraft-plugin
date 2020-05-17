@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -36,17 +35,12 @@ import org.bukkit.Bukkit;
  */
 public final class MavenAppProperties {
 
+    private static final String APP_PROPERTIES_FILENAME = "app.properties";
+
     /**
      * The properties.
      */
-    private final Properties properties;
-
-    /**
-     * Instantiates a new maven app properties.
-     */
-    public MavenAppProperties() {
-        this.properties = new Properties();
-    }
+    private static Properties properties = new Properties();
 
     /**
      * Load properties.
@@ -56,7 +50,7 @@ public final class MavenAppProperties {
             final File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                     .getCanonicalFile();
             try (JarFile jar = new JarFile(jarloc)) {
-                final JarEntry entry = jar.getJarEntry("app.properties");
+                final JarEntry entry = jar.getJarEntry(APP_PROPERTIES_FILENAME);
                 try (final InputStream resource = jar.getInputStream(entry)) {
                     properties.load(resource);
                 }
@@ -67,22 +61,43 @@ public final class MavenAppProperties {
     }
 
     /**
+     * Load properties from resources when the file is not inside a jar (ex: tests).
+     * 
+     * @throws IOException
+     */
+    public void loadPropertiesFromResources() throws IOException {
+        try (final InputStream resource = getClass().getClassLoader().getResourceAsStream(APP_PROPERTIES_FILENAME)) {
+            properties.load(resource);
+        }
+    }
+
+    /**
      * Gets the property string.
      *
-     * @param path the path
+     * @param path         the path
+     * @param defaultValue the default value
      * @return the property string
      */
-    public String getPropertyString(final String path) {
-        return properties.getProperty(path);
+    public static String getPropertyString(final String path, final String defaultValue) {
+        return properties.getProperty(path, defaultValue);
     }
 
     /**
      * Gets the property int.
      *
-     * @param path the path
+     * @param path            the path
+     * @param defaultValueInt the default value integer
      * @return the property int
      */
-    public int getPropertyInt(final String path) {
-        return Integer.parseInt(properties.getProperty(path));
+    public static int getPropertyInt(final String path, final int defaultValueInt) {
+        final String value = properties.getProperty(path);
+        if (value == null) {
+            return defaultValueInt;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException e) {
+            return defaultValueInt;
+        }
     }
 }

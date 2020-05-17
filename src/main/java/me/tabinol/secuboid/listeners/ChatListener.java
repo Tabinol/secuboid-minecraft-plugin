@@ -3,11 +3,6 @@ package me.tabinol.secuboid.listeners;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.Config;
-import me.tabinol.secuboid.config.players.PlayerConfig;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.utilities.ColoredConsole;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,6 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.players.PlayerConfig;
+import me.tabinol.secuboid.utilities.ColoredConsole;
 
 /**
  * Chat listener
@@ -36,7 +37,7 @@ public class ChatListener extends CommonListener implements Listener {
      *
      * @param secuboid secuboid instance
      */
-    public ChatListener(Secuboid secuboid) {
+    public ChatListener(final Secuboid secuboid) {
 
         super(secuboid);
         conf = secuboid.getConf();
@@ -44,27 +45,25 @@ public class ChatListener extends CommonListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+    public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
 
         if (!conf.isLandChat()) {
             return;
         }
 
-        String firstChar = event.getMessage().substring(0, 1);
-        Player player = event.getPlayer();
+        final String firstChar = event.getMessage().substring(0, 1);
+        final Player player = event.getPlayer();
 
         // Chat in a land
         if (firstChar.equals("=") || firstChar.equals(">") || firstChar.equals("<")) {
 
             event.setCancelled(true);
 
-            Land land = secuboid.getLands().getLand(player.getLocation());
+            final Land land = secuboid.getLands().getLand(player.getLocation());
 
             // The player is not in a land
             if (land == null) {
-                player.sendMessage(ChatColor.RED + "[Secuboid] "
-                        + secuboid.getLanguage().getMessage(
-                        "CHAT.OUTSIDE"));
+                player.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("CHAT.OUTSIDE"));
                 return;
             }
 
@@ -81,33 +80,31 @@ public class ChatListener extends CommonListener implements Listener {
             } else if (firstChar.equals("<")) {
                 playersToMsg = copyWithSpy(land.getPlayersInLandAndChildren());
             } else { // ">"
-                playersToMsg = copyWithSpy(land.getAncestor(land.getGenealogy()).getPlayersInLandAndChildren());
+                playersToMsg = copyWithSpy(land.getFirstParent().getPlayersInLandAndChildren());
             }
 
-            String message = event.getMessage().substring(1);
+            final String message = event.getMessage().substring(1);
 
             // send messages
-            ColoredConsole.info(ChatColor.WHITE + "[" + player.getDisplayName()
-                    + ChatColor.WHITE + " " + firstChar + " " + "'"
-                    + ChatColor.GREEN + land.getName() + ChatColor.WHITE + "'] "
-                    + ChatColor.GRAY + message);
-            for (Player playerToMsg : playersToMsg) {
-                playerToMsg.sendMessage(ChatColor.WHITE + "[" + player.getDisplayName()
-                        + ChatColor.WHITE + " " + firstChar + " " + "'"
-                        + ChatColor.GREEN + land.getName() + ChatColor.WHITE + "'] "
+            ColoredConsole.info(
+                    ChatColor.WHITE + "[" + player.getDisplayName() + ChatColor.WHITE + " " + firstChar + " " + "'"
+                            + ChatColor.GREEN + land.getName() + ChatColor.WHITE + "'] " + ChatColor.GRAY + message);
+            for (final Player playerToMsg : playersToMsg) {
+                playerToMsg.sendMessage(ChatColor.WHITE + "[" + player.getDisplayName() + ChatColor.WHITE + " "
+                        + firstChar + " " + "'" + ChatColor.GREEN + land.getName() + ChatColor.WHITE + "'] "
                         + ChatColor.GRAY + message);
             }
         }
     }
 
-    private HashSet<Player> copyWithSpy(Set<Player> a) {
+    private HashSet<Player> copyWithSpy(final Set<Player> a) {
 
-        HashSet<Player> listSet = new HashSet<Player>();
+        final HashSet<Player> listSet = new HashSet<Player>();
 
-        for (Player player : a) {
+        for (final Player player : a) {
             listSet.add(player);
         }
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (final Player player : Bukkit.getOnlinePlayers()) {
             if (playerConf.getChat().isSpy(player)) {
                 listSet.add(player);
             }

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -63,8 +62,8 @@ public final class VisualSelectionCuboid implements VisualSelection {
 
     private final CuboidArea originalArea;
 
-    public VisualSelectionCuboid(Secuboid secuboid, CuboidArea area, CuboidArea originalArea, boolean isActive,
-            Player player) {
+    public VisualSelectionCuboid(final Secuboid secuboid, final CuboidArea area, final CuboidArea originalArea,
+            final boolean isActive, final Player player) {
         this.secuboid = secuboid;
         this.originalArea = originalArea;
         if (area == null) {
@@ -120,7 +119,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
         final Location loc = player.getLocation();
         final int landXr = secuboid.getConf().getDefaultXSize() / 2;
         final int landZr = secuboid.getConf().getDefaultZSize() / 2;
-        area = new CuboidArea(loc.getWorld().getName(), loc.getBlockX() - landXr, visualCommon.getY1(),
+        area = new CuboidArea(false, loc.getWorld().getName(), loc.getBlockX() - landXr, visualCommon.getY1(),
                 loc.getBlockZ() - landZr, loc.getBlockX() + landXr, visualCommon.getY2(), loc.getBlockZ() + landZr);
 
         makeVisualSelection();
@@ -131,21 +130,21 @@ public final class VisualSelectionCuboid implements VisualSelection {
 
         // Detect the current land from the 8 points
         final LandPermissionsFlags landPermissionsFlags1 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX1(), area.getY1(), area.getZ1()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX1(), area.getY1(), area.getZ1()));
         final LandPermissionsFlags landPermissionsFlags2 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX1(), area.getY1(), area.getZ2()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX1(), area.getY1(), area.getZ2()));
         final LandPermissionsFlags landPermissionsFlags3 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX2(), area.getY1(), area.getZ1()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX2(), area.getY1(), area.getZ1()));
         final LandPermissionsFlags landPermissionsFlags4 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX2(), area.getY1(), area.getZ2()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX2(), area.getY1(), area.getZ2()));
         final LandPermissionsFlags landPermissionsFlags5 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX1(), area.getY2(), area.getZ1()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX1(), area.getY2(), area.getZ1()));
         final LandPermissionsFlags landPermissionsFlags6 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX1(), area.getY2(), area.getZ2()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX1(), area.getY2(), area.getZ2()));
         final LandPermissionsFlags landPermissionsFlags7 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX2(), area.getY2(), area.getZ1()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX2(), area.getY2(), area.getZ1()));
         final LandPermissionsFlags landPermissionsFlags8 = secuboid.getLands()
-                .getPermissionsFlags(new Location(area.getWord(), area.getX2(), area.getY2(), area.getZ2()));
+                .getPermissionsFlags(new Location(area.getWorld(), area.getX2(), area.getY2(), area.getZ2()));
 
         if (landPermissionsFlags1 == landPermissionsFlags2 && landPermissionsFlags1 == landPermissionsFlags3
                 && landPermissionsFlags1 == landPermissionsFlags4 && landPermissionsFlags1 == landPermissionsFlags5
@@ -180,12 +179,12 @@ public final class VisualSelectionCuboid implements VisualSelection {
                 }
                 if (posX == area.getX1() || posX == area.getX2() || posZ == area.getZ1() || posZ == area.getZ2()) {
 
-                    final Location newloc = new Location(area.getWord(), posX,
+                    final Location newloc = new Location(area.getWorld(), posX,
                             PlayersUtil.getYNearPlayer(player, posX, posZ) - 1d, posZ);
 
                     if (isActive) {
                         // Active Selection
-                        LandPermissionsFlags testCuboidarea = secuboid.getLands().getPermissionsFlags(newloc);
+                        final LandPermissionsFlags testCuboidarea = secuboid.getLands().getPermissionsFlags(newloc);
                         if (parentPermsFlagsDetected == testCuboidarea
                                 && (canCreate || secuboid.getPlayerConf().get(player).isAdminMode())) {
                             changedBlocks.changeBlock(newloc, ChangedBlocks.SEL_ACTIVE.createBlockData());
@@ -207,7 +206,7 @@ public final class VisualSelectionCuboid implements VisualSelection {
     }
 
     @Override
-    public void playerMove(AreaSelection.MoveType moveType) {
+    public void playerMove(final AreaSelection.MoveType moveType) {
         visualCommon.playerMoveSquare(moveType, area);
     }
 }

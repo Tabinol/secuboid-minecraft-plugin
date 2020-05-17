@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,6 +17,8 @@
  */
 package me.tabinol.secuboid;
 
+import java.util.Optional;
+
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,16 +26,17 @@ import me.tabinol.secuboid.commands.CommandListener;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.config.WorldConfig;
-import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.dependencies.DependPlugin;
 import me.tabinol.secuboid.economy.EcoScheduler;
 import me.tabinol.secuboid.economy.PlayerMoney;
+import me.tabinol.secuboid.inventories.Inventories;
 import me.tabinol.secuboid.lands.Lands;
-import me.tabinol.secuboid.lands.approve.ApproveList;
 import me.tabinol.secuboid.lands.approve.ApproveNotif;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.collisions.CollisionsManagerThread;
 import me.tabinol.secuboid.lands.types.Types;
 import me.tabinol.secuboid.listeners.ChatListener;
+import me.tabinol.secuboid.listeners.ConnectionListener;
 import me.tabinol.secuboid.listeners.FlyCreativeListener;
 import me.tabinol.secuboid.listeners.InventoryListener;
 import me.tabinol.secuboid.listeners.LandListener;
@@ -42,7 +44,10 @@ import me.tabinol.secuboid.listeners.PlayerListener;
 import me.tabinol.secuboid.listeners.PvpListener;
 import me.tabinol.secuboid.listeners.WorldListener;
 import me.tabinol.secuboid.permissionsflags.PermissionsFlags;
+import me.tabinol.secuboid.playercontainer.PlayerContainers;
+import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.playerscache.PlayersCache;
+import me.tabinol.secuboid.storage.Storage;
 import me.tabinol.secuboid.storage.StorageThread;
 import me.tabinol.secuboid.utilities.Lang;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
@@ -63,9 +68,9 @@ public final class Secuboid extends JavaPlugin {
     private MavenAppProperties mavenAppProperties;
 
     /**
-     * the new instance.
+     * the player containers.
      */
-    private NewInstance newInstance;
+    private PlayerContainers playerContainers;
 
     /**
      * The types.
@@ -81,11 +86,16 @@ public final class Secuboid extends JavaPlugin {
      * The world config.
      */
     private WorldConfig worldConfig;
-    
+
     /**
      * The approve list.
      */
-    private ApproveList approveList;
+    private Approves approves;
+
+    /**
+     * The inventories cache. Optional if inventories are enabled
+     */
+    private Optional<Inventories> inventoriesOpt;
 
     /**
      * The parameters.
@@ -117,6 +127,8 @@ public final class Secuboid extends JavaPlugin {
      */
     private ApproveNotif approveNotif;
 
+    private Storage storage;
+
     /**
      * The storage thread.
      */
@@ -132,8 +144,6 @@ public final class Secuboid extends JavaPlugin {
      */
     private Config conf;
 
-    private InventoryConfig inventoryConf = null;
-
     /**
      * The language.
      */
@@ -145,9 +155,9 @@ public final class Secuboid extends JavaPlugin {
     private DependPlugin dependPlugin;
 
     /**
-     * The player money.
+     * The player money (optional).
      */
-    private PlayerMoney playerMoney;
+    private Optional<PlayerMoney> playerMoneyOpt;
 
     /**
      * The players cache.
@@ -159,35 +169,44 @@ public final class Secuboid extends JavaPlugin {
         mavenAppProperties = new MavenAppProperties();
         mavenAppProperties.loadProperties();
         // Static access to «this» Secuboid
-        permissionsFlags = new PermissionsFlags(this); // Must be before the configuration!
+        permissionsFlags = new PermissionsFlags(); // Must be before the configuration!
         types = new Types();
         conf = new Config(this);
+        playerContainers = new PlayerContainers(this);
 
         // For inventory config
         if (conf.isMultipleInventories()) {
-            inventoryConf = new InventoryConfig(this);
+            final InventoryConfig inventoryConfig = new InventoryConfig(this);
+            final Inventories inventories = new Inventories(this, inventoryConfig);
+            inventories.reloadConfig();
+            inventoriesOpt = Optional.of(inventories);
+        } else {
+            inventoriesOpt = Optional.empty();
         }
 
-        newInstance = new NewInstance(this);
         dependPlugin = new DependPlugin(this);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
+            playerMoneyOpt = Optional.of(new PlayerMoney(dependPlugin.getVaultEconomy()));
         } else {
-            playerMoney = null;
+            playerMoneyOpt = Optional.empty();
         }
         playerConf = new PlayerConfig(this);
-        playerConf.addAll();
+        playerConf.addConsoleSender();
         language = new Lang(this);
-        storageThread = new StorageThread(this);
+        playersCache = new PlayersCache(this);
+        playersCache.start();
+        storage = Storage.getStorageFromConfig(this, getConf().getStorage());
+        storageThread = new StorageThread(this, storage);
         worldConfig = new WorldConfig(this);
         worldConfig.loadResources();
-        approveList = new ApproveList(this);
-        approveList.loadResources();
-        lands = new Lands(this, worldConfig, approveList);
+        approves = new Approves(this);
+
+        lands = new Lands(this, worldConfig, approves);
         collisionsManagerThread = new CollisionsManagerThread(this);
         collisionsManagerThread.start();
         storageThread.loadAllAndStart();
         final WorldListener worldListener = new WorldListener(this);
+        final ConnectionListener connectionListener = new ConnectionListener(this);
         final PlayerListener playerListener = new PlayerListener(this);
         final PvpListener pvpListener = new PvpListener(this);
         final LandListener landListener = new LandListener(this);
@@ -199,24 +218,22 @@ public final class Secuboid extends JavaPlugin {
             final EcoScheduler ecoScheduler = new EcoScheduler(this);
             ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         }
-        playersCache = new PlayersCache(this);
-        playersCache.start();
         getServer().getPluginManager().registerEvents(worldListener, this);
+        getServer().getPluginManager().registerEvents(connectionListener, this);
         getServer().getPluginManager().registerEvents(playerListener, this);
         getServer().getPluginManager().registerEvents(pvpListener, this);
         getServer().getPluginManager().registerEvents(landListener, this);
         getServer().getPluginManager().registerEvents(chatListener, this);
-        
-        
+
         final PluginCommand pluginCommand = getCommand("secuboid");
         pluginCommand.setExecutor(commandListener);
         pluginCommand.setTabCompleter(commandListener);
 
         // Register events only if Inventory is active
-        if (inventoryConf != null) {
-            inventoryListener = new InventoryListener(this);
+        inventoriesOpt.ifPresent(inventories -> {
+            inventoryListener = new InventoryListener(this, inventories);
             getServer().getPluginManager().registerEvents(inventoryListener, this);
-        }
+        });
 
         // Register events only if Fly and Creative is active
         if (conf.isFlyAndCreative()) {
@@ -233,20 +250,17 @@ public final class Secuboid extends JavaPlugin {
         types = new Types();
         // No reload of Parameters to avoid Deregistering external parameters
         conf.reloadConfig();
-        if (inventoryConf != null) {
-            inventoryConf.reloadConfig();
-        }
+        inventoriesOpt.ifPresent(Inventories::reloadConfig);
         if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
+            playerMoneyOpt = Optional.of(new PlayerMoney(dependPlugin.getVaultEconomy()));
         } else {
-            playerMoney = null;
+            playerMoneyOpt = Optional.empty();
         }
         language.reloadConfig();
         worldConfig.loadResources();
-        approveList.loadResources();
-        lands = new Lands(this, worldConfig, approveList);
+        lands = new Lands(this, worldConfig, approves);
         storageThread.stopNextRun();
-        storageThread = new StorageThread(this);
+        storageThread = new StorageThread(this, storage);
         storageThread.loadAllAndStart();
         approveNotif.stopNextRun();
         approveNotif.runApproveNotifLater();
@@ -255,9 +269,7 @@ public final class Secuboid extends JavaPlugin {
     @Override
     public void onDisable() {
         // Save all inventories
-        if (inventoryListener != null) {
-            inventoryListener.removeAndSave();
-        }
+        inventoriesOpt.ifPresent(Inventories::removeAndSave);
         collisionsManagerThread.stopNextRun();
         playersCache.stopNextRun();
         approveNotif.stopNextRun();
@@ -275,12 +287,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Gets the new instance to create some objects.
+     * Gets the player containers.
      *
-     * @return the new instance
+     * @return the player containers
      */
-    public NewInstance getNewInstance() {
-        return newInstance;
+    public PlayerContainers getPlayerContainers() {
+        return playerContainers;
     }
 
     /**
@@ -293,21 +305,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Inventory config
+     * Inventories. Optional if inventories are enabled.
      *
-     * @return the config
+     * @return the optional inventories
      */
-    public InventoryConfig getInventoryConf() {
-        return inventoryConf;
-    }
-
-    /**
-     * Inventory Listener,
-     *
-     * @return the inventory listener
-     */
-    public InventoryListener getInventoryListener() {
-        return inventoryListener;
+    public Optional<Inventories> getInventoriesOpt() {
+        return inventoriesOpt;
     }
 
     /**
@@ -401,12 +404,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Get player money.
+     * Get player money if economy is active.
      *
-     * @return the player money
+     * @return the optional player money
      */
-    public PlayerMoney getPlayerMoney() {
-        return playerMoney;
+    public Optional<PlayerMoney> getPlayerMoneyOpt() {
+        return playerMoneyOpt;
     }
 
     /**

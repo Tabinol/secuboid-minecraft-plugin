@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -38,16 +37,18 @@ public class SecuboidLandException extends ApiSecuboidLandException {
      * @param action   the action
      * @param error    the error
      */
-    public SecuboidLandException(Secuboid secuboid, String landName, Area area, Collisions.LandAction action, Collisions.LandError error) {
+    public SecuboidLandException(final Secuboid secuboid, final String landName, final Area area,
+            final Collisions.LandAction action, final Collisions.LandError error) {
+        super(String.format("Secuboid Land Exception: [Land=%s, area=%s, action=%s, error=%s]", landName,
+                area.getPrint(), action.name(), error.name()));
+    }
 
-        super("Secuboid Land Exception");
-
-        StringBuilder bf = new StringBuilder();
-
-        bf.append("Error: Land: ").append(landName);
-        if (area != null) {
-            bf.append(", area: ").append(area.getPrint());
-        }
-        bf.append(", Action: ").append(action.toString()).append(", Error: ").append(error.toString());
+    /**
+     * Instantiates a new secuboid land exception.
+     *
+     * @param err the error message
+     */
+    public SecuboidLandException(final String err) {
+        super(err);
     }
 }

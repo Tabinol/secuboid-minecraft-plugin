@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,7 +15,9 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.players;
+package me.tabinol.secuboid.players;
+
+import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCancel;
@@ -39,7 +40,7 @@ class PlayerAutoCancelSelect extends SecuboidRunnable {
      * @param secuboid the secuboid instance
      * @param entry    the entry
      */
-    PlayerAutoCancelSelect(Secuboid secuboid, PlayerConfEntry entry) {
+    PlayerAutoCancelSelect(final Secuboid secuboid, final PlayerConfEntry entry) {
 
         super(secuboid);
         this.entry = entry;
@@ -51,8 +52,9 @@ class PlayerAutoCancelSelect extends SecuboidRunnable {
         setOneTimeDone();
         try {
             new CommandCancel(secuboid, null, entry.getSender(), null).commandExecute();
-        } catch (SecuboidCommandException ex) {
-            secuboid.getLogger().severe("Can not cancel the command:" + ex.getLocalizedMessage());
+        } catch (final SecuboidCommandException ex) {
+            secuboid.getLogger().log(Level.SEVERE, "Error in select cancel command", ex);
+            ex.notifySender();
         }
     }
 }

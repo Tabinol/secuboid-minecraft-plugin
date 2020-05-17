@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,23 +17,17 @@
  */
 package me.tabinol.secuboid.playerscache;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
+import org.bukkit.Bukkit;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandPlayerThreadExec;
@@ -42,49 +35,24 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayerName;
 import me.tabinol.secuboid.playerscache.minecraftapi.HttpProfileRepository;
 import me.tabinol.secuboid.playerscache.minecraftapi.Profile;
-import org.bukkit.Bukkit;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
+import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
  * The Class PlayersCache.
  */
-public final class PlayersCache extends Thread {
-
-    private final Secuboid secuboid;
-
-    /**
-     * The player cache version.
-     */
-    private final int playerCacheVersion;
-
-    /**
-     * The file.
-     */
-    private final File file;
+public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerCacheable> {
 
     /**
      * The players cache list.
      */
-    private TreeMap<String, PlayerCacheEntry> playersCacheList;
+    private final Map<String, PlayerCacheEntry> playersCacheList;
 
     /**
      * The players rev cache list.
      */
-    private TreeMap<UUID, PlayerCacheEntry> playersRevCacheList;
-
-    /**
-     * The output list.
-     */
-    private final List<OutputRequest> outputList;
-
-    /**
-     * The update list.
-     */
-    private final List<PlayerCacheEntry> updateList;
-
-    /**
-     * The exit request.
-     */
-    private boolean exitRequest = false;
+    private final Map<UUID, PlayerCacheEntry> playersRevCacheList;
 
     /**
      * The http profile repository.
@@ -92,24 +60,16 @@ public final class PlayersCache extends Thread {
     private final HttpProfileRepository httpProfileRepository;
 
     /**
-     * The lock.
+     * This interface is here to represent objects in queue.
      */
-    private final Lock lock = new ReentrantLock();
-
-    /**
-     * The lock command request.
-     */
-    private final Condition commandRequest = lock.newCondition();
-
-    /**
-     * The lock not saved.
-     */
-    private final Condition notSaved = lock.newCondition();
+    protected interface PlayerCacheable {
+        // Empty interface
+    }
 
     /**
      * The Class OutputRequest.
      */
-    private class OutputRequest {
+    private static class OutputRequest implements PlayerCacheable {
 
         /**
          * The command exec.
@@ -127,8 +87,7 @@ public final class PlayersCache extends Thread {
          * @param commandExec the command exec
          * @param playerNames the player names
          */
-        OutputRequest(CommandPlayerThreadExec commandExec, String[] playerNames) {
-
+        OutputRequest(final CommandPlayerThreadExec commandExec, final String[] playerNames) {
             this.commandExec = commandExec;
             this.playerNames = playerNames;
         }
@@ -139,17 +98,22 @@ public final class PlayersCache extends Thread {
      *
      * @param secuboid secuboid instance
      */
-    public PlayersCache(Secuboid secuboid) {
-
-        this.secuboid = secuboid;
-        playerCacheVersion = secuboid.getMavenAppProperties().getPropertyInt("playersCacheVersion");
-        this.setName("Secuboid Players cache");
-        String fileName = secuboid.getDataFolder() + "/" + "playerscache.conf";
-        file = new File(fileName);
-        outputList = Collections.synchronizedList(new ArrayList<OutputRequest>());
-        updateList = Collections.synchronizedList(new ArrayList<PlayerCacheEntry>());
+    public PlayersCache(final Secuboid secuboid) {
+        super(secuboid, "Secuboid Players cache");
+        playersCacheList = new HashMap<>();
+        playersRevCacheList = new HashMap<>();
         httpProfileRepository = new HttpProfileRepository("minecraft");
-        loadAll();
+    }
+
+    /**
+     * Load players cache (Internal).
+     * 
+     * @param playerCacheEntries the player cache entries
+     */
+    public void loadPlayerscache(final List<PlayerCacheEntry> playerCacheEntries) {
+        playersCacheList.clear();
+        playersRevCacheList.clear();
+        playerCacheEntries.forEach(this::updatePlayerInlist);
     }
 
     /**
@@ -158,15 +122,8 @@ public final class PlayersCache extends Thread {
      * @param uuid       the uuid
      * @param playerName the player name
      */
-    public void updatePlayer(UUID uuid, String playerName) {
-
-        updateList.add(new PlayerCacheEntry(uuid, playerName));
-        lock.lock();
-        try {
-            commandRequest.signal();
-        } finally {
-            lock.unlock();
-        }
+    public void updatePlayer(final UUID uuid, final String playerName) {
+        addElement(new PlayerCacheEntry(uuid, playerName));
     }
 
     /**
@@ -178,9 +135,17 @@ public final class PlayersCache extends Thread {
         return playersCacheList.keySet();
     }
 
-    public String getNameFromUUID(UUID uuid) {
+    /**
+     * Gets the player cache entries.
+     * 
+     * @return an unmodifiable collection
+     */
+    public Collection<PlayerCacheEntry> getPlayerCacheEntries() {
+        return Collections.unmodifiableCollection(playersCacheList.values());
+    }
 
-        PlayerCacheEntry entry = playersRevCacheList.get(uuid);
+    public String getNameFromUUID(final UUID uuid) {
+        final PlayerCacheEntry entry = playersRevCacheList.get(uuid);
 
         if (entry != null) {
             return entry.getName();
@@ -195,7 +160,7 @@ public final class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param pc          the pc
      */
-    public void getUUIDWithNames(CommandPlayerThreadExec commandExec, PlayerContainer pc) {
+    public void getUUIDWithNameAsync(final CommandPlayerThreadExec commandExec, final PlayerContainer pc) {
 
         if (pc != null && pc instanceof PlayerContainerPlayerName) {
             getUUIDWithNames(commandExec, pc.getName());
@@ -211,91 +176,67 @@ public final class PlayersCache extends Thread {
      * @param commandExec the command exec
      * @param playerNames the player names
      */
-    private void getUUIDWithNames(CommandPlayerThreadExec commandExec, String... playerNames) {
-
-        outputList.add(new OutputRequest(commandExec, playerNames));
-        lock.lock();
-        try {
-            commandRequest.signal();
-        } finally {
-            lock.unlock();
-        }
+    private void getUUIDWithNames(final CommandPlayerThreadExec commandExec, final String... playerNames) {
+        addElement(new OutputRequest(commandExec, playerNames));
     }
 
     @Override
-    public void run() {
+    protected boolean doElement(final PlayerCacheable outputRequestObj) {
+        // Check if the object is an output request
+        if (outputRequestObj instanceof OutputRequest) {
+            final OutputRequest outputRequest = (OutputRequest) outputRequestObj;
+            final int length = outputRequest.playerNames.length;
 
-        lock.lock();
-        try {
-            // Output request loop (waiting for a command)
-            while (!exitRequest) {
+            final PlayerCacheEntry[] entries = new PlayerCacheEntry[length];
 
-                // Check if the list is empty and execute the list
-                while (!outputList.isEmpty()) {
-                    OutputRequest outputRequest = outputList.remove(0);
-                    int length = outputRequest.playerNames.length;
-
-                    PlayerCacheEntry[] entries = new PlayerCacheEntry[length];
-
-                    // Pass 1 check in playersCache or null
-                    ArrayList<String> names = new ArrayList<String>(); // Pass 2 list
-                    for (int t = 0; t < length; t++) {
-                        entries[t] = playersCacheList.get(outputRequest.playerNames[t].toLowerCase());
-                        if (entries[t] == null) {
-                            // Add in a list for pass 2
-                            names.add(outputRequest.playerNames[t]);
-                        }
-                    }
-
-                    // Pass 2 check in Minecraft website
-                    if (!names.isEmpty()) {
-                        Profile[] profiles = httpProfileRepository
-                                .findProfilesByNames(names.toArray(new String[names.size()]));
-                        for (Profile profile : profiles) {
-                            // Put in the correct position
-                            int compt = 0;
-
-                            while (compt != length) {
-                                if (entries[compt] == null) {
-                                    UUID uuid = stringToUUID(profile.getId());
-                                    if (uuid != null) {
-                                        entries[compt] = new PlayerCacheEntry(uuid, profile.getName());
-                                        // Update now
-                                        updatePlayerInlist(entries[compt]);
-                                    }
-                                }
-                                compt++;
-                            }
-                        }
-                    }
-                    // Return the output of the request on the main thread
-                    ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec,
-                            entries);
-                    Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
-                }
-
-                // Update playerList
-                while (!updateList.isEmpty()) {
-                    updatePlayerInlist(updateList.remove(0));
-                }
-
-                // wait!
-                try {
-                    commandRequest.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            // Pass 1 check in playersCache or null
+            final ArrayList<String> names = new ArrayList<String>(); // Pass 2 list
+            for (int t = 0; t < length; t++) {
+                entries[t] = playersCacheList.get(outputRequest.playerNames[t].toLowerCase());
+                if (entries[t] == null) {
+                    // Add in a list for pass 2
+                    names.add(outputRequest.playerNames[t]);
                 }
             }
-            saveAll();
-            notSaved.signal();
-        } finally {
-            lock.unlock();
+
+            // Pass 2 check in Minecraft website
+            if (!names.isEmpty()) {
+                final Profile[] profiles = httpProfileRepository
+                        .findProfilesByNames(names.toArray(new String[names.size()]));
+                for (final Profile profile : profiles) {
+                    // Put in the correct position
+                    int compt = 0;
+
+                    while (compt != length) {
+                        if (entries[compt] == null) {
+                            final UUID uuid = stringToUUID(profile.getId());
+                            if (uuid != null) {
+                                entries[compt] = new PlayerCacheEntry(uuid, profile.getName());
+                                // Update now
+                                updatePlayerInlist(entries[compt]);
+                            }
+                        }
+                        compt++;
+                    }
+                }
+            }
+            // Return the output of the request on the main thread
+            final ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(secuboid, outputRequest.commandExec,
+                    entries);
+            Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
+        } else if (outputRequestObj instanceof PlayerCacheEntry) {
+            // Update playerList
+            updatePlayerInlist((PlayerCacheEntry) outputRequestObj);
+        } else {
+            // Error!
+            return false;
         }
+        return true;
     }
 
-    private void updatePlayerInlist(PlayerCacheEntry entry) {
+    private void updatePlayerInlist(final PlayerCacheEntry entry) {
 
-        String nameLower = entry.getName().toLowerCase();
+        final String nameLower = entry.getName().toLowerCase();
         if (playersCacheList.get(nameLower) == null) {
 
             // Update to do
@@ -307,110 +248,19 @@ public final class PlayersCache extends Thread {
             // update name
             playersCacheList.put(nameLower, entry);
             playersRevCacheList.put(entry.getUUID(), entry);
+
+            // Request save
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, SaveOn.BOTH,
+                    Optional.of(entry));
         }
     }
 
-    /**
-     * Stop next run.
-     */
-    public void stopNextRun() {
-
-        if (!isAlive()) {
-            secuboid.getLogger().severe("Problem with Players Cache Thread. Possible data loss!");
-            return;
-        }
-        exitRequest = true;
-        lock.lock();
-        commandRequest.signal();
-        try {
-            notSaved.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Load all.
-     */
-    private void loadAll() {
-
-        playersCacheList = new TreeMap<String, PlayerCacheEntry>();
-        playersRevCacheList = new TreeMap<UUID, PlayerCacheEntry>();
-
-        try {
-            BufferedReader br;
-
-            try {
-                br = new BufferedReader(new FileReader(file));
-            } catch (FileNotFoundException ex) {
-                // Not existing? Nothing to load!
-                return;
-            }
-
-            @SuppressWarnings("unused")
-            int version = Integer.parseInt(br.readLine().split(":")[1]);
-            br.readLine(); // Read remark line
-
-            String str;
-
-            while ((str = br.readLine()) != null && !str.isEmpty()) {
-                // Read from String "PlayerUUID:LastInventoryName:isCreative"
-                String[] strs = str.split(":");
-
-                String name = strs[0];
-                UUID uuid = UUID.fromString(strs[1]);
-                playersCacheList.put(name.toLowerCase(), new PlayerCacheEntry(uuid, name));
-                playersRevCacheList.put(uuid, new PlayerCacheEntry(uuid, name));
-            }
-            br.close();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Save all.
-     */
-    private void saveAll() {
-
-        try {
-            BufferedWriter bw;
-
-            try {
-                bw = new BufferedWriter(new FileWriter(file));
-            } catch (FileNotFoundException ex) {
-                // Not existing? Nothing to load!
-                return;
-            }
-
-            bw.write("Version:" + playerCacheVersion);
-            bw.newLine();
-            bw.write("# Name:PlayerUUID");
-            bw.newLine();
-
-            for (Map.Entry<String, PlayerCacheEntry> PlayerInvEntry : playersCacheList.entrySet()) {
-                // Write to String "Name:PlayerUUID"
-                bw.write(PlayerInvEntry.getValue().getName() + ":" + PlayerInvEntry.getValue().getUUID());
-                bw.newLine();
-            }
-            bw.close();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private UUID stringToUUID(String stId) {
-
-        String convId = stId.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
+    private UUID stringToUUID(final String stId) {
+        final String convId = stId.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
         UUID uuid;
         try {
             uuid = UUID.fromString(convId);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             // error? return null
             return null;
         }

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -159,7 +158,7 @@ public final class WorldConfig {
         final Object rootObj;
         try {
             rootObj = yaml.load(inputStream);
-        } catch (ParserException e) {
+        } catch (final ParserException e) {
             log.log(Level.SEVERE, String.format("Yaml error in %s", fileName), e);
             return;
         }
@@ -260,37 +259,37 @@ public final class WorldConfig {
             final ParameterType parameterType, final String keyName, final Object valueObj) {
         final String fileName = fileType.fileName;
         switch (keyName.toLowerCase()) {
-        case KEY_PLAYER_CONTAINERS:
-            casePlayerContainers(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
-            break;
+            case KEY_PLAYER_CONTAINERS:
+                casePlayerContainers(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
+                break;
 
-        case KEY_PERMISSIONS:
-            casePermissions(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
-            break;
+            case KEY_PERMISSIONS:
+                casePermissions(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
+                break;
 
-        case KEY_FLAGS:
-            caseFlags(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
-            break;
+            case KEY_FLAGS:
+                caseFlags(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
+                break;
 
-        case KEY_WORLDS:
-            caseWorlds(flagPermValues, fileType, rootKey, keyName, valueObj);
-            break;
+            case KEY_WORLDS:
+                caseWorlds(flagPermValues, fileType, rootKey, keyName, valueObj);
+                break;
 
-        case KEY_TYPES:
-            caseTypes(flagPermValues, fileType, rootKey, keyName, valueObj);
-            break;
+            case KEY_TYPES:
+                caseTypes(flagPermValues, fileType, rootKey, keyName, valueObj);
+                break;
 
-        case KEY_VALUE:
-            caseValue(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
-            break;
+            case KEY_VALUE:
+                caseValue(flagPermValues, fileType, rootKey, parameterType, keyName, valueObj);
+                break;
 
-        case KEY_INHERITABLE:
-            caseInheritable(flagPermValues, fileType, rootKey, keyName, valueObj);
-            break;
+            case KEY_INHERITABLE:
+                caseInheritable(flagPermValues, fileType, rootKey, keyName, valueObj);
+                break;
 
-        default:
-            log.log(Level.SEVERE, () -> String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"",
-                    fileName, keyName, Objects.toString(valueObj), rootKey));
+            default:
+                log.log(Level.SEVERE, () -> String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"",
+                        fileName, keyName, Objects.toString(valueObj), rootKey));
         }
     }
 
@@ -412,7 +411,7 @@ public final class WorldConfig {
     private Optional<Double> getDouble(final Object valueObj) {
         try {
             return Optional.of(Double.parseDouble(Objects.toString(valueObj)));
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return Optional.empty();
         }
     }
@@ -474,7 +473,7 @@ public final class WorldConfig {
     private Map.Entry<PlayerContainer, Permission> createPcPermissionNullable(final String fileName,
             final String playerContainerName, final String permissionName, final boolean value,
             final boolean inheritable) throws WorldConfigException {
-        final PlayerContainer playerContainer = secuboid.getNewInstance()
+        final PlayerContainer playerContainer = secuboid.getPlayerContainers()
                 .getPlayerContainerFromFileFormat(playerContainerName);
         if (playerContainer == null) {
             throw new WorldConfigException(

@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -23,11 +22,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Location;
 
@@ -35,7 +37,7 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.WorldConfig;
 import me.tabinol.secuboid.events.LandDeleteEvent;
 import me.tabinol.secuboid.exceptions.SecuboidLandException;
-import me.tabinol.secuboid.lands.approve.ApproveList;
+import me.tabinol.secuboid.lands.approve.Approves;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.areas.AreaIndex;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
@@ -44,6 +46,8 @@ import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
+import me.tabinol.secuboid.storage.StorageThread.SaveOn;
 
 /**
  * The Class Lands manager.
@@ -81,9 +85,9 @@ public final class Lands {
     private final SortedMap<String, Land> landList;
 
     /**
-     * The approve list.
+     * The approve list isntance.
      */
-    private final ApproveList approveList;
+    private final Approves approves;
 
     /**
      * List of forSale.
@@ -102,11 +106,11 @@ public final class Lands {
      * @param worldConfig the world config
      * @param approveList the approve list
      */
-    public Lands(final Secuboid secuboid, final WorldConfig worldConfig, final ApproveList approveList) {
+    public Lands(final Secuboid secuboid, final WorldConfig worldConfig, final Approves approves) {
 
         this.secuboid = secuboid;
         this.worldConfig = worldConfig;
-        this.approveList = approveList;
+        this.approves = approves;
         areaList = new AreaMap[4];
 
         for (int i = 0; i < 4; i++) {
@@ -143,12 +147,12 @@ public final class Lands {
     }
 
     /**
-     * Gets the approve list.
+     * Gets the approves.
      *
-     * @return the approve list
+     * @return the approves
      */
-    public ApproveList getApproveList() {
-        return approveList;
+    public Approves getApproves() {
+        return approves;
     }
 
     /**
@@ -195,29 +199,30 @@ public final class Lands {
     public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent,
             final double price, final Type type) throws SecuboidLandException {
         getPriceFromPlayer(area.getWorldName(), owner, price);
-        return createLand(landName, owner, area, parent, 1, null, type);
+        return createLand(landName, true, owner, area, parent, 1, null, type);
     }
 
     /**
-     * Creates the land.
+     * Creates the land. (Internal only)
      *
-     * @param landName the land name
-     * @param owner    the owner
-     * @param area     the area
-     * @param parent   the parent
-     * @param areaId   the area id
-     * @param uuid     the uuid
-     * @param type     the type
+     * @param landName   the land name
+     * @param isApproved if the land is approved
+     * @param owner      the owner
+     * @param area       the area
+     * @param parent     the parent
+     * @param areaId     the area id
+     * @param uuid       the uuid
+     * @param type       the type
      * @return the land
      * @throws SecuboidLandException the secuboid land exception
      */
-    public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent,
-            final int areaId, final UUID uuid, final Type type) throws SecuboidLandException {
+    public Land createLand(final String landName, final boolean isApproved, final PlayerContainer owner,
+            final Area area, final Land parent, final int areaId, final UUID uuid, final Type type)
+            throws SecuboidLandException {
 
         final String landNameLower = landName.toLowerCase();
         final Land land;
         final UUID landUUID;
-        int genealogy = 0;
 
         if (uuid == null) {
             landUUID = UUID.randomUUID();
@@ -225,15 +230,12 @@ public final class Lands {
             landUUID = uuid;
         }
 
-        if (parent != null) {
-            genealogy = parent.getGenealogy() + 1;
-        }
-
         if (isNameExist(landName)) {
             throw new SecuboidLandException(secuboid, landName, area, LandAction.LAND_ADD, LandError.NAME_IN_USE);
         }
 
-        land = new Land(secuboid, landNameLower, landUUID, owner, area, genealogy, parent, areaId, type);
+        land = new Land(secuboid, landNameLower, landUUID, isApproved, owner, type, area.getWorldName());
+        land.init(area, areaId, parent);
         addLandToList(land);
 
         return land;
@@ -285,7 +287,7 @@ public final class Lands {
         if (land.getParent() != null) {
             land.getParent().removeChild(land.getUUID());
         }
-        secuboid.getStorageThread().removeLand(land);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, SaveOn.BOTH, Optional.of(land));
 
         return true;
     }
@@ -536,13 +538,16 @@ public final class Lands {
      * @param worldName the world name
      * @param pc        the pc
      * @param price     the price
-     * @return the price from player
+     * @return true, if successful
      */
     boolean getPriceFromPlayer(final String worldName, final PlayerContainer pc, final double price) {
-
-        return !(pc.getContainerType() == PlayerContainerType.PLAYER && price > 0) || secuboid.getPlayerMoney()
-                .getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(), worldName, price);
-
+        if (price == 0 || !secuboid.getPlayerMoneyOpt().isPresent()
+                || pc.getContainerType() != PlayerContainerType.PLAYER) {
+            // No transaction
+            return true;
+        }
+        return secuboid.getPlayerMoneyOpt().get().getFromPlayer(((PlayerContainerPlayer) pc).getOfflinePlayer(),
+                worldName, price);
     }
 
     /**
@@ -629,8 +634,6 @@ public final class Lands {
 
         int actualPrio = Short.MIN_VALUE;
         int curPrio;
-        int actualGen = 0;
-        int curGen;
         Area actualArea = null;
         Location resLoc; // Resolved location
 
@@ -649,16 +652,39 @@ public final class Lands {
         // Compare priorities of parents (or main)
         for (final Area area : areas) {
             curPrio = area.getLand().getPriority();
-            curGen = area.getLand().getGenealogy();
 
-            if (actualPrio < curPrio || (actualPrio == curPrio && actualGen <= curGen)) {
+            if (actualArea == null || actualPrio < curPrio
+                    || (actualPrio == curPrio && area.getLand().isParentOrAncestor(actualArea.getLand()))) {
                 actualArea = area;
                 actualPrio = curPrio;
-                actualGen = area.getLand().getGenealogy();
             }
         }
 
         return actualArea;
+    }
+
+    /**
+     * Set a parent to a map of lands.
+     * 
+     * @param orphanToParentUUID the orphan land to parent UUID
+     */
+    public void setParents(final Map<Land, UUID> orphanToParentUUID) {
+        for (final Map.Entry<Land, UUID> entry : orphanToParentUUID.entrySet()) {
+            final Land land = entry.getKey();
+            final Land parent = getLand(entry.getValue());
+            if (parent != null) {
+                if (parent.isDescendants(land)) {
+                    secuboid.getLogger().log(Level.SEVERE,
+                            String.format("The parent is a child descendant! [name=%s, uuid=%s, parentUUID=%s]",
+                                    land.getName(), land.getUUID(), entry.getValue()));
+                    continue;
+                }
+                land.setParent(parent);
+            } else {
+                secuboid.getLogger().severe("Error: The parent is not found! [name=" + land.getName() + ", uuid="
+                        + land.getUUID() + ", parentUUID=" + entry.getValue() + "]");
+            }
+        }
     }
 
     /**
@@ -672,16 +698,16 @@ public final class Lands {
     private boolean checkContinueSearch(final Area area, final int nbToFind, final int searchIndex) {
 
         switch (searchIndex) {
-        case INDEX_X1:
-            return nbToFind >= area.getX1();
-        case INDEX_X2:
-            return nbToFind <= area.getX2();
-        case INDEX_Z1:
-            return nbToFind >= area.getZ1();
-        case INDEX_Z2:
-            return nbToFind <= area.getZ2();
-        default:
-            return false;
+            case INDEX_X1:
+                return nbToFind >= area.getX1();
+            case INDEX_X2:
+                return nbToFind <= area.getX2();
+            case INDEX_Z1:
+                return nbToFind >= area.getZ1();
+            case INDEX_Z2:
+                return nbToFind <= area.getZ2();
+            default:
+                return false;
         }
     }
 

@@ -18,14 +18,18 @@
 package me.tabinol.secuboid.lands.collisions;
 
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
+import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 
 /**
  * Return the collision to launched command.
  */
-class ReturnCollisionsToCommand implements Callable<Void> {
+final class ReturnCollisionsToCommand implements Callable<Void> {
+
+    private final Secuboid secuboid;
 
     /**
      * The command exec.
@@ -40,11 +44,13 @@ class ReturnCollisionsToCommand implements Callable<Void> {
     /**
      * Instantiates a new return to command.
      *
+     * @param secuboid    the secuboid instance
      * @param commandExec the command exec
      * @param collisions  the collisions
      */
-    ReturnCollisionsToCommand(CommandCollisionsThreadExec commandExec, Collisions collisions) {
-
+    ReturnCollisionsToCommand(final Secuboid secuboid, final CommandCollisionsThreadExec commandExec,
+            final Collisions collisions) {
+        this.secuboid = secuboid;
         this.commandExec = commandExec;
         this.collisions = collisions;
     }
@@ -54,9 +60,14 @@ class ReturnCollisionsToCommand implements Callable<Void> {
 
         // Return the output of the request
         try {
-            commandExec.commandThreadParentExecute(collisions);
-        } catch (SecuboidCommandException e) {
-            System.err.println("SecuboidCommandException: " + e.getMessage());
+            try {
+                commandExec.commandThreadParentExecute(collisions);
+            } catch (final RuntimeException re) {
+                throw new SecuboidCommandException(secuboid, commandExec.getSender(), "Unknown exception", re);
+            }
+        } catch (final SecuboidCommandException e) {
+            secuboid.getLogger().log(Level.SEVERE, "Error in command", e);
+            e.notifySender();
         }
 
         return null;

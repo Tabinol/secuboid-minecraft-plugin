@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,6 +17,9 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -25,8 +27,6 @@ import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.economy.PlayerMoney;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandMoney.
@@ -56,7 +56,7 @@ public final class CommandMoney extends CommandExec {
             final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
-        playerMoney = secuboid.getPlayerMoney();
+        playerMoney = secuboid.getPlayerMoneyOpt().orElse(null);
     }
 
     @Override

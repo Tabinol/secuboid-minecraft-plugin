@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,10 +19,6 @@ package me.tabinol.secuboid.utilities;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-
 /**
  * The Class StringChanges. This is for static methods for String conversion or
  * modification.
@@ -36,7 +31,7 @@ public class StringChanges {
      * @param str the String without quote
      * @return the quoted String
      */
-    public static String toQuote(String str) {
+    public static String toQuote(final String str) {
 
         String strRet;
 
@@ -55,7 +50,7 @@ public class StringChanges {
      * @param str the quoted String
      * @return the string removed from quote
      */
-    public static String fromQuote(String str) {
+    public static String fromQuote(final String str) {
 
         if (isStartQuote(str) && isEndQuote(str)) {
             return (new StringBuffer(str).deleteCharAt(str.length() - 1).deleteCharAt(0)).toString().replaceAll("''",
@@ -72,13 +67,13 @@ public class StringChanges {
      * @param split the split character
      * @return the multiple String split
      */
-    public static String[] splitKeepQuote(String str, String split) {
+    public static String[] splitKeepQuote(final String str, final String split) {
 
-        String[] strs = str.split(split);
-        ArrayList<String> strl = new ArrayList<String>();
+        final String[] strs = str.split(split);
+        final ArrayList<String> strl = new ArrayList<String>();
         StringBuffer sb = null;
 
-        for (String strv : strs) {
+        for (final String strv : strs) {
             if (sb == null) {
                 if (isStartQuote(strv)) {
                     sb = new StringBuffer(strv);
@@ -103,7 +98,7 @@ public class StringChanges {
      * @param str the String
      * @return true, if the String starts with a quote
      */
-    private static boolean isStartQuote(String str) {
+    private static boolean isStartQuote(final String str) {
 
         return str.startsWith("'") || str.startsWith("\"");
     }
@@ -114,7 +109,7 @@ public class StringChanges {
      * @param str the String
      * @return true, if the String end with a quote
      */
-    private static boolean isEndQuote(String str) {
+    private static boolean isEndQuote(final String str) {
 
         return str.endsWith("'") || str.endsWith("\"") || str.endsWith(";") /* Fix String list */;
     }
@@ -126,62 +121,14 @@ public class StringChanges {
      * @param split  the split character
      * @return the string[]
      */
-    public static String[] splitAddVoid(String string, String split) {
+    public static String[] splitAddVoid(final String string, final String split) {
 
-        String[] tlist = string.split(split);
-        String[] result = new String[tlist.length + 1];
+        final String[] tlist = string.split(split);
+        final String[] result = new String[tlist.length + 1];
         System.arraycopy(tlist, 0, result, 0, tlist.length);
         result[tlist.length] = "";
 
         return result;
-    }
-
-    /**
-     * Location to string.
-     *
-     * @param location the location
-     * @return the string
-     */
-    public static String locationToString(Location location) {
-
-        return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ()
-                + ";" + location.getYaw() + ";" + location.getPitch();
-    }
-
-    /**
-     * String to location.
-     *
-     * @param locStr the string
-     * @return the location
-     */
-    public static Location stringToLocation(String locStr) {
-
-        String[] strs = locStr.split("\\;");
-
-        // Wrong parameter
-        if (strs.length != 6) {
-            return null;
-        }
-
-        World world = Bukkit.getWorld(strs[0]);
-
-        if (world == null) {
-            return null;
-        }
-
-        // Get the location
-        Location location;
-
-        try {
-            location = new Location(world, Double.parseDouble(strs[1]), Double.parseDouble(strs[2]),
-                    Double.parseDouble(strs[3]), Float.parseFloat(strs[4]), Float.parseFloat(strs[5]));
-        } catch (NumberFormatException ex) {
-
-            // if location is wrong, set null
-            location = null;
-        }
-
-        return location;
     }
 
     /**
@@ -192,7 +139,7 @@ public class StringChanges {
      * @param endIdx   the last index
      * @return a string
      */
-    public static String arrayToString(String[] arrayStr, int firstIdx, int endIdx) {
+    public static String arrayToString(final String[] arrayStr, final int firstIdx, final int endIdx) {
         final StringBuilder bf = new StringBuilder();
         int i = firstIdx;
         while (i < arrayStr.length && i <= endIdx) {

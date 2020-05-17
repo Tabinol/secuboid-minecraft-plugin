@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -43,9 +42,9 @@ final class ConfBuilderFlat {
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    ConfBuilderFlat(String name, UUID uuid, File file, int version) throws IOException {
+    ConfBuilderFlat(final String name, final UUID uuid, final File file, final int version) throws IOException {
 
-        FileWriter fr = new FileWriter(file, false);
+        final FileWriter fr = new FileWriter(file, false);
         br = new BufferedWriter(fr);
         writeVersion(version);
         writeUUID(uuid);
@@ -58,7 +57,7 @@ final class ConfBuilderFlat {
      * @param version the version
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeVersion(int version) throws IOException {
+    private void writeVersion(final int version) throws IOException {
 
         writeParam("Version", version);
     }
@@ -69,7 +68,7 @@ final class ConfBuilderFlat {
      * @param uuid the uuid
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeUUID(UUID uuid) throws IOException {
+    private void writeUUID(final UUID uuid) throws IOException {
 
         writeParam("UUID", uuid.toString());
     }
@@ -80,7 +79,7 @@ final class ConfBuilderFlat {
      * @param name the name
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeName(String name) throws IOException {
+    private void writeName(final String name) throws IOException {
 
         writeParam("Name", name);
     }
@@ -91,7 +90,7 @@ final class ConfBuilderFlat {
      * @param string the string
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private void writeln(String string) throws IOException {
+    private void writeln(final String string) throws IOException {
 
         br.write(string);
         br.newLine();
@@ -104,7 +103,7 @@ final class ConfBuilderFlat {
      * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeParam(String paramName, String param) throws IOException {
+    void writeParam(final String paramName, final String param) throws IOException {
 
         if (param == null) {
             writeln(paramName + ":-null-");
@@ -120,7 +119,7 @@ final class ConfBuilderFlat {
      * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeParam(String paramName, int param) throws IOException {
+    void writeParam(final String paramName, final int param) throws IOException {
 
         writeln(paramName + ":" + param);
     }
@@ -132,7 +131,7 @@ final class ConfBuilderFlat {
      * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeParam(String paramName, short param) throws IOException {
+    void writeParam(final String paramName, final short param) throws IOException {
 
         writeln(paramName + ":" + param);
     }
@@ -144,7 +143,19 @@ final class ConfBuilderFlat {
      * @param param     the param
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeParam(String paramName, double param) throws IOException {
+    void writeParam(final String paramName, final double param) throws IOException {
+
+        writeln(paramName + ":" + param);
+    }
+
+    /**
+     * Write param.
+     *
+     * @param paramName the param name
+     * @param param     the param
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    void writeParam(final String paramName, final boolean param) throws IOException {
 
         writeln(paramName + ":" + param);
     }
@@ -156,13 +167,13 @@ final class ConfBuilderFlat {
      * @param params    the params
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    void writeParam(String ParamName, String[] params) throws IOException {
+    void writeParam(final String ParamName, final String[] params) throws IOException {
 
         if (params == null) {
             return;
         }
         writeln(ParamName + "{");
-        for (String param : params) {
+        for (final String param : params) {
             writeln("  " + param);
         }
         writeln("}");

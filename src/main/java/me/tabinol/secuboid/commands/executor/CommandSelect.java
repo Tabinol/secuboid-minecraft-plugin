@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -157,7 +156,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         } else {
             landtest = secuboid.getLands().getLand(curArg);
         }
-        if (landtest == null) {
+        if (landtest == null || !landtest.isApproved()) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
 
         }
@@ -203,7 +202,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             areaSelect = doSelectAreaHere(landtest);
         }
 
-        if (areaSelect == null) {
+        if (areaSelect == null || !areaSelect.isApproved()) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
         }
 
@@ -245,6 +244,10 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         } else {
             // Player location
             areatest = secuboid.getLands().getArea(player.getLocation());
+        }
+
+        if (areatest == null) {
+            return null;
         }
 
         return areatest.getLand() == landtest ? areatest : null;
@@ -351,16 +354,16 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         // Price (economy)
         if (price > 0d) {
             switch (collisions.getAction()) {
-            case AREA_MODIFY:
-            case AREA_ADD:
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                        .getMessage("COMMAND.SELECT.INFO.INFO4", secuboid.getPlayerMoney().toFormat(price)));
-                break;
-            case LAND_ADD:
-                player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
-                        .getMessage("COMMAND.SELECT.INFO.INFO3", secuboid.getPlayerMoney().toFormat(price)));
-                break;
-            default:
+                case AREA_MODIFY:
+                case AREA_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                            "COMMAND.SELECT.INFO.INFO4", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
+                    break;
+                case LAND_ADD:
+                    player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage(
+                            "COMMAND.SELECT.INFO.INFO3", secuboid.getPlayerMoneyOpt().get().toFormat(price)));
+                    break;
+                default:
             }
         }
     }

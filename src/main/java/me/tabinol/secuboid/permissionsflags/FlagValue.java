@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,11 +17,15 @@
  */
 package me.tabinol.secuboid.permissionsflags;
 
-import me.tabinol.secuboid.utilities.StringChanges;
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 
+import me.tabinol.secuboid.utilities.StringChanges;
+
 /**
- * The Class FlagValue. Represent a flag value : Boolean, Double, String and String[]
+ * The Class FlagValue. Represent a flag value : Boolean, Double, String and
+ * String[]
  */
 public class FlagValue {
 
@@ -36,7 +39,7 @@ public class FlagValue {
      *
      * @param value the value
      */
-    public FlagValue(Object value) {
+    public FlagValue(final Object value) {
         this.value = value;
     }
 
@@ -47,7 +50,7 @@ public class FlagValue {
         } else if (value instanceof String) {
             return new FlagValue(String.valueOf(value));
         } else if (value instanceof String[]) {
-            String[] newStr = new String[((String[]) value).length];
+            final String[] newStr = new String[((String[]) value).length];
             for (int t = 0; t < ((String[]) value).length; t++) {
                 newStr[t] = String.valueOf(((String[]) value)[t]);
             }
@@ -61,7 +64,7 @@ public class FlagValue {
      *
      * @param value the new value
      */
-    public void setValue(Object value) {
+    public void setValue(final Object value) {
         this.value = value;
     }
 
@@ -134,8 +137,8 @@ public class FlagValue {
         }
 
         if (value instanceof String[]) {
-            StringBuilder sb = new StringBuilder();
-            for (String st : (String[]) value) {
+            final StringBuilder sb = new StringBuilder();
+            for (final String st : (String[]) value) {
                 if (sb.length() != 0) {
                     sb.append("; ");
                 }
@@ -145,5 +148,46 @@ public class FlagValue {
         }
 
         return null;
+    }
+
+    // *** Static methods ***
+
+    /**
+     * Gets the flag value from file format.
+     *
+     * @param str the string
+     * @param ft  the flag type
+     * @return the flag value
+     */
+    public static FlagValue getFlagValueFromFileFormat(final String str, final FlagType ft) {
+
+        FlagValue value;
+
+        if (ft.isRegistered()) {
+            if (ft.getDefaultValue().getValue() instanceof Boolean) {
+                final String[] strs = str.split(" ");
+                value = new FlagValue(Boolean.parseBoolean(strs[0]));
+            } else if (ft.getDefaultValue().getValue() instanceof Double) {
+                final String[] strs = str.split(" ");
+                value = new FlagValue(Double.parseDouble(strs[0]));
+            } else if (ft.getDefaultValue().getValue() instanceof String) {
+                value = new FlagValue(StringChanges.fromQuote(str));
+            } else if (ft.getDefaultValue().getValue() instanceof String[]) {
+                final ArrayList<String> result = new ArrayList<String>();
+                final String[] strs = StringChanges.splitKeepQuote(str, ";");
+                for (final String st : strs) {
+                    result.add(StringChanges.fromQuote(st));
+                }
+                value = new FlagValue(result.toArray(new String[result.size()]));
+            } else {
+                value = null;
+            }
+        } else {
+
+            // not registered save raw information
+            value = new FlagValue(str);
+        }
+
+        return value;
     }
 }

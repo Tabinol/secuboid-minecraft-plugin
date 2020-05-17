@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -30,13 +29,7 @@ import me.tabinol.secuboid.lands.LandPermissionsFlags;
  */
 public final class PlayerContainerResident implements PlayerContainer {
 
-    private static final PlayerContainerResident instance = new PlayerContainerResident();
-
-    private PlayerContainerResident() {
-    }
-
-    public static PlayerContainerResident getInstance() {
-        return instance;
+    PlayerContainerResident() {
     }
 
     @Override

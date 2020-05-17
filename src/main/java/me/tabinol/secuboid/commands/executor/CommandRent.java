@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,6 +17,12 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.block.data.type.Sign;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.InfoCommand;
@@ -25,11 +30,8 @@ import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.economy.EcoSign;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.exceptions.SignException;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.block.data.type.Sign;
-import org.bukkit.command.CommandSender;
 
 /**
  * The rent command class.
@@ -104,9 +106,10 @@ public final class CommandRent extends CommandExec {
                                                                                                                 // is
                                                                                                                 // rented
                 removeSignFromHand();
-                if (!ecoSign.getLocation().getBlock().equals(landSelectNullable.getRentSignLoc().getBlock())) {
-                    ecoSign.removeSign(landSelectNullable.getRentSignLoc());
-                    landSelectNullable.setRentSignLoc(ecoSign.getLocation());
+                final Location location = landSelectNullable.getRentSignLoc().toLocation();
+                if (!ecoSign.getLocation().getBlock().equals(location.getBlock())) {
+                    ecoSign.removeSign(location);
+                    landSelectNullable.setRentSignLoc(LandLocation.fromLocation(ecoSign.getLocation()));
                 }
             } catch (final SignException e) {
                 throw new SecuboidCommandException(secuboid, "Error in the command", player,
@@ -160,7 +163,8 @@ public final class CommandRent extends CommandExec {
             throw new SecuboidCommandException(secuboid, "Error in the command", player,
                     "COMMAND.ECONOMY.ERRORCREATESIGN");
         }
-        landSelectNullable.setForRent(rentPrice, rentRenew, rentAutoRenew, ecoSign.getLocation());
+        landSelectNullable.setForRent(rentPrice, rentRenew, rentAutoRenew,
+                LandLocation.fromLocation(ecoSign.getLocation()));
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.SIGNDONE"));
     }

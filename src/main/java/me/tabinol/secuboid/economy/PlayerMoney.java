@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,8 +17,9 @@
  */
 package me.tabinol.secuboid.economy;
 
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.OfflinePlayer;
+
+import net.milkbowl.vault.economy.Economy;
 
 /**
  * Money from players.
@@ -38,7 +38,7 @@ public class PlayerMoney {
      *
      * @param economy the secuboid economy instance
      */
-    public PlayerMoney(Economy economy) {
+    public PlayerMoney(final Economy economy) {
         this.economy = economy;
     }
 
@@ -49,7 +49,7 @@ public class PlayerMoney {
      * @param worldName     the world name
      * @return the player balance
      */
-    public Double getPlayerBalance(OfflinePlayer offlinePlayer, String worldName) {
+    public Double getPlayerBalance(final OfflinePlayer offlinePlayer, final String worldName) {
         return economy.getBalance(offlinePlayer, worldName);
     }
 
@@ -61,7 +61,7 @@ public class PlayerMoney {
      * @param amount        the amount
      * @return true, if successful
      */
-    public boolean giveToPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
+    public boolean giveToPlayer(final OfflinePlayer offlinePlayer, final String worldName, final Double amount) {
         return economy.depositPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
 
@@ -71,9 +71,9 @@ public class PlayerMoney {
      * @param offlinePlayer the offline player
      * @param worldName     the world name
      * @param amount        the amount
-     * @return the from player
+     * @return true, if successful
      */
-    public boolean getFromPlayer(OfflinePlayer offlinePlayer, String worldName, Double amount) {
+    public boolean getFromPlayer(final OfflinePlayer offlinePlayer, final String worldName, final Double amount) {
         return economy.withdrawPlayer(offlinePlayer, worldName, amount).transactionSuccess();
     }
 
@@ -83,7 +83,7 @@ public class PlayerMoney {
      * @param amount the amount
      * @return the string
      */
-    public String toFormat(Double amount) {
+    public String toFormat(final Double amount) {
         return economy.format(amount);
     }
 }

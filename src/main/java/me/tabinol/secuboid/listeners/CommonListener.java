@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -32,14 +31,22 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.plugin.PluginManager;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.economy.EcoSign;
+import me.tabinol.secuboid.events.PlayerLandChangeEvent;
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandLocation;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
-import me.tabinol.secuboid.utilities.StringChanges;
+import me.tabinol.secuboid.players.PlayerConfEntry;
+import me.tabinol.secuboid.selection.region.AreaSelection;
+import me.tabinol.secuboid.selection.region.AreaSelection.MoveType;
+import me.tabinol.secuboid.selection.region.RegionSelection;
 
 /**
  * Common methods for Listeners
@@ -51,19 +58,26 @@ abstract class CommonListener {
 
     final Secuboid secuboid;
 
-    CommonListener(Secuboid secuboid) {
+    /**
+     * The pm.
+     */
+    private final PluginManager pm;
+
+    CommonListener(final Secuboid secuboid) {
         this.secuboid = secuboid;
+        pm = secuboid.getServer().getPluginManager();
     }
 
     /**
      * Check permission.
      *
-     * @param landSelectNullable   the land
-     * @param player the player
-     * @param pt     the pt
+     * @param landSelectNullable the land
+     * @param player             the player
+     * @param pt                 the pt
      * @return true, if successful
      */
-    final boolean checkPermission(LandPermissionsFlags landPermissionsFlags, Player player, PermissionType pt) {
+    final boolean checkPermission(final LandPermissionsFlags landPermissionsFlags, final Player player,
+            final PermissionType pt) {
         return landPermissionsFlags.checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
     }
 
@@ -72,7 +86,7 @@ abstract class CommonListener {
      *
      * @param player the player
      */
-    final void messagePermission(Player player) {
+    final void messagePermission(final Player player) {
         player.sendMessage(
                 ChatColor.GRAY + "[Secuboid] " + secuboid.getLanguage().getMessage("GENERAL.MISSINGPERMISSION"));
     }
@@ -83,7 +97,7 @@ abstract class CommonListener {
      * @param entity the entity
      * @return the source player
      */
-    final Player getSourcePlayer(Entity entity) {
+    final Player getSourcePlayer(final Entity entity) {
 
         Projectile damagerProjectile;
 
@@ -108,7 +122,7 @@ abstract class CommonListener {
      * @param block the block
      * @return true if the sign is attached
      */
-    final boolean hasEcoSign(Land land, Block block) {
+    final boolean hasEcoSign(final Land land, final Block block) {
         return (land.getSaleSignLoc() != null && hasEcoSign(block, land.getSaleSignLoc()))
                 || (land.getRentSignLoc() != null && hasEcoSign(block, land.getRentSignLoc()));
     }
@@ -120,7 +134,8 @@ abstract class CommonListener {
      * @param ecoSignLoc the eco sign location
      * @return true if the sign is attached
      */
-    private boolean hasEcoSign(Block block, Location ecoSignLoc) {
+    private boolean hasEcoSign(final Block block, final LandLocation ecoSignLandLoc) {
+        final Location ecoSignLoc = ecoSignLandLoc.toLocation();
         return (block.getRelative(BlockFace.UP).getLocation().equals(ecoSignLoc)
                 && Sign.class.isAssignableFrom(block.getRelative(BlockFace.UP).getType().data))
                 || isEcoSignAttached(block, BlockFace.NORTH, ecoSignLoc)
@@ -129,14 +144,14 @@ abstract class CommonListener {
                 || isEcoSignAttached(block, BlockFace.WEST, ecoSignLoc);
     }
 
-    private boolean isEcoSignAttached(Block block, BlockFace face, Location ecoSignLoc) {
-        Block checkBlock = block.getRelative(face);
+    private boolean isEcoSignAttached(final Block block, final BlockFace face, final Location ecoSignLoc) {
+        final Block checkBlock = block.getRelative(face);
         return checkBlock.getLocation().equals(ecoSignLoc)
                 && checkBlock.getType().name().endsWith(EcoSign.WALL_SIGN_SUFFIX)
                 && ((Directional) checkBlock.getBlockData()).getFacing() == face;
     }
 
-    final boolean isDoor(Material material) {
+    final boolean isDoor(final Material material) {
         return Openable.class.isAssignableFrom(material.data);
     }
 
@@ -146,15 +161,17 @@ abstract class CommonListener {
      * @param landSelectNullable the land
      * @return the location
      */
-    final Location getLandSpawnPoint(LandPermissionsFlags landPermissionsFlags) {
+    final Location getLandSpawnPoint(final LandPermissionsFlags landPermissionsFlags) {
         String strLoc;
+        LandLocation landLoc;
         Location loc;
 
         // Check for land spawn
         final Land landNullable = landPermissionsFlags.getLandNullable();
         if (landNullable != null) {
             if (!(strLoc = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType())
-                    .getValueString()).isEmpty() && (loc = StringChanges.stringToLocation(strLoc)) != null) {
+                    .getValueString()).isEmpty() && (landLoc = LandLocation.fromFileFormat(strLoc)) != null
+                    && (loc = landLoc.toLocation()) != null) {
                 return loc;
             }
             secuboid.getLogger()
@@ -166,10 +183,10 @@ abstract class CommonListener {
         return getWorldSpawnPoint(landPermissionsFlags.getWorldNameNullable());
     }
 
-    final Location getWorldSpawnPoint(String worldNameNullable) {
+    final Location getWorldSpawnPoint(final String worldNameNullable) {
 
         if (worldNameNullable != null) {
-            World world = Bukkit.getWorld(worldNameNullable);
+            final World world = Bukkit.getWorld(worldNameNullable);
             if (world != null) {
                 return world.getSpawnLocation();
             }
@@ -177,5 +194,76 @@ abstract class CommonListener {
 
         secuboid.getLogger().warning("Teleportation requested and no world named \"" + worldNameNullable + "\"!");
         return null;
+    }
+
+    /**
+     * Update pos info.
+     *
+     * @param event     the events
+     * @param entry     the entry
+     * @param loc       the loc
+     * @param newPlayer the new player
+     */
+    protected void updatePosInfo(final Event event, final PlayerConfEntry entry, final Location loc,
+            final boolean newPlayer) {
+
+        final LandPermissionsFlags landPermissionsFlags;
+        final LandPermissionsFlags oldPermissionsFlags;
+        final Player player = entry.getPlayer();
+        PlayerLandChangeEvent landEvent;
+        Boolean isTp;
+
+        landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
+
+        if (newPlayer) {
+            entry.setLastLandPermissionsFlags(oldPermissionsFlags = landPermissionsFlags);
+        } else {
+            oldPermissionsFlags = entry.getLastLandPermissionsFlags();
+        }
+        if (newPlayer || landPermissionsFlags != oldPermissionsFlags) {
+            isTp = event instanceof PlayerTeleportEvent;
+            // First parameter : If it is a new player, it is null, if not new
+            // player, it is "old"
+            landEvent = new PlayerLandChangeEvent(newPlayer ? null : oldPermissionsFlags, landPermissionsFlags, player,
+                    entry.getLastLoc(), loc, isTp);
+            pm.callEvent(landEvent);
+
+            if (landEvent.isCancelled()) {
+                if (isTp) {
+                    ((PlayerTeleportEvent) event).setCancelled(true);
+                    return;
+                }
+                if (landPermissionsFlags == oldPermissionsFlags) {
+                    player.teleport(player.getWorld().getSpawnLocation());
+                } else {
+                    final Location retLoc = entry.getLastLoc();
+                    player.teleport(new Location(retLoc.getWorld(), retLoc.getX(), retLoc.getBlockY(), retLoc.getZ(),
+                            loc.getYaw(), loc.getPitch()));
+                }
+                entry.setTpCancel(true);
+                return;
+            }
+            entry.setLastLandPermissionsFlags(landPermissionsFlags);
+
+            // Update player in the lands
+            final Land oldLandNullable = oldPermissionsFlags.getLandNullable();
+            if (oldLandNullable != null && oldPermissionsFlags != landPermissionsFlags) {
+                oldLandNullable.removePlayerInLand(player);
+            }
+            final Land landNullable = landPermissionsFlags.getLandNullable();
+            if (landNullable != null) {
+                landNullable.addPlayerInLand(player);
+            }
+        }
+        entry.setLastLoc(loc);
+
+        // Update visual selection
+        if (entry.getSelection().hasSelection()) {
+            for (final RegionSelection sel : entry.getSelection().getSelections()) {
+                if (sel instanceof AreaSelection && ((AreaSelection) sel).getMoveType() != MoveType.PASSIVE) {
+                    ((AreaSelection) sel).playerMove();
+                }
+            }
+        }
     }
 }

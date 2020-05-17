@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,10 +19,11 @@ package me.tabinol.secuboid.lands.approve;
 
 import java.util.logging.Level;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.utilities.SecuboidRunnable;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.utilities.SecuboidRunnable;
 
 /**
  * The Class ApproveNotif.
@@ -40,7 +40,7 @@ public class ApproveNotif extends SecuboidRunnable {
      *
      * @param secuboid secuboid instance
      */
-    public ApproveNotif(Secuboid secuboid) {
+    public ApproveNotif(final Secuboid secuboid) {
         super(secuboid);
     }
 
@@ -49,7 +49,7 @@ public class ApproveNotif extends SecuboidRunnable {
      */
     public void runApproveNotifLater() {
 
-        long notifyTime = secuboid.getConf().getApproveNotifyTime();
+        final long notifyTime = secuboid.getConf().getApproveNotifyTime();
 
         // Start only if notification is activated in configuration
         if (notifyTime != 0) {
@@ -63,7 +63,7 @@ public class ApproveNotif extends SecuboidRunnable {
 
         int lstCount;
 
-        if ((lstCount = secuboid.getLands().getApproveList().getApproveList().size()) != 0) {
+        if ((lstCount = secuboid.getLands().getApproves().getApproveList().size()) != 0) {
 
             // If there is some notification to done
             notifyListApprove(lstCount);
@@ -76,8 +76,9 @@ public class ApproveNotif extends SecuboidRunnable {
      * @param landName   the land name
      * @param playerName the player name
      */
-    void notifyForApprove(String landName, String playerName) {
-        notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+    void notifyForApprove(final String landName, final String playerName) {
+        notifyPlayer(
+                secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
     }
 
     /**
@@ -85,7 +86,7 @@ public class ApproveNotif extends SecuboidRunnable {
      *
      * @param lstCount the lst count
      */
-    private void notifyListApprove(int lstCount) {
+    private void notifyListApprove(final int lstCount) {
         notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
     }
 
@@ -94,8 +95,8 @@ public class ApproveNotif extends SecuboidRunnable {
      *
      * @param message the message
      */
-    private void notifyPlayer(String message) {
-        for (Player players : secuboid.getServer().getOnlinePlayers()) {
+    private void notifyPlayer(final String message) {
+        for (final Player players : secuboid.getServer().getOnlinePlayers()) {
             if (players.hasPermission(PERM_APPROVE)) {
                 players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
             }

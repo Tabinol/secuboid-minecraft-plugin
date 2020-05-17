@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -30,6 +29,7 @@ import me.tabinol.secuboid.lands.areas.CylinderArea;
 import me.tabinol.secuboid.lands.areas.RegionMatrix;
 import me.tabinol.secuboid.lands.areas.RoadArea;
 import me.tabinol.secuboid.playercontainer.PlayerContainerNobody;
+import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 
 /**
  * Tests for lands.
@@ -44,15 +44,18 @@ public final class LandsTest {
 
     @Before
     public void initLands() throws SecuboidLandException {
-        lands = new InitLands().getLands();
+        final InitLands initLands = new InitLands();
+        lands = initLands.getLands();
+        final PlayerContainerNobody playerContainerNobody = (PlayerContainerNobody) initLands.getPlayerContainers()
+                .getPlayerContainer(PlayerContainerType.NOBODY);
 
         // Create lands for test
-        lands.createLand(TEST_CUBOID, PlayerContainerNobody.getInstance(), new CuboidArea(WORLD, 0, 0, 0, 99, 255, 99));
-        lands.createLand(TEST_CYLINDER, PlayerContainerNobody.getInstance(), new CylinderArea(WORLD, 9, 9, 9, 120, 255, 100));
-        RegionMatrix regionMatrix = new RegionMatrix();
+        lands.createLand(TEST_CUBOID, playerContainerNobody, new CuboidArea(true, WORLD, 0, 0, 0, 99, 255, 99));
+        lands.createLand(TEST_CYLINDER, playerContainerNobody, new CylinderArea(true, WORLD, 9, 9, 9, 120, 255, 100));
+        final RegionMatrix regionMatrix = new RegionMatrix();
         regionMatrix.addPoint(200, 200);
         regionMatrix.addPoint(-200, -200);
-        lands.createLand(TEST_ROAD, PlayerContainerNobody.getInstance(), new RoadArea(WORLD, 0, 255, regionMatrix));
+        lands.createLand(TEST_ROAD, playerContainerNobody, new RoadArea(true, WORLD, 0, 255, regionMatrix));
     }
 
     @Test

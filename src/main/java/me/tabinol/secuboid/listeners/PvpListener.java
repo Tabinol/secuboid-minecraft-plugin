@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -37,11 +36,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.config.players.PlayerConfEntry;
-import me.tabinol.secuboid.config.players.PlayerConfig;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.permissionsflags.FlagList;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
+import me.tabinol.secuboid.players.PlayerConfEntry;
+import me.tabinol.secuboid.players.PlayerConfig;
 import me.tabinol.secuboid.utilities.ExpirableHashMap;
 
 /**

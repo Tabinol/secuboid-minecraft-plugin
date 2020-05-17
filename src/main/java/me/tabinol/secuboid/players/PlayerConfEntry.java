@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,7 +15,10 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.config.players;
+package me.tabinol.secuboid.players;
+
+import java.util.Optional;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -25,6 +27,7 @@ import org.bukkit.entity.Player;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.selection.PlayerSelection;
@@ -50,6 +53,11 @@ public final class PlayerConfEntry {
      * Player Lands, areas and visual selections
      */
     private final PlayerSelection playerSelection;
+
+    /**
+     * Plauer inventory cache optional.
+     */
+    private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
 
     /**
      * If the player is in Admin Mod
@@ -114,22 +122,26 @@ public final class PlayerConfEntry {
     /**
      * Instantiates a new player conf entry.
      *
-     * @param secuboid secuboid instance
-     * @param sender   the sender
+     * @param secuboid                secuboid instance
+     * @param sender                  the sender
+     * @param playerInventoryCacheOpt the player inventory cache optional
      */
-    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender) {
-
+    PlayerConfEntry(final Secuboid secuboid, final CommandSender sender,
+            final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
         this.secuboid = secuboid;
         this.sender = sender;
+        this.playerInventoryCacheOpt = playerInventoryCacheOpt;
+
         if (sender instanceof Player) {
             player = (Player) sender;
             playerSelection = new PlayerSelection(secuboid, this);
-            pcp = new PlayerContainerPlayer(secuboid, player.getUniqueId());
+            pcp = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(player.getUniqueId());
         } else {
             player = null;
             playerSelection = null;
             pcp = null;
         }
+
         selectionTop = secuboid.getConf().getDefaultTop();
         selectionBottom = secuboid.getConf().getDefaultBottom();
         selectionRadius = secuboid.getConf().getDefaultRadius();
@@ -169,6 +181,15 @@ public final class PlayerConfEntry {
      */
     public PlayerSelection getSelection() {
         return playerSelection;
+    }
+
+    /**
+     * Gets the player inventory cache optional.
+     * 
+     * @return the player inventory cache optional
+     */
+    public Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
+        return playerInventoryCacheOpt;
     }
 
     /**
@@ -388,5 +409,13 @@ public final class PlayerConfEntry {
      */
     public void setSelectionRadius(final int selectionRadius) {
         this.selectionRadius = selectionRadius;
+    }
+
+    public UUID getUUID() {
+        return player.getUniqueId();
+    }
+
+    public String getName() {
+        return player.getName();
     }
 }

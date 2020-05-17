@@ -1,7 +1,6 @@
 /*
  Secuboid: Lands and Protection plugin for Minecraft server
- Copyright (C) 2015 Tabinol
- Forked from Factoid (Copyright (C) 2014 Kaz00, Tabinol)
+ Copyright (C) 2014 Tabinol
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,6 +17,12 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import static me.tabinol.secuboid.config.Config.NEWLINE;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
@@ -28,11 +33,6 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.permissionsflags.PermissionList;
 import me.tabinol.secuboid.permissionsflags.PermissionType;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-
-import static me.tabinol.secuboid.config.Config.NEWLINE;
 
 /**
  * The Class CommandInfo.
@@ -105,10 +105,16 @@ public final class CommandInfo extends CommandExec {
         if (landSelectNullable != null) {
             // Create list
             StringBuilder stList = new StringBuilder();
+            final ChatColor landColor;
+            if (landSelectNullable.isApproved()) {
+                landColor = ChatColor.GREEN;
+            } else {
+                landColor = ChatColor.RED;
+            }
             stList.append(ChatColor.YELLOW)
                     .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.NAME",
-                            ChatColor.GREEN + landSelectNullable.getName() + ChatColor.YELLOW,
-                            ChatColor.GREEN + landSelectNullable.getUUID().toString() + ChatColor.YELLOW));
+                            landColor + landSelectNullable.getName() + ChatColor.YELLOW,
+                            landColor + landSelectNullable.getUUID().toString() + ChatColor.YELLOW));
             stList.append(NEWLINE);
             stList.append(ChatColor.YELLOW)
                     .append(secuboid.getLanguage().getMessage("COMMAND.INFO.LAND.PRIORITY", landSelectNullable.getPriority() + ""));

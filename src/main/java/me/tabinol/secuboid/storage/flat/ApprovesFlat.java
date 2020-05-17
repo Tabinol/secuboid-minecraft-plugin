@@ -227,7 +227,7 @@ public final class ApprovesFlat {
             newArea = Area.getFromFileFormat(section.getString("NewArea"));
         }
 
-        final LandAction action = LandAction.valueOf(section.getString("action"));
+        final LandAction action = LandAction.valueOf(section.getString("Action"));
 
         // If the land was deleted
         if (action != LandAction.LAND_ADD && lands.getLand(landName) == null) {

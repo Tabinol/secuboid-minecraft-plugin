@@ -151,6 +151,7 @@ public class Approves {
      * Creates the action (approve and execute).
      * 
      * @param approve the approve
+     * @throws SecuboidLandException SecuboidLandException
      */
     public void createAction(final Approve approve) throws SecuboidLandException {
         final LandAction action = approve.getAction();

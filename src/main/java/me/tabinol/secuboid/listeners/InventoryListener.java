@@ -53,7 +53,8 @@ public final class InventoryListener extends CommonListener implements Listener 
     /**
      * Instantiates a new inventory listener.
      *
-     * @param secuboid secuboid instance
+     * @param secuboid    secuboid instance
+     * @param inventories inventories instance
      */
     public InventoryListener(final Secuboid secuboid, final Inventories inventories) {
         super(secuboid);

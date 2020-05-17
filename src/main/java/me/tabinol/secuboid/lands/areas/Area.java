@@ -35,8 +35,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     /**
      * Gets the Area from string file format. LEGACY USAGE ONLY!
      *
-     * @param str        the str
-     * @param isApproved sets the area approved or not
+     * @param str the str
      * @return the from string
      */
     static Area getFromFileFormat(final String str) {

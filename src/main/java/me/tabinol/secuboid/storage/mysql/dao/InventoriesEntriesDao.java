@@ -106,7 +106,7 @@ public final class InventoriesEntriesDao {
     }
 
     public void deleteInventoryEntry(final Connection conn, final long id) throws SQLException {
-        final String sql = "DELETE FROM `{{TP}}inventories_entries WHERE `id`=?";
+        final String sql = "DELETE FROM `{{TP}}inventories_entries` WHERE `id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.setLong(1, id);

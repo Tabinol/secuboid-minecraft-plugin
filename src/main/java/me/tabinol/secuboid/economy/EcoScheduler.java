@@ -60,16 +60,21 @@ public final class EcoScheduler extends BukkitRunnable {
                 final PlayerContainerPlayer tenant = land.getTenant();
                 final OfflinePlayer offlineTenant = tenant.getOfflinePlayer();
 
+                // Check if the player exists
+                final boolean playerFound;
                 if (offlineTenant == null || !offlineTenant.hasPlayedBefore()) {
                     secuboid.getLogger()
                             .warning("Player " + tenant.getMinecraftUUID()
                                     + " not found in this server and cannot pay for the land " + land.getName()
                                     + ", UUID: " + land.getUUID() + ".");
-                    continue;
+                    playerFound = false;
+                } else {
+                    playerFound = true;
                 }
 
                 // Check if the tenant has enough money or time limit whit no auto renew
-                if (playerMoney.getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
+                if (!playerFound
+                        || playerMoney.getPlayerBalance(offlineTenant, land.getWorldName()) < land.getRentPrice()
                         || !land.getRentAutoRenew()) {
 
                     // Unrent

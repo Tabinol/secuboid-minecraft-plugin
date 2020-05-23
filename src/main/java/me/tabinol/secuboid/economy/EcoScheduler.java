@@ -85,7 +85,7 @@ public final class EcoScheduler extends BukkitRunnable {
                         new EcoSign(secuboid, land, land.getRentSignLoc().toLocation()).createSignForRent(
                                 land.getRentPrice(), land.getRentRenew(), land.getRentAutoRenew(), null);
                     } catch (final SignException e) {
-                        secuboid.getLogger().severe("Sign exception in location: " + land.getSaleSignLoc());
+                        secuboid.getLogger().severe("Sign exception in location: " + land.getRentSignLoc());
                     }
                     pm.callEvent(new LandEconomyEvent(land, LandEconomyEvent.LandEconomyReason.UNRENT, land.getOwner(),
                             tenant));

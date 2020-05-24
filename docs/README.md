@@ -7,7 +7,6 @@ Join us on Discord: https://discord.gg/XXXXXX
 ## Wiki
 
 [English](https://bitbucket.org/Tabinol/secuboid/wiki/Home)
-
 [Français](https://bitbucket.org/Tabinol/secuboid/wiki/Home_fr)
 
 # Features
@@ -61,6 +60,7 @@ Join us on Discord: https://discord.gg/XXXXXX
 * MySQL/Maria (since 1.5.0)
 
 ## Dependencies:
+
 * **Needed**: Vault (groups, economy)
 * **Optional**: WorldEdit, Essentials(-X) (chat, vanish), VanishNoPacket (vanish), SuperVanish/PremiumVanish (vanish)
 
@@ -80,15 +80,19 @@ The Secuboid project began in 1994 on the "Factoid" name. The goal was to
 You have a complete protecton plugin with an unlimited possibilities of configuration for lands and worlds. We also wanted to add a inventory system for lands, worlds and game modes.
 
 ## Former developers
+
 Kaz00
 
 ## actual developers
+
 Ouaou, Tabinol
 
 ## Tanks to
+
 Breston (Documentation), Undia (Logo), Modulmonde staff (Tests)
 
 # License
+
 * Secuboid license is [GPL3](http://fsf.org/)
 * Secuboid logo is copyright
 * OpenMoji icons is [CC BY-SA 4.0](https://openmoji.org/)

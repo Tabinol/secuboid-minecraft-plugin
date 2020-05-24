@@ -4,10 +4,9 @@ Secuboid is a complete land (region) protection plugin. It has a lot of function
 
 Join us on Discord: https://discord.gg/XXXXXX
 
-## Wiki
+## Documentation
 
-[English](https://bitbucket.org/Tabinol/secuboid/wiki/Home)
-[Français](https://bitbucket.org/Tabinol/secuboid/wiki/Home_fr)
+[configuration](CONFIG)
 
 # Features
 

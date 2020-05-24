@@ -8,7 +8,7 @@ You need a Spigot/Paper/Craftbukkit. You have to copy to file secuboid-x.y.z.jav
 
 ## Configuration
 
-** Please do not change the indentation in a ".yml" file. You have also to respect the case or it will not works. **
+**Please do not change the indentation in a ".yml" file. You have also to respect the case or it will not works.**
 
 #### config.yml
 

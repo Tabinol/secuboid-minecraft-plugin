@@ -24,4 +24,4 @@ Here is the list of Bukkit permissons. The * are accepted.
  &nbsp;               |secuboid.flycreative.override.nobuildoutside  |op    |Can build outside the land
  &nbsp;               |secuboid.flycreative.override.allowbanneditems|op    |Can use banned items
 
-**:warning: Important:** Some permision systems override "false" default values Do not use "secuboid.*" or set explicitly "secuboid.inv.ignorecreativeinv" and "secuboid.inv.ignoreinv" to "false"
+**⚠ Important:** Some permision systems override "false" default values Do not use "secuboid.*" or set explicitly "secuboid.inv.ignorecreativeinv" and "secuboid.inv.ignoreinv" to "false"

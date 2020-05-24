@@ -50,8 +50,8 @@ Join us on Discord: https://discord.gg/XXXXXX
 ## Multilanguage
 ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/E24A-100x.png)
 
-* English
-* Français
+* English ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/1F1EC-1F1E7-50x.png) ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/1F1FA-1F1F8-50x.png)
+* Français ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/1F1EB-1F1F7-50x.png)
 * Add your language by editing the .yml file in /lang folder
 
 ## Persistence

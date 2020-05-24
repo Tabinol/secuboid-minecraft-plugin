@@ -6,7 +6,9 @@ Join us on Discord: https://discord.gg/XXXXXX
 
 ## Documentation
 
-[configuration](CONFIG)
+* [configuration](https://tabinol.github.io/secuboid-minecraft-plugin/CONFIG)
+* [Bukkit permissions](https://tabinol.github.io/secuboid-minecraft-plugin/BUKKIT_PERMISSIONS)
+
 
 # Features
 
@@ -48,8 +50,8 @@ Join us on Discord: https://discord.gg/XXXXXX
 ## Multilanguage
 ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/E24A-100x.png)
 
-* English
-* Français
+* English :us: :gb:
+* Français :fr:
 * Add your language by editing the .yml file in /lang folder
 
 ## Persistence

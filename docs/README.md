@@ -26,6 +26,7 @@ Join us on Discord: https://discord.gg/XXXXXX
 
 * You can speak in the region just putting =, < or > before your message
 * You can spy region chat by giving a permission to your moderators
+
 ## Land Management
 ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/1F3E1-100x.png)
 

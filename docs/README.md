@@ -12,7 +12,7 @@ Join us on Discord: https://discord.gg/XXXXXX
 * [Tables (Player containers, Permsions, Flags)](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES)
 * [Commands](https://tabinol.github.io/secuboid-minecraft-plugin/COMMANDS)
 * [Issues](https://bitbucket.org/Tabinol/secuboid/issues)
-* [For developers](https://bitbucket.org/Tabinol/secuboid/DEVELOPERS)
+* [For developers](https://tabinol.github.io/secuboid-minecraft-plugin/DEVELOPERS)
 
 # Features
 

@@ -8,7 +8,11 @@ Join us on Discord: https://discord.gg/XXXXXX
 
 * [configuration](https://tabinol.github.io/secuboid-minecraft-plugin/CONFIG)
 * [Bukkit permissions](https://tabinol.github.io/secuboid-minecraft-plugin/BUKKIT_PERMISSIONS)
-
+* [How to create a land quick guide](https://tabinol.github.io/secuboid-minecraft-plugin/CREATE_LAND)
+* [Tables (Player containers, Permsions, Flags)](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES)
+* [Commands](https://tabinol.github.io/secuboid-minecraft-plugin/COMMANDS)
+* [Issues](https://bitbucket.org/Tabinol/secuboid/issues)
+* [For developers](https://bitbucket.org/Tabinol/secuboid/DEVELOPERS)
 
 # Features
 
@@ -64,7 +68,6 @@ Join us on Discord: https://discord.gg/XXXXXX
 
 * **Needed**: Vault (groups, economy)
 * **Optional**: WorldEdit, Essentials(-X) (chat, vanish), VanishNoPacket (vanish), SuperVanish/PremiumVanish (vanish)
-
 
 # Servers that use Secuboid (ask me on Discord if you want your server here):
 

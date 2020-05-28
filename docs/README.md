@@ -87,7 +87,7 @@ You have a complete protecton plugin with an unlimited possibilities of configur
 
 Kaz00
 
-## actual developers
+## Actual developers
 
 Ouaou, Tabinol
 

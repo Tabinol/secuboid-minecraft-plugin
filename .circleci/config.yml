@@ -27,7 +27,7 @@ jobs:
           name: Creating Artifacts
           command: |
             mkdir /tmp/artifacts;
-            cp ~/secuboid-minecraft-plugin/target/secuboid-*.jar /tmp/artifacts/;
+            cp target/secuboid-*.jar /tmp/artifacts/;
       - store_artifacts:
           path: /tmp/artifacts
 

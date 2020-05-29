@@ -11,7 +11,7 @@ Join us on Discord: https://discord.gg/XXXXXX
 * [How to create a land quick guide](https://tabinol.github.io/secuboid-minecraft-plugin/CREATE_LAND)
 * [Tables (Player containers, Permsions, Flags)](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES)
 * [Commands](https://tabinol.github.io/secuboid-minecraft-plugin/COMMANDS)
-* [Issues](https://bitbucket.org/Tabinol/secuboid/issues)
+* [Issues](https://github.com/Tabinol/secuboid-minecraft-plugin/issues)
 * [For developers](https://tabinol.github.io/secuboid-minecraft-plugin/DEVELOPERS)
 
 # Features

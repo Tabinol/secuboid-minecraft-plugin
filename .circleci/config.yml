@@ -17,17 +17,21 @@ jobs:
       - run: mvn package
       - store_test_results:
           path: target/surefire-reports
-
-  deploy:
-    working_directory: ~/secuboid-minecraft-plugin
-    docker:
-      - image: ubuntu:20.04
-    steps:
       - run:
           name: Creating Artifacts
           command: |
             mkdir /tmp/artifacts;
             cp target/secuboid-*.jar /tmp/artifacts/;
+      - persist_to_workspace:
+          root: /tmp/artifacts
+          paths:
+            - secuboid-*.jar
+  deploy:
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - attach_workspace:
+          at: /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
 

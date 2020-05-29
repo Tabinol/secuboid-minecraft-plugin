@@ -1,0 +1,44 @@
+version: 2.1
+
+jobs:
+  build:
+    working_directory: ~/secuboid-minecraft-plugin
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - restore_cache:
+          key: secuboid-minecraft-plugin-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: secuboid-minecraft-plugin-{{ checksum "pom.xml" }}
+      - run: mvn package
+      - store_test_results:
+          path: target/surefire-reports
+
+  deploy:
+    working_directory: ~/secuboid-minecraft-plugin
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - run:
+          name: Creating Artifacts
+          command: |
+            mkdir /tmp/artifacts;
+            cp ~/secuboid-minecraft-plugin/target/secuboid-*.jar /tmp/artifacts/;
+      - store_artifacts:
+          path: /tmp/artifacts
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

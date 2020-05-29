@@ -28,7 +28,7 @@ jobs:
             - secuboid-*.jar
   deploy:
     docker:
-      - image: ubuntu:20.04
+      - image: circleci/ubuntu-server
     steps:
       - attach_workspace:
           at: /tmp/artifacts

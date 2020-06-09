@@ -155,9 +155,9 @@ Sets the land priority. The child land takes his parent priority. If two lands o
 
 Sets the ray distance (square) when a road land is selected.
 
-### /secuboid remove
+### /secuboid remove [force/recursive]
 
-Destroys the selected land.
+Destroys the selected land. "force" permits to delete a land with children. "recursive" deletes also the children.
 
 ### /secuboid rename NEW_NAME
 

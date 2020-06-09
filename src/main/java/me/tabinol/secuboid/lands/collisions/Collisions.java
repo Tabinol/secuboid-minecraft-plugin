@@ -54,8 +54,15 @@ public final class Collisions {
      * The Enum LandError.
      */
     public enum LandError {
-        COLLISION(true), NAME_IN_USE(false), HAS_CHILDREN(false), CHILD_OUT_OF_BORDER(true), OUT_OF_PARENT(true),
-        IN_APPROVE_LIST(false), NOT_ENOUGH_MONEY(false), MAX_AREA_FOR_LAND(true), MAX_LAND_FOR_PLAYER(true),
+        COLLISION(true), //
+        NAME_IN_USE(false), //
+        HAS_CHILDREN(false), //
+        CHILD_OUT_OF_BORDER(true), //
+        OUT_OF_PARENT(true), //
+        IN_APPROVE_LIST(false), //
+        NOT_ENOUGH_MONEY(false), //
+        MAX_AREA_FOR_LAND(true), //
+        MAX_LAND_FOR_PLAYER(true), //
         MUST_HAVE_AT_LEAST_ONE_AREA(false);
 
         /**
@@ -78,11 +85,14 @@ public final class Collisions {
      */
     public enum LandAction {
         LAND_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NAME_IN_USE, NOT_ENOUGH_MONEY,
-                MAX_LAND_FOR_PLAYER)),
-        LAND_RENAME(EnumSet.of(IN_APPROVE_LIST, NAME_IN_USE)), LAND_REMOVE(EnumSet.of(IN_APPROVE_LIST, HAS_CHILDREN)),
-        LAND_PARENT(EnumSet.of(IN_APPROVE_LIST, OUT_OF_PARENT)),
-        AREA_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NOT_ENOUGH_MONEY, MAX_AREA_FOR_LAND)),
-        AREA_REMOVE(EnumSet.of(IN_APPROVE_LIST, CHILD_OUT_OF_BORDER, MUST_HAVE_AT_LEAST_ONE_AREA)),
+                MAX_LAND_FOR_PLAYER)), //
+        LAND_RENAME(EnumSet.of(IN_APPROVE_LIST, NAME_IN_USE)), //
+        LAND_REMOVE(EnumSet.of(IN_APPROVE_LIST, HAS_CHILDREN)), //
+        LAND_REMOVE_FORCE(EnumSet.of(IN_APPROVE_LIST)), //
+        LAND_REMOVE_RECURSIVE(EnumSet.of(IN_APPROVE_LIST)), //
+        LAND_PARENT(EnumSet.of(IN_APPROVE_LIST, OUT_OF_PARENT)), //
+        AREA_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NOT_ENOUGH_MONEY, MAX_AREA_FOR_LAND)), //
+        AREA_REMOVE(EnumSet.of(IN_APPROVE_LIST, CHILD_OUT_OF_BORDER, MUST_HAVE_AT_LEAST_ONE_AREA)), //
         AREA_MODIFY(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, CHILD_OUT_OF_BORDER, NOT_ENOUGH_MONEY));
 
         EnumSet<LandError> errorsToCheck;

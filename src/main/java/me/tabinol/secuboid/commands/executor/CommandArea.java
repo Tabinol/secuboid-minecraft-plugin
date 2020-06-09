@@ -18,21 +18,23 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Map;
+import java.util.Optional;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
-import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.lands.areas.Area;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 /**
  * The Class CommandArea.
@@ -55,8 +57,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandArea(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandArea(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -76,7 +78,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             checkPermission(true, true, null, null);
             checkSelections(true, true);
 
-            Area area = playerConf.getSelection().getArea();
+            final Area area = playerConf.getSelection().getArea();
 
             // Check for collision
             checkCollision(area.getWorldName(), landSelectNullable.getName(), landSelectNullable, null,
@@ -87,11 +89,11 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             checkPermission(true, true, null, null);
             checkSelections(true, null);
 
-            String areaNbStr = argList.getNext();
+            final String areaNbStr = argList.getNext();
             int areaNb = 0;
 
             // check here if there is an area to replace
-            Area areaToReplace = playerConf.getSelection().getAreaToReplace();
+            final Area areaToReplace = playerConf.getSelection().getAreaToReplace();
             if (areaToReplace != null) {
                 areaNb = areaToReplace.getKey();
             }
@@ -108,7 +110,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 }
                 try {
                     areaNb = Integer.parseInt(areaNbStr);
-                } catch (NumberFormatException ex) {
+                } catch (final NumberFormatException ex) {
                     throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
                 }
                 if (landSelectNullable.getArea(areaNb) == null) {
@@ -129,7 +131,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 // Only for a replace
                 checkSelections(true, true);
 
-                Area area = playerConf.getSelection().getArea();
+                final Area area = playerConf.getSelection().getArea();
 
                 // Check for collision
                 checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable,
@@ -140,8 +142,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
         } else if (fonction.equalsIgnoreCase("list")) {
 
             checkSelections(true, null);
-            StringBuilder stList = new StringBuilder();
-            for (Map.Entry<Integer, Area> entry : landSelectNullable.getIdsAndAreas().entrySet()) {
+            final StringBuilder stList = new StringBuilder();
+            for (final Map.Entry<Integer, Area> entry : landSelectNullable.getIdsAndAreas().entrySet()) {
                 stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint())
                         .append(Config.NEWLINE);
             }
@@ -153,7 +155,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
     }
 
     @Override
-    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+    public void commandThreadExecute(final Collisions collisions) throws SecuboidCommandException {
 
         if (collisions.hasCollisions()) {
             return;
@@ -176,7 +178,8 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 throw new SecuboidCommandException(secuboid, "Area", sender, "COMMAND.REMOVE.AREA.INVALID");
             }
 
-            playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, landSelectNullable, removeId));
+            playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, landSelectNullable, removeId,
+                    Optional.of(LandAction.AREA_REMOVE)));
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
 
         } else if (fonction.equalsIgnoreCase("replace")) {

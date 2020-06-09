@@ -252,6 +252,28 @@ public final class Lands {
         return landList.containsKey(landName.toLowerCase());
     }
 
+    public void removeLandForce(final Land land) throws SecuboidLandException {
+
+        // Remove parents from children
+        // Copy to array to avoid ConcurrentModificationException
+        for (final Land landChild : land.getChildren().toArray(new Land[0])) {
+            landChild.setParent(null);
+        }
+
+        removeLand(land);
+    }
+
+    public void removeLandRecursive(final Land land) throws SecuboidLandException {
+
+        // Remove children (recursive)
+        // Copy to array to avoid ConcurrentModificationException
+        for (final Land landChild : land.getChildren().toArray(new Land[0])) {
+            removeLandRecursive(landChild);
+        }
+
+        removeLand(land);
+    }
+
     /**
      * Removes the land.
      *
@@ -280,8 +302,7 @@ public final class Lands {
 
         // If the land has children
         if (!land.getChildren().isEmpty()) {
-            throw new SecuboidLandException(secuboid, landName, null, LandAction.LAND_REMOVE,
-                    LandError.HAS_CHILDREN);
+            throw new SecuboidLandException(secuboid, landName, null, LandAction.LAND_REMOVE, LandError.HAS_CHILDREN);
         }
 
         // Call Land Event and check if it is cancelled

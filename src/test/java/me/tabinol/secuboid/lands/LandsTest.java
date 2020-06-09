@@ -18,6 +18,7 @@
 package me.tabinol.secuboid.lands;
 
 import static me.tabinol.secuboid.lands.InitLands.WORLD;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
@@ -129,5 +130,37 @@ public final class LandsTest {
         if (land.isLocationInside(WORLD, 201, 30, 200)) {
             fail("Location error");
         }
+    }
+
+    @Test
+    public void removeForceTest() throws SecuboidLandException {
+        final Land parent = lands.getLand(TEST_CUBOID);
+        final Land child1 = lands.getLand(TEST_CYLINDER);
+        final Land child2 = lands.getLand(TEST_ROAD);
+
+        child1.setParent(parent);
+        child2.setParent(parent);
+
+        lands.removeLandForce(parent);
+
+        assertNull(lands.getLand(TEST_CUBOID));
+        assertNull(lands.getLand(TEST_CYLINDER).getParent());
+        assertNull(lands.getLand(TEST_ROAD).getParent());
+    }
+
+    @Test
+    public void removeRecursiveTest() throws SecuboidLandException {
+        final Land parent = lands.getLand(TEST_CUBOID);
+        final Land child1 = lands.getLand(TEST_CYLINDER);
+        final Land child2 = lands.getLand(TEST_ROAD);
+
+        child1.setParent(parent);
+        child2.setParent(parent);
+
+        lands.removeLandRecursive(parent);
+
+        assertNull(lands.getLand(TEST_CUBOID));
+        assertNull(lands.getLand(TEST_CYLINDER));
+        assertNull(lands.getLand(TEST_ROAD));
     }
 }

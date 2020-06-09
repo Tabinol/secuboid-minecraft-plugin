@@ -121,7 +121,7 @@ HELP:
     RADIUS:
       1: "/secuboid radius <nombre> : Sélection du rayon pour les routes."
     REMOVE:
-      1: "/secuboid remove : Efface un terrain."
+      1: "/secuboid remove [force/recursive] : Efface un terrain."
     RENAME:
       1: "/secuboid rename <nouveau nom> : Renomme un terrain."
     RENT:

@@ -17,12 +17,15 @@
  */
 package me.tabinol.secuboid.commands;
 
+import java.util.Optional;
+
 import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
 /**
  * The Class ConfirmEntry.
  */
-public class ConfirmEntry {
+public final class ConfirmEntry {
 
     /**
      * The Enum ConfirmType. Represent a Entry for a "/secuboid confirm".
@@ -59,16 +62,24 @@ public class ConfirmEntry {
     public final int areaNb;
 
     /**
+     * The land action optional.
+     */
+    public final Optional<LandAction> landActionOpt;
+
+    /**
      * Instantiates a new confirm entry.
      *
-     * @param confirmType the confirm type
-     * @param land        the land
-     * @param areaNb      the area nb
+     * @param confirmType   the confirm type
+     * @param land          the land
+     * @param areaNb        the area nb
+     * @param landActionOpt the land action optional
      */
-    public ConfirmEntry(ConfirmType confirmType, Land land, int areaNb) {
+    public ConfirmEntry(final ConfirmType confirmType, final Land land, final int areaNb,
+            final Optional<LandAction> landActionOpt) {
 
         this.confirmType = confirmType;
         this.land = land;
         this.areaNb = areaNb;
+        this.landActionOpt = landActionOpt;
     }
 }

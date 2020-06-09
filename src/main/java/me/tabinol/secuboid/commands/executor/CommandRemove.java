@@ -17,17 +17,27 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.commands.*;
-import me.tabinol.secuboid.exceptions.SecuboidCommandException;
-import me.tabinol.secuboid.lands.collisions.Collisions;
+import java.util.Optional;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.commands.ArgList;
+import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.commands.InfoCommand;
+import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.lands.collisions.Collisions;
+import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
 /**
  * The Class CommandRemove.
  */
-@InfoCommand(name = "remove")
+@InfoCommand(name = "remove", //
+        completion = { //
+                @CompletionMap(regex = "^$", completions = { "force", "recursive" }) //
+        })
 public final class CommandRemove extends CommandCollisionsThreadExec {
 
     /**
@@ -39,8 +49,8 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandRemove(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandRemove(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -51,13 +61,25 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
         checkSelections(true, null);
         checkPermission(true, true, null, null);
 
+        final String fonction = argList.getNext();
+        final LandAction landAction;
+        if (fonction == null) {
+            landAction = LandAction.LAND_REMOVE;
+        } else if (fonction.equalsIgnoreCase("force")) {
+            landAction = LandAction.LAND_REMOVE_FORCE;
+        } else if (fonction.equalsIgnoreCase("recursive")) {
+            landAction = LandAction.LAND_REMOVE_RECURSIVE;
+        } else {
+            throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
+        }
+
         // Check for collision
-        checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null, Collisions.LandAction.LAND_REMOVE,
-                0, null, landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
+        checkCollision(landSelectNullable.getWorldName(), landSelectNullable.getName(), landSelectNullable, null,
+                landAction, 0, null, landSelectNullable.getParent(), landSelectNullable.getOwner(), true);
     }
 
     @Override
-    public void commandThreadExecute(Collisions collisions) throws SecuboidCommandException {
+    public void commandThreadExecute(final Collisions collisions) throws SecuboidCommandException {
 
         // Check for collision
         if (collisions.hasCollisions()) {
@@ -65,7 +87,8 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
         }
 
         new CommandCancel(secuboid, null, sender, argList).commandExecute();
-        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, landSelectNullable, 0));
+        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, landSelectNullable, 0,
+                Optional.of(collisions.getAction())));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

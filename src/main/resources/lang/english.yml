@@ -121,7 +121,7 @@ HELP:
     RADIUS:
       1: "/secuboid radius <number> : Radius selection for roads."
     REMOVE:
-      1: "/secuboid remove : Delete a land."
+      1: "/secuboid remove [force/recursive] : Delete a land."
     RENAME:
       1: "/secuboid rename <new name> : Rename a land."
     RENT:

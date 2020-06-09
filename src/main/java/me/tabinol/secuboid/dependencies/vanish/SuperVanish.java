@@ -17,36 +17,65 @@
  */
 package me.tabinol.secuboid.dependencies.vanish;
 
-import de.myzelyam.api.vanish.VanishAPI;
-import me.tabinol.secuboid.Secuboid;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+import me.tabinol.secuboid.Secuboid;
+
 /**
- * SuperVanish/PremiumVanish dependency.
- * Created by mblanchet on 2017-03-20.
+ * SuperVanish/PremiumVanish dependency. Created by mblanchet on 2017-03-20.
  */
 public class SuperVanish implements Vanish {
 
+    private static final String VANISH_API_CLASS_NAME = "de.myzelyam.api.vanish.VanishAPI";
+    private static final String IS_INVISIBLE_STATIC_METHOD = "isInvisible";
+
     private final Secuboid secuboid;
+    private final Class<?> vanishAPIClass;
 
     /**
      * Instantiates a new super vanish.
      *
      * @param secuboid secuboid instance
      */
-    public SuperVanish(Secuboid secuboid) {
+    public SuperVanish(final Secuboid secuboid) {
         this.secuboid = secuboid;
+
+        Class<?> vanishAPIClassTmp;
+        try {
+            vanishAPIClassTmp = Class.forName(VANISH_API_CLASS_NAME);
+        } catch (final ClassNotFoundException e) {
+            secuboid.getLogger().log(Level.SEVERE,
+                    "Class not found: Is it an incompatible SuperVanish version? [" + VANISH_API_CLASS_NAME + "]", e);
+            vanishAPIClassTmp = null;
+        }
+        vanishAPIClass = vanishAPIClassTmp;
     }
 
     @Override
-    public boolean isVanished(Player player) {
+    public boolean isVanished(final Player player) {
 
-        if ((secuboid.getConf().isSpectatorIsVanish()
-                && player.getGameMode() == GameMode.SPECTATOR)) {
+        if ((secuboid.getConf().isSpectatorIsVanish() && player.getGameMode() == GameMode.SPECTATOR)) {
             return true;
         }
 
-        return VanishAPI.isInvisible(player);
+        // Someting is wrong!
+        if (vanishAPIClass == null) {
+            return false;
+        }
+
+        try {
+            return ((Boolean) vanishAPIClass.getDeclaredMethod(IS_INVISIBLE_STATIC_METHOD, Player.class).invoke(null,
+                    player)).booleanValue();
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException e) {
+            secuboid.getLogger().log(Level.SEVERE,
+                    "Method not found: Is it an incompatible SuperVanish version? [" + IS_INVISIBLE_STATIC_METHOD + "]",
+                    e);
+            return false;
+        }
     }
 }

@@ -17,24 +17,27 @@
  */
 package me.tabinol.secuboid.dependencies;
 
-import com.earth2me.essentials.Essentials;
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.dependencies.chat.ChatEssentials;
-import me.tabinol.secuboid.dependencies.chat.ChatSecuboid;
-import me.tabinol.secuboid.dependencies.vanish.*;
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
-
 import static org.bukkit.Bukkit.getServer;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.dependencies.chat.ChatEssentials;
+import me.tabinol.secuboid.dependencies.chat.ChatSecuboid;
+import me.tabinol.secuboid.dependencies.vanish.DummyVanish;
+import me.tabinol.secuboid.dependencies.vanish.SuperVanish;
+import me.tabinol.secuboid.dependencies.vanish.Vanish;
+import me.tabinol.secuboid.dependencies.vanish.VanishEssentials;
+import me.tabinol.secuboid.dependencies.vanish.VanishNoPacket;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
+
 /**
  * The Class for plugin dependencies.
  */
-public class DependPlugin {
+public final class DependPlugin {
 
     private final Secuboid secuboid;
 
@@ -47,6 +50,7 @@ public class DependPlugin {
      * The essentials.
      */
     private Plugin essentials = null;
+    private EssentialsCommon essentialsCommon = null;
 
     /**
      * The vanish
@@ -88,12 +92,15 @@ public class DependPlugin {
      *
      * @param secuboid secuboid instance
      */
-    public DependPlugin(Secuboid secuboid) {
+    public DependPlugin(final Secuboid secuboid) {
 
         this.secuboid = secuboid;
 
         worldEdit = getPlugin("WorldEdit");
         essentials = getPlugin("Essentials");
+        if (essentials != null) {
+            essentialsCommon = new EssentialsCommon(secuboid, essentials);
+        }
         vanishNoPacket = getPlugin("VanishNoPacket");
         superVanish = getPlugin("PremiumVanish");
         if (superVanish == null) {
@@ -111,9 +118,9 @@ public class DependPlugin {
      * @param pluginName the plugin name
      * @return the plugin
      */
-    private Plugin getPlugin(String pluginName) {
+    private Plugin getPlugin(final String pluginName) {
 
-        Plugin plugin = secuboid.getServer().getPluginManager().getPlugin(pluginName);
+        final Plugin plugin = secuboid.getServer().getPluginManager().getPlugin(pluginName);
 
         if (plugin != null) {
             secuboid.getServer().getPluginManager().enablePlugin(plugin);
@@ -129,7 +136,8 @@ public class DependPlugin {
      * Setup permissions.
      */
     private void setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        final RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.permission.Permission.class);
         if (permissionProvider != null) {
             vaultPermission = permissionProvider.getProvider();
         }
@@ -139,14 +147,15 @@ public class DependPlugin {
      * Setup chat.
      */
     private void setupChat() {
-        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        final RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.chat.Chat.class);
         if (chatProvider != null) {
             vaultChat = chatProvider.getProvider();
         }
 
         // Get chat for social spy.
         if (essentials != null) {
-            chat = new ChatEssentials((Essentials) essentials);
+            chat = new ChatEssentials(essentialsCommon);
         } else {
             chat = new ChatSecuboid();
         }
@@ -156,7 +165,8 @@ public class DependPlugin {
      * Setup vaultEconomy.
      */
     private void setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        final RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             vaultEconomy = economyProvider.getProvider();
         }
@@ -173,7 +183,7 @@ public class DependPlugin {
             vanish = new VanishNoPacket(secuboid);
 
         } else if (essentials != null) {
-            vanish = new VanishEssentials(secuboid, (Essentials) essentials);
+            vanish = new VanishEssentials(secuboid, essentialsCommon);
 
             // Dummy Vanish if no plugins
         } else {

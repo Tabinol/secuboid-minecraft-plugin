@@ -17,30 +17,30 @@
  */
 package me.tabinol.secuboid.dependencies.vanish;
 
-import com.earth2me.essentials.Essentials;
-import me.tabinol.secuboid.Secuboid;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.dependencies.EssentialsCommon;
 
 /**
  * Essentials Functions.
  *
  * @author Tabinol
  */
-public class VanishEssentials implements Vanish {
+public final class VanishEssentials implements Vanish {
 
-    private final Essentials essentials;
     private final Secuboid secuboid;
+    private final EssentialsCommon essentialsCommon;
 
-    public VanishEssentials(Secuboid secuboid, Essentials essentials) {
+    public VanishEssentials(final Secuboid secuboid, final EssentialsCommon essentialsCommon) {
         this.secuboid = secuboid;
-        this.essentials = essentials;
+        this.essentialsCommon = essentialsCommon;
     }
 
     @Override
-    public boolean isVanished(Player player) {
-        return (secuboid.getConf().isSpectatorIsVanish()
-                && player.getGameMode() == GameMode.SPECTATOR)
-                || essentials.getUser(player).isVanished();
+    public boolean isVanished(final Player player) {
+        return (secuboid.getConf().isSpectatorIsVanish() && player.getGameMode() == GameMode.SPECTATOR)
+                || essentialsCommon.isVanished(player);
     }
 }

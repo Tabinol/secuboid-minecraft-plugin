@@ -17,39 +17,40 @@
  */
 package me.tabinol.secuboid.dependencies.chat;
 
-import com.earth2me.essentials.Essentials;
 import org.bukkit.entity.Player;
+
+import me.tabinol.secuboid.dependencies.EssentialsCommon;
 
 /**
  * The Class ChatEssentials.
  */
-public class ChatEssentials implements Chat {
+public final class ChatEssentials implements Chat {
 
     /**
      * The essentials instance.
      */
-    private final Essentials essentials;
+    private final EssentialsCommon essentialsCommon;
 
     /**
      * Instantiates a new chat essentials.
      *
      * @param essentials essentials plugin instance
      */
-    public ChatEssentials(Essentials essentials) {
+    public ChatEssentials(final EssentialsCommon essentialsCommon) {
 
-        this.essentials = essentials;
+        this.essentialsCommon = essentialsCommon;
     }
 
     @Override
-    public boolean isSpy(Player player) {
+    public boolean isSpy(final Player player) {
 
-        return essentials.getUser(player).isSocialSpyEnabled();
+        return essentialsCommon.isSocialSpyEnabled(player);
     }
 
     @Override
-    public boolean isMuted(Player player) {
+    public boolean isMuted(final Player player) {
 
-        return essentials.getUser(player).isMuted();
+        return essentialsCommon.isMuted(player);
     }
 
 }

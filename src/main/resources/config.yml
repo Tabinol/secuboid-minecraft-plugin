@@ -100,6 +100,7 @@ Lands:
 
   OwnerCanSet:                     # What the owner can set on his land?
     Permissions:
+      - LAND_OWNER                 # Give owner permission to others
       - BUILD
       - OPEN
       - USE
@@ -113,6 +114,14 @@ Lands:
       - TNT_DAMAGE
       - MESSAGE_ENTER
       - MESSAGE_EXIT
+  
+  TenantCanSet:                     # What the owner can set on his land?
+                                    # CAUTION: The permissions and flags
+                                    # will not be removed on land unrent
+                                    # except the permission LAND_TENANT
+    Permissions:
+      - LAND_TENANT                 # Give tenant permission to others
+    Flags: []
 
 # Fly and Creative configuration (only if general.FlyAndCreative is activated)
 FlyCreative:

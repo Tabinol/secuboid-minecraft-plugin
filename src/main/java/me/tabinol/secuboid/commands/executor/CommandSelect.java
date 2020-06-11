@@ -165,7 +165,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
 
         // (isResidentManager && landtest.isResident(player): Bug exploitation found by
         // Geo_Log: Add resident for a non resident
-        if (!(landtest.isOwner(player) || playerConf.isAdminMode()
+        if (!(landtest.isOwner(player) || landtest.isTenant(player) || playerConf.isAdminMode()
                 || (isResidentManager && landtest.isResident(player)))) {
             throw new SecuboidCommandException(secuboid, "CommandSelect", player, "GENERAL.MISSINGPERMISSION");
         }

@@ -65,8 +65,8 @@ public final class CommandPermission extends CommandPlayerThreadExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandPermission(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandPermission(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -99,9 +99,8 @@ public final class CommandPermission extends CommandPlayerThreadExec {
 
             // For default Type
             if (landSelectNullable.getType() != null) {
-                stList.append(ChatColor.DARK_GRAY)
-                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", landSelectNullable.getType().getName()))
-                        .append(Config.NEWLINE);
+                stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+                        landSelectNullable.getType().getName())).append(Config.NEWLINE);
                 importDisplayPermsFrom(secuboid.getLands().getDefaultConf(landSelectNullable.getType()), false);
             }
 
@@ -117,24 +116,25 @@ public final class CommandPermission extends CommandPlayerThreadExec {
             stList.append(ChatColor.DARK_GRAY)
                     .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", landSelectNullable.getWorldName()))
                     .append(Config.NEWLINE);
-            importDisplayPermsFrom(secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
+            importDisplayPermsFrom(
+                    secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
 
-            new ChatPage(secuboid, "COMMAND.PERMISSION.LISTSTART", stList.toString(), player, landSelectNullable.getName())
-                    .getPage(1);
+            new ChatPage(secuboid, "COMMAND.PERMISSION.LISTSTART", stList.toString(), player,
+                    landSelectNullable.getName()).getPage(1);
 
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
         }
     }
 
-    private void importDisplayPermsFrom(LandPermissionsFlags landPermissionsFlags, boolean onlyInherit) {
+    private void importDisplayPermsFrom(final LandPermissionsFlags landPermissionsFlags, final boolean onlyInherit) {
 
         boolean addToList = false;
 
-        for (PlayerContainer pc : landPermissionsFlags.getSetPCHavePermission()) {
-            StringBuilder stSubList = new StringBuilder();
+        for (final PlayerContainer pc : landPermissionsFlags.getSetPCHavePermission()) {
+            final StringBuilder stSubList = new StringBuilder();
 
-                for (Permission perm : landPermissionsFlags.getPermissionsForPC(pc)) {
+            for (final Permission perm : landPermissionsFlags.getPermissionsForPC(pc)) {
                 if ((!onlyInherit || perm.isInheritable()) && !permInList(pc, perm)) {
                     addToList = true;
                     stSubList.append(" ").append(perm.getPermType().getPrint()).append(":")
@@ -155,12 +155,12 @@ public final class CommandPermission extends CommandPlayerThreadExec {
         }
     }
 
-    private boolean permInList(PlayerContainer pc, Permission perm) {
+    private boolean permInList(final PlayerContainer pc, final Permission perm) {
 
-        for (LandPermissionsFlags listlandPermissionsFlags : precDL) {
+        for (final LandPermissionsFlags listlandPermissionsFlags : precDL) {
 
             if (listlandPermissionsFlags.getSetPCHavePermission().contains(pc)) {
-                for (Permission listPerm : listlandPermissionsFlags.getPermissionsForPC(pc)) {
+                for (final Permission listPerm : listlandPermissionsFlags.getPermissionsForPC(pc)) {
                     if (perm.getPermType() == listPerm.getPermType()) {
                         return true;
                     }
@@ -172,13 +172,14 @@ public final class CommandPermission extends CommandPlayerThreadExec {
     }
 
     @Override
-    public void commandThreadExecute(PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
+    public void commandThreadExecute(final PlayerCacheEntry[] playerCacheEntry) throws SecuboidCommandException {
 
         convertPcIfNeeded(playerCacheEntry);
 
         if (fonction.equalsIgnoreCase("add")) {
 
-            Permission perm = argList.getPermissionFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            final Permission perm = argList.getPermissionFromArg(playerConf.isAdminMode(),
+                    landSelectNullable.isOwner(player), landSelectNullable.isTenant(player));
 
             if (!perm.getPermType().isRegistered()) {
                 throw new SecuboidCommandException(secuboid, "Permission not registered", player,
@@ -192,13 +193,14 @@ public final class CommandPermission extends CommandPlayerThreadExec {
                         "COMMAND.PERMISSION.NOENTERNOTINSPAWN");
             }
             landSelectNullable.getPermissionsFlags().addPermission(pc, perm);
-            player.sendMessage(
-                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE",
-                            perm.getPermType().getPrint(), pc.getPrint() + ChatColor.YELLOW, landSelectNullable.getName()));
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.PERMISSION.ISDONE", perm.getPermType().getPrint(),
+                            pc.getPrint() + ChatColor.YELLOW, landSelectNullable.getName()));
 
         } else if (fonction.equalsIgnoreCase("remove")) {
 
-            PermissionType pt = argList.getPermissionTypeFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            final PermissionType pt = argList.getPermissionTypeFromArg(playerConf.isAdminMode(),
+                    landSelectNullable.isOwner(player), landSelectNullable.isTenant(player));
             if (!landSelectNullable.getPermissionsFlags().removePermission(pc, pt)) {
                 throw new SecuboidCommandException(secuboid, "Permission", player, "COMMAND.PERMISSION.REMOVENOTEXIST");
             }

@@ -467,6 +467,34 @@ public final class Config {
     }
 
     /**
+     * The tenant config flag.
+     */
+    private TreeSet<FlagType> tenantConfigFlag; // Flags a tenant can set
+
+    /**
+     * Gets the tenant config flag.
+     *
+     * @return the tenant config flag
+     */
+    public TreeSet<FlagType> getTenantConfigFlag() {
+        return tenantConfigFlag;
+    }
+
+    /**
+     * The tenant config perm.
+     */
+    private TreeSet<PermissionType> tenantConfigPerm; // Permissions a tenant can set
+
+    /**
+     * Gets the tenant config perm.
+     *
+     * @return the tenant config perm
+     */
+    public TreeSet<PermissionType> getTenantConfigPerm() {
+        return tenantConfigPerm;
+    }
+
+    /**
      * The type admin mod.
      */
     private Type typeAdminMode;
@@ -624,6 +652,16 @@ public final class Config {
         ownerConfigPerm = new TreeSet<PermissionType>();
         for (final String value : config.getStringList("Lands.OwnerCanSet.Permissions")) {
             ownerConfigPerm.add(secuboid.getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
+        }
+        config.addDefault("Lands.TenantCanSet.Flags", new String[] {});
+        tenantConfigFlag = new TreeSet<FlagType>();
+        for (final String value : config.getStringList("Lands.TenantCanSet.Flags")) {
+            tenantConfigFlag.add(secuboid.getPermissionsFlags().getFlagTypeNoValid(value.toUpperCase()));
+        }
+        config.addDefault("Lands.TenantCanSet.Permissions", new String[] {});
+        tenantConfigPerm = new TreeSet<PermissionType>();
+        for (final String value : config.getStringList("Lands.TenantCanSet.Permissions")) {
+            tenantConfigPerm.add(secuboid.getPermissionsFlags().getPermissionTypeNoValid(value.toUpperCase()));
         }
 
         // Fly and creative

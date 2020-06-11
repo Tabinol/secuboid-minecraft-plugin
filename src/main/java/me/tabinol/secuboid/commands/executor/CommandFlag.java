@@ -58,8 +58,8 @@ public final class CommandFlag extends CommandExec {
      * @param argList     the arg list
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public CommandFlag(Secuboid secuboid, InfoCommand infoCommand, CommandSender sender, ArgList argList)
-            throws SecuboidCommandException {
+    public CommandFlag(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -68,12 +68,13 @@ public final class CommandFlag extends CommandExec {
     public void commandExecute() throws SecuboidCommandException {
 
         checkSelections(true, null);
-        String curArg = argList.getNext();
+        final String curArg = argList.getNext();
 
         if (curArg.equalsIgnoreCase("add")) {
 
             // Permission check is on getFlagFromArg
-            Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            final Flag landFlag = argList.getFlagFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player),
+                    landSelectNullable.isTenant(player));
 
             if (!landFlag.getFlagType().isRegistered()) {
                 throw new SecuboidCommandException(secuboid, "Flag not registered", player, "COMMAND.FLAGS.FLAGNULL");
@@ -86,7 +87,8 @@ public final class CommandFlag extends CommandExec {
 
         } else if (curArg.equalsIgnoreCase("remove")) {
 
-            FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(), landSelectNullable.isOwner(player));
+            final FlagType flagType = argList.getFlagTypeFromArg(playerConf.isAdminMode(),
+                    landSelectNullable.isOwner(player), landSelectNullable.isTenant(player));
             if (!landSelectNullable.getPermissionsFlags().removeFlag(flagType)) {
                 throw new SecuboidCommandException(secuboid, "Flags", player, "COMMAND.FLAGS.REMOVENOTEXIST");
             }
@@ -103,9 +105,8 @@ public final class CommandFlag extends CommandExec {
 
             // For default Type
             if (landSelectNullable.getType() != null) {
-                stList.append(ChatColor.DARK_GRAY)
-                        .append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE", landSelectNullable.getType().getName()))
-                        .append(Config.NEWLINE);
+                stList.append(ChatColor.DARK_GRAY).append(secuboid.getLanguage().getMessage("GENERAL.FROMDEFAULTTYPE",
+                        landSelectNullable.getType().getName())).append(Config.NEWLINE);
                 importDisplayFlagsFrom(secuboid.getLands().getDefaultConf(landSelectNullable.getType()), false);
             }
 
@@ -121,19 +122,21 @@ public final class CommandFlag extends CommandExec {
             stList.append(ChatColor.DARK_GRAY)
                     .append(secuboid.getLanguage().getMessage("GENERAL.FROMWORLD", landSelectNullable.getWorldName()))
                     .append(Config.NEWLINE);
-            importDisplayFlagsFrom(secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
+            importDisplayFlagsFrom(
+                    secuboid.getLands().getOutsideLandPermissionsFlags(landSelectNullable.getWorldName()), true);
 
-            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, landSelectNullable.getName()).getPage(1);
+            new ChatPage(secuboid, "COMMAND.FLAGS.LISTSTART", stList.toString(), player, landSelectNullable.getName())
+                    .getPage(1);
 
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", player, "GENERAL.MISSINGINFO");
         }
     }
 
-    private void importDisplayFlagsFrom(LandPermissionsFlags landPermissionsFlags, boolean onlyInherit) {
+    private void importDisplayFlagsFrom(final LandPermissionsFlags landPermissionsFlags, final boolean onlyInherit) {
 
         final StringBuilder stSubList = new StringBuilder();
-        for (Flag flag : landPermissionsFlags.getFlags()) {
+        for (final Flag flag : landPermissionsFlags.getFlags()) {
             if (stSubList.length() != 0 && !stSubList.toString().endsWith(" ")) {
                 stSubList.append(" ");
             }
@@ -148,10 +151,10 @@ public final class CommandFlag extends CommandExec {
         }
     }
 
-    private boolean flagInList(Flag flag) {
+    private boolean flagInList(final Flag flag) {
 
-        for (LandPermissionsFlags listLandPermissionsFlags : precDL) {
-            for (Flag listFlag : listLandPermissionsFlags.getFlags()) {
+        for (final LandPermissionsFlags listLandPermissionsFlags : precDL) {
+            for (final Flag listFlag : listLandPermissionsFlags.getFlags()) {
                 if (flag.getFlagType() == listFlag.getFlagType()) {
                     return true;
                 }

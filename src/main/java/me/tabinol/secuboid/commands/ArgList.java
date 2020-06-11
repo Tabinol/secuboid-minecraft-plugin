@@ -138,12 +138,13 @@ public final class ArgList {
     /**
      * Gets the flag type from arg.
      *
-     * @param isAdminmode the is adminmode
-     * @param isOwner     the is owner
+     * @param isAdminmode is adminmode
+     * @param isOwner     is owner
+     * @param isTenant    is tenant
      * @return the flag type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public FlagType getFlagTypeFromArg(final boolean isAdminmode, final boolean isOwner)
+    public FlagType getFlagTypeFromArg(final boolean isAdminmode, final boolean isOwner, final boolean isTenant)
             throws SecuboidCommandException {
 
         final String curArg = getNext();
@@ -158,7 +159,8 @@ public final class ArgList {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "COMMAND.FLAGS.FLAGNULL");
         }
 
-        if (!isAdminmode && !(isOwner && secuboid.getConf().getOwnerConfigFlag().contains(flagType))) {
+        if (!isAdminmode && !(isOwner && secuboid.getConf().getOwnerConfigFlag().contains(flagType))
+                && !(isTenant && secuboid.getConf().getTenantConfigFlag().contains(flagType))) {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "GENERAL.MISSINGPERMISSION");
         }
 
@@ -168,14 +170,16 @@ public final class ArgList {
     /**
      * Gets the flag from arg.
      *
-     * @param isAdminmob the is adminmob
-     * @param isOwner    the is owner
+     * @param isAdminmob is adminmob
+     * @param isOwner    is owner
+     * @param isTenant   is tenant
      * @return the flag from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public Flag getFlagFromArg(final boolean isAdminmob, final boolean isOwner) throws SecuboidCommandException {
+    public Flag getFlagFromArg(final boolean isAdminmob, final boolean isOwner, final boolean isTenant)
+            throws SecuboidCommandException {
 
-        final FlagType flagType = getFlagTypeFromArg(isAdminmob, isOwner);
+        final FlagType flagType = getFlagTypeFromArg(isAdminmob, isOwner, isTenant);
 
         if (isLast()) {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "GENERAL.MISSINGINFO");
@@ -262,13 +266,14 @@ public final class ArgList {
     /**
      * Gets the permission type from arg.
      *
-     * @param isAdminmode the is adminmod
-     * @param isOwner     the is owner
+     * @param isAdminmode is adminmod
+     * @param isOwner     is owner
+     * @param isTenant    is tenant
      * @return the permission type from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public PermissionType getPermissionTypeFromArg(final boolean isAdminmode, final boolean isOwner)
-            throws SecuboidCommandException {
+    public PermissionType getPermissionTypeFromArg(final boolean isAdminmode, final boolean isOwner,
+            final boolean isTenant) throws SecuboidCommandException {
 
         final String curArg = getNext();
         PermissionType pt;
@@ -282,7 +287,8 @@ public final class ArgList {
             throw new SecuboidCommandException(secuboid, "Permission Error", player, "COMMAND.PERMISSIONTYPE.INVALID");
         }
 
-        if (!isAdminmode && !(isOwner && secuboid.getConf().getOwnerConfigPerm().contains(pt))) {
+        if (!isAdminmode && !(isOwner && secuboid.getConf().getOwnerConfigPerm().contains(pt))
+                && !(isTenant && secuboid.getConf().getTenantConfigPerm().contains(pt))) {
             throw new SecuboidCommandException(secuboid, "Permission Error", player, "GENERAL.MISSINGPERMISSION");
         }
 
@@ -292,15 +298,16 @@ public final class ArgList {
     /**
      * Gets the permission from arg.
      *
-     * @param isAdminmode the is adminmod
-     * @param isOwner     the is owner
+     * @param isAdminmode is adminmod
+     * @param isOwner     is owner
+     * @param isTenant    is tenant
      * @return the permission from arg
      * @throws SecuboidCommandException the secuboid command exception
      */
-    public Permission getPermissionFromArg(final boolean isAdminmode, final boolean isOwner)
+    public Permission getPermissionFromArg(final boolean isAdminmode, final boolean isOwner, final boolean isTenant)
             throws SecuboidCommandException {
 
-        final PermissionType pt = getPermissionTypeFromArg(isAdminmode, isOwner);
+        final PermissionType pt = getPermissionTypeFromArg(isAdminmode, isOwner, isTenant);
         final String curArg = getNext();
 
         if (curArg == null) {

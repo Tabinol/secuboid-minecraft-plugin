@@ -173,6 +173,7 @@ COLLISION:
     MAX_AREA_FOR_LAND: "Plus que le nombre maximum d'étendues pour le terrain '%'."
     MAX_LAND_FOR_PLAYER: "Plus que le nombre maximum de terrain pour le joueur."
     MUST_HAVE_AT_LEAST_ONE_AREA: "Le terrain doit avoir au moins une étendue."
+    MAX_WIDTH: "Plus que la largeur maximale."
     LISTSTART: "-Action(s) à approuver-"
     LIST: "% Terrain: %, demandeur: %, action: %."
     LISTROWNULL: "Pas d'action à approuver."

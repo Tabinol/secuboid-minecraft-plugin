@@ -215,7 +215,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     int getZ2();
 
     /**
-     * Sets the x1. Do not use if the area is already in a land. Normally, it us for
+     * Sets the x1. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *
@@ -224,7 +224,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     void setX1(int x1);
 
     /**
-     * Sets the x2. Do not use if the area is already in a land. Normally, it us for
+     * Sets the x2. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *
@@ -233,7 +233,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     void setX2(int x2);
 
     /**
-     * Sets the y1. Do not use if the area is already in a land. Normally, it us for
+     * Sets the y1. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *
@@ -242,7 +242,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     void setY1(int y1);
 
     /**
-     * Sets the y2. Do not use if the area is already in a land. Normally, it us for
+     * Sets the y2. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *
@@ -251,7 +251,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     void setY2(int y2);
 
     /**
-     * Sets the z1. Do not use if the area is already in a land. Normally, it us for
+     * Sets the z1. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *
@@ -260,7 +260,7 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     void setZ1(int z1);
 
     /**
-     * Sets the z2. Do not use if the area is already in a land. Normally, it us for
+     * Sets the z2. Do not use if the area is already in a land. Normally, it is for
      * internal use. For roads, it changes only the limit to start and stop looking
      * the matrix.
      *

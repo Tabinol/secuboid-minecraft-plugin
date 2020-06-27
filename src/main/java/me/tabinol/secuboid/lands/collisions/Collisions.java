@@ -17,17 +17,6 @@
  */
 package me.tabinol.secuboid.lands.collisions;
 
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.CHILD_OUT_OF_BORDER;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.COLLISION;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.HAS_CHILDREN;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.IN_APPROVE_LIST;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_AREA_FOR_LAND;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MAX_LAND_FOR_PLAYER;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.MUST_HAVE_AT_LEAST_ONE_AREA;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NAME_IN_USE;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.NOT_ENOUGH_MONEY;
-import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.OUT_OF_PARENT;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -44,6 +33,8 @@ import me.tabinol.secuboid.permissionsflags.FlagType;
 import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
+
+import static me.tabinol.secuboid.lands.collisions.Collisions.LandError.*;
 
 /**
  * The Class Collisions. This class is created for async calculation and price
@@ -63,7 +54,8 @@ public final class Collisions {
         NOT_ENOUGH_MONEY(false), //
         MAX_AREA_FOR_LAND(true), //
         MAX_LAND_FOR_PLAYER(true), //
-        MUST_HAVE_AT_LEAST_ONE_AREA(false);
+        MUST_HAVE_AT_LEAST_ONE_AREA(false), //
+        MAX_WIDTH(true);
 
         /**
          * The can be approved.
@@ -85,15 +77,15 @@ public final class Collisions {
      */
     public enum LandAction {
         LAND_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NAME_IN_USE, NOT_ENOUGH_MONEY,
-                MAX_LAND_FOR_PLAYER)), //
+                MAX_LAND_FOR_PLAYER, MAX_WIDTH)), //
         LAND_RENAME(EnumSet.of(IN_APPROVE_LIST, NAME_IN_USE)), //
         LAND_REMOVE(EnumSet.of(IN_APPROVE_LIST, HAS_CHILDREN)), //
         LAND_REMOVE_FORCE(EnumSet.of(IN_APPROVE_LIST)), //
         LAND_REMOVE_RECURSIVE(EnumSet.of(IN_APPROVE_LIST)), //
         LAND_PARENT(EnumSet.of(IN_APPROVE_LIST, OUT_OF_PARENT)), //
-        AREA_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NOT_ENOUGH_MONEY, MAX_AREA_FOR_LAND)), //
+        AREA_ADD(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, NOT_ENOUGH_MONEY, MAX_AREA_FOR_LAND, MAX_WIDTH)), //
         AREA_REMOVE(EnumSet.of(IN_APPROVE_LIST, CHILD_OUT_OF_BORDER, MUST_HAVE_AT_LEAST_ONE_AREA)), //
-        AREA_MODIFY(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, CHILD_OUT_OF_BORDER, NOT_ENOUGH_MONEY));
+        AREA_MODIFY(EnumSet.of(IN_APPROVE_LIST, COLLISION, OUT_OF_PARENT, CHILD_OUT_OF_BORDER, NOT_ENOUGH_MONEY, MAX_WIDTH));
 
         EnumSet<LandError> errorsToCheck;
 
@@ -234,7 +226,7 @@ public final class Collisions {
 
         // Pass 6 check if the name is already in Approve List (true in all actions!)
         if (landName != null && !checkApproveList && lands.getApproves().isInApprove(landName)) {
-            collisionsEntries.add(new CollisionsEntry(secuboid, LandError.IN_APPROVE_LIST, null, 0));
+            collisionsEntries.add(new CollisionsEntry(secuboid, IN_APPROVE_LIST, null, 0));
         }
         percentDone = 60;
 
@@ -247,7 +239,7 @@ public final class Collisions {
                     final double playerBalance = secuboid.getPlayerMoneyOpt().get().getPlayerBalance(
                             ((PlayerContainerPlayer) owner).getOfflinePlayer(), newArea.getWorldName());
                     if (action.errorsToCheck.contains(NOT_ENOUGH_MONEY) && playerBalance < price) {
-                        collisionsEntries.add(new CollisionsEntry(secuboid, LandError.NOT_ENOUGH_MONEY, null, 0));
+                        collisionsEntries.add(new CollisionsEntry(secuboid, NOT_ENOUGH_MONEY, null, 0));
                     }
                 }
             }
@@ -256,14 +248,14 @@ public final class Collisions {
             // Pass 8 check if the land has more than the maximum number of areas
             if (land != null && action.errorsToCheck.contains(MAX_AREA_FOR_LAND)
                     && land.getAreas().size() >= secuboid.getConf().getMaxAreaPerLand()) {
-                collisionsEntries.add(new CollisionsEntry(secuboid, LandError.MAX_AREA_FOR_LAND, land, 0));
+                collisionsEntries.add(new CollisionsEntry(secuboid, MAX_AREA_FOR_LAND, land, 0));
             }
             percentDone = 80;
 
             // Pass 9 check if the player has more than the maximum number of land
             if (action.errorsToCheck.contains(MAX_LAND_FOR_PLAYER)
                     && secuboid.getLands().getLands(owner).size() >= secuboid.getConf().getMaxLandPerPlayer()) {
-                collisionsEntries.add(new CollisionsEntry(secuboid, LandError.MAX_LAND_FOR_PLAYER, null, 0));
+                collisionsEntries.add(new CollisionsEntry(secuboid, MAX_LAND_FOR_PLAYER, null, 0));
             }
         }
         percentDone = 90;
@@ -274,6 +266,11 @@ public final class Collisions {
                     .add(new CollisionsEntry(secuboid, LandError.MUST_HAVE_AT_LEAST_ONE_AREA, land, removedAreaId));
         }
         percentDone = 100;
+
+        // Pass 11 check if the land exceeds the width
+        if (action.errorsToCheck.contains(MAX_WIDTH)) {
+            checkMaxWidth();;
+        }
 
         // End check if the action can be done or approve
         allowApprove = true;
@@ -370,7 +367,7 @@ public final class Collisions {
      */
     private void checkIfLandHasChildren() {
         for (final Land child : land.getChildren()) {
-            collisionsEntries.add(new CollisionsEntry(secuboid, LandError.HAS_CHILDREN, child, 0));
+            collisionsEntries.add(new CollisionsEntry(secuboid, HAS_CHILDREN, child, 0));
         }
     }
 
@@ -380,6 +377,20 @@ public final class Collisions {
     private void checkIfNameExist() {
         if (lands.isNameExist(landName) && !lands.getLand(landName).equals(land)) {
             collisionsEntries.add(new CollisionsEntry(secuboid, NAME_IN_USE, null, 0));
+        }
+    }
+
+    private void checkMaxWidth() {
+        if (newArea == null) {
+            return;
+        }
+
+        final int widthX = Math.abs(newArea.getX2() - newArea.getX1());
+        final int widthZ = Math.abs(newArea.getZ2() - newArea.getZ1());
+        final int maxWidth = secuboid.getConf().getMaxWidth();
+
+        if (widthX > maxWidth || widthZ > maxWidth) {
+            collisionsEntries.add(new CollisionsEntry(secuboid, MAX_WIDTH, land, 0));
         }
     }
 

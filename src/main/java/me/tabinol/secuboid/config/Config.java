@@ -279,6 +279,20 @@ public final class Config {
     }
 
     /**
+     * The max width.
+     */
+    private int maxWidth;
+
+    /**
+     * Gets the max width.
+     *
+     * @return the max width
+     */
+    public int getMaxWidth() {
+        return maxWidth;
+    }
+
+    /**
      * The max area per Lands.
      */
     private int maxAreaPerLand;
@@ -639,6 +653,7 @@ public final class Config {
             }
         }
 
+        maxWidth = config.getInt("Lands.MaxWidth", 100);
         maxAreaPerLand = config.getInt("Lands.Areas.MaxAreaPerLand", 3);
         maxLandPerPlayer = config.getInt("Lands.MaxLandPerPlayer", 5);
         overrideExplosions = config.getBoolean("General.OverrideExplosions", true);

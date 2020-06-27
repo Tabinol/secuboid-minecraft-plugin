@@ -24,7 +24,7 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandError;
 /**
  * The Class CollisionsEntry.
  */
-public class CollisionsEntry {
+public final class CollisionsEntry {
 
     private final Secuboid secuboid;
 
@@ -51,7 +51,7 @@ public class CollisionsEntry {
      * @param land the land
      * @param areaId the area id
      */
-    public CollisionsEntry(Secuboid secuboid, LandError error, Land land, int areaId) {
+    public CollisionsEntry(final Secuboid secuboid, final LandError error, final Land land, final int areaId) {
 
 	this.secuboid = secuboid;
 	this.error = error;
@@ -77,16 +77,6 @@ public class CollisionsEntry {
     public Land getLand() {
 
 	return land;
-    }
-
-    /**
-     * Gets the area id.
-     *
-     * @return the area id
-     */
-    public int getAreaId() {
-
-	return areaId;
     }
 
     /**
@@ -118,6 +108,8 @@ public class CollisionsEntry {
 		    return secuboid.getLanguage().getMessage("COLLISION.SHOW.MAX_LAND_FOR_PLAYER");
 		case MUST_HAVE_AT_LEAST_ONE_AREA:
 		    return secuboid.getLanguage().getMessage("COLLISION.SHOW.MUST_HAVE_AT_LEAST_ONE_AREA");
+		case MAX_WIDTH:
+			return secuboid.getLanguage().getMessage("COLLISION.SHOW.MAX_WIDTH");
 		default:
 		    break;
 	    }

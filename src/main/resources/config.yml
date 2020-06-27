@@ -71,6 +71,13 @@ Lands:
   MaxBottom: 0                       # Maximum selection high
   MaxTop: 255
   MaxRadius: 10                      # Maximum selection radius for roads
+
+  # Need approve (if activated)
+  MaxWidth: 100                      # X and Z
+  MaxLandPerPlayer: 5
+  Areas:
+    MaxAreaPerLand: 3
+
   # Not selected blocks in road selection
   DefaultNonSelectedMaterials:
     - BEDROCK
@@ -93,10 +100,6 @@ Lands:
     - SAND
     - SOUL_SAND
     - STONE
-  MaxLandPerPlayer: 5
-
-  Areas:
-    MaxAreaPerLand: 3
 
   OwnerCanSet:                     # What the owner can set on his land?
     Permissions:

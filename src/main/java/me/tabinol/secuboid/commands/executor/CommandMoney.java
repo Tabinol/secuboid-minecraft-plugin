@@ -117,7 +117,7 @@ public final class CommandMoney extends CommandExec {
         landSelectNullable.addMoney(amount);
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDDEPOSIT",
-                        playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
+                        playerMoney.toFormat(amount), landSelectNullable.getName()));
     }
 
     /**
@@ -141,7 +141,7 @@ public final class CommandMoney extends CommandExec {
         playerMoney.giveToPlayer(player.getPlayer(), landSelectNullable.getWorldName(), amount);
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.ECONOMY.LANDWITHDRAW",
-                        playerMoney.toFormat(landSelectNullable.getMoney()), landSelectNullable.getName()));
+                        playerMoney.toFormat(amount), landSelectNullable.getName()));
     }
 
     /**
@@ -161,10 +161,7 @@ public final class CommandMoney extends CommandExec {
                 // Amount is 0 or less
                 err = true;
             }
-        } catch (final NullPointerException ex) {
-            // Amount is null
-            err = true;
-        } catch (final NumberFormatException ex) {
+        } catch (final NullPointerException | NumberFormatException ex) {
             // Amount is unreadable
             err = true;
         }

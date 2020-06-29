@@ -28,3 +28,9 @@ This file contains all permissions and flags in a world, outside any land and se
 This file set the default configuration for permissions and flags when a land is created.
 
 [See the example](https://github.com/Tabinol/secuboid-minecraft-plugin/blob/master/src/main/resources/landdefault.yml)
+
+#### inventory.yml
+
+The file contains the configuration of inventories (must be activated in config.yml)
+
+[See the example](https://github.com/Tabinol/secuboid-minecraft-plugin/blob/master/src/main/resources/inventory.yml)

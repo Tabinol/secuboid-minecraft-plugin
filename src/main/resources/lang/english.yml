@@ -354,7 +354,7 @@ COMMAND:
     LANDBALANCE: "The balance of the land '%' is '%'."
     INVALIDAMOUNT: "Invalid amount."
     LANDDEPOSIT: "You added '%' to land '%'."
-    LANDWITHDRAW: "you removed '%' from land '%'."
+    LANDWITHDRAW: "You removed '%' from land '%'."
     ERRORCREATESIGN: "You can not create a sign here."
     SIGNDONE: "The sign is created."
     NOTENOUGHMONEY: "Not enough money."

@@ -2,7 +2,7 @@
 
 Secuboid is a complete land (region) protection plugin. It has a lot of functionalities. You can make cuboid lands, cylinder lands and road (beta) protection. The player can make his own land with economy, rent or sell his land. There is also a very complete list of flags and permissions.
 
-Join us on Discord: https://discord.gg/XXXXXX
+Join us on Discord: https://discord.gg/XA4uVBZ
 
 ## Documentation
 
@@ -69,19 +69,10 @@ Join us on Discord: https://discord.gg/XXXXXX
 * **Needed**: Vault (groups, economy)
 * **Optional**: WorldEdit, Essentials(-X) (chat, vanish), VanishNoPacket (vanish), SuperVanish/PremiumVanish (vanish)
 
-# Servers that use Secuboid (ask me on Discord if you want your server here):
-
-Name       | Address             | Description
------------|---------------------|---------------------------------
-Modulmonde | play.modulmonde.com | Survial server (french language)
-
-# You want to work on Secuboid?
-**Go on our Discord to speak with us**
-
 # History
 
 The Secuboid project began in 1994 on the "Factoid" name. The goal was to
-You have a complete protecton plugin with an unlimited possibilities of configuration for lands and worlds. We also wanted to add a inventory system for lands, worlds and game modes.
+You have a complete protection plugin with an unlimited possibilities of configuration for lands and worlds. We also wanted to add a inventory system for lands, worlds and game modes.
 
 ## Former developers
 

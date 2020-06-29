@@ -19,7 +19,7 @@ Inventories:
         SeparateCreative: true
 #    Pvp:
 #        SeparateCreative: true
-#        DisabledCommands: ['kpack']
+#        DisabledCommands: ['backpack']
 #    Creative:
 #        SeparateCreative: false
 #    Spleef:

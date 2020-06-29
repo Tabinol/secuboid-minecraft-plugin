@@ -62,6 +62,7 @@ PORTAL_WORLD          | text            |               | Teleport the player to
 PORTAL_LAND           | text            |               | Teleport the player to a specific land (the land must have a spawn point)
 PORTAL_WORLD_RANDOM   | text            |               | Teleport the player to a random point and outside a land to a specific world (Be sure to adjust "/worldborder" on the destination!)
 PORTAL_LAND_RANDOM    | text            |               | Teleport the player randomly inside a specific land (the land must include ground level)
+INVENTORY             | text            | Default       | Name of the inventory: MultipleInventories must be "true" in config.yml and the inventory name must be defined in inventory.yml
 
 ## Permissions
 

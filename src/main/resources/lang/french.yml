@@ -354,7 +354,7 @@ COMMAND:
     LANDBALANCE: "La balance du terrain '%' est '%'."
     INVALIDAMOUNT: "Montant invalide."
     LANDDEPOSIT: "Tu as ajouté '%' au terrain '%'."
-    LANDWITHDRAW: "you avez enlevé '%' au terrain '%'."
+    LANDWITHDRAW: "Tu as enlevé '%' au terrain '%'."
     ERRORCREATESIGN: "Tu ne peux pas créer un panneau ici."
     SIGNDONE: "Le panneau est créé."
     NOTENOUGHMONEY: "Pas assez d'argent."

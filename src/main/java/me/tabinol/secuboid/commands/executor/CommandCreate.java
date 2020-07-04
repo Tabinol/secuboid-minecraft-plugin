@@ -71,7 +71,7 @@ public final class CommandCreate extends CommandCollisionsThreadExec {
 
         final LandCheckValues landCheckValues = landCheckForCreate(select);
         checkCollision(area.getWorldName(), curArg, null, landCheckValues.localType, LandAction.LAND_ADD, 0, area,
-                landCheckValues.realLocalParent, landCheckValues.localOwner, true);
+                landCheckValues.realLocalParent, landCheckValues.localOwner, false);
     }
 
     @Override

@@ -165,8 +165,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
 
             if (addForApprove) {
                 if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.APPROVE && allowApprove) {
-                    Land landLocal;
-                    if ((landLocal = collisions.getLand()) == null) {
+                    Land landLocal = collisions.getLand();
+                    if (landLocal == null) {
                         // Land create? create a non approved land
                         final UUID uuid = UUID.randomUUID();
                         try {

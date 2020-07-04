@@ -373,6 +373,11 @@ public final class StorageMySql implements Storage {
     @Override
     public void removeLand(final Land land) {
         try (final Connection conn = dbConn.openConnection()) {
+            // Remove areas
+            for (Area area : land.getAreas()) {
+                removeLandArea(land, area);
+            }
+            // Remove land
             landsDao.deleteLand(conn, land.getUUID());
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to delete the land from database [landUUID=%s, landName=%s]",

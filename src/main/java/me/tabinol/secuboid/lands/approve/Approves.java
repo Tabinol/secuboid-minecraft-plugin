@@ -20,7 +20,6 @@ package me.tabinol.secuboid.lands.approve;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
@@ -47,12 +46,12 @@ public class Approves {
 
     /**
      * Load all approves (Internal).
-     * 
+     *
      * @param approves approve list
      */
     public void loadApproves(final List<Approve> approves) {
         landNameToApprove.clear();
-        approves.stream().forEach(this::addApprove);
+        approves.forEach(this::addApprove);
     }
 
     /**
@@ -64,8 +63,8 @@ public class Approves {
         final Land land = approve.getLand();
 
         // Verify if the areas still exist
-        if ((approve.getRemovedAreaIdOpt().isPresent() && land.getArea(approve.getRemovedAreaIdOpt().get()) == null)
-                || (approve.getNewAreaIdOpt().isPresent() && land.getArea(approve.getNewAreaIdOpt().get()) == null)) {
+        if ((approve.getRemovedAreaIdNullable() != null && land.getArea(approve.getRemovedAreaIdNullable()) == null)
+                || (approve.getNewAreaIdNullable() != null && land.getArea(approve.getNewAreaIdNullable()) == null)) {
             secuboid.getLogger().log(Level.WARNING,
                     "Skipping the approve because it referes to a non existing area [name=" + approve.getName() + "]");
             return;
@@ -73,12 +72,12 @@ public class Approves {
 
         landNameToApprove.put(approve.getName(), approve);
 
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, SaveOn.BOTH, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, SaveOn.BOTH, approve);
     }
 
     /**
      * Gets the approve from name.
-     * 
+     *
      * @param name the name
      * @return the approve instance
      */
@@ -119,7 +118,7 @@ public class Approves {
         if (removeLandAndArea) {
             removeLandAndAreaIfNeeded(approve);
         }
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, SaveOn.BOTH, Optional.of(approve));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE, SaveOn.BOTH, approve);
     }
 
     /**
@@ -130,10 +129,10 @@ public class Approves {
             removeLandAndAreaIfNeeded(approve);
         }
         landNameToApprove.clear();
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, SaveOn.BOTH, Optional.empty());
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, SaveOn.BOTH, null);
     }
 
-    private final void removeLandAndAreaIfNeeded(final Approve approve) {
+    private void removeLandAndAreaIfNeeded(final Approve approve) {
         final Land land = approve.getLand();
         if (!land.isApproved()) {
             try {
@@ -143,13 +142,15 @@ public class Approves {
                         "Unable to delete non approved land \"%s\", \"%s\"", land.getName(), land.getUUID()), e);
             }
         } else {
-            approve.getNewAreaIdOpt().ifPresent(area -> land.removeArea(area));
+            if (approve.getNewAreaIdNullable() != null) {
+                land.removeArea(approve.getNewAreaIdNullable());
+            }
         }
     }
 
     /**
      * Creates the action (approve and execute).
-     * 
+     *
      * @param approve the approve
      * @throws SecuboidLandException SecuboidLandException
      */
@@ -160,13 +161,13 @@ public class Approves {
         if (action != null) {
             switch (action) {
                 case AREA_ADD:
-                    land.approveArea(approve.getNewAreaIdOpt().get(), approve.getPrice());
+                    land.approveArea(approve.getNewAreaIdNullable(), approve.getPrice());
                     break;
                 case AREA_REMOVE:
-                    land.removeArea(approve.getRemovedAreaIdOpt().get());
+                    land.removeArea(approve.getRemovedAreaIdNullable());
                     break;
                 case AREA_MODIFY:
-                    land.approveReplaceArea(approve.getRemovedAreaIdOpt().get(), approve.getNewAreaIdOpt().get(),
+                    land.approveReplaceArea(approve.getRemovedAreaIdNullable(), approve.getNewAreaIdNullable(),
                             approve.getPrice());
                     break;
                 case LAND_ADD:
@@ -176,7 +177,7 @@ public class Approves {
                     secuboid.getLands().removeLand(approve.getLand());
                     break;
                 case LAND_PARENT:
-                    land.setParent(approve.getParentOpt().get());
+                    land.setParent(approve.getParentNullable());
                     break;
                 default:
                     break;

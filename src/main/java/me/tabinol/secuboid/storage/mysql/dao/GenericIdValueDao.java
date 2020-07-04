@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
@@ -38,10 +37,6 @@ import me.tabinol.secuboid.utilities.DbUtils;
  */
 public final class GenericIdValueDao<I, V> {
 
-    public enum IdNameTableSuffix {
-        LANDS_TYPES, player_containers_types, areas_types
-    }
-
     private final Class<I> idClazz;
     private final Class<V> valueClazz;
     private final DatabaseConnection dbConn;
@@ -50,7 +45,7 @@ public final class GenericIdValueDao<I, V> {
     private final String valueColumnLabel;
 
     public GenericIdValueDao(final DatabaseConnection dbConn, final Class<I> idClazz, final Class<V> valueClazz,
-            final String tableSuffix, final String idColumnLabel, final String valueColumnLabel) {
+                             final String tableSuffix, final String idColumnLabel, final String valueColumnLabel) {
         this.dbConn = dbConn;
         this.idClazz = idClazz;
         this.valueClazz = valueClazz;
@@ -120,32 +115,32 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
-    public Optional<I> getIdOpt(final Connection conn, final V v) throws SQLException {
+    public I getIdNullable(final Connection conn, final V v) throws SQLException {
         final String sql = String.format("SELECT `%s` FROM `{{TP}}%s` WHERE `%s`=?", idColumnLabel, tableSuffix,
                 valueColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             setFromClass(valueClazz, stmt, 1, v);
             try (final ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    return Optional.of(getFromClass(idClazz, rs, idColumnLabel));
+                if (rs.next()) {
+                    return getFromClass(idClazz, rs, idColumnLabel);
                 }
-                return Optional.empty();
+                return null;
             }
         }
     }
 
-    public Optional<V> getValueOpt(final Connection conn, final I i) throws SQLException {
+    public V getValueNullable(final Connection conn, final I i) throws SQLException {
         final String sql = String.format("SELECT `%s` FROM `{{TP}}%s` WHERE `%s`=?", valueColumnLabel, tableSuffix,
                 idColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             setFromClass(idClazz, stmt, 1, i);
             try (final ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    return Optional.of(getFromClass(valueClazz, rs, valueColumnLabel));
+                if (rs.next()) {
+                    return getFromClass(valueClazz, rs, valueColumnLabel);
                 }
-                return Optional.empty();
+                return null;
             }
         }
     }
@@ -153,9 +148,9 @@ public final class GenericIdValueDao<I, V> {
     public long insertOrGetId(final Connection conn, final V v) throws SQLException {
         assert idClazz.isAssignableFrom(Long.class);
 
-        final Optional<I> idOpt = getIdOpt(conn, v);
-        if (idOpt.isPresent()) {
-            return ((Long) idOpt.get()).longValue();
+        final I idNullable = getIdNullable(conn, v);
+        if (idNullable != null) {
+            return (Long) idNullable;
         }
 
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=?", tableSuffix, valueColumnLabel);
@@ -164,7 +159,7 @@ public final class GenericIdValueDao<I, V> {
                 Statement.RETURN_GENERATED_KEYS)) {
             setFromClass(valueClazz, stmt, 1, v);
             stmt.executeUpdate();
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
+            try (final ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
                 return rs.getLong(1);
             }
@@ -194,13 +189,13 @@ public final class GenericIdValueDao<I, V> {
     @SuppressWarnings("unchecked")
     private <C> C getFromClass(final Class<C> clazz, final ResultSet rs, final String columnLabel) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {
-            return (C) new Integer(rs.getInt(columnLabel));
+            return (C) Integer.valueOf(rs.getInt(columnLabel));
         }
         if (clazz.isAssignableFrom(Long.class)) {
-            return (C) new Long(rs.getLong(columnLabel));
+            return (C) Long.valueOf(rs.getLong(columnLabel));
         }
         if (clazz.isAssignableFrom(Double.class)) {
-            return (C) new Double(rs.getDouble(columnLabel));
+            return (C) Double.valueOf(rs.getDouble(columnLabel));
         }
         if (clazz.isAssignableFrom(UUID.class)) {
             return (C) DbUtils.getUUID(rs, columnLabel);
@@ -209,7 +204,7 @@ public final class GenericIdValueDao<I, V> {
             return (C) rs.getString(columnLabel);
         }
         if (clazz.isAssignableFrom(Boolean.class)) {
-            return (C) new Boolean(rs.getBoolean(columnLabel));
+            return (C) Boolean.valueOf(rs.getBoolean(columnLabel));
         }
 
         classNotSupported(clazz);
@@ -217,7 +212,7 @@ public final class GenericIdValueDao<I, V> {
     }
 
     private <C> void setFromClass(final Class<C> clazz, final PreparedStatement stmt, final int parameterIndex,
-            final C c) throws SQLException {
+                                  final C c) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {
             stmt.setInt(parameterIndex, (Integer) c);
         } else if (clazz.isAssignableFrom(Long.class)) {

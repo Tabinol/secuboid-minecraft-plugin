@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -50,15 +49,15 @@ public final class ApprovesDao {
                 while (rs.next()) {
                     final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
                     final long approveActionId = rs.getLong("approve_action_id");
-                    final Optional<Integer> removedAreaIdOpt = DbUtils.getOpt(rs, "removed_area_id", rs::getInt);
-                    final Optional<Integer> newAreaIdOpt = DbUtils.getOpt(rs, "new_area_id", rs::getInt);
+                    final Integer removedAreaIdNullable = DbUtils.getNullable(rs, "removed_area_id", rs::getInt);
+                    final Integer newAreaIdNullable = DbUtils.getNullable(rs, "new_area_id", rs::getInt);
                     final long ownerId = rs.getLong("owner_id");
-                    final Optional<UUID> parentUUIDOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
+                    final UUID parentUUIDNullable = DbUtils.getNullable(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
                     final double price = rs.getDouble("price");
-                    Calendar transactionDatetime = DbUtils.getCalendar(rs, "transaction_datetime");
+                    final Calendar transactionDatetime = DbUtils.getCalendar(rs, "transaction_datetime");
 
-                    results.add(new ApprovePojo(landUUID, approveActionId, removedAreaIdOpt, newAreaIdOpt, ownerId,
-                            parentUUIDOpt, price, transactionDatetime));
+                    results.add(new ApprovePojo(landUUID, approveActionId, removedAreaIdNullable, newAreaIdNullable, ownerId,
+                            parentUUIDNullable, price, transactionDatetime));
                 }
                 return results;
             }
@@ -77,18 +76,18 @@ public final class ApprovesDao {
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, approvePojo.getLandUUID());
             stmt.setLong(2, approvePojo.getApproveActionId());
-            DbUtils.setOpt(stmt, 3, approvePojo.getRemovedAreaIdOpt(), (i, u) -> stmt.setInt(i, u));
-            DbUtils.setOpt(stmt, 4, approvePojo.getNewAreaIdOpt(), (i, u) -> stmt.setInt(i, u));
+            DbUtils.setNullable(stmt, 3, approvePojo.getRemovedAreaIdNullable(), stmt::setInt);
+            DbUtils.setNullable(stmt, 4, approvePojo.getNewAreaIdNullable(), stmt::setInt);
             stmt.setLong(5, approvePojo.getOwnerId());
-            DbUtils.setOpt(stmt, 6, approvePojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 6, approvePojo.getParentUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setDouble(7, approvePojo.getPrice());
             DbUtils.setCalendar(stmt, 8, approvePojo.getTransactionDatetime());
 
             stmt.setLong(9, approvePojo.getApproveActionId());
-            DbUtils.setOpt(stmt, 10, approvePojo.getRemovedAreaIdOpt(), (i, u) -> stmt.setInt(i, u));
-            DbUtils.setOpt(stmt, 11, approvePojo.getNewAreaIdOpt(), (i, u) -> stmt.setInt(i, u));
+            DbUtils.setNullable(stmt, 10, approvePojo.getRemovedAreaIdNullable(), stmt::setInt);
+            DbUtils.setNullable(stmt, 11, approvePojo.getNewAreaIdNullable(), stmt::setInt);
             stmt.setLong(12, approvePojo.getOwnerId());
-            DbUtils.setOpt(stmt, 13, approvePojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 13, approvePojo.getParentUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setDouble(14, approvePojo.getPrice());
             DbUtils.setCalendar(stmt, 15, approvePojo.getTransactionDatetime());
 

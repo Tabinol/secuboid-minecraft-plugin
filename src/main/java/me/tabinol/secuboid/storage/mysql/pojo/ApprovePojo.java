@@ -18,29 +18,28 @@
 package me.tabinol.secuboid.storage.mysql.pojo;
 
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 public final class ApprovePojo {
 
     private final UUID landUUID;
     private final long approveActionId;
-    private final Optional<Integer> removedAreaIdOpt;
-    private final Optional<Integer> newAreaIdOpt;
+    private final Integer removedAreaIdNullable;
+    private final Integer newAreaIdNullable;
     private final long ownerId;
-    private final Optional<UUID> parentUUIDOpt;
+    private final UUID parentUUIDNullable;
     private final double price;
     private final Calendar transactionDatetime;
 
-    public ApprovePojo(final UUID landUUID, final long approveActionId, final Optional<Integer> removedAreaIdOpt,
-            final Optional<Integer> newAreaIdOpt, final long ownerId, final Optional<UUID> parentUUIDOpt,
-            final double price, final Calendar transactionDatetime) {
+    public ApprovePojo(final UUID landUUID, final long approveActionId, final Integer removedAreaIdNullable,
+                       final Integer newAreaIdNullable, final long ownerId, final UUID parentUUIDNullable,
+                       final double price, final Calendar transactionDatetime) {
         this.approveActionId = approveActionId;
         this.landUUID = landUUID;
-        this.removedAreaIdOpt = removedAreaIdOpt;
-        this.newAreaIdOpt = newAreaIdOpt;
+        this.removedAreaIdNullable = removedAreaIdNullable;
+        this.newAreaIdNullable = newAreaIdNullable;
         this.ownerId = ownerId;
-        this.parentUUIDOpt = parentUUIDOpt;
+        this.parentUUIDNullable = parentUUIDNullable;
         this.price = price;
         this.transactionDatetime = transactionDatetime;
     }
@@ -53,20 +52,20 @@ public final class ApprovePojo {
         return this.approveActionId;
     }
 
-    public Optional<Integer> getRemovedAreaIdOpt() {
-        return this.removedAreaIdOpt;
+    public Integer getRemovedAreaIdNullable() {
+        return this.removedAreaIdNullable;
     }
 
-    public Optional<Integer> getNewAreaIdOpt() {
-        return this.newAreaIdOpt;
+    public Integer getNewAreaIdNullable() {
+        return this.newAreaIdNullable;
     }
 
     public long getOwnerId() {
         return this.ownerId;
     }
 
-    public Optional<UUID> getParentUUIDOpt() {
-        return this.parentUUIDOpt;
+    public UUID getParentUUIDNullable() {
+        return this.parentUUIDNullable;
     }
 
     public double getPrice() {

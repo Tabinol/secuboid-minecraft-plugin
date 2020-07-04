@@ -205,8 +205,8 @@ public final class StorageMySql implements Storage {
             // Verify if the database is empty
             final SecuboidDao secuboidDao = new SecuboidDao(dbConn);
             secuboidDao.createVarables(conn);
-            final Optional<Integer> versionOpt = secuboidDao.getVersionOpt(conn);
-            if (!versionOpt.isPresent() || versionOpt.get() < 1) {
+            final Integer versionNullable = secuboidDao.getVersionNullable(conn);
+            if (versionNullable == null || versionNullable < 1) {
                 // Create database
                 log.info("Creating tables...");
                 secuboidDao.initDatabase(conn);
@@ -269,10 +269,10 @@ public final class StorageMySql implements Storage {
         }
 
         for (final LandPojo landPojo : landPojos) {
-            final Entry<Land, Optional<UUID>> orphanToParentUUIDOptEntry;
+            final Entry<Land, UUID> orphanToParentUUIDNullableEntry;
             final UUID landUUID = landPojo.getUUID();
             try {
-                orphanToParentUUIDOptEntry = loadLand(landPojo, idToType, idToPlayerContainerPojo,
+                orphanToParentUUIDNullableEntry = loadLand(landPojo, idToType, idToPlayerContainerPojo,
                         idToPlayerContainerType, landUUIDToAreas.getOrDefault(landUUID, Collections.emptyList()),
                         landUUIDToMatrices, idToAreaType,
                         landUUIDToResidentIds.getOrDefault(landUUID, Collections.emptyList()),
@@ -286,10 +286,12 @@ public final class StorageMySql implements Storage {
                         String.format("Unable to load the land from database: %s", landPojo.getName()), e);
                 continue;
             }
-            if (orphanToParentUUIDOptEntry != null) {
+            if (orphanToParentUUIDNullableEntry != null) {
                 loadedlands++;
-                orphanToParentUUIDOptEntry.getValue().ifPresent(
-                        parentUUID -> orphanToParentUUID.put(orphanToParentUUIDOptEntry.getKey(), parentUUID));
+                final UUID parentUUIDNullable = orphanToParentUUIDNullableEntry.getValue();
+                if (parentUUIDNullable != null) {
+                    orphanToParentUUID.put(orphanToParentUUIDNullableEntry.getKey(), parentUUIDNullable);
+                }
             }
         }
 
@@ -304,11 +306,11 @@ public final class StorageMySql implements Storage {
 
             // Get landType
             final Type type = land.getType();
-            final Optional<Long> typeIdOpt;
+            final Long typeIdNullable;
             if (type != null) {
-                typeIdOpt = Optional.of(landsTypesDao.insertOrGetId(conn, type.getName()));
+                typeIdNullable = landsTypesDao.insertOrGetId(conn, type.getName());
             } else {
-                typeIdOpt = Optional.empty();
+                typeIdNullable = null;
             }
 
             // Get ownerId
@@ -316,53 +318,53 @@ public final class StorageMySql implements Storage {
 
             // For sale
             final boolean isForSale = land.isForSale();
-            final Optional<String> forSaleSignLocationOpt;
-            final Optional<Double> salePriceOpt;
+            final String forSaleSignLocationNullable;
+            final Double salePriceNullable;
             if (isForSale) {
-                forSaleSignLocationOpt = Optional.of(land.getSaleSignLoc().toFileFormat());
-                salePriceOpt = Optional.of(land.getSalePrice());
+                forSaleSignLocationNullable = land.getSaleSignLoc().toFileFormat();
+                salePriceNullable = land.getSalePrice();
             } else {
-                forSaleSignLocationOpt = Optional.empty();
-                salePriceOpt = Optional.empty();
+                forSaleSignLocationNullable = null;
+                salePriceNullable = null;
             }
 
             // For rent
             final boolean isForRent = land.isForRent();
-            final Optional<String> forRentSignLocationOpt;
-            final Optional<Double> rentPriceOpt;
-            final Optional<Integer> rentRenewOpt;
-            final Optional<Boolean> rentAutoRenewOpt;
-            final Optional<UUID> tenantUUIDOpt;
-            final Optional<Long> lastPaymentMillisOpt;
+            final String forRentSignLocationNullable;
+            final Double rentPriceNullable;
+            final Integer rentRenewNullable;
+            final Boolean rentAutoRenewNullable;
+            final UUID tenantUUIDNullable;
+            final Long lastPaymentMillisNullable;
             if (isForRent) {
-                forRentSignLocationOpt = Optional.of(land.getRentSignLoc().toFileFormat());
-                rentPriceOpt = Optional.of(land.getRentPrice());
-                rentRenewOpt = Optional.of(land.getRentRenew());
-                rentAutoRenewOpt = Optional.of(land.getRentAutoRenew());
+                forRentSignLocationNullable = land.getRentSignLoc().toFileFormat();
+                rentPriceNullable = land.getRentPrice();
+                rentRenewNullable = land.getRentRenew();
+                rentAutoRenewNullable = land.getRentAutoRenew();
                 if (land.isRented()) {
                     final UUID tenantUUID = land.getTenant().getMinecraftUUID();
                     addUserInDatabaseIfNeeded(conn, tenantUUID);
-                    tenantUUIDOpt = Optional.of(tenantUUID);
-                    lastPaymentMillisOpt = Optional.of(land.getLastPaymentTime());
+                    tenantUUIDNullable = tenantUUID;
+                    lastPaymentMillisNullable = land.getLastPaymentTime();
                 } else {
-                    tenantUUIDOpt = Optional.empty();
-                    lastPaymentMillisOpt = Optional.empty();
+                    tenantUUIDNullable = null;
+                    lastPaymentMillisNullable = null;
                 }
             } else {
-                forRentSignLocationOpt = Optional.empty();
-                rentPriceOpt = Optional.empty();
-                rentRenewOpt = Optional.empty();
-                rentAutoRenewOpt = Optional.empty();
-                tenantUUIDOpt = Optional.empty();
-                lastPaymentMillisOpt = Optional.empty();
+                forRentSignLocationNullable = null;
+                rentPriceNullable = null;
+                rentRenewNullable = null;
+                rentAutoRenewNullable = null;
+                tenantUUIDNullable = null;
+                lastPaymentMillisNullable = null;
             }
 
             // Update land table
-            final Optional<UUID> parentUUIDOpt = Optional.ofNullable(land.getParent()).map(Land::getUUID);
-            final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(), land.isApproved(), typeIdOpt,
-                    ownerId, parentUUIDOpt, land.getPriority(), land.getMoney(), isForSale, forSaleSignLocationOpt,
-                    salePriceOpt, isForRent, forRentSignLocationOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
-                    tenantUUIDOpt, lastPaymentMillisOpt);
+            final UUID parentUUIDNullable = Optional.ofNullable(land.getParent()).map(Land::getUUID).orElse(null);
+            final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(), land.isApproved(), typeIdNullable,
+                    ownerId, parentUUIDNullable, land.getPriority(), land.getMoney(), isForSale, forSaleSignLocationNullable,
+                    salePriceNullable, isForRent, forRentSignLocationNullable, rentPriceNullable, rentRenewNullable, rentAutoRenewNullable,
+                    tenantUUIDNullable, lastPaymentMillisNullable);
             landsDao.insertOrUpdateLand(conn, landPojo);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to save the land to database [landUUID=%s, landName=%s]",
@@ -462,17 +464,16 @@ public final class StorageMySql implements Storage {
             final Object flagValueObj = flag.getValue().getValue();
 
             // Delete flag before (foreign key)
-            final Optional<Long> landFlagIdOpt = flagsDao.getLandFlagIdOpt(conn, land.getUUID(), flagId);
-            if (landFlagIdOpt.isPresent()) {
-                final long landFlagId = landFlagIdOpt.get();
+            final Long landFlagIdNullable = flagsDao.getLandFlagIdNullable(conn, land.getUUID(), flagId);
+            if (landFlagIdNullable != null) {
                 if (flagValueObj instanceof String) {
-                    flagsValuesStringDao.delete(conn, landFlagId);
+                    flagsValuesStringDao.delete(conn, landFlagIdNullable);
                 } else if (flagValueObj instanceof Double) {
-                    flagsValuesDoubleDao.delete(conn, landFlagId);
+                    flagsValuesDoubleDao.delete(conn, landFlagIdNullable);
                 } else if (flagValueObj instanceof Boolean) {
-                    flagsValuesBooleanDao.delete(conn, landFlagId);
+                    flagsValuesBooleanDao.delete(conn, landFlagIdNullable);
                 } else if (flagValueObj instanceof String[]) {
-                    flagsValuesListDao.deleteLandFlagValueList(conn, landFlagId);
+                    flagsValuesListDao.deleteLandFlagValueList(conn, landFlagIdNullable);
                 }
             }
 
@@ -530,7 +531,7 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void removeLandPermission(final Land land, final PlayerContainer playerContainer,
-            final Permission permission) {
+                                     final Permission permission) {
         try (final Connection conn = dbConn.openConnection()) {
             final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             final long permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
@@ -557,7 +558,7 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void saveLandPermission(final Land land, final PlayerContainer playerContainer,
-            final Permission permission) {
+                                   final Permission permission) {
         try (final Connection conn = dbConn.openConnection()) {
             final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
             final long permissionId = permissionsTypesDao.insertOrGetId(conn, permission.getPermType().getName());
@@ -659,9 +660,9 @@ public final class StorageMySql implements Storage {
                 final LandAction action = idToActionName.get(approvePojo.getApproveActionId());
                 final PlayerContainer owner = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType,
                         approvePojo.getOwnerId());
-                final Optional<Land> parentOpt = approvePojo.getParentUUIDOpt().map(lands::getLand);
-                approves.add(new Approve(land, action, approvePojo.getRemovedAreaIdOpt(), approvePojo.getNewAreaIdOpt(),
-                        owner, parentOpt, approvePojo.getPrice(), approvePojo.getTransactionDatetime()));
+                final Land parentNullable = Optional.ofNullable(approvePojo.getParentUUIDNullable()).map(lands::getLand).orElse(null);
+                approves.add(new Approve(land, action, approvePojo.getRemovedAreaIdNullable(), approvePojo.getNewAreaIdNullable(),
+                        owner, parentNullable, approvePojo.getPrice(), approvePojo.getTransactionDatetime()));
             }
             lands.getApproves().loadApproves(approves);
         } catch (final SQLException e) {
@@ -674,9 +675,9 @@ public final class StorageMySql implements Storage {
         try (final Connection conn = dbConn.openConnection()) {
             final long approveActionId = approvesActionsDao.insertOrGetId(conn, approve.getAction().name());
             final long ownerId = getOrAddPlayerContainer(conn, approve.getOwner());
-            final Optional<UUID> parentUUIDOpt = approve.getParentOpt().map(Land::getUUID);
+            final UUID parentUUIDNullable = Optional.ofNullable(approve.getParentNullable()).map(Land::getUUID).orElse(null);
             final ApprovePojo approvePojo = new ApprovePojo(approve.getUUID(), approveActionId,
-                    approve.getRemovedAreaIdOpt(), approve.getNewAreaIdOpt(), ownerId, parentUUIDOpt,
+                    approve.getRemovedAreaIdNullable(), approve.getNewAreaIdNullable(), ownerId, parentUUIDNullable,
                     approve.getPrice(), approve.getDateTime());
             approvesDao.insertOrUpdateApprove(conn, approvePojo);
         } catch (final SQLException e) {
@@ -724,9 +725,9 @@ public final class StorageMySql implements Storage {
                 final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos = inventoriesPotionEffectsDao
                         .getPotionEffectsFromEntryId(conn, inventoryEntryId);
                 final PlayerInvEntry playerInvEntry = loadInventoryFromPojo(inventoryEntryPojo,
-                        inventoryPotionEffectPojos, Optional.empty(), inventorySpec, false);
+                        inventoryPotionEffectPojos, null, inventorySpec, false);
 
-                inventories.saveInventory(Optional.empty(), playerInvEntry, false, true, false);
+                inventories.saveInventory(null, playerInvEntry, false, true, false);
             }
         } catch (final SQLException e) {
             log.log(Level.SEVERE, "Unable to load the inventories from database", e);
@@ -736,7 +737,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the inventory default to database %s", playerInvEntry.getName()), e);
@@ -748,12 +749,11 @@ public final class StorageMySql implements Storage {
         try (final Connection conn = dbConn.openConnection()) {
             final long inventoryId = inventoriesDao.insertOrGetId(conn,
                     playerInvEntry.getInventorySpec().getInventoryName());
-            final Optional<Long> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
-            if (inventoryEntryIdOpt.isPresent()) {
+            final Long inventoryEntryIdNullable = inventoriesDefaultsDao.getValueNullable(conn, inventoryId);
+            if (inventoryEntryIdNullable != null) {
                 inventoriesDefaultsDao.delete(conn, inventoryId);
-                final long inventoryEntryId = inventoryEntryIdOpt.get();
-                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId);
-                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId);
+                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryIdNullable);
+                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryIdNullable);
             }
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
@@ -771,20 +771,26 @@ public final class StorageMySql implements Storage {
                 final long inventoryId = inventoriesDao.insertOrGetId(conn, inventorySpec.getInventoryName());
 
                 // Survival
-                createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, false,
-                        Optional.empty())
-                                .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, false, false, false));
+                final PlayerInvEntry survivalInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, false,
+                        null);
+                if (survivalInvEntryNullable != null) {
+                        inventories.saveInventory(null, survivalInvEntryNullable, false, false, false);
+                }
 
                 // Creative
-                createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, true,
-                        Optional.empty())
-                                .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, false, false, false));
+                final PlayerInvEntry creativeInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, true,
+                        null);
+                if (creativeInvEntryNullable != null) {
+                        inventories.saveInventory(null, creativeInvEntryNullable, false, false, false);
+                }
 
                 // Death
                 for (int deathVersion = PlayerInventoryCache.DEATH_SAVE_MAX_NBR; deathVersion > 0; deathVersion--) {
-                    createInventoriesEntryPlayerOpt(conn, playerInventoryCache, inventoryId, inventorySpec, false,
-                            Optional.of(deathVersion))
-                                    .ifPresent(e -> inventories.saveInventory(Optional.empty(), e, true, false, false));
+                    final PlayerInvEntry deathInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, false,
+                            deathVersion);
+                    if (deathInvEntryNullable != null) {
+                        inventories.saveInventory(null, deathInvEntryNullable, true, false, false);
+                    }
                 }
             }
         } catch (final SQLException e) {
@@ -796,7 +802,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the player inventory to database %s", playerInvEntry.getName()), e);
@@ -806,7 +812,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), false, true);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, true);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the player death inventory to database %s", playerInvEntry.getName()),
@@ -817,7 +823,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDOpt(), true, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), true, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to save the player death inventory history to database %s",
                     playerInvEntry.getName()), e);
@@ -847,14 +853,14 @@ public final class StorageMySql implements Storage {
     }
 
     private PlayerContainer getPlayerContainer(final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo,
-            final Map<Long, String> idToPlayerContainerType, final long id) {
+                                               final Map<Long, String> idToPlayerContainerType, final long id) {
         final PlayerContainerPojo playerContainerPojo = idToPlayerContainerPojo.get(id);
         final String PlayerContainerTypeStr = idToPlayerContainerType
                 .get(playerContainerPojo.getPlayerContainerTypeId());
         final PlayerContainerType playerContainerType = PlayerContainerType.getFromString(PlayerContainerTypeStr);
 
         return secuboid.getPlayerContainers().getOrAddPlayerContainer(playerContainerType,
-                playerContainerPojo.getParameterOpt(), playerContainerPojo.getPlayerUUIDOpt());
+                playerContainerPojo.getParameterNullable(), playerContainerPojo.getPlayerUUIDNullable());
     }
 
     private long getOrAddPlayerContainer(final Connection conn, final PlayerContainer playerContainer)
@@ -867,13 +873,13 @@ public final class StorageMySql implements Storage {
                 final UUID playerUUID = ((PlayerContainerPlayer) playerContainer).getMinecraftUUID();
                 addUserInDatabaseIfNeeded(conn, playerUUID);
                 return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId,
-                        Optional.of(playerUUID), Optional.empty());
+                        playerUUID, null);
             }
-            return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, Optional.empty(),
-                    Optional.of(playerContainer.getName()));
+            return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, null,
+                    playerContainer.getName());
         }
-        return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, Optional.empty(),
-                Optional.empty());
+        return playerContainersDao.insertOrGetPlayerContainer(conn, playerContainerTypeId, null,
+                null);
     }
 
     /**
@@ -881,17 +887,17 @@ public final class StorageMySql implements Storage {
      *
      * @return a map with a land (if success) and the parent (if exists)
      */
-    private Entry<Land, Optional<UUID>> loadLand(final LandPojo landPojo, final Map<Long, String> idToType,
-            final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo,
-            final Map<Long, String> idToPlayerContainerType, final List<AreaPojo> areaPojos,
-            final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, final Map<Long, String> idToAreaType,
-            final List<Long> residentIds, final List<Long> bannedIds, final List<PermissionPojo> permissionPojos,
-            final Map<Long, String> idToPermissionType, final List<FlagPojo> flagPojos,
-            final Map<Long, String> landFlagIdtoValueString, final Map<Long, Double> landFlagIdtoValueDouble,
-            final Map<Long, Boolean> landFlagIdtoValueBoolean, final Map<Long, List<String>> landFlagIdtoValueList,
-            final Map<Long, String> idToFlagType, final List<UUID> playerNotifyUUIDs) {
+    private Entry<Land, UUID> loadLand(final LandPojo landPojo, final Map<Long, String> idToType,
+                                       final Map<Long, PlayerContainerPojo> idToPlayerContainerPojo,
+                                       final Map<Long, String> idToPlayerContainerType, final List<AreaPojo> areaPojos,
+                                       final Map<UUID, List<RoadMatrixPojo>> landUUIDToMatrices, final Map<Long, String> idToAreaType,
+                                       final List<Long> residentIds, final List<Long> bannedIds, final List<PermissionPojo> permissionPojos,
+                                       final Map<Long, String> idToPermissionType, final List<FlagPojo> flagPojos,
+                                       final Map<Long, String> landFlagIdtoValueString, final Map<Long, Double> landFlagIdtoValueDouble,
+                                       final Map<Long, Boolean> landFlagIdtoValueBoolean, final Map<Long, List<String>> landFlagIdtoValueList,
+                                       final Map<Long, String> idToFlagType, final List<UUID> playerNotifyUUIDs) {
 
-        final String type = landPojo.getTypeIdOpt().map(idToType::get).orElse(null);
+        final String type = Optional.ofNullable(landPojo.getTypeIdNullable()).map(idToType::get).orElse(null);
         final UUID landUUID = landPojo.getUUID();
         final String landName = landPojo.getName();
         final Map<Integer, Area> areas = new TreeMap<>();
@@ -1005,7 +1011,7 @@ public final class StorageMySql implements Storage {
         boolean forSale = landPojo.isForSale();
         LandLocation forSaleSignLocNullable = null;
         if (forSale) {
-            forSaleSignLocNullable = landPojo.getForSaleSignLocationOpt().map(LandLocation::fromFileFormat)
+            forSaleSignLocNullable = Optional.ofNullable(landPojo.getForSaleSignLocationNullable()).map(LandLocation::fromFileFormat)
                     .orElse(null);
             if (forSaleSignLocNullable == null) {
                 log.log(Level.WARNING,
@@ -1016,7 +1022,7 @@ public final class StorageMySql implements Storage {
         boolean forRent = landPojo.getForRent();
         LandLocation forRentSignLocNullable = null;
         if (forRent) {
-            forRentSignLocNullable = landPojo.getForRentSignLocationOpt().map(LandLocation::fromFileFormat)
+            forRentSignLocNullable = Optional.ofNullable(landPojo.getForRentSignLocationNullable()).map(LandLocation::fromFileFormat)
                     .orElse(null);
             if (forRentSignLocNullable == null) {
                 log.log(Level.WARNING,
@@ -1067,27 +1073,27 @@ public final class StorageMySql implements Storage {
 
         // Economy add
         if (forSale) {
-            land.setForSale(true, landPojo.getSalePriceOpt().orElse(0d), forSaleSignLocNullable);
+            land.setForSale(true, Optional.ofNullable(landPojo.getSalePriceNullable()).orElse(0D), forSaleSignLocNullable);
         }
         if (forRent) {
-            land.setForRent(landPojo.getRentPriceOpt().orElse(0d), landPojo.getRentRenewOpt().orElse(7),
-                    landPojo.getRentAutoRenewOpt().orElse(false), forRentSignLocNullable);
-            landPojo.getTenantUUIDOpt().ifPresent(tenantUUID -> {
+            land.setForRent(Optional.ofNullable(landPojo.getRentPriceNullable()).orElse(0D), Optional.ofNullable(landPojo.getRentRenewNullable()).orElse(7),
+                    Optional.ofNullable(landPojo.getRentAutoRenewNullable()).orElse(false), forRentSignLocNullable);
+            Optional.ofNullable(landPojo.getTenantUUIDNullable()).ifPresent(tenantUUID -> {
                 final PlayerContainerPlayer tenant = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(tenantUUID);
                 land.setRented(tenant);
-                land.setLastPaymentTime(landPojo.getLastPaymentMillisOpt().orElse(0L));
+                land.setLastPaymentTime(Optional.ofNullable(landPojo.getLastPaymentMillisNullable()).orElse(0L));
 
             });
         }
 
-        return new AbstractMap.SimpleEntry<>(land, landPojo.getParentUUIDOpt());
+        return new AbstractMap.SimpleEntry<>(land, landPojo.getParentUUIDNullable());
     }
 
     private PlayerInvEntry loadInventoryFromPojo(final InventoryEntryPojo inventoryEntryPojo,
-            final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos,
-            final Optional<PlayerInventoryCache> playerInventoryCacheOpt, final InventorySpec inventorySpec,
-            final boolean isCreative) {
-        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerInventoryCacheOpt, inventorySpec, isCreative);
+                                                 final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos,
+                                                 final PlayerInventoryCache playerInventoryCacheNullable, final InventorySpec inventorySpec,
+                                                 final boolean isCreative) {
+        final PlayerInvEntry playerInvEntry = new PlayerInvEntry(playerInventoryCacheNullable, inventorySpec, isCreative);
 
         playerInvEntry.setLevel(inventoryEntryPojo.getLevel());
         playerInvEntry.setExp(inventoryEntryPojo.getExp());
@@ -1110,12 +1116,12 @@ public final class StorageMySql implements Storage {
     }
 
     public void saveInventory(final Connection conn, final PlayerInvEntry playerInvEntry,
-            final Optional<UUID> playerUUIDOpt, final boolean isDeathHistory, final boolean enderChestOnly)
+                              final UUID playerUUIDNullable, final boolean isDeathHistory, final boolean enderChestOnly)
             throws SQLException {
         final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
-        if (playerUUIDOpt.isPresent()) {
-            addUserInDatabaseIfNeeded(conn, playerUUIDOpt.get());
+        if (playerUUIDNullable != null) {
+            addUserInDatabaseIfNeeded(conn, playerUUIDNullable);
         } else {
             // If for some reasons whe have to skip save (ex: SaveInventory = false)
             if (!inventorySpec.isSaveInventory()) {
@@ -1129,46 +1135,42 @@ public final class StorageMySql implements Storage {
         final long inventoryId = inventoriesDao.insertOrGetId(conn,
                 playerInvEntry.getInventorySpec().getInventoryName());
 
-        if (isDeathHistory && playerUUIDOpt.isPresent()) {
+        if (isDeathHistory && playerUUIDNullable != null) {
             // Save death inventory
-            final UUID playerUUID = playerUUIDOpt.get();
-
             // Death rename
-            final Optional<Long> inventoryEntryId9Opt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID,
+            final Long inventoryEntryId9Nullable = inventoriesDeathsDao.getEntryIdNullable(conn, playerUUIDNullable,
                     inventoryId, gameModeId, 9);
-            inventoriesDeathsDao.deleteNinth(conn, playerUUID, inventoryId, gameModeId);
-            if (inventoryEntryId9Opt.isPresent()) {
-                final long inventoryEntryId9 = inventoryEntryId9Opt.get();
-                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId9);
-                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9);
+            inventoriesDeathsDao.deleteNinth(conn, playerUUIDNullable, inventoryId, gameModeId);
+            if (inventoryEntryId9Nullable != null) {
+                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId9Nullable);
+                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9Nullable);
             }
             for (int t = 8; t >= 1; t--) {
-                inventoriesDeathsDao.incrementDeathNumber(conn, playerUUID, inventoryId, gameModeId, t);
+                inventoriesDeathsDao.incrementDeathNumber(conn, playerUUIDNullable, inventoryId, gameModeId, t);
             }
-            final Optional<Long> inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID, inventoryId,
+            final Long inventoryEntryIdNullable = inventoriesDeathsDao.getEntryIdNullable(conn, playerUUIDNullable, inventoryId,
                     gameModeId, 1);
-            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
-                    i -> inventoriesDeathsDao.insertInventoryDeath(conn, playerUUID, inventoryId, gameModeId, 1, i));
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdNullable,
+                    i -> inventoriesDeathsDao.insertInventoryDeath(conn, playerUUIDNullable, inventoryId, gameModeId, 1, i));
 
-        } else if (!playerUUIDOpt.isPresent()) {
+        } else if (playerUUIDNullable == null) {
             // Save default inventory
-            final Optional<Long> inventoryEntryIdOpt = inventoriesDefaultsDao.getValueOpt(conn, inventoryId);
-            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
+            final Long inventoryEntryIdNullable = inventoriesDefaultsDao.getValueNullable(conn, inventoryId);
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdNullable,
                     i -> inventoriesDefaultsDao.insert(conn, inventoryId, i));
 
         } else {
             // Save normal inventory
-            final UUID playerUUID = playerUUIDOpt.get();
-            final Optional<Long> inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID, inventoryId,
+            final Long inventoryEntryIdNullable = inventoriesSavesDao.getEntryIdNullable(conn, playerUUIDNullable, inventoryId,
                     gameModeId);
-            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdOpt,
-                    i -> inventoriesSavesDao.insertInventorySave(conn, playerUUID, inventoryId, gameModeId, i));
+            saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdNullable,
+                    i -> inventoriesSavesDao.insertInventorySave(conn, playerUUIDNullable, inventoryId, gameModeId, i));
         }
     }
 
     private void saveInventoryEntry(final Connection conn, final PlayerInvEntry playerInvEntry,
-            final boolean enderChestOnly, final Optional<Long> inventoryEntryIdOpt,
-            final SqlConsumer<Long> updateInvEntryIdConsumer) throws SQLException {
+                                    final boolean enderChestOnly, final Long inventoryEntryIdNullable,
+                                    final SqlConsumer<Long> updateInvEntryIdConsumer) throws SQLException {
 
         final int level;
         final float exp;
@@ -1195,8 +1197,8 @@ public final class StorageMySql implements Storage {
 
         // If the entry id does not exist, a new entry will be created.
         final long inventoryEntryId;
-        if (inventoryEntryIdOpt.isPresent()) {
-            inventoryEntryId = inventoryEntryIdOpt.get();
+        if (inventoryEntryIdNullable != null) {
+            inventoryEntryId = inventoryEntryIdNullable;
 
             // Remove potions
             inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId);
@@ -1225,35 +1227,33 @@ public final class StorageMySql implements Storage {
         }
     }
 
-    private Optional<PlayerInvEntry> createInventoriesEntryPlayerOpt(final Connection conn,
-            final PlayerInventoryCache playerInventoryCache, final long inventoryId, final InventorySpec inventorySpec,
-            final boolean isCreative, final Optional<Integer> deathVersionOpt) throws SQLException {
+    private PlayerInvEntry createInventoriesEntryPlayerNullable(final Connection conn,
+                                                                final PlayerInventoryCache playerInventoryCache, final long inventoryId, final InventorySpec inventorySpec,
+                                                                final boolean isCreative, final Integer deathVersionNullable) throws SQLException {
         final long gameModeId = gameModesDao.insertOrGetId(conn, getGameModeFromBoolean(isCreative));
         final UUID playerUUID = playerInventoryCache.getUUID();
 
-        final Optional<Long> inventoryEntryIdOpt;
-        if (deathVersionOpt.isPresent()) {
+        final Long inventoryEntryIdNullable;
+        if (deathVersionNullable != null) {
             // Death load
-            final int deathVersion = deathVersionOpt.get();
-            inventoryEntryIdOpt = inventoriesDeathsDao.getEntryIdOpt(conn, playerUUID, inventoryId, gameModeId,
-                    deathVersion);
+            inventoryEntryIdNullable = inventoriesDeathsDao.getEntryIdNullable(conn, playerUUID, inventoryId, gameModeId,
+                    deathVersionNullable);
 
         } else {
             // Normal load
-            inventoryEntryIdOpt = inventoriesSavesDao.getEntryIdOpt(conn, playerUUID, inventoryId, gameModeId);
+            inventoryEntryIdNullable = inventoriesSavesDao.getEntryIdNullable(conn, playerUUID, inventoryId, gameModeId);
         }
 
-        if (inventoryEntryIdOpt.isPresent()) {
-            final long inventoryEntryId = inventoryEntryIdOpt.get();
+        if (inventoryEntryIdNullable != null) {
             final InventoryEntryPojo inventoryEntryPojo = inventoriesEntriesDao.getInventoryEntry(conn,
-                    inventoryEntryId);
+                    inventoryEntryIdNullable);
             final List<InventoryPotionEffectPojo> inventoryPotionEffectPojos = inventoriesPotionEffectsDao
-                    .getPotionEffectsFromEntryId(conn, inventoryEntryId);
+                    .getPotionEffectsFromEntryId(conn, inventoryEntryIdNullable);
 
-            return Optional.of(loadInventoryFromPojo(inventoryEntryPojo, inventoryPotionEffectPojos,
-                    Optional.of(playerInventoryCache), inventorySpec, isCreative));
+            return loadInventoryFromPojo(inventoryEntryPojo, inventoryPotionEffectPojos,
+                    playerInventoryCache, inventorySpec, isCreative);
         }
-        return Optional.empty();
+        return null;
     }
 
     private String getGameModeFromBoolean(final boolean isCreative) {
@@ -1261,8 +1261,8 @@ public final class StorageMySql implements Storage {
     }
 
     private void addUserInDatabaseIfNeeded(final Connection conn, final UUID playerUUID) throws SQLException {
-        final Optional<String> playerNameOpt = playersDao.getValueOpt(conn, playerUUID);
-        if (!playerNameOpt.isPresent()) {
+        final String playerNameNullable = playersDao.getValueNullable(conn, playerUUID);
+        if (playerNameNullable == null) {
             log.warning("Player " + playerUUID + " is not present in players cache. Adding the UUID as player name.");
             playersDao.insert(conn, playerUUID, playerUUID.toString());
         }

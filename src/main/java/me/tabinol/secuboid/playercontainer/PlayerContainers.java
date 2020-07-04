@@ -20,7 +20,6 @@ package me.tabinol.secuboid.playercontainer;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.Secuboid;
@@ -76,9 +75,9 @@ public final class PlayerContainers {
      * @param playerUUID the player uuid
      * @return the player container player
      */
-    public PlayerContainerPlayer getOrAddPlayerContainerPlayer(UUID playerUUID) {
-        return (PlayerContainerPlayer) getOrAddPlayerContainer(PlayerContainerType.PLAYER, Optional.empty(),
-                Optional.of(playerUUID));
+    public PlayerContainerPlayer getOrAddPlayerContainerPlayer(final UUID playerUUID) {
+        return (PlayerContainerPlayer) getOrAddPlayerContainer(PlayerContainerType.PLAYER, null,
+                playerUUID);
     }
 
     /**
@@ -86,12 +85,12 @@ public final class PlayerContainers {
      * parameter. Player type checks first for a UUID then a UUID in String format.
      *
      * @param playerContainerType the player container type
-     * @param parameterOpt        the parameter optional
-     * @param uuidOpt             the uuid optional
+     * @param parameterNullable   the parameter optional
+     * @param uuidNullable        the uuid optional
      * @return the player container
      */
     public PlayerContainer getOrAddPlayerContainer(final PlayerContainerType playerContainerType,
-            final Optional<String> parameterOpt, final Optional<UUID> uuidOpt) {
+                                                   final String parameterNullable, final UUID uuidNullable) {
 
         if (playerContainerType == null) {
             return null;
@@ -105,31 +104,28 @@ public final class PlayerContainers {
         switch (playerContainerType) {
             case PLAYER:
             case PLAYERNAME:
-                @SuppressWarnings("unchecked")
-                final Map<UUID, PlayerContainerPlayer> uuidToPCP = (Map<UUID, PlayerContainerPlayer>) typeToPlayerContainerObj
+                @SuppressWarnings("unchecked") final Map<UUID, PlayerContainerPlayer> uuidToPCP = (Map<UUID, PlayerContainerPlayer>) typeToPlayerContainerObj
                         .get(PlayerContainerType.PLAYER);
                 final UUID playerUUID;
-                if (uuidOpt.isPresent()) {
-                    playerUUID = uuidOpt.get();
+                if (uuidNullable != null) {
+                    playerUUID = uuidNullable;
                 } else {
                     // First check if the ID is valid or was connected to the server
-                    final String parameter = parameterOpt.get();
                     try {
-                        playerUUID = UUID.fromString(parameter.replaceFirst("ID-", ""));
+                        playerUUID = UUID.fromString(parameterNullable.replaceFirst("ID-", ""));
                     } catch (final IllegalArgumentException ex) {
                         // If there is an error, just return a temporary PlayerName without adding it in
                         // the map
-                        return new PlayerContainerPlayerName(parameter);
+                        return new PlayerContainerPlayerName(parameterNullable);
                     }
                 }
                 // If not null, assign the value to a new PlayerContainer
                 return uuidToPCP.computeIfAbsent(playerUUID, u -> new PlayerContainerPlayer(secuboid, u));
             default:
                 // With String parameter
-                @SuppressWarnings("unchecked")
-                final Map<String, PlayerContainer> parameterToPC = (Map<String, PlayerContainer>) typeToPlayerContainerObj
+                @SuppressWarnings("unchecked") final Map<String, PlayerContainer> parameterToPC = (Map<String, PlayerContainer>) typeToPlayerContainerObj
                         .get(playerContainerType);
-                return parameterToPC.computeIfAbsent(parameterOpt.get(),
+                return parameterToPC.computeIfAbsent(parameterNullable,
                         p -> playerContainerType.createPCBiFunction.apply(secuboid, p));
         }
     }
@@ -141,10 +137,10 @@ public final class PlayerContainers {
      * @return the string
      */
     public PlayerContainer getPlayerContainerFromFileFormat(final String string) {
-        final String strs[] = StringChanges.splitAddVoid(string, ":");
+        final String[] strs = StringChanges.splitAddVoid(string, ":");
         final PlayerContainerType type = PlayerContainerType.getFromString(strs[0]);
-        final Optional<String> parameterOpt = Optional.ofNullable(strs[1].isEmpty() ? null : strs[1]);
-        return getOrAddPlayerContainer(type, parameterOpt, Optional.empty());
+        final String parameterNullable = strs[1].isEmpty() ? null : strs[1];
+        return getOrAddPlayerContainer(type, parameterNullable, null);
     }
 
 }

@@ -47,8 +47,8 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
  */
 @InfoCommand(name = "approve", allowConsole = true, forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "clear", "list", "info", "confirm", "cancel" }), //
-                @CompletionMap(regex = "^(info|confirm|cancel)$", completions = { "@approveLandList" }) //
+                @CompletionMap(regex = "^$", completions = {"clear", "list", "info", "confirm", "cancel"}), //
+                @CompletionMap(regex = "^(info|confirm|cancel)$", completions = {"@approveLandList"}) //
         })
 public final class CommandApprove extends CommandCollisionsThreadExec {
 
@@ -66,7 +66,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandApprove(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-            final ArgList argList) throws SecuboidCommandException {
+                          final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
         approves = secuboid.getLands().getApproves();
@@ -74,7 +74,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
@@ -101,7 +101,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
             // List of Approve
             final StringBuilder stList = new StringBuilder();
             int t = 0;
-            final TreeMap<Date, Approve> approveTree = new TreeMap<Date, Approve>();
+            final TreeMap<Date, Approve> approveTree = new TreeMap<>();
 
             // create list (short by date/time)
             for (final Approve app : approves.getApproveList().values()) {
@@ -157,18 +157,18 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
 
             final Land landLocal = approve.getLand();
             final Collisions.LandAction actionLocal = approve.getAction();
-            final Optional<Integer> removeAreaIdOptLocal = approve.getRemovedAreaIdOpt();
-            final Optional<Integer> newAreaIdOptLocal = approve.getNewAreaIdOpt();
-            final Optional<Land> parentOptLocal = approve.getParentOpt();
+            final Integer removeAreaIdNullableLocal = approve.getRemovedAreaIdNullable();
+            final Integer newAreaIdNullableLocal = approve.getNewAreaIdNullable();
+            final Land parentNullableLocal = approve.getParentNullable();
             final PlayerContainer ownerLocal = approve.getOwner();
 
             if (curArg.equalsIgnoreCase("info") || curArg.equalsIgnoreCase("confirm")) {
-                String worldNameLocal;
+                final String worldNameLocal;
 
                 // Print area and get world
                 final Area newAreaLocalNullable;
-                if (newAreaIdOptLocal.isPresent()) {
-                    newAreaLocalNullable = landLocal.getArea(newAreaIdOptLocal.get());
+                if (newAreaIdNullableLocal != null) {
+                    newAreaLocalNullable = landLocal.getArea(newAreaIdNullableLocal);
                     worldNameLocal = newAreaLocalNullable.getWorldName();
                     sender.sendMessage(newAreaLocalNullable.getPrint());
                 } else {
@@ -181,8 +181,8 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                     confirm = true;
                 }
                 // Info on the specified land (Collision)
-                checkCollision(worldNameLocal, param, landLocal, null, actionLocal, removeAreaIdOptLocal.orElse(0),
-                        newAreaLocalNullable, parentOptLocal.orElse(null), ownerLocal, false);
+                checkCollision(worldNameLocal, param, landLocal, null, actionLocal, Optional.ofNullable(removeAreaIdNullableLocal).orElse(0),
+                        newAreaLocalNullable, Optional.ofNullable(parentNullableLocal).orElse(null), ownerLocal, false);
 
             } else if (curArg.equalsIgnoreCase("cancel")) {
 

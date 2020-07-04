@@ -17,22 +17,21 @@
  */
 package me.tabinol.secuboid.storage.mysql.pojo;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public final class PlayerContainerPojo {
 
     private final long id;
     private final long playerContainerTypeId;
-    private final Optional<UUID> playerUUIDOpt;
-    private final Optional<String> parameterOpt;
+    private final UUID playerUUIDNullable;
+    private final String parameterNullable;
 
-    public PlayerContainerPojo(final long id, final long playerContainerTypeId, final Optional<UUID> playerUUIDOpt,
-            final Optional<String> parameterOpt) {
+    public PlayerContainerPojo(final long id, final long playerContainerTypeId, final UUID playerUUIDNullable,
+                               final String parameterNullable) {
         this.id = id;
         this.playerContainerTypeId = playerContainerTypeId;
-        this.playerUUIDOpt = playerUUIDOpt;
-        this.parameterOpt = parameterOpt;
+        this.playerUUIDNullable = playerUUIDNullable;
+        this.parameterNullable = parameterNullable;
     }
 
     public long getId() {
@@ -43,11 +42,11 @@ public final class PlayerContainerPojo {
         return this.playerContainerTypeId;
     }
 
-    public Optional<UUID> getPlayerUUIDOpt() {
-        return this.playerUUIDOpt;
+    public UUID getPlayerUUIDNullable() {
+        return this.playerUUIDNullable;
     }
 
-    public Optional<String> getParameterOpt() {
-        return this.parameterOpt;
+    public String getParameterNullable() {
+        return this.parameterNullable;
     }
 }

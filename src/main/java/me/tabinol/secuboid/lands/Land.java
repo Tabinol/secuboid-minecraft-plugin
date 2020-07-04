@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -91,7 +90,7 @@ public final class Land implements Savable, Approvable {
     /**
      * The type.
      */
-    private Type type = null;
+    private Type type;
 
     /**
      * The areas. TreeMap because the order must be respected.
@@ -226,7 +225,7 @@ public final class Land implements Savable, Approvable {
      * @param worldName  the worldName
      */
     Land(final Secuboid secuboid, final String landName, final UUID uuid, final boolean isApproved,
-            final PlayerContainer owner, final Type type, final String worldName) {
+         final PlayerContainer owner, final Type type, final String worldName) {
         this.secuboid = secuboid;
         this.uuid = uuid;
         this.isApproved = isApproved;
@@ -389,18 +388,17 @@ public final class Land implements Savable, Approvable {
      */
     public boolean removeArea(final int key) {
 
-        Area area;
+        final Area area;
 
         if ((area = areas.remove(key)) != null) {
             // Remove approves if exist
             final Approves approves = secuboid.getLands().getApproves();
             final Approve approve = approves.getApprove(name);
-            if (approve != null) {
-                approve.getRemovedAreaIdOpt().ifPresent(removedAreaId -> {
-                    if (removedAreaId == area.getKey()) {
-                        approves.removeApprove(approve, false);
-                    }
-                });
+            if (approve != null && approve.getRemovedAreaIdNullable() != null) {
+                final Integer removedAreaIdNullable = approve.getRemovedAreaIdNullable();
+                if (removedAreaIdNullable != null && removedAreaIdNullable.intValue() == area.getKey().intValue()) {
+                    approves.removeApprove(approve, false);
+                }
             }
 
             secuboid.getLands().removeAreaFromList(area);
@@ -448,7 +446,7 @@ public final class Land implements Savable, Approvable {
      * @return true, if successful
      */
     public boolean replaceArea(final int key, final Area newArea) {
-        Area area;
+        final Area area;
 
         if ((area = areas.remove(key)) != null) {
             secuboid.getLands().removeAreaFromList(area);
@@ -840,7 +838,7 @@ public final class Land implements Savable, Approvable {
 
     /**
      * Gets the first parent in the line (or this land).
-     * 
+     *
      * @return the first parent
      */
     public Land getFirstParent() {
@@ -980,9 +978,9 @@ public final class Land implements Savable, Approvable {
     }
 
     private void doSave(final SaveActionEnum SaveActionEnum, final SaveOn saveOn,
-            final SavableParameter... savableParameters) {
+                        final SavableParameter... savableParameters) {
         if (autoSave) {
-            secuboid.getStorageThread().addSaveAction(SaveActionEnum, saveOn, Optional.of(this), savableParameters);
+            secuboid.getStorageThread().addSaveAction(SaveActionEnum, saveOn, this, savableParameters);
         }
     }
 
@@ -1234,7 +1232,7 @@ public final class Land implements Savable, Approvable {
      * @param signLoc       the sign location
      */
     public void setForRent(final double rentPrice, final int rentRenew, final boolean rentAutoRenew,
-            final LandLocation signLoc) {
+                           final LandLocation signLoc) {
         forRent = true;
         this.rentPrice = rentPrice;
         this.rentRenew = rentRenew;

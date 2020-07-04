@@ -19,7 +19,6 @@ package me.tabinol.secuboid.players;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -58,7 +57,7 @@ public class PlayerConfig {
      */
     public PlayerConfig(final Secuboid secuboid) {
         this.secuboid = secuboid;
-        playerConfList = new HashMap<CommandSender, PlayerConfEntry>();
+        playerConfList = new HashMap<>();
         vanish = secuboid.getDependPlugin().getVanish();
         chat = secuboid.getDependPlugin().getChat();
     }
@@ -66,13 +65,13 @@ public class PlayerConfig {
     /**
      * Adds the static configuration.
      *
-     * @param sender                  the sender
-     * @param playerInventoryCacheOpt the player inventory cache optional
+     * @param sender                       the sender
+     * @param playerInventoryCacheNullable the player inventory cache optional
      * @return the player conf entry
      */
     public PlayerConfEntry add(final CommandSender sender,
-            final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
-        final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCacheOpt);
+                               final PlayerInventoryCache playerInventoryCacheNullable) {
+        final PlayerConfEntry entry = new PlayerConfEntry(secuboid, sender, playerInventoryCacheNullable);
         playerConfList.put(sender, entry);
 
         return entry;
@@ -106,7 +105,7 @@ public class PlayerConfig {
      * Adds console sender.
      */
     public void addConsoleSender() {
-        add(secuboid.getServer().getConsoleSender(), Optional.empty());
+        add(secuboid.getServer().getConsoleSender(), null);
     }
 
     /**

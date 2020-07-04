@@ -17,8 +17,6 @@
  */
 package me.tabinol.secuboid.commands;
 
-import java.util.Optional;
-
 import org.bukkit.command.CommandSender;
 
 import me.tabinol.secuboid.Secuboid;
@@ -98,7 +96,6 @@ public final class ArgList {
 
     /**
      * Sets the iterator to zero position.
-     *
      */
     public void setPosZero() {
 
@@ -148,7 +145,7 @@ public final class ArgList {
             throws SecuboidCommandException {
 
         final String curArg = getNext();
-        FlagType flagType;
+        final FlagType flagType;
 
         if (curArg == null) {
             throw new SecuboidCommandException(secuboid, "Flag error", player, "COMMAND.FLAGS.FLAGNULL");
@@ -205,7 +202,7 @@ public final class ArgList {
             throws SecuboidCommandException {
 
         final String curArg = getNext();
-        PlayerContainer pc;
+        final PlayerContainer pc;
 
         if (curArg == null) {
             throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
@@ -248,7 +245,7 @@ public final class ArgList {
                 throw new SecuboidCommandException(secuboid, "PlayerContainer Error", player,
                         "COMMAND.CONTAINER.CONTAINERNULL");
             }
-            pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(pcType, Optional.of(param), Optional.empty());
+            pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(pcType, param, null);
         } else {
             pc = secuboid.getPlayerContainers().getPlayerContainer(pcType);
         }
@@ -273,10 +270,10 @@ public final class ArgList {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public PermissionType getPermissionTypeFromArg(final boolean isAdminmode, final boolean isOwner,
-            final boolean isTenant) throws SecuboidCommandException {
+                                                   final boolean isTenant) throws SecuboidCommandException {
 
         final String curArg = getNext();
-        PermissionType pt;
+        final PermissionType pt;
 
         if (curArg == null) {
             throw new SecuboidCommandException(secuboid, "Permission Error", player, "COMMAND.PERMISSIONTYPE.TYPENULL");

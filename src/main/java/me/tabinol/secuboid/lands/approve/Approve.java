@@ -18,7 +18,6 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.lands.Land;
@@ -44,12 +43,12 @@ public class Approve implements Savable {
     /**
      * The removed area id.
      */
-    private final Optional<Integer> removedAreaIdOpt;
+    private final Integer removedAreaIdNullable;
 
     /**
      * The new area.
      */
-    private final Optional<Integer> newAreaIdOpt;
+    private final Integer newAreaIdNullable;
 
     /**
      * The owner.
@@ -59,7 +58,7 @@ public class Approve implements Savable {
     /**
      * The parent.
      */
-    private final Optional<Land> parentOpt;
+    private final Land parentNullable;
 
     /**
      * The price.
@@ -74,25 +73,25 @@ public class Approve implements Savable {
     /**
      * Instantiates a new approve.
      *
-     * @param land             the land (new or modified)
-     * @param action           the action
-     * @param removedAreaIdOpt the removed area id (optional)
-     * @param newAreaIdOpt     the new area id (optional)
-     * @param owner            the requestor
-     * @param parentOpt        the parent (optional)
-     * @param price            the price
-     * @param dateTime         the date time
+     * @param land                  the land (new or modified)
+     * @param action                the action
+     * @param removedAreaIdNullable the removed area id (optional)
+     * @param newAreaIdNullable     the new area id (optional)
+     * @param owner                 the requestor
+     * @param parentNullable        the parent (optional)
+     * @param price                 the price
+     * @param dateTime              the date time
      */
-    public Approve(final Land land, final LandAction action, final Optional<Integer> removedAreaIdOpt,
-            final Optional<Integer> newAreaIdOpt, final PlayerContainer owner, final Optional<Land> parentOpt,
-            final double price, final Calendar dateTime) {
+    public Approve(final Land land, final LandAction action, final Integer removedAreaIdNullable,
+                   final Integer newAreaIdNullable, final PlayerContainer owner, final Land parentNullable,
+                   final double price, final Calendar dateTime) {
 
         this.action = action;
         this.land = land;
-        this.removedAreaIdOpt = removedAreaIdOpt;
-        this.newAreaIdOpt = newAreaIdOpt;
+        this.removedAreaIdNullable = removedAreaIdNullable;
+        this.newAreaIdNullable = newAreaIdNullable;
         this.owner = owner;
-        this.parentOpt = parentOpt;
+        this.parentNullable = parentNullable;
         this.price = price;
         this.dateTime = dateTime;
     }
@@ -120,8 +119,8 @@ public class Approve implements Savable {
      *
      * @return the removed area id (optional)
      */
-    public Optional<Integer> getRemovedAreaIdOpt() {
-        return removedAreaIdOpt;
+    public Integer getRemovedAreaIdNullable() {
+        return removedAreaIdNullable;
     }
 
     /**
@@ -129,8 +128,8 @@ public class Approve implements Savable {
      *
      * @return the new area (optional)
      */
-    public Optional<Integer> getNewAreaIdOpt() {
-        return newAreaIdOpt;
+    public Integer getNewAreaIdNullable() {
+        return newAreaIdNullable;
     }
 
     /**
@@ -147,8 +146,8 @@ public class Approve implements Savable {
      *
      * @return the parent land (optional)
      */
-    public Optional<Land> getParentOpt() {
-        return parentOpt;
+    public Land getParentNullable() {
+        return parentNullable;
     }
 
     /**

@@ -145,17 +145,17 @@ public final class ApprovesFlat {
 
         final String[] ownerS = StringChanges.splitAddVoid(section.getString(PARAM_NAME_OWNER), ":");
         final PlayerContainer pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(
-                PlayerContainerType.getFromString(ownerS[0]), Optional.ofNullable(ownerS[1]), Optional.empty());
-        Optional<Land> parentOpt = Optional.empty();
-        Optional<Integer> newAreaIdOpt = Optional.empty();
-        Optional<Integer> removedAreaIdOpt = Optional.empty();
+                PlayerContainerType.getFromString(ownerS[0]), ownerS[1], null);
+        Land parentNullable = null;
+        Integer newAreaIdNullable = null;
+        Integer removedAreaIdNullable = null;
 
         if (section.contains(PARAM_NAME_PARENT_UUID)) {
             final UUID parentUUID = UUID.fromString(section.getString(PARAM_NAME_PARENT_UUID));
-            parentOpt = Optional.ofNullable(secuboid.getLands().getLand(parentUUID));
+            parentNullable = secuboid.getLands().getLand(parentUUID);
 
             // If the parent does not exist
-            if (!parentOpt.isPresent()) {
+            if (parentNullable == null) {
                 secuboid.getLogger().log(Level.WARNING,
                         String.format("In approvelist.yml, \"%s\", \"%s\" refere to an invalid parent \"%s\"",
                                 land.getName(), landUUID, parentUUID));
@@ -164,21 +164,21 @@ public final class ApprovesFlat {
         }
 
         if (section.contains(PARAM_NAME_REMOVED_AREA_ID)) {
-            removedAreaIdOpt = Optional.of(Integer.parseInt(section.getString(PARAM_NAME_REMOVED_AREA_ID)));
-            if (land.getArea(removedAreaIdOpt.get()) == null) {
+            removedAreaIdNullable = Integer.parseInt(section.getString(PARAM_NAME_REMOVED_AREA_ID));
+            if (land.getArea(removedAreaIdNullable) == null) {
                 secuboid.getLogger().log(Level.WARNING,
                         String.format("In approvelist.yml, \"%s\", \"%s\" refere to an invalid removed area id \"%s\"",
-                                land.getName(), landUUID, removedAreaIdOpt.get()));
+                                land.getName(), landUUID, removedAreaIdNullable));
                 return null;
             }
         }
 
         if (section.contains(PARAM_NAME_NEW_AREA_ID)) {
-            newAreaIdOpt = Optional.of(Integer.parseInt(section.getString(PARAM_NAME_NEW_AREA_ID)));
-            if (land.getArea(newAreaIdOpt.get()) == null) {
+            newAreaIdNullable = Integer.parseInt(section.getString(PARAM_NAME_NEW_AREA_ID));
+            if (land.getArea(newAreaIdNullable) == null) {
                 secuboid.getLogger().log(Level.WARNING,
                         String.format("In approvelist.yml, \"%s\", \"%s\" refere to an invalid new area id \"%s\"",
-                                land.getName(), landUUID, newAreaIdOpt.get()));
+                                land.getName(), landUUID, newAreaIdNullable));
                 return null;
             }
         }
@@ -188,7 +188,7 @@ public final class ApprovesFlat {
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(section.getLong(PARAM_NAME_DATETIME));
 
-        return new Approve(land, action, removedAreaIdOpt, newAreaIdOpt, pc, parentOpt,
+        return new Approve(land, action, removedAreaIdNullable, newAreaIdNullable, pc, parentNullable,
                 section.getDouble(PARAM_NAME_PRICE), cal);
     }
 
@@ -210,7 +210,7 @@ public final class ApprovesFlat {
 
         final String[] ownerS = StringChanges.splitAddVoid(section.getString("Owner"), ":");
         final PlayerContainer pc = secuboid.getPlayerContainers().getOrAddPlayerContainer(
-                PlayerContainerType.getFromString(ownerS[0]), Optional.ofNullable(ownerS[1]), Optional.empty());
+                PlayerContainerType.getFromString(ownerS[0]), ownerS[1], null);
         Land parent = null;
         Area newArea = null;
 
@@ -250,10 +250,9 @@ public final class ApprovesFlat {
             land.addArea(newArea);
         }
 
-        final Optional<Integer> newAreaIdOpt = Optional
-                .of(Optional.ofNullable(newArea).map(area -> area.getKey()).orElse(0));
-        return new Approve(land, action, Optional.of(section.getInt("RemovedAreaId")), newAreaIdOpt, pc,
-                Optional.ofNullable(parent), section.getDouble("Price"), cal);
+        final Integer newAreaIdNullable = Optional.ofNullable(newArea).map(area -> area.getKey()).orElse(0);
+        return new Approve(land, action, section.getInt("RemovedAreaId"), newAreaIdNullable, pc,
+                parent, section.getDouble("Price"), cal);
     }
 
     void saveApprove(final Approve approve) {
@@ -262,15 +261,15 @@ public final class ApprovesFlat {
         final ConfigurationSection section = approveConfig.createSection(landUUID.toString());
         section.set(PARAM_NAME_LAND_NAME, land.getName());
         section.set(PARAM_NAME_ACTION, approve.getAction().name());
-        if (approve.getRemovedAreaIdOpt().isPresent()) {
-            section.set(PARAM_NAME_REMOVED_AREA_ID, approve.getRemovedAreaIdOpt().get());
+        if (approve.getRemovedAreaIdNullable() != null) {
+            section.set(PARAM_NAME_REMOVED_AREA_ID, approve.getRemovedAreaIdNullable());
         }
-        if (approve.getNewAreaIdOpt().isPresent()) {
-            section.set(PARAM_NAME_NEW_AREA_ID, approve.getNewAreaIdOpt().get());
+        if (approve.getNewAreaIdNullable() != null) {
+            section.set(PARAM_NAME_NEW_AREA_ID, approve.getNewAreaIdNullable());
         }
         section.set(PARAM_NAME_OWNER, approve.getOwner().toFileFormat());
-        if (approve.getParentOpt().isPresent()) {
-            section.set(PARAM_NAME_PARENT_UUID, approve.getParentOpt().get().getUUID().toString());
+        if (approve.getParentNullable() != null) {
+            section.set(PARAM_NAME_PARENT_UUID, approve.getParentNullable().getUUID().toString());
         }
         section.set(PARAM_NAME_PRICE, approve.getPrice());
         section.set(PARAM_NAME_DATETIME, approve.getDateTime().getTimeInMillis());

@@ -57,7 +57,7 @@ public final class PlayerConfEntry {
     /**
      * Plauer inventory cache optional.
      */
-    private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
+    private final PlayerInventoryCache playerInventoryCacheNullable;
 
     /**
      * If the player is in Admin Mod
@@ -122,15 +122,15 @@ public final class PlayerConfEntry {
     /**
      * Instantiates a new player conf entry.
      *
-     * @param secuboid                secuboid instance
-     * @param sender                  the sender
-     * @param playerInventoryCacheOpt the player inventory cache optional
+     * @param secuboid                     secuboid instance
+     * @param sender                       the sender
+     * @param playerInventoryCacheNullable the player inventory cache optional
      */
     PlayerConfEntry(final Secuboid secuboid, final CommandSender sender,
-            final Optional<PlayerInventoryCache> playerInventoryCacheOpt) {
+                    final PlayerInventoryCache playerInventoryCacheNullable) {
         this.secuboid = secuboid;
         this.sender = sender;
-        this.playerInventoryCacheOpt = playerInventoryCacheOpt;
+        this.playerInventoryCacheNullable = playerInventoryCacheNullable;
 
         if (sender instanceof Player) {
             player = (Player) sender;
@@ -185,11 +185,11 @@ public final class PlayerConfEntry {
 
     /**
      * Gets the player inventory cache optional.
-     * 
+     *
      * @return the player inventory cache optional
      */
     public Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
-        return playerInventoryCacheOpt;
+        return Optional.ofNullable(playerInventoryCacheNullable);
     }
 
     /**
@@ -332,7 +332,7 @@ public final class PlayerConfEntry {
      */
     public void setAutoCancelSelect(final boolean value) {
 
-        final Long timeTick = secuboid.getConf().getSelectAutoCancel();
+        final long timeTick = secuboid.getConf().getSelectAutoCancel();
 
         if (timeTick == 0) {
             return;

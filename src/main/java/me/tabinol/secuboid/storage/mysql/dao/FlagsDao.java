@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -62,7 +61,7 @@ public final class FlagsDao {
         }
     }
 
-    public Optional<Long> getLandFlagIdOpt(final Connection conn, final UUID landUUID, final long flagId)
+    public Long getLandFlagIdNullable(final Connection conn, final UUID landUUID, final long flagId)
             throws SQLException {
         final String sql = "SELECT `id` FROM `{{TP}}lands_flags` " //
                 + "WHERE `land_uuid`=? AND `flag_id`=?";
@@ -71,16 +70,16 @@ public final class FlagsDao {
             DbUtils.setUUID(stmt, 1, landUUID);
             stmt.setLong(2, flagId);
             try (final ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    return Optional.of(rs.getLong("id"));
+                if (rs.next()) {
+                    return rs.getLong("id");
                 }
-                return Optional.empty();
+                return null;
             }
         }
     }
 
     public void updateLandFlagIdInheritance(final Connection conn, final UUID landUUID, final long flagId,
-            boolean inheritance) throws SQLException {
+                                            final boolean inheritance) throws SQLException {
         final String sql = "UPDATE `{{TP}}lands_flags` SET `inheritance`=?" //
                 + "WHERE `land_uuid`=? AND `flag_id`=?";
 
@@ -93,12 +92,12 @@ public final class FlagsDao {
     }
 
     public long insertFlagOrUpdateGetId(final Connection conn, final UUID landUUID, final long flagId,
-            final boolean inheritance) throws SQLException {
-        final Optional<Long> idOpt = getLandFlagIdOpt(conn, landUUID, flagId);
+                                        final boolean inheritance) throws SQLException {
+        final Long idNullable = getLandFlagIdNullable(conn, landUUID, flagId);
 
-        if (idOpt.isPresent()) {
+        if (idNullable != null) {
             updateLandFlagIdInheritance(conn, landUUID, flagId, inheritance);
-            return idOpt.get();
+            return idNullable;
         }
 
         final String sql = "INSERT INTO `{{TP}}lands_flags`(" //
@@ -111,7 +110,7 @@ public final class FlagsDao {
             stmt.setLong(2, flagId);
             stmt.setBoolean(3, inheritance);
             stmt.executeUpdate();
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
+            try (final ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
                 return rs.getLong(1);
             }

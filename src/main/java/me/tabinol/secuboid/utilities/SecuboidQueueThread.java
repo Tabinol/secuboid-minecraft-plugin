@@ -53,7 +53,7 @@ public abstract class SecuboidQueueThread<T> extends Thread {
 
     /**
      * Instantiates a new Secuboid queue thread.
-     * 
+     *
      * @param secuboid   the secuboid instance
      * @param threadName the name of the thread
      */
@@ -93,7 +93,7 @@ public abstract class SecuboidQueueThread<T> extends Thread {
 
     /**
      * Execute what it should execute inside the loop.
-     * 
+     *
      * @param t the element
      * @return true if the correct class is found, false throws an exception.
      * @throws InterruptedException InterruptedException
@@ -129,13 +129,12 @@ public abstract class SecuboidQueueThread<T> extends Thread {
             join(millis);
         } catch (final InterruptedException e) {
             secuboid.getLogger().warning(String.format("Thread \"%s\" interrupted!", getName()));
-            return;
         }
     }
 
     /**
      * Gets a lock object for thread synchronization.
-     * 
+     *
      * @return a lock object
      */
     public final Object getLock() {

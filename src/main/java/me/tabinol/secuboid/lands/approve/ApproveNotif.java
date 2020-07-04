@@ -61,7 +61,7 @@ public class ApproveNotif extends SecuboidRunnable {
     @Override
     public void run() {
 
-        int lstCount;
+        final int lstCount;
 
         if ((lstCount = secuboid.getLands().getApproves().getApproveList().size()) != 0) {
 

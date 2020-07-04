@@ -19,7 +19,6 @@ package me.tabinol.secuboid.listeners;
 
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -72,7 +71,7 @@ public class ConnectionListener extends CommonListener implements Listener {
     /**
      * On async player prelogin. This method is async, do not call bukkit/Secuboid
      * direct methods here.
-     * 
+     *
      * @param event the event
      */
     @EventHandler(priority = EventPriority.NORMAL)
@@ -100,7 +99,7 @@ public class ConnectionListener extends CommonListener implements Listener {
         // Load inventories from save thread
         final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
         storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, SaveOn.BOTH,
-                Optional.of(playerInventoryCache));
+                playerInventoryCache);
 
         // Waiting for inventory load
         synchronized (lock) {
@@ -141,19 +140,16 @@ public class ConnectionListener extends CommonListener implements Listener {
         secuboid.getPlayersCache().updatePlayer(player.getUniqueId(), player.getName());
 
         // Create a new static config
-        final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
+        PlayerInventoryCache playerInventoryCacheNullable = null;
         if (secuboid.getInventoriesOpt().isPresent()) {
-            PlayerInventoryCache playerInventoryCache = playerUUIDToInventoryCachePreLoad.remove(playerUUID);
-            if (playerInventoryCache == null) {
+            playerInventoryCacheNullable = playerUUIDToInventoryCachePreLoad.remove(playerUUID);
+            if (playerInventoryCacheNullable == null) {
                 secuboid.getLogger().log(Level.SEVERE,
                         String.format("Inventory not loaded for player [uuid=%s, name=%s]", playerUUID, playerName));
-                playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
+                playerInventoryCacheNullable = new PlayerInventoryCache(playerUUID, playerName);
             }
-            playerInventoryCacheOpt = Optional.of(playerInventoryCache);
-        } else {
-            playerInventoryCacheOpt = Optional.empty();
         }
-        final PlayerConfEntry entry = playerConf.add(player, playerInventoryCacheOpt);
+        final PlayerConfEntry entry = playerConf.add(player, playerInventoryCacheNullable);
 
         updatePosInfo(event, entry, player.getLocation(), true);
 

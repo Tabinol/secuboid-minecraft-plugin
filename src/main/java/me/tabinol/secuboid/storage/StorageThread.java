@@ -61,20 +61,20 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     }
 
     public enum SaveOn {
-        BOTH, DATABASE, FLAT;
+        BOTH, DATABASE, FLAT
     }
 
     protected static final class SaveEntry {
         final SaveActionEnum saveActionEnum;
         final SaveOn saveOn;
-        final Optional<Savable> savableOpt;
+        final Savable savableNullable;
         final SavableParameter[] savableParameters;
 
-        private SaveEntry(final SaveActionEnum saveActionEnum, final SaveOn saveOn, final Optional<Savable> savableOpt,
-                final SavableParameter[] savableParameters) {
+        private SaveEntry(final SaveActionEnum saveActionEnum, final SaveOn saveOn, final Savable savableNullable,
+                          final SavableParameter[] savableParameters) {
             this.saveActionEnum = saveActionEnum;
             this.saveOn = saveOn;
-            this.savableOpt = savableOpt;
+            this.savableNullable = savableNullable;
             this.savableParameters = savableParameters;
         }
     }
@@ -132,8 +132,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         try {
             doSave(saveEntry);
         } catch (final RuntimeException e) {
-            final String savableNameNullable = saveEntry.savableOpt.map(o -> o.getName()).orElse(null);
-            final String savableUUIDNullable = saveEntry.savableOpt.map(o -> o.getUUID().toString()).orElse(null);
+            final String savableNameNullable = Optional.ofNullable(saveEntry.savableNullable).map(o -> o.getName()).orElse(null);
+            final String savableUUIDNullable = Optional.ofNullable(saveEntry.savableNullable).map(o -> o.getUUID().toString()).orElse(null);
             secuboid.getLogger().log(Level.SEVERE,
                     String.format("Unable to save or load \"%s\" for \"%s\", UUID \"%s\". Possible data loss!",
                             saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
@@ -143,7 +143,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     }
 
     private void doSave(final SaveEntry saveEntry) {
-        final Savable savableNullable = saveEntry.savableOpt.orElse(null);
+        final Savable savableNullable = saveEntry.savableNullable;
         final SavableParameter[] savableParameters = saveEntry.savableParameters;
         switch (saveEntry.saveActionEnum) {
             case APPROVE_REMOVE:
@@ -166,7 +166,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
                 storage.loadInventoriesPlayer(playerInventoryCache);
                 preLoginThreadNotify(playerInventoryCache.getUUID());
             }
-                break;
+            break;
             case INVENTORY_PLAYER_SAVE:
                 storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
                 break;
@@ -249,12 +249,12 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      *
      * @param saveActionEnum    the action type to do
      * @param saveOn            Both, database or flat file only
-     * @param savableOpt        the savable object optional
+     * @param savableNullable   the savable object optional
      * @param savableParameters An array of savable parameters
      */
     public void addSaveAction(final SaveActionEnum saveActionEnum, final SaveOn saveOn,
-            final Optional<Savable> savableOpt, final SavableParameter... savableParameters) {
-        addElement(new SaveEntry(saveActionEnum, saveOn, savableOpt, savableParameters));
+                              final Savable savableNullable, final SavableParameter... savableParameters) {
+        addElement(new SaveEntry(saveActionEnum, saveOn, savableNullable, savableParameters));
     }
 
     public void addPlayerUUIDPreLogin(final UUID uuid, final Object lock) {

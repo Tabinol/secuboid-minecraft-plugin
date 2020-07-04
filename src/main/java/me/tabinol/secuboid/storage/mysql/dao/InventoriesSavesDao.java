@@ -21,7 +21,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -35,8 +34,8 @@ public final class InventoriesSavesDao {
         this.dbConn = dbConn;
     }
 
-    public Optional<Long> getEntryIdOpt(final Connection conn, final UUID playerUUID, final long inventoryId,
-            final long gameModeId) throws SQLException {
+    public Long getEntryIdNullable(final Connection conn, final UUID playerUUID, final long inventoryId,
+                                   final long gameModeId) throws SQLException {
         final String sql = "SELECT `inventories_entries_id` FROM `{{TP}}inventories_saves` " //
                 + "WHERE `player_uuid`=? AND `inventory_id`=? AND `game_mode_id`=?";
 
@@ -46,16 +45,16 @@ public final class InventoriesSavesDao {
             stmt.setLong(3, gameModeId);
 
             try (final ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    return Optional.of(rs.getLong("inventories_entries_id"));
+                if (rs.next()) {
+                    return rs.getLong("inventories_entries_id");
                 }
-                return Optional.empty();
+                return null;
             }
         }
     }
 
     public void insertInventorySave(final Connection conn, final UUID playerUUID, final long inventoryId,
-            final long gameModeId, final long inventoryEntryId) throws SQLException {
+                                    final long gameModeId, final long inventoryEntryId) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}inventories_saves` " //
                 + "(`player_uuid`, `inventory_id`, `game_mode_id`, `inventories_entries_id`) " //
                 + "VALUES (?, ?, ?, ?)";

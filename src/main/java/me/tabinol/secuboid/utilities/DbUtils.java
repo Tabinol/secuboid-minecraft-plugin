@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,12 +37,12 @@ import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 public final class DbUtils {
 
     @FunctionalInterface
-    public static interface SqlBiConsumer<T, U> {
+    public interface SqlBiConsumer<T, U> {
         void accept(T t, U u) throws SQLException;
     }
 
     @FunctionalInterface
-    public static interface SqlFunction<T, R> {
+    public interface SqlFunction<T, R> {
         R apply(T t) throws SQLException;
     }
 
@@ -78,7 +77,7 @@ public final class DbUtils {
         final long high = uuid.getMostSignificantBits();
         final long low = uuid.getLeastSignificantBits();
 
-        final byte[] bytes = new byte[] { //
+        final byte[] bytes = new byte[]{ //
                 (byte) (high >> 8), //
                 (byte) high, //
                 (byte) (high >> 24), //
@@ -108,7 +107,7 @@ public final class DbUtils {
             return null;
         }
 
-        final Long high = ((long) bytes[4] << 56) //
+        final long high = ((long) bytes[4] << 56) //
                 | ((long) bytes[5] & 0xff) << 48 //
                 | ((long) bytes[6] & 0xff) << 40 //
                 | ((long) bytes[7] & 0xff) << 32 //
@@ -117,7 +116,7 @@ public final class DbUtils {
                 | ((long) bytes[0] & 0xff) << 8 //
                 | ((long) bytes[1] & 0xff);
 
-        final Long low = ((long) bytes[8] << 56) //
+        final long low = ((long) bytes[8] << 56) //
                 | ((long) bytes[9] & 0xff) << 48 //
                 | ((long) bytes[10] & 0xff) << 40 //
                 | ((long) bytes[11] & 0xff) << 32 //
@@ -154,7 +153,7 @@ public final class DbUtils {
     }
 
     public static void setItemStacks(final PreparedStatement stmt, final int parameterIndex,
-            final ItemStack[] itemStacks) throws SQLException {
+                                     final ItemStack[] itemStacks) throws SQLException {
         final YamlConfiguration itemStackYaml = new YamlConfiguration();
         for (int t = 0; t < itemStacks.length; t++) {
             itemStackYaml.set(Integer.toString(t), itemStacks[t]);
@@ -185,25 +184,25 @@ public final class DbUtils {
         return itemStacks;
     }
 
-    public static <U> void setOpt(final PreparedStatement stmt, final int parameterIndex, final Optional<U> uOpt,
-            final SqlBiConsumer<Integer, U> consumer) throws SQLException {
-        if (uOpt.isPresent()) {
-            consumer.accept(parameterIndex, uOpt.get());
+    public static <U> void setNullable(final PreparedStatement stmt, final int parameterIndex, final U uNullable,
+                                       final SqlBiConsumer<Integer, U> consumer) throws SQLException {
+        if (uNullable != null) {
+            consumer.accept(parameterIndex, uNullable);
         } else {
             stmt.setNull(parameterIndex, Types.NULL);
         }
     }
 
-    public static <R> Optional<R> getOpt(final ResultSet rs, final String columnLabel,
-            final SqlFunction<String, R> function) throws SQLException {
+    public static <R> R getNullable(final ResultSet rs, final String columnLabel,
+                                    final SqlFunction<String, R> function) throws SQLException {
         final R r = function.apply(columnLabel);
         if (rs.wasNull()) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(r);
+        return r;
     }
 
-    public static <V> String isNullOrEquals(Optional<V> valueOpt) {
-        return valueOpt.map(v -> "=?").orElse(" IS NULL");
+    public static <V> String isNullOrEquals(final V valueNullable) {
+        return valueNullable != null ? "=?" : " IS NULL";
     }
 }

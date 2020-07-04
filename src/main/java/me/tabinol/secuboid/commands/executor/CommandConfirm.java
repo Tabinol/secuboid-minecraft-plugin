@@ -44,7 +44,7 @@ public final class CommandConfirm extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandConfirm(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-            final ArgList argList) throws SecuboidCommandException {
+                          final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -52,7 +52,7 @@ public final class CommandConfirm extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        ConfirmEntry confirmEntry;
+        final ConfirmEntry confirmEntry;
 
         if ((confirmEntry = playerConf.getConfirm()) != null) {
             if (confirmEntry.confirmType != null) {
@@ -95,7 +95,7 @@ public final class CommandConfirm extends CommandExec {
 
     private void removeLand(final ConfirmEntry confirmEntry) throws SecuboidCommandException {
         final int i = confirmEntry.land.getAreas().size();
-        final LandAction landAction = confirmEntry.landActionOpt.get();
+        final LandAction landAction = confirmEntry.landActionNullable;
         try {
             switch (landAction) {
                 case LAND_REMOVE:

@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -55,27 +54,27 @@ public final class LandsDao {
                     final UUID uuid = DbUtils.getUUID(rs, "uuid");
                     final String name = rs.getString("name");
                     final boolean approved = rs.getBoolean("approved");
-                    final Optional<Long> typeIdOpt = DbUtils.getOpt(rs, "type_id", rs::getLong);
+                    final Long typeIdNullable = DbUtils.getNullable(rs, "type_id", rs::getLong);
                     final long ownerId = rs.getLong("owner_id");
-                    final Optional<UUID> parentUUIDOpt = DbUtils.getOpt(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
+                    final UUID parentUUIDNullable = DbUtils.getNullable(rs, "parent_uuid", c -> DbUtils.getUUID(rs, c));
                     final short priority = rs.getShort("priority");
                     final double money = rs.getDouble("money");
                     final boolean forSale = rs.getBoolean("for_sale");
-                    final Optional<String> forSaleSignLocationOpt = DbUtils.getOpt(rs, "for_sale_sign_location",
+                    final String forSaleSignLocationNullable = DbUtils.getNullable(rs, "for_sale_sign_location",
                             rs::getString);
-                    final Optional<Double> salePriceOpt = DbUtils.getOpt(rs, "sale_price", rs::getDouble);
+                    final Double salePriceNullable = DbUtils.getNullable(rs, "sale_price", rs::getDouble);
                     final boolean forRent = rs.getBoolean("for_rent");
-                    final Optional<String> forRentSignLocationOpt = DbUtils.getOpt(rs, "for_rent_sign_location",
+                    final String forRentSignLocationNullable = DbUtils.getNullable(rs, "for_rent_sign_location",
                             rs::getString);
-                    final Optional<Double> rentPriceOpt = DbUtils.getOpt(rs, "rent_price", rs::getDouble);
-                    final Optional<Integer> rentRenewOpt = DbUtils.getOpt(rs, "rent_renew", rs::getInt);
-                    final Optional<Boolean> rentAutoRenewOpt = DbUtils.getOpt(rs, "rent_auto_renew", rs::getBoolean);
-                    final Optional<UUID> tenantUUIDOpt = DbUtils.getOpt(rs, "tenant_uuid", c -> DbUtils.getUUID(rs, c));
-                    final Optional<Long> lastPaymentMillisOpt = DbUtils.getOpt(rs, "last_payment_millis", rs::getLong);
+                    final Double rentPriceNullable = DbUtils.getNullable(rs, "rent_price", rs::getDouble);
+                    final Integer rentRenewNullable = DbUtils.getNullable(rs, "rent_renew", rs::getInt);
+                    final Boolean rentAutoRenewNullable = DbUtils.getNullable(rs, "rent_auto_renew", rs::getBoolean);
+                    final UUID tenantUUIDNullable = DbUtils.getNullable(rs, "tenant_uuid", c -> DbUtils.getUUID(rs, c));
+                    final Long lastPaymentMillisNullable = DbUtils.getNullable(rs, "last_payment_millis", rs::getLong);
 
-                    results.add(new LandPojo(uuid, name, approved, typeIdOpt, ownerId, parentUUIDOpt, priority, money,
-                            forSale, forSaleSignLocationOpt, salePriceOpt, forRent, forRentSignLocationOpt,
-                            rentPriceOpt, rentRenewOpt, rentAutoRenewOpt, tenantUUIDOpt, lastPaymentMillisOpt));
+                    results.add(new LandPojo(uuid, name, approved, typeIdNullable, ownerId, parentUUIDNullable, priority, money,
+                            forSale, forSaleSignLocationNullable, salePriceNullable, forRent, forRentSignLocationNullable,
+                            rentPriceNullable, rentRenewNullable, rentAutoRenewNullable, tenantUUIDNullable, lastPaymentMillisNullable));
                 }
                 return results;
             }
@@ -99,39 +98,39 @@ public final class LandsDao {
             DbUtils.setUUID(stmt, 1, landPojo.getUUID());
             stmt.setString(2, landPojo.getName());
             stmt.setBoolean(3, landPojo.isApproved());
-            DbUtils.setOpt(stmt, 4, landPojo.getTypeIdOpt(), (i, u) -> stmt.setLong(i, u));
+            DbUtils.setNullable(stmt, 4, landPojo.getTypeIdNullable(), stmt::setLong);
             stmt.setLong(5, landPojo.getOwnerId());
-            DbUtils.setOpt(stmt, 6, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 6, landPojo.getParentUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setShort(7, landPojo.getPriority());
             stmt.setDouble(8, landPojo.getMoney());
             stmt.setBoolean(9, landPojo.isForSale());
-            DbUtils.setOpt(stmt, 10, landPojo.getForSaleSignLocationOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 11, landPojo.getSalePriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setNullable(stmt, 10, landPojo.getForSaleSignLocationNullable(), stmt::setString);
+            DbUtils.setNullable(stmt, 11, landPojo.getSalePriceNullable(), stmt::setDouble);
             stmt.setBoolean(12, landPojo.isForRent());
-            DbUtils.setOpt(stmt, 13, landPojo.getForRentSignLocationOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 14, landPojo.getRentPriceOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 15, landPojo.getRentRenewOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 16, landPojo.getRentAutoRenewOpt(), (i, u) -> stmt.setBoolean(i, u));
-            DbUtils.setOpt(stmt, 17, landPojo.getTenantUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
-            DbUtils.setOpt(stmt, 18, landPojo.getLastPaymentMillisOpt(), (i, u) -> stmt.setLong(i, u));
+            DbUtils.setNullable(stmt, 13, landPojo.getForRentSignLocationNullable(), stmt::setString);
+            DbUtils.setNullable(stmt, 14, landPojo.getRentPriceNullable(), stmt::setDouble);
+            DbUtils.setNullable(stmt, 15, landPojo.getRentRenewNullable(), stmt::setInt);
+            DbUtils.setNullable(stmt, 16, landPojo.getRentAutoRenewNullable(), stmt::setBoolean);
+            DbUtils.setNullable(stmt, 17, landPojo.getTenantUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 18, landPojo.getLastPaymentMillisNullable(), stmt::setLong);
 
             stmt.setString(19, landPojo.getName());
             stmt.setBoolean(20, landPojo.isApproved());
-            DbUtils.setOpt(stmt, 21, landPojo.getTypeIdOpt(), (i, u) -> stmt.setLong(i, u));
+            DbUtils.setNullable(stmt, 21, landPojo.getTypeIdNullable(), stmt::setLong);
             stmt.setLong(22, landPojo.getOwnerId());
-            DbUtils.setOpt(stmt, 23, landPojo.getParentUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 23, landPojo.getParentUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
             stmt.setShort(24, landPojo.getPriority());
             stmt.setDouble(25, landPojo.getMoney());
             stmt.setBoolean(26, landPojo.isForSale());
-            DbUtils.setOpt(stmt, 27, landPojo.getForSaleSignLocationOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 28, landPojo.getSalePriceOpt(), (i, u) -> stmt.setDouble(i, u));
+            DbUtils.setNullable(stmt, 27, landPojo.getForSaleSignLocationNullable(), stmt::setString);
+            DbUtils.setNullable(stmt, 28, landPojo.getSalePriceNullable(), stmt::setDouble);
             stmt.setBoolean(29, landPojo.isForRent());
-            DbUtils.setOpt(stmt, 30, landPojo.getForRentSignLocationOpt(), (i, u) -> stmt.setString(i, u));
-            DbUtils.setOpt(stmt, 31, landPojo.getRentPriceOpt(), (i, u) -> stmt.setDouble(i, u));
-            DbUtils.setOpt(stmt, 32, landPojo.getRentRenewOpt(), (i, u) -> stmt.setInt(i, u));
-            DbUtils.setOpt(stmt, 33, landPojo.getRentAutoRenewOpt(), (i, u) -> stmt.setBoolean(i, u));
-            DbUtils.setOpt(stmt, 34, landPojo.getTenantUUIDOpt(), (i, u) -> DbUtils.setUUID(stmt, i, u));
-            DbUtils.setOpt(stmt, 35, landPojo.getLastPaymentMillisOpt(), (i, u) -> stmt.setLong(i, u));
+            DbUtils.setNullable(stmt, 30, landPojo.getForRentSignLocationNullable(), stmt::setString);
+            DbUtils.setNullable(stmt, 31, landPojo.getRentPriceNullable(), stmt::setDouble);
+            DbUtils.setNullable(stmt, 32, landPojo.getRentRenewNullable(), stmt::setInt);
+            DbUtils.setNullable(stmt, 33, landPojo.getRentAutoRenewNullable(), stmt::setBoolean);
+            DbUtils.setNullable(stmt, 34, landPojo.getTenantUUIDNullable(), (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 35, landPojo.getLastPaymentMillisNullable(), stmt::setLong);
 
             stmt.executeUpdate();
         }

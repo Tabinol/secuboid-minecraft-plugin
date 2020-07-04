@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +57,7 @@ public final class WorldConfig {
     private static final String KEY_VALUE = "value";
     private static final String KEY_INHERITABLE = "inheritable";
 
-    private static final String[] OLD_KEYS = new String[] { "_Global_", "ContainerPermissions", "ContainerFlags" };
+    private static final String[] OLD_KEYS = new String[]{"_Global_", "ContainerPermissions", "ContainerFlags"};
 
     /**
      * The global permissions and flags.
@@ -147,7 +146,6 @@ public final class WorldConfig {
             loadDataYml(inputStream, fileType);
         } catch (final FileNotFoundException e) {
             log.log(Level.SEVERE, String.format("Unable to load %s!", fileName), e);
-            return;
         }
     }
 
@@ -203,7 +201,7 @@ public final class WorldConfig {
 
     @SuppressWarnings("unchecked")
     private void loadFlagPerm(final FileType fileType, final ParameterType parameterType, final String rootKey,
-            final List<Object> objects) {
+                              final List<Object> objects) {
         if (objects == null || objects.isEmpty()) {
             // Do not load anything if empty
             return;
@@ -219,7 +217,7 @@ public final class WorldConfig {
     }
 
     private void loadFlagPermFromKey(final FileType fileType, final ParameterType parameterType, final String rootKey,
-            final Map<String, Object> keyToValue) {
+                                     final Map<String, Object> keyToValue) {
         // Load flags/perms list
         final FlagPermValues flagPermValues = loadFlagPermValues(fileType, rootKey, keyToValue, parameterType);
 
@@ -244,7 +242,7 @@ public final class WorldConfig {
     }
 
     private FlagPermValues loadFlagPermValues(final FileType fileType, final String rootKey,
-            final Map<String, Object> keyToValue, final ParameterType parameterType) {
+                                              final Map<String, Object> keyToValue, final ParameterType parameterType) {
         final FlagPermValues flagPermValues = new FlagPermValues();
 
         for (final Map.Entry<String, Object> entry : keyToValue.entrySet()) {
@@ -256,7 +254,7 @@ public final class WorldConfig {
     }
 
     private void loadFlagPermValue(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final ParameterType parameterType, final String keyName, final Object valueObj) {
+                                   final ParameterType parameterType, final String keyName, final Object valueObj) {
         final String fileName = fileType.fileName;
         switch (keyName.toLowerCase()) {
             case KEY_PLAYER_CONTAINERS:
@@ -289,12 +287,12 @@ public final class WorldConfig {
 
             default:
                 log.log(Level.SEVERE, () -> String.format("In file %s, invalid key: \"%s: %s\" for root key \"%s\"",
-                        fileName, keyName, Objects.toString(valueObj), rootKey));
+                        fileName, keyName, valueObj, rootKey));
         }
     }
 
     private void casePlayerContainers(final FlagPermValues flagPermValues, final FileType fileType,
-            final String rootKey, final ParameterType parameterType, final String keyName, final Object valueObj) {
+                                      final String rootKey, final ParameterType parameterType, final String keyName, final Object valueObj) {
         if (parameterType == ParameterType.PERMISSIONS) {
             flagPermValues.playerContainersNullable = loadStringList(valueObj);
         } else {
@@ -303,7 +301,7 @@ public final class WorldConfig {
     }
 
     private void casePermissions(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final ParameterType parameterType, final String keyName, final Object valueObj) {
+                                 final ParameterType parameterType, final String keyName, final Object valueObj) {
         if (parameterType == ParameterType.PERMISSIONS) {
             flagPermValues.permissionsNullable = loadStringList(valueObj);
         } else {
@@ -312,7 +310,7 @@ public final class WorldConfig {
     }
 
     private void caseFlags(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final ParameterType parameterType, final String keyName, final Object valueObj) {
+                           final ParameterType parameterType, final String keyName, final Object valueObj) {
         if (parameterType == ParameterType.FLAGS) {
             flagPermValues.flagsNullable = loadStringList(valueObj);
         } else {
@@ -321,7 +319,7 @@ public final class WorldConfig {
     }
 
     private void caseWorlds(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final String keyName, final Object valueObj) {
+                            final String keyName, final Object valueObj) {
         if (fileType == FileType.WORLD_CONFIG) {
             flagPermValues.worldsNullable = loadStringList(valueObj);
         } else {
@@ -330,7 +328,7 @@ public final class WorldConfig {
     }
 
     private void caseTypes(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final String keyName, final Object valueObj) {
+                           final String keyName, final Object valueObj) {
         if (fileType == FileType.LAND_DEFAULT) {
             flagPermValues.typesNullable = loadStringList(valueObj);
         } else {
@@ -339,8 +337,8 @@ public final class WorldConfig {
     }
 
     private void caseValue(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final ParameterType parameterType, final String keyName, final Object valueObj) {
-        flagPermValues.valueNullable = getBoolean(valueObj).orElse(null);
+                           final ParameterType parameterType, final String keyName, final Object valueObj) {
+        flagPermValues.valueNullable = getBooleanNullable(valueObj);
         if (flagPermValues.valueNullable != null) {
             return;
         }
@@ -348,13 +346,13 @@ public final class WorldConfig {
             log.log(Level.SEVERE,
                     () -> String.format(
                             "In file %s, the permission value must be true or false: \"%s: %s\" for root key \"%s\"",
-                            fileType.fileName, keyName, Objects.toString(valueObj), rootKey));
+                            fileType.fileName, keyName, valueObj, rootKey));
         }
-        flagPermValues.valueNullable = getDouble(valueObj).orElse(null);
+        flagPermValues.valueNullable = getDoubleNullable(valueObj);
         if (flagPermValues.valueNullable != null) {
             return;
         }
-        flagPermValues.valueNullable = getStringArray(valueObj).orElse(null);
+        flagPermValues.valueNullable = getStringArrayNullable(valueObj);
         if (flagPermValues.valueNullable != null) {
             return;
         }
@@ -362,12 +360,12 @@ public final class WorldConfig {
     }
 
     private void caseInheritable(final FlagPermValues flagPermValues, final FileType fileType, final String rootKey,
-            final String keyName, final Object valueObj) {
-        flagPermValues.inheritableOpt = getBoolean(valueObj);
-        if (!flagPermValues.inheritableOpt.isPresent()) {
+                                 final String keyName, final Object valueObj) {
+        flagPermValues.inheritableNullable = getBooleanNullable(valueObj);
+        if (flagPermValues.inheritableNullable == null) {
             log.log(Level.SEVERE,
                     () -> String.format("In file %s, inheritable must be true or false: \"%s: %s\" for root key \"%s\"",
-                            fileType.fileName, keyName, Objects.toString(valueObj), rootKey));
+                            fileType.fileName, keyName, valueObj, rootKey));
         }
     }
 
@@ -384,39 +382,39 @@ public final class WorldConfig {
         return Collections.singletonList(Objects.toString(stringListObj));
     }
 
-    private Optional<Boolean> getBoolean(final Object valueObj) {
+    private Boolean getBooleanNullable(final Object valueObj) {
         if (valueObj instanceof Boolean) {
-            return Optional.of((Boolean) valueObj);
+            return (Boolean) valueObj;
         }
         final String valueStr = Objects.toString(valueObj);
         if (valueStr != null) {
             if (valueStr.matches("^(?i)(true|yes)$")) {
-                return Optional.of(Boolean.TRUE);
+                return Boolean.TRUE;
             }
             if (valueStr.matches("^(?i)(false|no)$")) {
-                return Optional.of(Boolean.FALSE);
+                return Boolean.FALSE;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<String[]> getStringArray(final Object valueObj) {
+    private String[] getStringArrayNullable(final Object valueObj) {
         if (valueObj instanceof List) {
-            return Optional.of(((List<String>) valueObj).toArray(new String[0]));
+            return ((List<String>) valueObj).toArray(new String[0]);
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<Double> getDouble(final Object valueObj) {
+    private Double getDoubleNullable(final Object valueObj) {
         try {
-            return Optional.of(Double.parseDouble(Objects.toString(valueObj)));
+            return Double.parseDouble(Objects.toString(valueObj));
         } catch (final NumberFormatException e) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    private final void loadPermissions(final FileType fileType, final FlagPermValues flagPermValues) {
+    private void loadPermissions(final FileType fileType, final FlagPermValues flagPermValues) {
         for (final String playerContainerName : flagPermValues.playerContainersNullable) {
             for (final String permissionName : flagPermValues.permissionsNullable) {
                 try {
@@ -428,11 +426,11 @@ public final class WorldConfig {
         }
     }
 
-    private final void loadPermission(final FileType fileType, final FlagPermValues flagPermValues,
-            final String playerContainerName, final String permissionName) throws WorldConfigException {
+    private void loadPermission(final FileType fileType, final FlagPermValues flagPermValues,
+                                final String playerContainerName, final String permissionName) throws WorldConfigException {
         final Map.Entry<PlayerContainer, Permission> playerContainerToPermission = createPcPermissionNullable(
                 fileType.fileName, playerContainerName, permissionName, (boolean) flagPermValues.valueNullable,
-                flagPermValues.inheritableOpt.orElse(Boolean.TRUE));
+                flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : Boolean.TRUE);
         final PlayerContainer playerContainer = playerContainerToPermission.getKey();
         final Permission permission = playerContainerToPermission.getValue();
         if (fileType == FileType.LAND_DEFAULT) {
@@ -443,7 +441,7 @@ public final class WorldConfig {
     }
 
     private void loadPermissionLandDefault(final FlagPermValues flagPermValues, final PlayerContainer playerContainer,
-            final Permission permission) {
+                                           final Permission permission) {
         if (flagPermValues.typesNullable == null || flagPermValues.typesNullable.isEmpty()) {
             defaultPermissionsFlags.addPermission(playerContainer, permission);
         } else {
@@ -457,7 +455,7 @@ public final class WorldConfig {
     }
 
     private void loadPermissionWorldConfig(final FlagPermValues flagPermValues, final PlayerContainer playerContainer,
-            final Permission permission) {
+                                           final Permission permission) {
         if (flagPermValues.worldsNullable == null || flagPermValues.worldsNullable.isEmpty()) {
             globalPermissionsFlags.addPermission(playerContainer, permission);
         } else {
@@ -471,8 +469,8 @@ public final class WorldConfig {
     }
 
     private Map.Entry<PlayerContainer, Permission> createPcPermissionNullable(final String fileName,
-            final String playerContainerName, final String permissionName, final boolean value,
-            final boolean inheritable) throws WorldConfigException {
+                                                                              final String playerContainerName, final String permissionName, final boolean value,
+                                                                              final boolean inheritable) throws WorldConfigException {
         final PlayerContainer playerContainer = secuboid.getPlayerContainers()
                 .getPlayerContainerFromFileFormat(playerContainerName);
         if (playerContainer == null) {
@@ -484,11 +482,11 @@ public final class WorldConfig {
         return new AbstractMap.SimpleImmutableEntry<>(playerContainer, permission);
     }
 
-    private final void loadFlags(final FileType fileType, final FlagPermValues flagPermValues) {
+    private void loadFlags(final FileType fileType, final FlagPermValues flagPermValues) {
         for (final String flagName : flagPermValues.flagsNullable) {
             try {
                 final Flag flag = createFlagNullable(fileType.fileName, flagName, flagPermValues.valueNullable,
-                        flagPermValues.inheritableOpt.orElse(Boolean.TRUE));
+                        flagPermValues.inheritableNullable != null ? flagPermValues.inheritableNullable : Boolean.TRUE);
                 if (flag == null) {
                     throw new WorldConfigException(
                             String.format("In file %s, unable to load flag \"%s\" with value \"%s\"", fileType.fileName,
@@ -532,7 +530,7 @@ public final class WorldConfig {
     }
 
     private Flag createFlagNullable(final String fileName, final String flagName, final Object value,
-            final boolean inheritable) throws WorldConfigException {
+                                    final boolean inheritable) throws WorldConfigException {
         FlagType flagType = secuboid.getPermissionsFlags().getFlagType(flagName);
         if (flagType != null) {
             if (!flagType.getDefaultValue().getValue().getClass().isInstance(value)) {
@@ -546,7 +544,7 @@ public final class WorldConfig {
     }
 
     private enum ParameterType {
-        PERMISSIONS, FLAGS;
+        PERMISSIONS, FLAGS
     }
 
     enum FileType {
@@ -554,7 +552,7 @@ public final class WorldConfig {
 
         final String fileName;
 
-        private FileType(final String fileName) {
+        FileType(final String fileName) {
             this.fileName = fileName;
         }
     }
@@ -566,7 +564,7 @@ public final class WorldConfig {
         List<String> worldsNullable = null;
         List<String> typesNullable = null;
         Object valueNullable = null;
-        Optional<Boolean> inheritableOpt = Optional.empty();
+        Boolean inheritableNullable = null;
 
         boolean verifyForFlags() {
             return flagsNullable != null && !flagsNullable.isEmpty() && valueNullable != null;
@@ -574,18 +572,12 @@ public final class WorldConfig {
         }
 
         boolean verifyForPermissions() {
-            if (permissionsNullable == null || playerContainersNullable == null || valueNullable == null) {
-                return false;
-            }
-            return true;
+            return permissionsNullable != null && playerContainersNullable != null && valueNullable != null;
         }
 
         boolean verifyForPermissionsNotEmpty() {
-            if (permissionsNullable.isEmpty() || playerContainersNullable.isEmpty()
-                    || !(valueNullable instanceof Boolean)) {
-                return false;
-            }
-            return true;
+            return !permissionsNullable.isEmpty() && !playerContainersNullable.isEmpty()
+                    && valueNullable instanceof Boolean;
         }
     }
 

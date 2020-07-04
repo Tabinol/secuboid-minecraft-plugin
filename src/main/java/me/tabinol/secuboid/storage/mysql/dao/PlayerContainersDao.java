@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -49,45 +48,45 @@ public final class PlayerContainersDao {
                 while (rs.next()) {
                     final long id = rs.getLong("id");
                     final long playerContainerTypeId = rs.getLong("player_container_type_id");
-                    final Optional<UUID> playerUUIDOpt = DbUtils.getOpt(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
-                    final Optional<String> parameterOpt = DbUtils.getOpt(rs, "parameter", rs::getString);
+                    final UUID playerUUIDNullable = DbUtils.getNullable(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
+                    final String parameterNullable = DbUtils.getNullable(rs, "parameter", rs::getString);
 
-                    results.put(id, new PlayerContainerPojo(id, playerContainerTypeId, playerUUIDOpt, parameterOpt));
+                    results.put(id, new PlayerContainerPojo(id, playerContainerTypeId, playerUUIDNullable, parameterNullable));
                 }
                 return results;
             }
         }
     }
 
-    public Optional<Long> getIdOpt(final Connection conn, final long playerContainerTypeId,
-            final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
+    public Long getIdNullable(final Connection conn, final long playerContainerTypeId,
+                              final UUID playerUUIDNullable, final String parameterNullable) throws SQLException {
         final String sql = String.format("SELECT `id` FROM `{{TP}}player_containers` " //
-                + "WHERE `player_container_type_id`=? AND `player_uuid`%s AND `parameter`%s",
-                DbUtils.isNullOrEquals(playerUUIDOpt), DbUtils.isNullOrEquals(parameterOpt));
+                        + "WHERE `player_container_type_id`=? AND `player_uuid`%s AND `parameter`%s",
+                DbUtils.isNullOrEquals(playerUUIDNullable), DbUtils.isNullOrEquals(parameterNullable));
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             int parameterIndex = 1;
             stmt.setLong(parameterIndex++, playerContainerTypeId);
-            if (playerUUIDOpt.isPresent()) {
-                DbUtils.setOpt(stmt, parameterIndex++, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
+            if (playerUUIDNullable != null) {
+                DbUtils.setNullable(stmt, parameterIndex++, playerUUIDNullable, (i, u) -> DbUtils.setUUID(stmt, i, u));
             }
-            if (parameterOpt.isPresent()) {
-                DbUtils.setOpt(stmt, parameterIndex++, parameterOpt, (i, u) -> stmt.setString(i, u));
+            if (parameterNullable != null) {
+                DbUtils.setNullable(stmt, parameterIndex, parameterNullable, stmt::setString);
             }
             try (final ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    return Optional.of(rs.getLong("id"));
+                if (rs.next()) {
+                    return rs.getLong("id");
                 }
-                return Optional.empty();
+                return null;
             }
         }
     }
 
     public long insertOrGetPlayerContainer(final Connection conn, final long playerContainerTypeId,
-            final Optional<UUID> playerUUIDOpt, final Optional<String> parameterOpt) throws SQLException {
-        final Optional<Long> idOpt = getIdOpt(conn, playerContainerTypeId, playerUUIDOpt, parameterOpt);
-        if (idOpt.isPresent()) {
-            return idOpt.get();
+                                           final UUID playerUUIDNullable, final String parameterNullable) throws SQLException {
+        final Long idNullable = getIdNullable(conn, playerContainerTypeId, playerUUIDNullable, parameterNullable);
+        if (idNullable != null) {
+            return idNullable;
         }
 
         final String sql = "INSERT INTO `{{TP}}player_containers` " //
@@ -96,10 +95,10 @@ public final class PlayerContainersDao {
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, playerContainerTypeId);
-            DbUtils.setOpt(stmt, 2, playerUUIDOpt, (i, u) -> DbUtils.setUUID(stmt, i, u));
-            DbUtils.setOpt(stmt, 3, parameterOpt, (i, u) -> stmt.setString(i, u));
+            DbUtils.setNullable(stmt, 2, playerUUIDNullable, (i, u) -> DbUtils.setUUID(stmt, i, u));
+            DbUtils.setNullable(stmt, 3, parameterNullable, stmt::setString);
             stmt.executeUpdate();
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
+            try (final ResultSet rs = stmt.getGeneratedKeys()) {
                 rs.next();
                 return rs.getLong(1);
             }

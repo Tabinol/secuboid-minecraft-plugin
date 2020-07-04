@@ -18,7 +18,6 @@
 package me.tabinol.secuboid.commands.executor;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -41,8 +40,8 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
  */
 @InfoCommand(name = "area", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "add", "list", "remove", "replace" }), //
-                @CompletionMap(regex = "^(remove|replace)$", completions = { "@areaLand" }) //
+                @CompletionMap(regex = "^$", completions = {"add", "list", "remove", "replace"}), //
+                @CompletionMap(regex = "^(remove|replace)$", completions = {"@areaLand"}) //
         })
 public final class CommandArea extends CommandCollisionsThreadExec {
 
@@ -58,14 +57,14 @@ public final class CommandArea extends CommandCollisionsThreadExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandArea(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-            final ArgList argList) throws SecuboidCommandException {
+                       final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see me.tabinol.secuboid.commands.executor.CommandInterface#commandExecute()
      */
     @Override
@@ -179,7 +178,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             }
 
             playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, landSelectNullable, removeId,
-                    Optional.of(LandAction.AREA_REMOVE)));
+                    LandAction.AREA_REMOVE));
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
 
         } else if (fonction.equalsIgnoreCase("replace")) {

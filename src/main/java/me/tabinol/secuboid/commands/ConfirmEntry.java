@@ -17,8 +17,6 @@
  */
 package me.tabinol.secuboid.commands;
 
-import java.util.Optional;
-
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
@@ -43,7 +41,7 @@ public final class ConfirmEntry {
         /**
          * The land default.
          */
-        LAND_DEFAULT;
+        LAND_DEFAULT
     }
 
     /**
@@ -64,22 +62,22 @@ public final class ConfirmEntry {
     /**
      * The land action optional.
      */
-    public final Optional<LandAction> landActionOpt;
+    public final LandAction landActionNullable;
 
     /**
      * Instantiates a new confirm entry.
      *
-     * @param confirmType   the confirm type
-     * @param land          the land
-     * @param areaNb        the area nb
-     * @param landActionOpt the land action optional
+     * @param confirmType        the confirm type
+     * @param land               the land
+     * @param areaNb             the area nb
+     * @param landActionNullable the land action optional
      */
     public ConfirmEntry(final ConfirmType confirmType, final Land land, final int areaNb,
-            final Optional<LandAction> landActionOpt) {
+                        final LandAction landActionNullable) {
 
         this.confirmType = confirmType;
         this.land = land;
         this.areaNb = areaNb;
-        this.landActionOpt = landActionOpt;
+        this.landActionNullable = landActionNullable;
     }
 }

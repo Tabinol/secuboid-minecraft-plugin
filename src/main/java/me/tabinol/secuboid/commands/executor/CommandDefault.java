@@ -17,8 +17,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.util.Optional;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -44,7 +42,7 @@ public final class CommandDefault extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandDefault(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-            final ArgList argList) throws SecuboidCommandException {
+                          final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -56,7 +54,7 @@ public final class CommandDefault extends CommandExec {
         checkPermission(true, true, null, null);
 
         playerConf.setConfirm(
-                new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, landSelectNullable, 0, Optional.empty()));
+                new ConfirmEntry(ConfirmEntry.ConfirmType.LAND_DEFAULT, landSelectNullable, 0, null));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

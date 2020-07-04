@@ -17,17 +17,17 @@
  */
 package me.tabinol.secuboid.inventories;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import me.tabinol.secuboid.storage.Savable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The class for inventory entries.
@@ -39,7 +39,7 @@ public class PlayerInvEntry implements Savable {
     public final static int INVENTORY_LIST_SIZE = 41;
     public final static int ENDER_CHEST_SIZE = 27;
 
-    private final Optional<PlayerInventoryCache> playerInventoryCacheOpt;
+    private final PlayerInventoryCache playerInventoryCacheNullable;
     private final InventorySpec inventorySpec;
     private final boolean isCreativeInv;
     private final ItemStack[] slotItems;
@@ -50,9 +50,9 @@ public class PlayerInvEntry implements Savable {
     private int foodLevel;
     private final List<PotionEffect> potionEffects;
 
-    public PlayerInvEntry(final Optional<PlayerInventoryCache> playerInventoryCacheOpt,
-            final InventorySpec inventorySpec, final boolean isCreativeInv) {
-        this.playerInventoryCacheOpt = playerInventoryCacheOpt;
+    public PlayerInvEntry(final PlayerInventoryCache playerInventoryCacheNullable,
+                          final InventorySpec inventorySpec, final boolean isCreativeInv) {
+        this.playerInventoryCacheNullable = playerInventoryCacheNullable;
         this.inventorySpec = inventorySpec;
         this.isCreativeInv = isCreativeInv;
 
@@ -75,12 +75,12 @@ public class PlayerInvEntry implements Savable {
         Arrays.fill(itemStacks, null);
     }
 
-    Optional<PlayerInventoryCache> getPlayerInventoryCacheOpt() {
-        return playerInventoryCacheOpt;
+    PlayerInventoryCache getPlayerInventoryCacheNullable() {
+        return playerInventoryCacheNullable;
     }
 
-    public Optional<UUID> getPlayerUUIDOpt() {
-        return playerInventoryCacheOpt.map(PlayerInventoryCache::getUUID);
+    public UUID getPlayerUUIDNullable() {
+        return playerInventoryCacheNullable != null ? playerInventoryCacheNullable.getUUID() : null;
     }
 
     public InventorySpec getInventorySpec() {
@@ -133,7 +133,7 @@ public class PlayerInvEntry implements Savable {
 
     public PlayerInvEntry setHealth(final double health) {
         // #50 Fix health greater than 20
-        this.health = health <= MAX_HEALTH ? health : MAX_HEALTH;
+        this.health = Math.min(health, MAX_HEALTH);
         return this;
     }
 
@@ -162,11 +162,11 @@ public class PlayerInvEntry implements Savable {
     @Override
     public String getName() {
         return String.format("[invName=%s, isCreativeInv=%s, playerUUID=%s]", inventorySpec.getInventoryName(),
-                isCreativeInv, getPlayerUUIDOpt().orElse(null));
+                isCreativeInv, getPlayerUUIDNullable());
     }
 
     @Override
     public UUID getUUID() {
-        return getPlayerUUIDOpt().orElse(null);
+        return getPlayerUUIDNullable();
     }
 }

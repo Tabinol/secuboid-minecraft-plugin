@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -107,7 +106,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
 
     /**
      * Load players cache (Internal).
-     * 
+     *
      * @param playerCacheEntries the player cache entries
      */
     public void loadPlayerscache(final List<PlayerCacheEntry> playerCacheEntries) {
@@ -128,7 +127,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
 
     /**
      * Gets all player names in cache.
-     * 
+     *
      * @return a set of player names
      */
     public Set<String> getPlayerNames() {
@@ -137,7 +136,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
 
     /**
      * Gets the player cache entries.
-     * 
+     *
      * @return an unmodifiable collection
      */
     public Collection<PlayerCacheEntry> getPlayerCacheEntries() {
@@ -251,7 +250,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
 
             // Request save
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.PLAYERS_CACHE_SAVE, SaveOn.BOTH,
-                    Optional.of(entry));
+                    entry);
         }
     }
 

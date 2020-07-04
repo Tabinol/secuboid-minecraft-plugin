@@ -2,7 +2,6 @@ package me.tabinol.secuboid.storage;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -56,10 +55,10 @@ public final class FlatToMySql {
         // the parent UUID before the parent is added.
         final LandsFlat landsFlat = new LandsFlat(secuboid);
         final Map<Land, UUID> orphanToParentUUID = landsFlat.loadLandsOrphanToParentUUID();
-        waitforSave();
+        waitForSave();
 
         landsFlat.findLandParents(orphanToParentUUID);
-        waitforSave();
+        waitForSave();
 
         moveToBackup(landsFile, NAME_LANDS);
         log.info("Lands conversion done.");
@@ -76,7 +75,7 @@ public final class FlatToMySql {
 
         final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
         approvesFlat.loadApproves();
-        waitforSave();
+        waitForSave();
 
         moveToBackup(approvesFile, NAME_APPROVE_LIST);
         log.info("Approves conversion done.");
@@ -93,7 +92,7 @@ public final class FlatToMySql {
 
         final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
         playersCacheFlat.loadPlayersCache();
-        waitforSave();
+        waitForSave();
 
         moveToBackup(playersCacheFile, NAME_PLAYERS_CACHE);
         log.info("Players cache conversion done.");
@@ -117,7 +116,7 @@ public final class FlatToMySql {
                     playerCacheEntry.getName());
             inventoriesFlat.loadInventoriesPlayer(playerInventoryCache);
         }
-        waitforSave();
+        waitForSave();
 
         moveToBackup(inventoriesFile, NAME_INVENTORIES);
         log.info("Inventories conversion done.");
@@ -131,10 +130,10 @@ public final class FlatToMySql {
         fileToMove.renameTo(new File(backupFile, fileName));
     }
 
-    private void waitforSave() {
+    private void waitForSave() {
         // Send the wake up signal at the end of the queue
         final StorageThread storageThread = secuboid.getStorageThread();
-        storageThread.addSaveAction(SaveActionEnum.THREAD_NOTIFY, SaveOn.DATABASE, Optional.empty());
+        storageThread.addSaveAction(SaveActionEnum.THREAD_NOTIFY, SaveOn.DATABASE, null);
 
         // Wait!
         final Object lock = storageThread.getLock();

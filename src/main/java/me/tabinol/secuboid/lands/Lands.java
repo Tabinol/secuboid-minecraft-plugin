@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -66,7 +65,7 @@ public final class Lands {
     /**
      * Area list put in an area for finding lands.
      */
-    private class AreaMap {
+    private static class AreaMap {
         TreeMap<String, TreeSet<AreaIndex>> worldToAreaIndex;
     }
 
@@ -198,7 +197,7 @@ public final class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public Land createLand(final String landName, final PlayerContainer owner, final Area area, final Land parent,
-            final double price, final Type type) throws SecuboidLandException {
+                           final double price, final Type type) throws SecuboidLandException {
         getPriceFromPlayer(area.getWorldName(), owner, price);
         return createLand(landName, true, owner, area, parent, 1, null, type);
     }
@@ -218,7 +217,7 @@ public final class Lands {
      * @throws SecuboidLandException the secuboid land exception
      */
     public Land createLand(final String landName, final boolean isApproved, final PlayerContainer owner,
-            final Area area, final Land parent, final int areaId, final UUID uuid, final Type type)
+                           final Area area, final Land parent, final int areaId, final UUID uuid, final Type type)
             throws SecuboidLandException {
 
         final String landNameLower = landName.toLowerCase();
@@ -316,7 +315,7 @@ public final class Lands {
         if (land.getParent() != null) {
             land.getParent().removeChild(land.getUUID());
         }
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, SaveOn.BOTH, Optional.of(land));
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, SaveOn.BOTH, land);
 
         return true;
     }
@@ -694,7 +693,7 @@ public final class Lands {
 
     /**
      * Set a parent to a map of lands.
-     * 
+     *
      * @param orphanToParentUUID the orphan land to parent UUID
      */
     public void setParents(final Map<Land, UUID> orphanToParentUUID) {

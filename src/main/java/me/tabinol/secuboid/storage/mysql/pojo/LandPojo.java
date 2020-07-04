@@ -17,7 +17,6 @@
  */
 package me.tabinol.secuboid.storage.mysql.pojo;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -28,46 +27,46 @@ public final class LandPojo {
     private final UUID uuid;
     private final String name;
     private final boolean approved;
-    private final Optional<Long> typeIdOpt;
+    private final Long typeIdNullable;
     private final long ownerId;
-    private final Optional<UUID> parentUUIDOpt;
+    private final UUID parentUUIDNullable;
     private final short priority;
     private final double money;
     private final boolean forSale;
-    private final Optional<String> forSaleSignLocationOpt;
-    private final Optional<Double> salePriceOpt;
+    private final String forSaleSignLocationNullable;
+    private final Double salePriceNullable;
     private final boolean forRent;
-    private final Optional<String> forRentSignLocationOpt;
-    private final Optional<Double> rentPriceOpt;
-    private final Optional<Integer> rentRenewOpt;
-    private final Optional<Boolean> rentAutoRenewOpt;
-    private final Optional<UUID> tenantUUIDOpt;
-    private final Optional<Long> lastPaymentMillisOpt;
+    private final String forRentSignLocationNullable;
+    private final Double rentPriceNullable;
+    private final Integer rentRenewNullable;
+    private final Boolean rentAutoRenewNullable;
+    private final UUID tenantUUIDNullable;
+    private final Long lastPaymentMillisNullable;
 
-    public LandPojo(final UUID uuid, final String name, final boolean approved, final Optional<Long> typeIdOpt,
-            final long ownerId, final Optional<UUID> parentUUIDOpt, final short priority, final double money,
-            final boolean forSale, final Optional<String> forSaleSignLocationOpt, final Optional<Double> salePriceOpt,
-            final boolean forRent, final Optional<String> forRentSignLocationOpt, final Optional<Double> rentPriceOpt,
-            final Optional<Integer> rentRenewOpt, final Optional<Boolean> rentAutoRenewOpt,
-            final Optional<UUID> tenantUUIDOpt, final Optional<Long> lastPaymentMillisOpt) {
+    public LandPojo(final UUID uuid, final String name, final boolean approved, final Long typeIdNullable,
+                    final long ownerId, final UUID parentUUIDNullable, final short priority, final double money,
+                    final boolean forSale, final String forSaleSignLocationNullable, final Double salePriceNullable,
+                    final boolean forRent, final String forRentSignLocationNullable, final Double rentPriceNullable,
+                    final Integer rentRenewNullable, final Boolean rentAutoRenewNullable,
+                    final UUID tenantUUIDNullable, final Long lastPaymentMillisNullable) {
         this.uuid = uuid;
         this.name = name;
         this.approved = approved;
-        this.typeIdOpt = typeIdOpt;
+        this.typeIdNullable = typeIdNullable;
         this.ownerId = ownerId;
-        this.parentUUIDOpt = parentUUIDOpt;
+        this.parentUUIDNullable = parentUUIDNullable;
         this.priority = priority;
         this.money = money;
         this.forSale = forSale;
-        this.forSaleSignLocationOpt = forSaleSignLocationOpt;
-        this.salePriceOpt = salePriceOpt;
+        this.forSaleSignLocationNullable = forSaleSignLocationNullable;
+        this.salePriceNullable = salePriceNullable;
         this.forRent = forRent;
-        this.forRentSignLocationOpt = forRentSignLocationOpt;
-        this.rentPriceOpt = rentPriceOpt;
-        this.rentRenewOpt = rentRenewOpt;
-        this.rentAutoRenewOpt = rentAutoRenewOpt;
-        this.tenantUUIDOpt = tenantUUIDOpt;
-        this.lastPaymentMillisOpt = lastPaymentMillisOpt;
+        this.forRentSignLocationNullable = forRentSignLocationNullable;
+        this.rentPriceNullable = rentPriceNullable;
+        this.rentRenewNullable = rentRenewNullable;
+        this.rentAutoRenewNullable = rentAutoRenewNullable;
+        this.tenantUUIDNullable = tenantUUIDNullable;
+        this.lastPaymentMillisNullable = lastPaymentMillisNullable;
     }
 
     public UUID getUUID() {
@@ -86,16 +85,16 @@ public final class LandPojo {
         return this.approved;
     }
 
-    public Optional<Long> getTypeIdOpt() {
-        return this.typeIdOpt;
+    public Long getTypeIdNullable() {
+        return this.typeIdNullable;
     }
 
     public long getOwnerId() {
         return this.ownerId;
     }
 
-    public Optional<UUID> getParentUUIDOpt() {
-        return this.parentUUIDOpt;
+    public UUID getParentUUIDNullable() {
+        return this.parentUUIDNullable;
     }
 
     public short getPriority() {
@@ -114,12 +113,12 @@ public final class LandPojo {
         return this.forSale;
     }
 
-    public Optional<String> getForSaleSignLocationOpt() {
-        return this.forSaleSignLocationOpt;
+    public String getForSaleSignLocationNullable() {
+        return this.forSaleSignLocationNullable;
     }
 
-    public Optional<Double> getSalePriceOpt() {
-        return this.salePriceOpt;
+    public Double getSalePriceNullable() {
+        return this.salePriceNullable;
     }
 
     public boolean getForRent() {
@@ -130,27 +129,27 @@ public final class LandPojo {
         return this.forRent;
     }
 
-    public Optional<String> getForRentSignLocationOpt() {
-        return this.forRentSignLocationOpt;
+    public String getForRentSignLocationNullable() {
+        return this.forRentSignLocationNullable;
     }
 
-    public Optional<Double> getRentPriceOpt() {
-        return this.rentPriceOpt;
+    public Double getRentPriceNullable() {
+        return this.rentPriceNullable;
     }
 
-    public Optional<Integer> getRentRenewOpt() {
-        return this.rentRenewOpt;
+    public Integer getRentRenewNullable() {
+        return this.rentRenewNullable;
     }
 
-    public Optional<Boolean> getRentAutoRenewOpt() {
-        return this.rentAutoRenewOpt;
+    public Boolean getRentAutoRenewNullable() {
+        return this.rentAutoRenewNullable;
     }
 
-    public Optional<UUID> getTenantUUIDOpt() {
-        return this.tenantUUIDOpt;
+    public UUID getTenantUUIDNullable() {
+        return this.tenantUUIDNullable;
     }
 
-    public Optional<Long> getLastPaymentMillisOpt() {
-        return this.lastPaymentMillisOpt;
+    public Long getLastPaymentMillisNullable() {
+        return this.lastPaymentMillisNullable;
     }
 }

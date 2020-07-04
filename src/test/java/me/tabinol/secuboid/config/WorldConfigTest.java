@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -151,7 +150,7 @@ public final class WorldConfigTest {
         final InputStream inputStream = new ByteArrayInputStream(yml.getBytes());
         worldConfig.loadDataYml(inputStream, FileType.LAND_DEFAULT);
 
-        assertTrue(flagValueStringArrayCheck("EXCLUDE_COMMANDS", new String[] { "a", "b", "c", "d" }));
+        assertTrue(flagValueStringArrayCheck("EXCLUDE_COMMANDS", new String[]{"a", "b", "c", "d"}));
     }
 
     @Test
@@ -234,11 +233,11 @@ public final class WorldConfigTest {
         worldConfig.loadDataYml(inputStream, FileType.LAND_DEFAULT);
 
         assertTrue(permissionValueCheck(playerContainers.getOrAddPlayerContainer(PlayerContainerType.GROUP,
-                Optional.of("new"), Optional.empty()), "BUILD", false));
+                "new", null), "BUILD", false));
         assertTrue(permissionValueCheck(playerContainers.getPlayerContainer(PlayerContainerType.EVERYBODY), "BUILD",
                 false));
         assertTrue(permissionValueCheck(playerContainers.getOrAddPlayerContainer(PlayerContainerType.GROUP,
-                Optional.of("new"), Optional.empty()), "OPEN", false));
+                "new", null), "OPEN", false));
         assertTrue(permissionValueCheck(playerContainers.getPlayerContainer(PlayerContainerType.EVERYBODY), "OPEN",
                 false));
     }

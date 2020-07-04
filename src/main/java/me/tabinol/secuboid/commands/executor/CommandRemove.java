@@ -17,8 +17,6 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
-import java.util.Optional;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -36,7 +34,7 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
  */
 @InfoCommand(name = "remove", //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "force", "recursive" }) //
+                @CompletionMap(regex = "^$", completions = {"force", "recursive"}) //
         })
 public final class CommandRemove extends CommandCollisionsThreadExec {
 
@@ -50,7 +48,7 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandRemove(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-            final ArgList argList) throws SecuboidCommandException {
+                         final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -88,7 +86,7 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
 
         new CommandCancel(secuboid, null, sender, argList).commandExecute();
         playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, landSelectNullable, 0,
-                Optional.of(collisions.getAction())));
+                collisions.getAction()));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
 }

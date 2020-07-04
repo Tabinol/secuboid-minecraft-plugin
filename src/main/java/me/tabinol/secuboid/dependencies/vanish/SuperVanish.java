@@ -62,15 +62,15 @@ public class SuperVanish implements Vanish {
             return true;
         }
 
-        // Someting is wrong!
+        // Something is wrong!
         if (vanishAPIClass == null) {
             return false;
         }
 
         try {
-            return ((Boolean) vanishAPIClass.getDeclaredMethod(IS_INVISIBLE_STATIC_METHOD, Player.class).invoke(null,
-                    player)).booleanValue();
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+            return (Boolean) vanishAPIClass.getMethod(IS_INVISIBLE_STATIC_METHOD, Player.class).invoke(null,
+                    player);
+        } catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException e) {
             secuboid.getLogger().log(Level.SEVERE,
                     "Method not found: Is it an incompatible SuperVanish version? [" + IS_INVISIBLE_STATIC_METHOD + "]",

@@ -66,7 +66,7 @@ public final class EssentialsCommon {
     public boolean isSocialSpyEnabled(final Player player) {
         try {
             final Object user = getUser(player);
-            return ((Boolean) userClass.getDeclaredMethod(IS_SOCIAL_SPY_ENABLED_METHOD).invoke(user)).booleanValue();
+            return ((Boolean) userClass.getMethod(IS_SOCIAL_SPY_ENABLED_METHOD).invoke(user)).booleanValue();
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | NullPointerException e) {
             secuboid.getLogger().log(Level.SEVERE, "Method not found: Is it an incompatible Essentials version? ["
@@ -78,7 +78,7 @@ public final class EssentialsCommon {
     public boolean isMuted(final Player player) {
         try {
             final Object user = getUser(player);
-            return ((Boolean) userClass.getDeclaredMethod(IS_MUTED_METHOD).invoke(user)).booleanValue();
+            return ((Boolean) userClass.getMethod(IS_MUTED_METHOD).invoke(user)).booleanValue();
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | NullPointerException e) {
             secuboid.getLogger().log(Level.SEVERE,
@@ -90,7 +90,7 @@ public final class EssentialsCommon {
     public boolean isVanished(final Player player) {
         try {
             final Object user = getUser(player);
-            return ((Boolean) userClass.getDeclaredMethod(IS_VANISHED_METHOD).invoke(user)).booleanValue();
+            return ((Boolean) userClass.getMethod(IS_VANISHED_METHOD).invoke(user)).booleanValue();
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
                 | SecurityException | NullPointerException e) {
             secuboid.getLogger().log(Level.SEVERE,
@@ -101,7 +101,7 @@ public final class EssentialsCommon {
 
     private Object getUser(final Player player) throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, NoSuchMethodException, SecurityException {
-        return essentialsAPIClass.getDeclaredMethod(GET_USER_METHOD, Player.class).invoke(essentialsPlugin, player);
+        return essentialsAPIClass.getMethod(GET_USER_METHOD, Player.class).invoke(essentialsPlugin, player);
     }
 
 }

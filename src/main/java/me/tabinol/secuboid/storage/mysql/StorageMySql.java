@@ -183,7 +183,7 @@ public final class StorageMySql implements Storage {
         final boolean newDatabase;
         try {
             newDatabase = initDatabase();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (final ClassNotFoundException | SQLException e) {
             throw new SecuboidRuntimeException(
                     "Unable to create or access the database. Is the database up and running, user and password created and added in Secuboid configuration?",
                     e);
@@ -358,7 +358,7 @@ public final class StorageMySql implements Storage {
             }
 
             // Update land table
-            final Optional<UUID> parentUUIDOpt = Optional.ofNullable(land.getParent()).map(l -> l.getUUID());
+            final Optional<UUID> parentUUIDOpt = Optional.ofNullable(land.getParent()).map(Land::getUUID);
             final LandPojo landPojo = new LandPojo(land.getUUID(), land.getName(), land.isApproved(), typeIdOpt,
                     ownerId, parentUUIDOpt, land.getPriority(), land.getMoney(), isForSale, forSaleSignLocationOpt,
                     salePriceOpt, isForRent, forRentSignLocationOpt, rentPriceOpt, rentRenewOpt, rentAutoRenewOpt,
@@ -747,6 +747,7 @@ public final class StorageMySql implements Storage {
             if (inventoryEntryIdOpt.isPresent()) {
                 inventoriesDefaultsDao.delete(conn, inventoryId);
                 final long inventoryEntryId = inventoryEntryIdOpt.get();
+                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId);
                 inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId);
             }
         } catch (final SQLException e) {
@@ -954,7 +955,7 @@ public final class StorageMySql implements Storage {
         }
         // Create permissions
         for (final PermissionPojo permissionPojo : permissionPojos) {
-            TreeMap<PermissionType, Permission> permPlayer;
+            final TreeMap<PermissionType, Permission> permPlayer;
             final PlayerContainer pc = getPlayerContainer(idToPlayerContainerPojo, idToPlayerContainerType,
                     permissionPojo.getPlayerContainerId());
             final String permissionTypeStr = idToPermissionType.get(permissionPojo.getPermissionId());
@@ -993,8 +994,7 @@ public final class StorageMySql implements Storage {
         }
         // Players Notify
         for (final UUID playerUUID : playerNotifyUUIDs) {
-            pNotifs.add(
-                    (PlayerContainerPlayer) secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(playerUUID));
+            pNotifs.add(secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(playerUUID));
         }
         // Economy
         boolean forSale = landPojo.isForSale();
@@ -1068,15 +1068,14 @@ public final class StorageMySql implements Storage {
             land.setForRent(landPojo.getRentPriceOpt().orElse(0d), landPojo.getRentRenewOpt().orElse(7),
                     landPojo.getRentAutoRenewOpt().orElse(false), forRentSignLocNullable);
             landPojo.getTenantUUIDOpt().ifPresent(tenantUUID -> {
-                final PlayerContainerPlayer tenant = (PlayerContainerPlayer) secuboid.getPlayerContainers()
-                        .getOrAddPlayerContainerPlayer(tenantUUID);
+                final PlayerContainerPlayer tenant = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(tenantUUID);
                 land.setRented(tenant);
-                land.setLastPaymentTime(landPojo.getLastPaymentMillisOpt().orElse(0l));
+                land.setLastPaymentTime(landPojo.getLastPaymentMillisOpt().orElse(0L));
 
             });
         }
 
-        return new AbstractMap.SimpleEntry<Land, Optional<UUID>>(land, landPojo.getParentUUIDOpt());
+        return new AbstractMap.SimpleEntry<>(land, landPojo.getParentUUIDOpt());
     }
 
     private PlayerInvEntry loadInventoryFromPojo(final InventoryEntryPojo inventoryEntryPojo,
@@ -1134,7 +1133,9 @@ public final class StorageMySql implements Storage {
                     inventoryId, gameModeId, 9);
             inventoriesDeathsDao.deleteNinth(conn, playerUUID, inventoryId, gameModeId);
             if (inventoryEntryId9Opt.isPresent()) {
-                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9Opt.get());
+                final long inventoryEntryId9 = inventoryEntryId9Opt.get();
+                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId9);
+                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9);
             }
             for (int t = 8; t >= 1; t--) {
                 inventoriesDeathsDao.incrementDeathNumber(conn, playerUUID, inventoryId, gameModeId, t);
@@ -1208,10 +1209,6 @@ public final class StorageMySql implements Storage {
             updateInvEntryIdConsumer.accept(inventoryEntryId);
         }
 
-        // PotionsEffects
-        if (inventoryEntryIdOpt.isPresent()) {
-            inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryIdOpt.get());
-        }
         if (!enderChestOnly) {
             final List<PotionEffect> activePotionEffects = playerInvEntry.getPotionEffects();
             for (final PotionEffect effect : activePotionEffects) {
@@ -1258,8 +1255,8 @@ public final class StorageMySql implements Storage {
         return isCreative ? "CREATIVE" : "SURVIVAL";
     }
 
-    private void addUserInDatabaseIfNeeded(Connection conn, UUID playerUUID) throws SQLException {
-        Optional<String> playerNameOpt = playersDao.getValueOpt(conn, playerUUID);
+    private void addUserInDatabaseIfNeeded(final Connection conn, final UUID playerUUID) throws SQLException {
+        final Optional<String> playerNameOpt = playersDao.getValueOpt(conn, playerUUID);
         if (!playerNameOpt.isPresent()) {
             log.warning("Player " + playerUUID + " is not present in players cache. Adding the UUID as player name.");
             playersDao.insert(conn, playerUUID, playerUUID.toString());

@@ -203,7 +203,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
         }
 
         if (areaSelect == null || !areaSelect.isApproved()) {
-            throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.NOLAND");
+            throw new SecuboidCommandException(secuboid, "CommandSelect", player, "COMMAND.SELECT.OUTSIDELAND");
         }
 
         if (playerConf.getSelection().getArea() == null) {
@@ -342,7 +342,7 @@ public final class CommandSelect extends CommandCollisionsThreadExec {
             // Land create
             final LandCheckValues landCheckValues = landCheckForCreate(areaSelection);
             checkCollision(area.getWorldName(), null, null, landCheckValues.localType, Collisions.LandAction.LAND_ADD,
-                    0, area, landCheckValues.realLocalParent, landCheckValues.localOwner, true);
+                    0, area, landCheckValues.realLocalParent, landCheckValues.localOwner, false);
         }
     }
 

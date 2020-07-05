@@ -18,6 +18,7 @@
 package me.tabinol.secuboid.lands;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import me.tabinol.secuboid.lands.areas.CuboidArea;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -281,6 +283,9 @@ public final class Land implements Savable, Approvable {
             area.setApproved();
             activateArea(area);
         }
+
+        // If database, save also approved land
+        doSave(SaveActionEnum.LAND_SAVE, SaveOn.DATABASE);
     }
 
     public void setApproved(final double price) {
@@ -347,6 +352,7 @@ public final class Land implements Savable, Approvable {
 
         area.setLand(this);
         areas.put(key, area);
+        area.setKey(key);
         activateArea(area);
     }
 
@@ -396,7 +402,7 @@ public final class Land implements Savable, Approvable {
             final Approve approve = approves.getApprove(name);
             if (approve != null && approve.getRemovedAreaIdNullable() != null) {
                 final Integer removedAreaIdNullable = approve.getRemovedAreaIdNullable();
-                if (removedAreaIdNullable != null && removedAreaIdNullable.intValue() == area.getKey().intValue()) {
+                if (removedAreaIdNullable != null && removedAreaIdNullable == key) {
                     approves.removeApprove(approve, false);
                 }
             }
@@ -452,6 +458,7 @@ public final class Land implements Savable, Approvable {
             secuboid.getLands().removeAreaFromList(area);
             newArea.setLand(this);
             areas.put(key, newArea);
+            newArea.setKey(key);
             newArea.setApproved();
             secuboid.getLands().addAreaToList(newArea);
             doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.DATABASE, area);
@@ -492,6 +499,10 @@ public final class Land implements Savable, Approvable {
         setAutoSave(false);
         removeArea(newArea);
         setAutoSave(true);
+        // Fix thread problem make a temporary area with the same key
+        final Area tempArea = new CuboidArea(false, "Dummy", 0, 0, 0, 0, 0 , 0);
+        tempArea.setKey(newArea.getKey());
+        doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.DATABASE, tempArea);
         return replaceArea(key, newArea, price);
     }
 
@@ -536,7 +547,7 @@ public final class Land implements Savable, Approvable {
      * @return the ids and areas
      */
     public Map<Integer, Area> getIdsAndAreas() {
-        return areas;
+        return Collections.unmodifiableMap(areas);
     }
 
     /**

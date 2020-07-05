@@ -320,6 +320,11 @@ public final class RoadArea implements Area {
     }
 
     @Override
+    public void setKey(final int key) {
+        areaCommon.setKey(key);
+    }
+
+    @Override
     public Integer getKey() {
         return areaCommon.getKey();
     }

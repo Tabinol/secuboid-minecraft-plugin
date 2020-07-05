@@ -216,6 +216,7 @@ COMMAND:
     HINT: "Type % '/secuboid select done' % % to confirm your choice."
     ALREADY: "You are already in Select Mode."
     NOLAND: "This land doesn't Exist."
+    OUTSIDELAND: "Selection outside the land. '/secuboid cancel' if you want to select an other land"
     LAND:
       NOCOLLISION: "Your selection has no collision."
       COLLISION: "Your selection has a collision with an another Land."

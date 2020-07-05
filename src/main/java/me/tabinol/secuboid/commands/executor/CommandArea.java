@@ -143,6 +143,11 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             checkSelections(true, null);
             final StringBuilder stList = new StringBuilder();
             for (final Map.Entry<Integer, Area> entry : landSelectNullable.getIdsAndAreas().entrySet()) {
+                if (entry.getValue().isApproved()) {
+                    stList.append(ChatColor.GREEN);
+                } else {
+                    stList.append(ChatColor.RED);
+                }
                 stList.append("ID: ").append(entry.getKey()).append(", ").append(entry.getValue().getPrint())
                         .append(Config.NEWLINE);
             }

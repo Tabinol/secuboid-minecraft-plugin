@@ -138,6 +138,13 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     AreaType getAreaType();
 
     /**
+     * Sets the key. Do not change this value!
+     *
+     * @param key the land key
+     */
+    void setKey(int key);
+
+    /**
      * Gets the key from the land.
      *
      * @return the key

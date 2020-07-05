@@ -51,6 +51,11 @@ final class AreaCommon {
     private Land land = null;
 
     /**
+     * The area land key. We need to store it also in AreaCommon because when it is removed from the land, the key disappears.
+     */
+    private Integer key = null;
+
+    /**
      * Instantiates a new area.
      *
      * @param area       the area
@@ -64,7 +69,7 @@ final class AreaCommon {
      * @param z2         the z2
      */
     AreaCommon(final Area area, final boolean isApproved, final String worldName, final int x1, final int y1,
-            final int z1, final int x2, final int y2, final int z2) {
+               final int z1, final int x2, final int y2, final int z2) {
 
         this.area = area;
         this.worldName = worldName;
@@ -77,17 +82,21 @@ final class AreaCommon {
     }
 
     /**
+     * Sets the key.
+     *
+     * @param key the land key
+     */
+    void setKey(int key) {
+        this.key = key;
+    }
+
+    /**
      * Gets the key.
      *
      * @return the key
      */
     Integer getKey() {
-
-        if (land != null) {
-            return land.getAreaKey(area);
-        }
-
-        return null;
+        return key;
     }
 
     /**

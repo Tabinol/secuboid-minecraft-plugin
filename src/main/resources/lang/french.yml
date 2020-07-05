@@ -216,6 +216,7 @@ COMMAND:
     HINT: "Tapez % '/secuboid select done' % % pour confirmer ton choix."
     ALREADY: "Tu es déjà en mode sélection."
     NOLAND: "Ce terrain n'existe pas."
+    OUTSIDELAND: "Sélection en dehors du terrain. '/secuboid cancel' si tu veux sélectionner un autre terrain."
     LAND:
       NOCOLLISION: "Ta sélection n'a pas de collision."
       COLLISION: "Ta sélection a une collision avec un autre terrain."

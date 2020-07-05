@@ -159,6 +159,9 @@ public class Approves {
         final Land land = approve.getLand();
 
         if (action != null) {
+            // Remove approve before to prevent a foreign key constraint fails
+            removeApprove(approve, false);
+
             switch (action) {
                 case AREA_ADD:
                     land.approveArea(approve.getNewAreaIdNullable(), approve.getPrice());
@@ -182,7 +185,6 @@ public class Approves {
                 default:
                     break;
             }
-            removeApprove(approve, false);
         }
     }
 }

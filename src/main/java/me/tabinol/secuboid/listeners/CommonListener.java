@@ -71,13 +71,13 @@ abstract class CommonListener {
     /**
      * Check permission.
      *
-     * @param landSelectNullable the land
-     * @param player             the player
-     * @param pt                 the pt
+     * @param landPermissionsFlags the land permissions flags
+     * @param player               the player
+     * @param pt                   the pt
      * @return true, if successful
      */
     final boolean checkPermission(final LandPermissionsFlags landPermissionsFlags, final Player player,
-            final PermissionType pt) {
+                                  final PermissionType pt) {
         return landPermissionsFlags.checkPermissionAndInherit(player, pt) == pt.getDefaultValue();
     }
 
@@ -98,15 +98,12 @@ abstract class CommonListener {
      * @return the source player
      */
     final Player getSourcePlayer(final Entity entity) {
-
-        Projectile damagerProjectile;
-
         // Check if the damager is a player
         if (entity instanceof Player) {
             return (Player) entity;
         } else if (entity instanceof Projectile && entity.getType() != EntityType.EGG
                 && entity.getType() != EntityType.SNOWBALL) {
-            damagerProjectile = (Projectile) entity;
+            final Projectile damagerProjectile = (Projectile) entity;
             if (damagerProjectile.getShooter() instanceof Player) {
                 return (Player) damagerProjectile.getShooter();
             }
@@ -130,8 +127,8 @@ abstract class CommonListener {
     /**
      * Check if the block to destroy is attached to an eco sign
      *
-     * @param block      the block
-     * @param ecoSignLoc the eco sign location
+     * @param block          the block
+     * @param ecoSignLandLoc the eco sign land location
      * @return true if the sign is attached
      */
     private boolean hasEcoSign(final Block block, final LandLocation ecoSignLandLoc) {
@@ -158,17 +155,16 @@ abstract class CommonListener {
     /**
      * Gets the spawn point for a land and transform it to location
      *
-     * @param landSelectNullable the land
+     * @param landPermissionsFlags the land permissions flags
      * @return the location
      */
     final Location getLandSpawnPoint(final LandPermissionsFlags landPermissionsFlags) {
-        String strLoc;
-        LandLocation landLoc;
-        Location loc;
-
         // Check for land spawn
         final Land landNullable = landPermissionsFlags.getLandNullable();
         if (landNullable != null) {
+            final String strLoc;
+            final LandLocation landLoc;
+            final Location loc;
             if (!(strLoc = landNullable.getPermissionsFlags().getFlagAndInherit(FlagList.SPAWN.getFlagType())
                     .getValueString()).isEmpty() && (landLoc = LandLocation.fromFileFormat(strLoc)) != null
                     && (loc = landLoc.toLocation()) != null) {
@@ -199,19 +195,19 @@ abstract class CommonListener {
     /**
      * Update pos info.
      *
-     * @param event     the events
-     * @param entry     the entry
-     * @param loc       the loc
-     * @param newPlayer the new player
+     * @param eventNullable the events
+     * @param entry         the entry
+     * @param loc           the loc
+     * @param newPlayer     the new player
      */
-    protected void updatePosInfo(final Event event, final PlayerConfEntry entry, final Location loc,
-            final boolean newPlayer) {
+    protected void updatePosInfo(final Event eventNullable, final PlayerConfEntry entry, final Location loc,
+                                 final boolean newPlayer) {
 
         final LandPermissionsFlags landPermissionsFlags;
         final LandPermissionsFlags oldPermissionsFlags;
         final Player player = entry.getPlayer();
-        PlayerLandChangeEvent landEvent;
-        Boolean isTp;
+        final PlayerLandChangeEvent landEvent;
+
 
         landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
 
@@ -221,7 +217,7 @@ abstract class CommonListener {
             oldPermissionsFlags = entry.getLastLandPermissionsFlags();
         }
         if (newPlayer || landPermissionsFlags != oldPermissionsFlags) {
-            isTp = event instanceof PlayerTeleportEvent;
+            final boolean isTp = eventNullable instanceof PlayerTeleportEvent;
             // First parameter : If it is a new player, it is null, if not new
             // player, it is "old"
             landEvent = new PlayerLandChangeEvent(newPlayer ? null : oldPermissionsFlags, landPermissionsFlags, player,
@@ -230,7 +226,7 @@ abstract class CommonListener {
 
             if (landEvent.isCancelled()) {
                 if (isTp) {
-                    ((PlayerTeleportEvent) event).setCancelled(true);
+                    ((PlayerTeleportEvent) eventNullable).setCancelled(true);
                     return;
                 }
                 if (landPermissionsFlags == oldPermissionsFlags) {

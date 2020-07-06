@@ -18,8 +18,12 @@
 package me.tabinol.secuboid;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
 
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.tabinol.secuboid.commands.CommandListener;
@@ -63,231 +67,230 @@ public final class Secuboid extends JavaPlugin {
     private static final int ECO_SCHEDULE_INTERVAL = 20 * 60 * 5;
 
     /**
-     * The maven app properties.
-     */
-    private MavenAppProperties mavenAppProperties;
-
-    /**
      * the player containers.
      */
-    private PlayerContainers playerContainers;
+    private final PlayerContainers playerContainers;
 
     /**
      * The types.
      */
-    private Types types;
+    private final Types types;
 
     /**
      * The lands.
      */
-    private Lands lands;
+    private final Lands lands;
 
     /**
      * The world config.
      */
-    private WorldConfig worldConfig;
+    private final WorldConfig worldConfig;
 
     /**
-     * The approve list.
+     * The inventories cache.
      */
-    private Approves approves;
-
-    /**
-     * The inventories cache. Optional if inventories are enabled
-     */
-    private Inventories inventoriesNullable;
+    private final Inventories inventories;
 
     /**
      * The parameters.
      */
-    private PermissionsFlags permissionsFlags;
+    private final PermissionsFlags permissionsFlags;
 
     /**
      * The player conf.
      */
-    private PlayerConfig playerConf;
+    private final PlayerConfig playerConf;
 
     /**
      * The Command listener.
      */
-    private CommandListener commandListener;
-
-    /**
-     * The inventory listener
-     */
-    private InventoryListener inventoryListener = null;
-
-    /**
-     * The inventory listener
-     */
-    private FlyCreativeListener flyCreativeListener = null;
+    private final CommandListener commandListener;
 
     /**
      * The approve notif.
      */
-    private ApproveNotif approveNotif;
+    private final ApproveNotif approveNotif;
 
-    private Storage storage;
+    private final EcoScheduler ecoScheduler;
+
+    /**
+     * The Lands manager thread
+     */
+    private final CollisionsManagerThread collisionsManagerThread;
+
+    /**
+     * The conf.
+     */
+    private final Config conf;
+
+    /**
+     * The language.
+     */
+    private final Lang language;
+
+    /**
+     * The depend plugin.
+     */
+    private final DependPlugin dependPlugin;
+
+    /**
+     * The player money (optional).
+     */
+    private final PlayerMoney playerMoney;
+
+    /**
+     * The players cache.
+     */
+    private final PlayersCache playersCache;
+
+    /**
+     * The connection listener.
+     */
+    private ConnectionListener connectionListener = null;
 
     /**
      * The storage thread.
      */
     private StorageThread storageThread = null;
 
-    /**
-     * The Lands manager thread
-     */
-    private CollisionsManagerThread collisionsManagerThread = null;
+    private boolean isInventoriesEnabled = false;
+    private boolean isEconomy = false;
 
-    /**
-     * The conf.
-     */
-    private Config conf;
+    public Secuboid() {
+        // Load properties first
+        new MavenAppProperties().loadProperties();
 
-    /**
-     * The language.
-     */
-    private Lang language;
-
-    /**
-     * The depend plugin.
-     */
-    private DependPlugin dependPlugin;
-
-    /**
-     * The player money (optional).
-     */
-    private PlayerMoney playerMoneyNullable;
-
-    /**
-     * The players cache.
-     */
-    private PlayersCache playersCache;
-
-    @Override
-    public void onEnable() {
-        mavenAppProperties = new MavenAppProperties();
-        mavenAppProperties.loadProperties();
-        // Static access to «this» Secuboid
         permissionsFlags = new PermissionsFlags(); // Must be before the configuration!
         types = new Types();
         conf = new Config(this);
         playerContainers = new PlayerContainers(this);
 
-        // For inventory config
-        if (conf.isMultipleInventories()) {
-            final InventoryConfig inventoryConfig = new InventoryConfig(this);
-            final Inventories inventories = new Inventories(this, inventoryConfig);
-            inventories.reloadConfig();
-            inventoriesNullable = inventories;
-        } else {
-            inventoriesNullable = null;
-        }
+        // Inventories
+        final InventoryConfig inventoryConfig = new InventoryConfig(this);
+        inventories = new Inventories(this, inventoryConfig);
 
         dependPlugin = new DependPlugin(this);
-        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoneyNullable = new PlayerMoney(dependPlugin.getVaultEconomy());
-        } else {
-            playerMoneyNullable = null;
-        }
+        playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
         playerConf = new PlayerConfig(this);
-        playerConf.addConsoleSender();
         language = new Lang(this);
         playersCache = new PlayersCache(this);
-        playersCache.start();
-        storage = Storage.getStorageFromConfig(this, getConf().getStorage());
-        storageThread = new StorageThread(this, storage);
         worldConfig = new WorldConfig(this);
-        worldConfig.loadResources();
-        approves = new Approves(this);
-
+        final Approves approves = new Approves(this);
         lands = new Lands(this, worldConfig, approves);
         collisionsManagerThread = new CollisionsManagerThread(this);
-        collisionsManagerThread.start();
-        storageThread.loadAllAndStart();
-        final WorldListener worldListener = new WorldListener(this);
-        final ConnectionListener connectionListener = new ConnectionListener(this);
-        final PlayerListener playerListener = new PlayerListener(this);
-        final PvpListener pvpListener = new PvpListener(this);
-        final LandListener landListener = new LandListener(this);
-        final ChatListener chatListener = new ChatListener(this);
         commandListener = new CommandListener(this);
         approveNotif = new ApproveNotif(this);
+        ecoScheduler = new EcoScheduler(this);
+    }
+
+    @Override
+    public void onEnable() {
+        loadSecuboid(true);
+    }
+
+    @Override
+    public void onDisable() {
+        unloadSecuboid();
+    }
+
+    private void loadSecuboid(final boolean isServerBoot) {
+        conf.loadConfig(isServerBoot);
+        dependPlugin.loadConfig(isServerBoot);
+
+        if (isServerBoot) {
+            isInventoriesEnabled = conf.isMultipleInventories();
+            isEconomy = conf.useEconomy() && dependPlugin.getVaultEconomy() != null;
+        }
+
+        if (isInventoriesEnabled) {
+            inventories.loadConfig(isServerBoot);
+        }
+
+        playerConf.loadConfig(isServerBoot);
+        language.loadConfig(isServerBoot);
+        worldConfig.loadConfig(isServerBoot);
+
+        // Storage
+        if (isServerBoot) {
+            final Storage storage = Storage.getStorageFromConfig(this, getConf().getStorage());
+            storageThread = new StorageThread(this, storage);
+        }
+
+        lands.loadConfig(isServerBoot);
+
+        // Start threads
+        playersCache.start();
+        collisionsManagerThread.start();
+        storageThread.loadAllAndStart();
         approveNotif.runApproveNotifLater();
-        if (dependPlugin.getVaultEconomy() != null) {
-            final EcoScheduler ecoScheduler = new EcoScheduler(this);
+        if (isServerBoot && isEconomy) {
             ecoScheduler.runTaskTimer(this, ECO_SCHEDULE_INTERVAL, ECO_SCHEDULE_INTERVAL);
         }
-        getServer().getPluginManager().registerEvents(worldListener, this);
-        getServer().getPluginManager().registerEvents(connectionListener, this);
-        getServer().getPluginManager().registerEvents(playerListener, this);
-        getServer().getPluginManager().registerEvents(pvpListener, this);
-        getServer().getPluginManager().registerEvents(landListener, this);
-        getServer().getPluginManager().registerEvents(chatListener, this);
 
-        final PluginCommand pluginCommand = getCommand("secuboid");
-        pluginCommand.setExecutor(commandListener);
-        pluginCommand.setTabCompleter(commandListener);
+        if (isServerBoot) {
+            // register events
+            final WorldListener worldListener = new WorldListener(this);
+            connectionListener = new ConnectionListener(this);
+            final PlayerListener playerListener = new PlayerListener(this);
+            final PvpListener pvpListener = new PvpListener(this);
+            final LandListener landListener = new LandListener(this);
+            final ChatListener chatListener = new ChatListener(this);
+            getServer().getPluginManager().registerEvents(worldListener, this);
+            getServer().getPluginManager().registerEvents(connectionListener, this);
+            getServer().getPluginManager().registerEvents(playerListener, this);
+            getServer().getPluginManager().registerEvents(pvpListener, this);
+            getServer().getPluginManager().registerEvents(landListener, this);
+            getServer().getPluginManager().registerEvents(chatListener, this);
 
-        // Register events only if Inventory is active
-        if (inventoriesNullable != null) {
-            inventoryListener = new InventoryListener(this, inventoriesNullable);
-            getServer().getPluginManager().registerEvents(inventoryListener, this);
+            if (isInventoriesEnabled) {
+                // Register events only if Inventory is active
+                final InventoryListener inventoryListener = new InventoryListener(this, inventories);
+                getServer().getPluginManager().registerEvents(inventoryListener, this);
+            }
+
+            if (conf.isFlyAndCreative()) {
+                final FlyCreativeListener flyCreativeListener = new FlyCreativeListener(this);
+                getServer().getPluginManager().registerEvents(flyCreativeListener, this);
+            }
+
+            // Commands
+            final PluginCommand pluginCommand = getCommand("secuboid");
+            pluginCommand.setExecutor(commandListener);
+            pluginCommand.setTabCompleter(commandListener);
         }
 
-        // Register events only if Fly and Creative is active
-        if (conf.isFlyAndCreative()) {
-            flyCreativeListener = new FlyCreativeListener(this);
-            getServer().getPluginManager().registerEvents(flyCreativeListener, this);
+        if (!isServerBoot) {
+            // Reload players
+            for (final Player player : this.getServer().getOnlinePlayers()) {
+                final UUID playerUUID = player.getUniqueId();
+                final String playerName = player.getName();
+
+                // Reload players
+                if (!connectionListener.doAsyncPlayerPreLogin(playerUUID, playerName)) {
+                    player.kickPlayer("Problem with Secuboid inventory. Contact an administrator.");
+                }
+                connectionListener.doPlayerJoin(player);
+            }
         }
+    }
+
+    private void unloadSecuboid() {
+        if (isInventoriesEnabled) {
+            inventories.removeAndSave();
+        }
+        collisionsManagerThread.stopNextRun();
+        playerConf.removeAll();
+        playersCache.stopNextRun();
+        approveNotif.stopNextRun();
+        storageThread.stopNextRun();
     }
 
     /**
      * Reload.
      */
     public void reload() {
-
-        types = new Types();
-        // No reload of Parameters to avoid Deregistering external parameters
-        conf.reloadConfig();
-        if (inventoriesNullable != null) {
-            inventoriesNullable.reloadConfig();
-        }
-        if (conf.useEconomy() && dependPlugin.getVaultEconomy() != null) {
-            playerMoneyNullable = new PlayerMoney(dependPlugin.getVaultEconomy());
-        } else {
-            playerMoneyNullable = null;
-        }
-        language.reloadConfig();
-        worldConfig.loadResources();
-        lands = new Lands(this, worldConfig, approves);
-        storageThread.stopNextRun();
-        storageThread = new StorageThread(this, storage);
-        storageThread.loadAllAndStart();
-        approveNotif.stopNextRun();
-        approveNotif.runApproveNotifLater();
-    }
-
-    @Override
-    public void onDisable() {
-        // Save all inventories
-        if (inventoriesNullable != null) {
-            inventoriesNullable.removeAndSave();
-        }
-        collisionsManagerThread.stopNextRun();
-        playersCache.stopNextRun();
-        approveNotif.stopNextRun();
-        storageThread.stopNextRun();
-        playerConf.removeAll();
-    }
-
-    /**
-     * Gets the maven app properties.
-     *
-     * @return the maven app properties
-     */
-    public MavenAppProperties getMavenAppProperties() {
-        return mavenAppProperties;
+        unloadSecuboid();
+        loadSecuboid(false);
     }
 
     /**
@@ -314,16 +317,7 @@ public final class Secuboid extends JavaPlugin {
      * @return the optional inventories
      */
     public Optional<Inventories> getInventoriesOpt() {
-        return Optional.ofNullable(inventoriesNullable);
-    }
-
-    /**
-     * fly and creative Listener.
-     *
-     * @return the fly and creative listener
-     */
-    public FlyCreativeListener getFlyCreativeListener() {
-        return flyCreativeListener;
+        return isInventoriesEnabled ? Optional.of(inventories) : Optional.empty();
     }
 
     /**
@@ -399,21 +393,12 @@ public final class Secuboid extends JavaPlugin {
     }
 
     /**
-     * Get approve notif.
-     *
-     * @return the approve notif
-     */
-    public ApproveNotif getApproveNotif() {
-        return approveNotif;
-    }
-
-    /**
      * Get player money if economy is active.
      *
      * @return the optional player money
      */
     public Optional<PlayerMoney> getPlayerMoneyOpt() {
-        return Optional.ofNullable(playerMoneyNullable);
+        return isEconomy ? Optional.of(playerMoney) : Optional.empty();
     }
 
     /**

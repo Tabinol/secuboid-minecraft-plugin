@@ -47,8 +47,9 @@ public final class InventoryConfig {
     public static final String PERM_IGNORE_DISABLED_COMMANDS = "secuboid.inv.ignoredisabledcommands";
     private static final String INVENTORY_CONFIG_FILE = "inventory.yml";
 
-    private final FlagType invFlag; // Registered inventory Flag (Factoid)
     private final Secuboid secuboid;
+
+    private FlagType invFlag; // Registered inventory Flag (Factoid)
     private FileConfiguration config;
     private HashMap<String, InventorySpec> invNameToInvSpec;
 
@@ -59,20 +60,27 @@ public final class InventoryConfig {
      */
     public InventoryConfig(final Secuboid secuboid) {
         this.secuboid = secuboid;
-
-        // Create files (if not exist) and load
-        if (!new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
-            secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
-        }
-
-        // Connect to the data file and register flag to Secuboid
-        invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", "");
     }
 
-    public void reloadConfig() {
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        if (isServerBoot) {
+
+            // Create files (if not exist) and load
+            if (!new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE).exists()) {
+                secuboid.saveResource(INVENTORY_CONFIG_FILE, false);
+            }
+
+            // Connect to the data file and register flag to Secuboid
+            invFlag = secuboid.getPermissionsFlags().registerFlagType("INVENTORY", "");
+        }
 
         config = YamlConfiguration.loadConfiguration(new File(secuboid.getDataFolder(), INVENTORY_CONFIG_FILE));
-        invNameToInvSpec = new HashMap<String, InventorySpec>();
+        invNameToInvSpec = new HashMap<>();
         loadInventory();
     }
 
@@ -96,7 +104,7 @@ public final class InventoryConfig {
     }
 
     private void createInventoryEntry(final String key, final boolean creativeChange, final boolean saveInventory,
-            final boolean allowDrop, final List<String> disabledCommands) {
+                                      final boolean allowDrop, final List<String> disabledCommands) {
         invNameToInvSpec.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 

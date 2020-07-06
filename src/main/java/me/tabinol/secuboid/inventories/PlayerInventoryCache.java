@@ -17,19 +17,25 @@
  */
 package me.tabinol.secuboid.inventories;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 import me.tabinol.secuboid.storage.Savable;
+import me.tabinol.secuboid.storage.StorageThread;
 
 /**
  * The player inventory status.
  */
 public class PlayerInventoryCache implements Savable {
 
+    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = Duration.ofSeconds(20).toMillis();
     public static final int DEATH_SAVE_MAX_NBR = 9;
 
     private final UUID playerUUID;
@@ -62,6 +68,37 @@ public class PlayerInventoryCache implements Savable {
         inventorySpecToCreativeInvEntry = new HashMap<>();
         deathInvEntries = new ArrayList<>();
         curInvEntry = null;
+    }
+
+    public boolean inventoryPreLogin(final Secuboid secuboid) {
+        // Put the new login thread in the map for wake up after inventories load
+        final Object lock = new Object();
+        final StorageThread storageThread = secuboid.getStorageThread();
+        storageThread.addPlayerUUIDPreLogin(playerUUID, lock);
+
+        // Load inventories from save thread
+        storageThread.addSaveAction(StorageThread.SaveActionEnum.INVENTORY_PLAYER_LOAD, StorageThread.SaveOn.BOTH,
+                this);
+
+        // Waiting for inventory load
+        synchronized (lock) {
+            try {
+                lock.wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
+            } catch (final InterruptedException e) {
+                throw new SecuboidRuntimeException(
+                        String.format("Interruption on player connexion [uuid=%s, name=%s]", playerUUID, playerName),
+                        e);
+            }
+        }
+
+        // Check if the inventory load is completed
+        if (storageThread.removePlayerUUIDPreLogin(playerUUID) != null) {
+            secuboid.getLogger().log(Level.WARNING,
+                    String.format("Unable to load the inventory of player [uuid=%s, name=%s]", playerUUID, playerName));
+            return false;
+        }
+
+        return true;
     }
 
     void addInventory(final InventorySpec inventorySpec, final PlayerInvEntry playerInvEntry) {
@@ -98,7 +135,7 @@ public class PlayerInventoryCache implements Savable {
     PlayerInvEntry getInventoryDeath(final int deathVersion) {
         try {
             return deathInvEntries.get(deathVersion - 1);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             // Not found!
             return null;
         }

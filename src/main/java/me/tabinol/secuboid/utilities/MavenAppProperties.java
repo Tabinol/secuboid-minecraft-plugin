@@ -40,7 +40,7 @@ public final class MavenAppProperties {
     /**
      * The properties.
      */
-    private static Properties properties = new Properties();
+    private static final Properties properties = new Properties();
 
     /**
      * Load properties.
@@ -49,20 +49,20 @@ public final class MavenAppProperties {
         try {
             final File jarloc = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                     .getCanonicalFile();
-            try (JarFile jar = new JarFile(jarloc)) {
+            try (final JarFile jar = new JarFile(jarloc)) {
                 final JarEntry entry = jar.getJarEntry(APP_PROPERTIES_FILENAME);
                 try (final InputStream resource = jar.getInputStream(entry)) {
                     properties.load(resource);
                 }
             }
-        } catch (URISyntaxException | IOException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, null, ex);
+        } catch (final URISyntaxException | IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Unable to load the Secuboid properties file inside de .jar", e);
         }
     }
 
     /**
      * Load properties from resources when the file is not inside a jar (ex: tests).
-     * 
+     *
      * @throws IOException IOException
      */
     public void loadPropertiesFromResources() throws IOException {

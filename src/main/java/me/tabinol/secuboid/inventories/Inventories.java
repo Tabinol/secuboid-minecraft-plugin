@@ -57,8 +57,13 @@ public final class Inventories {
         inventorySpecToDefaultInvEntry = new HashMap<>();
     }
 
-    public void reloadConfig() {
-        inventoryConfig.reloadConfig();
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        inventoryConfig.loadConfig(isServerBoot);
     }
 
     public Collection<InventorySpec> getInvSpecs() {

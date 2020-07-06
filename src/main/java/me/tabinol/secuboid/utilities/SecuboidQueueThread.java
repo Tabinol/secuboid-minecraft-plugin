@@ -29,11 +29,13 @@ import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 /**
  * Abstract class for task queue in a thread.
  */
-public abstract class SecuboidQueueThread<T> extends Thread {
+public abstract class SecuboidQueueThread<T> {
 
     private static final long TIME_WAITING_THREAD_MILLIS = Duration.ofSeconds(10).toMillis();
 
     protected final Secuboid secuboid;
+
+    private final String threadName;
 
     /**
      * The blocking queue for requests.
@@ -45,6 +47,8 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      * queue.
      */
     protected boolean isQueueActive;
+
+    private Thread thread;
 
     /**
      * A lock object for thread synchronization.
@@ -59,21 +63,29 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      */
     protected SecuboidQueueThread(final Secuboid secuboid, final String threadName) {
         this.secuboid = secuboid;
+        this.threadName = threadName;
+        thread = null;
         taskQueue = new LinkedBlockingQueue<>();
         isQueueActive = true;
         lock = new Object();
-        setName(threadName);
     }
 
-    @Override
-    public final void run() {
-        try {
-            loopQueue();
-        } catch (final InterruptedException e) {
-            secuboid.getLogger().log(Level.WARNING,
-                    String.format("Interruption requested for thread \"%s\".", getName()), e);
-        }
+    public final void start() {
+        thread = new Thread() {
+            @Override
+            public final void run() {
+                try {
+                    loopQueue();
+                } catch (final InterruptedException e) {
+                    secuboid.getLogger().log(Level.WARNING,
+                            String.format("Interruption requested for thread \"%s\".", getName()), e);
+                }
+            }
+        };
+        thread.setName(threadName);
+        thread.start();
     }
+
 
     private void loopQueue() throws InterruptedException {
         Optional<T> tOpt;
@@ -105,8 +117,8 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      */
     public final void stopNextRun() {
         // Check if the thread is not death
-        if (!isAlive()) {
-            secuboid.getLogger().severe(String.format("Thread \"%s\" is already stopped and it shouldn't!", getName()));
+        if (thread == null || !thread.isAlive()) {
+            secuboid.getLogger().severe(String.format("Thread \"%s\" is already stopped and it shouldn't!", threadName));
             return;
         }
 
@@ -114,21 +126,25 @@ public abstract class SecuboidQueueThread<T> extends Thread {
         taskQueue.add(Optional.empty());
 
         // Waiting for thread
-        waitForThread(TIME_WAITING_THREAD_MILLIS);
+        waitForThread();
 
         // If the thread is not stopped
-        if (isAlive()) {
-            secuboid.getLogger().warning(String.format("Unable to stop gracefully the thread \"%s\"!", getName()));
-            interrupt();
-            waitForThread(TIME_WAITING_THREAD_MILLIS);
+        if (thread != null && thread.isAlive()) {
+            secuboid.getLogger().warning(String.format("Unable to stop gracefully the thread \"%s\"!", threadName));
+            thread.interrupt();
+            waitForThread();
         }
     }
 
-    private void waitForThread(final long millis) {
+    private void waitForThread() {
+        if (thread == null) {
+            return;
+        }
+
         try {
-            join(millis);
+            thread.join(TIME_WAITING_THREAD_MILLIS);
         } catch (final InterruptedException e) {
-            secuboid.getLogger().warning(String.format("Thread \"%s\" interrupted!", getName()));
+            secuboid.getLogger().warning(String.format("Thread \"%s\" interrupted!", threadName));
         }
     }
 
@@ -139,5 +155,9 @@ public abstract class SecuboidQueueThread<T> extends Thread {
      */
     public final Object getLock() {
         return lock;
+    }
+
+    Thread getThread() {
+        return thread;
     }
 }

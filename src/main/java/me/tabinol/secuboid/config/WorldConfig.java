@@ -97,7 +97,12 @@ public final class WorldConfig {
         typeToDefaultPermissionsFlags = new HashMap<>();
     }
 
-    public void loadResources() {
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
         // Load resources
         isOldVersion = false;
         globalPermissionsFlags.setDefault();

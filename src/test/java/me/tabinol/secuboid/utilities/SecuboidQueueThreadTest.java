@@ -46,8 +46,8 @@ public final class SecuboidQueueThreadTest {
 
         @Override
         protected boolean doElement(final Long sleepTimeMillis) throws InterruptedException {
-            if (sleepTimeMillis != 0l) {
-                sleep(sleepTimeMillis);
+            if (sleepTimeMillis != 0L) {
+                Thread.sleep(sleepTimeMillis);
             }
             return true;
         }
@@ -66,38 +66,38 @@ public final class SecuboidQueueThreadTest {
     @Test
     public void testStop() {
         testQueueThread.start();
-        assertTrue(testQueueThread.isAlive());
+        assertTrue(testQueueThread.getThread().isAlive());
         testQueueThread.stopNextRun();
-        assertFalse(testQueueThread.isAlive());
+        assertFalse(testQueueThread.getThread().isAlive());
     }
 
     @Test
     public void testWaitingStop() {
         testQueueThread.start();
         testQueueThread.addElement(Duration.ofSeconds(2).toMillis());
-        assertTrue(testQueueThread.isAlive());
+        assertTrue(testQueueThread.getThread().isAlive());
         testQueueThread.stopNextRun();
-        assertFalse(testQueueThread.isAlive());
+        assertFalse(testQueueThread.getThread().isAlive());
     }
 
     @Test
     public void testInterruptStop() {
         testQueueThread.start();
         testQueueThread.addElement(Duration.ofMinutes(1).toMillis());
-        assertTrue(testQueueThread.isAlive());
+        assertTrue(testQueueThread.getThread().isAlive());
         testQueueThread.stopNextRun();
-        assertFalse(testQueueThread.isAlive());
+        assertFalse(testQueueThread.getThread().isAlive());
     }
 
     @Test
     public void testDeathStop() {
         testQueueThread.stopNextRun();
-        assertFalse(testQueueThread.isAlive());
+        assertTrue(testQueueThread.getThread() == null || !testQueueThread.getThread().isAlive());
     }
 
     @Test
     public void addElementQueueActive() throws InterruptedException {
-        final long element1 = 0l;
+        final long element1 = 0L;
         testQueueThread.start();
         testQueueThread.addElement(element1);
         testQueueThread.stopNextRun();
@@ -106,7 +106,7 @@ public final class SecuboidQueueThreadTest {
 
     @Test
     public void addElementQueueInactive() throws InterruptedException {
-        final long element1 = 0l;
+        final long element1 = 0L;
         testQueueThread.start();
         testQueueThread.isQueueActive = false;
         testQueueThread.addElement(element1);

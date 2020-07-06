@@ -125,6 +125,25 @@ public final class Lands {
     }
 
     /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        if (!isServerBoot) {
+            for (int i = 0; i < 4; i++) {
+                areaList[i] = new AreaMap();
+                areaList[i].worldToAreaIndex = new TreeMap<>();
+            }
+
+            landList.clear();
+            landUUIDList.clear();
+            forSale.clear();
+            forRent.clear();
+        }
+    }
+
+    /**
      * Gets the the default configuration for a land type.
      *
      * @param typeNullable the land type nullable

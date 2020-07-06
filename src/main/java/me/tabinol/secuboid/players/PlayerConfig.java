@@ -19,7 +19,11 @@ package me.tabinol.secuboid.players;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import me.tabinol.secuboid.commands.executor.CommandCancel;
+import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.selection.PlayerSelection;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +35,9 @@ import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 /**
  * The Class PlayerConfig. Contains lists for player (selection, ect, ...).
  */
-public class PlayerConfig {
+public final class PlayerConfig {
+
+    private final Secuboid secuboid;
 
     /**
      * The player conf list.
@@ -41,14 +47,12 @@ public class PlayerConfig {
     /**
      * The vanish.
      */
-    private final Vanish vanish;
+    private Vanish vanish;
 
     /**
      * The chat.
      */
-    private final Chat chat;
-
-    private final Secuboid secuboid;
+    private Chat chat;
 
     /**
      * Instantiates a new player static config.
@@ -58,8 +62,19 @@ public class PlayerConfig {
     public PlayerConfig(final Secuboid secuboid) {
         this.secuboid = secuboid;
         playerConfList = new HashMap<>();
-        vanish = secuboid.getDependPlugin().getVanish();
-        chat = secuboid.getDependPlugin().getChat();
+    }
+
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        if (isServerBoot) {
+            vanish = secuboid.getDependPlugin().getVanish();
+            chat = secuboid.getDependPlugin().getChat();
+        }
+        addConsoleSender();
     }
 
     /**
@@ -102,19 +117,19 @@ public class PlayerConfig {
     }
 
     /**
-     * Adds console sender.
-     */
-    public void addConsoleSender() {
-        add(secuboid.getServer().getConsoleSender(), null);
-    }
-
-    /**
      * Removes all static configurations.
      */
     public void removeAll() {
         for (final PlayerConfEntry entry : playerConfList.values()) {
-            // First, remove AutoCancelSelect
-            entry.setAutoCancelSelect(false);
+            final PlayerSelection playerSelection = entry.getSelection();
+            if (playerSelection != null && playerSelection.hasSelection()) {
+                try {
+                    // Cancel selection
+                    new CommandCancel(secuboid, null, entry.getPlayer(), null).commandExecute();
+                } catch (SecuboidCommandException e) {
+                    secuboid.getLogger().log(Level.WARNING, String.format("Unable to cancel the selection for the player [name=%s, uuid=%s]", entry.getPlayer().getUniqueId(), entry.getPlayer().getName()));
+                }
+            }
         }
         playerConfList.clear();
     }
@@ -136,5 +151,12 @@ public class PlayerConfig {
      */
     public Chat getChat() {
         return chat;
+    }
+
+    /**
+     * Adds console sender.
+     */
+    private void addConsoleSender() {
+        add(secuboid.getServer().getConsoleSender(), null);
     }
 }

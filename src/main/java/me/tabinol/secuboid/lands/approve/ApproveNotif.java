@@ -28,7 +28,7 @@ import me.tabinol.secuboid.utilities.SecuboidRunnable;
 /**
  * The Class ApproveNotif.
  */
-public class ApproveNotif extends SecuboidRunnable {
+public final class ApproveNotif extends SecuboidRunnable {
 
     /**
      * The Constant PERM_APPROVE.
@@ -54,6 +54,7 @@ public class ApproveNotif extends SecuboidRunnable {
         // Start only if notification is activated in configuration
         if (notifyTime != 0) {
             this.runLater(notifyTime, true);
+            this.stopNextRun();
         }
 
     }

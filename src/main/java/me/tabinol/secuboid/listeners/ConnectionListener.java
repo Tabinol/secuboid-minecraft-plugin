@@ -17,12 +17,12 @@
  */
 package me.tabinol.secuboid.listeners;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-
+import me.tabinol.secuboid.Secuboid;
+import me.tabinol.secuboid.inventories.PlayerInventoryCache;
+import me.tabinol.secuboid.lands.Land;
+import me.tabinol.secuboid.lands.LandPermissionsFlags;
+import me.tabinol.secuboid.players.PlayerConfEntry;
+import me.tabinol.secuboid.players.PlayerConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,23 +32,15 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import me.tabinol.secuboid.Secuboid;
-import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
-import me.tabinol.secuboid.inventories.PlayerInventoryCache;
-import me.tabinol.secuboid.lands.Land;
-import me.tabinol.secuboid.lands.LandPermissionsFlags;
-import me.tabinol.secuboid.players.PlayerConfEntry;
-import me.tabinol.secuboid.players.PlayerConfig;
-import me.tabinol.secuboid.storage.StorageThread;
-import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
-import me.tabinol.secuboid.storage.StorageThread.SaveOn;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
  * ConnectionListener
  */
 public class ConnectionListener extends CommonListener implements Listener {
-
-    public static final long MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS = Duration.ofSeconds(20).toMillis();
 
     /**
      * The player conf.
@@ -81,47 +73,24 @@ public class ConnectionListener extends CommonListener implements Listener {
             return;
         }
 
-        // Inventory prelogin
-        if (secuboid.getInventoriesOpt().isPresent()) {
-            inventoryPreLogin(event);
+        final UUID playerUUID = event.getUniqueId();
+        final String playerName = event.getName();
+        if (!doAsyncPlayerPreLogin(playerUUID, playerName)) {
+            event.disallow(Result.KICK_OTHER, "Problem with Secuboid inventory. Contact an administrator.");
         }
     }
 
-    private void inventoryPreLogin(final AsyncPlayerPreLoginEvent event) {
-        final UUID playerUUID = event.getUniqueId();
-        final String playerName = event.getName();
-
-        // Put the new login thread in the map for wake up after inventories load
-        final StorageThread storageThread = secuboid.getStorageThread();
-        final Object lock = new Object();
-        storageThread.addPlayerUUIDPreLogin(playerUUID, lock);
-
-        // Load inventories from save thread
-        final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
-        storageThread.addSaveAction(SaveActionEnum.INVENTORY_PLAYER_LOAD, SaveOn.BOTH,
-                playerInventoryCache);
-
-        // Waiting for inventory load
-        synchronized (lock) {
-            try {
-                lock.wait(MAX_PLAYER_INVENTORIES_LOAD_TIME_MILLIS);
-            } catch (final InterruptedException e) {
-                throw new SecuboidRuntimeException(
-                        String.format("Interruption on player connexion [uuid=%s, name=%s]", playerUUID, playerName),
-                        e);
+    public boolean doAsyncPlayerPreLogin(final UUID playerUUID, final String playerName) {
+        if (secuboid.getInventoriesOpt().isPresent()) {
+            // Inventory prelogin
+            final PlayerInventoryCache playerInventoryCache = new PlayerInventoryCache(playerUUID, playerName);
+            if (!playerInventoryCache.inventoryPreLogin(secuboid)) {
+                return false;
             }
+            // Add the player to preload map
+            playerUUIDToInventoryCachePreLoad.put(playerUUID, playerInventoryCache);
         }
-
-        // Check if the inventory load is completed
-        if (storageThread.removePlayerUUIDPreLogin(playerUUID) != null) {
-            secuboid.getLogger().log(Level.WARNING,
-                    String.format("Unable to load the inventoy of player [uuid=%s, name=%s]", playerUUID, playerName));
-            event.disallow(Result.KICK_OTHER, "Problem with Secuboid inventory. Contact an administrator.");
-            return;
-        }
-
-        // Add the player to preload map
-        playerUUIDToInventoryCachePreLoad.put(playerUUID, playerInventoryCache);
+        return true;
     }
 
     /**
@@ -131,8 +100,11 @@ public class ConnectionListener extends CommonListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-
         final Player player = event.getPlayer();
+        doPlayerJoin(player);
+    }
+
+    public void doPlayerJoin(final Player player) {
         final UUID playerUUID = player.getUniqueId();
         final String playerName = player.getName();
 
@@ -151,7 +123,7 @@ public class ConnectionListener extends CommonListener implements Listener {
         }
         final PlayerConfEntry entry = playerConf.add(player, playerInventoryCacheNullable);
 
-        updatePosInfo(event, entry, player.getLocation(), true);
+        updatePosInfo(null, entry, player.getLocation(), true);
 
         // Check if AdminMode is auto
         if (player.hasPermission("secuboid.adminmode.auto")) {

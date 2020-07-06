@@ -68,19 +68,22 @@ public final class Lang {
         this.secuboid = secuboid;
         actualVersion = MavenAppProperties.getPropertyInt("langVersion", 1);
         this.langconfig = new YamlConfiguration();
-        reloadConfig();
-        checkVersion();
     }
 
     /**
-     * Reload config.
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
      */
-    public final void reloadConfig() {
+    public void loadConfig(final boolean isServerBoot) {
         this.lang = secuboid.getConf().getLang();
         this.langFile = new File(secuboid.getDataFolder() + "/lang/", lang + ".yml");
         if (secuboid.getConf().getLang() != null) {
             copyLang();
             loadYamls();
+        }
+        if (isServerBoot) {
+            checkVersion();
         }
     }
 
@@ -107,9 +110,7 @@ public final class Lang {
     private void loadYamls() {
         try {
             langconfig.load(langFile);
-        } catch (final IOException e) {
-            secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
-        } catch (final InvalidConfigurationException e) {
+        } catch (final IOException | InvalidConfigurationException e) {
             secuboid.getLogger().severe("Error on language load: " + e.getLocalizedMessage());
         }
     }
@@ -128,7 +129,7 @@ public final class Lang {
             if (!langFile.renameTo(new File(secuboid.getDataFolder() + "/lang/", lang + ".yml.v" + fileVersion))) {
                 secuboid.getLogger().severe("Unable to rename the old language file.");
             }
-            reloadConfig();
+            loadConfig(false);
             secuboid.getLogger().info("There is a new language file. Your old language file was renamed \"" + lang
                     + ".yml.v" + fileVersion + "\".");
         }
@@ -149,7 +150,7 @@ public final class Lang {
             return "MESSAGE NOT FOUND FOR PATH: " + path;
         }
         if (param.length >= 1) {
-            final int occurence = getOccurence(message, '%');
+            final int occurence = getOccurrence(message, '%');
             if (occurence == param.length) {
                 for (int i = 0; i < occurence; i++) {
                     message = replace(message, "%", param[i]);
@@ -179,24 +180,24 @@ public final class Lang {
             return s_original;
         }
 
-        StringBuffer s_final;
+        final StringBuffer sFinal;
         final int index = s_original.indexOf(s_cherche);
 
-        s_final = new StringBuffer(s_original.substring(0, index));
-        s_final.append(s_nouveau);
-        s_final.append(s_original.substring(index + s_cherche.length()));
+        sFinal = new StringBuffer(s_original.substring(0, index));
+        sFinal.append(s_nouveau);
+        sFinal.append(s_original.substring(index + s_cherche.length()));
 
-        return s_final.toString();
+        return sFinal.toString();
     }
 
     /**
-     * Gets the occurence.
+     * Gets the occurrence.
      *
      * @param s the s
      * @param r the r
-     * @return the occurence
+     * @return the occurrence
      */
-    private int getOccurence(final String s, final char r) {
+    private int getOccurrence(final String s, final char r) {
         int counter = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == r) {

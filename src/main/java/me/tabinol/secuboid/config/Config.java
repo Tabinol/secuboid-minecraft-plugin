@@ -55,14 +55,7 @@ public final class Config {
      * @param secuboid secuboid instance
      */
     public Config(final Secuboid secuboid) {
-
         this.secuboid = secuboid;
-        secuboid.saveDefaultConfig();
-
-        // Get Bukkit Config for this plugin, not this class!!!
-        config = secuboid.getConfig();
-
-        reloadConfig();
     }
 
     // **********************************
@@ -576,11 +569,16 @@ public final class Config {
     }
 
     /**
-     * Reload config.
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
      */
-    public final void reloadConfig() {
-
-        secuboid.reloadConfig();
+    public void loadConfig(final boolean isServerBoot) {
+        if (isServerBoot) {
+            secuboid.saveDefaultConfig();
+        } else {
+            secuboid.reloadConfig();
+        }
         config = secuboid.getConfig();
         getConfig();
     }

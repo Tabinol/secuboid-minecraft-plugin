@@ -93,23 +93,31 @@ public final class DependPlugin {
      * @param secuboid secuboid instance
      */
     public DependPlugin(final Secuboid secuboid) {
-
         this.secuboid = secuboid;
+    }
 
-        worldEdit = getPlugin("WorldEdit");
-        essentials = getPlugin("Essentials");
-        if (essentials != null) {
-            essentialsCommon = new EssentialsCommon(secuboid, essentials);
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        if (isServerBoot) {
+            worldEdit = getPlugin("WorldEdit");
+            essentials = getPlugin("Essentials");
+            if (essentials != null) {
+                essentialsCommon = new EssentialsCommon(secuboid, essentials);
+            }
+            vanishNoPacket = getPlugin("VanishNoPacket");
+            superVanish = getPlugin("PremiumVanish");
+            if (superVanish == null) {
+                superVanish = getPlugin("SuperVanish");
+            }
+            setupPermissions();
+            setupChat();
+            setupEconomy();
+            setupVanish();
         }
-        vanishNoPacket = getPlugin("VanishNoPacket");
-        superVanish = getPlugin("PremiumVanish");
-        if (superVanish == null) {
-            superVanish = getPlugin("SuperVanish");
-        }
-        setupPermissions();
-        setupChat();
-        setupEconomy();
-        setupVanish();
     }
 
     /**

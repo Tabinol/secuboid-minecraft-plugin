@@ -381,9 +381,11 @@ public final class Land implements Savable, Approvable {
         }
         doSave(SaveActionEnum.LAND_AREA_SAVE, SaveOn.BOTH, area);
 
-        // Start Event
-        secuboid.getServer().getPluginManager()
-                .callEvent(new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_ADD, area));
+        // Start Event Bug if it is in "/sd reload"
+        if (!secuboid.getStorageThread().isInLoad()) {
+            secuboid.getServer().getPluginManager()
+                    .callEvent(new LandModifyEvent(this, LandModifyEvent.LandModifyReason.AREA_ADD, area));
+        }
     }
 
     /**
@@ -500,7 +502,7 @@ public final class Land implements Savable, Approvable {
         removeArea(newArea);
         setAutoSave(true);
         // Fix thread problem make a temporary area with the same key
-        final Area tempArea = new CuboidArea(false, "Dummy", 0, 0, 0, 0, 0 , 0);
+        final Area tempArea = new CuboidArea(false, "Dummy", 0, 0, 0, 0, 0, 0);
         tempArea.setKey(newArea.getKey());
         doSave(SaveActionEnum.LAND_AREA_REMOVE, SaveOn.DATABASE, tempArea);
         return replaceArea(key, newArea, price);

@@ -19,9 +19,7 @@ package me.tabinol.secuboid;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
-import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -170,7 +168,7 @@ public final class Secuboid extends JavaPlugin {
         inventories = new Inventories(this, inventoryConfig);
 
         dependPlugin = new DependPlugin(this);
-        playerMoney = new PlayerMoney(dependPlugin.getVaultEconomy());
+        playerMoney = new PlayerMoney(dependPlugin);
         playerConf = new PlayerConfig(this);
         language = new Lang(this);
         playersCache = new PlayersCache(this);
@@ -196,6 +194,7 @@ public final class Secuboid extends JavaPlugin {
     private void loadSecuboid(final boolean isServerBoot) {
         conf.loadConfig(isServerBoot);
         dependPlugin.loadConfig(isServerBoot);
+        playerMoney.loadConfig(isServerBoot);
 
         if (isServerBoot) {
             isInventoriesEnabled = conf.isMultipleInventories();

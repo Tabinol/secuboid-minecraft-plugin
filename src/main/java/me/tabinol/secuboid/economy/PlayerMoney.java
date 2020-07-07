@@ -17,6 +17,7 @@
  */
 package me.tabinol.secuboid.economy;
 
+import me.tabinol.secuboid.dependencies.DependPlugin;
 import org.bukkit.OfflinePlayer;
 
 import net.milkbowl.vault.economy.Economy;
@@ -29,17 +30,30 @@ import net.milkbowl.vault.economy.Economy;
 public class PlayerMoney {
 
     /**
-     * The economy.
+     * Depend pluin.
      */
-    private final Economy economy;
+    private final DependPlugin dependPlugin;
+
+    private Economy economy = null;
 
     /**
      * Instantiates a new player money.
      *
-     * @param economy the secuboid economy instance
+     * @param dependPlugin depend plugin instance
      */
-    public PlayerMoney(final Economy economy) {
-        this.economy = economy;
+    public PlayerMoney(final DependPlugin dependPlugin) {
+        this.dependPlugin = dependPlugin;
+    }
+
+    /**
+     * Load config.
+     *
+     * @param isServerBoot is first boot?
+     */
+    public void loadConfig(final boolean isServerBoot) {
+        if (isServerBoot) {
+            economy = dependPlugin.getVaultEconomy();
+        }
     }
 
     /**

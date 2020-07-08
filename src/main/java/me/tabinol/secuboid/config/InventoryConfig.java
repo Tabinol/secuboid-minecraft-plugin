@@ -121,7 +121,7 @@ public final class InventoryConfig {
         // If the flag is set with wrong inventory
         if (invSpec == null) {
             secuboid.getLogger().warning("Inventory name \"" + invFlagValue.getValueString() + "\" is not found "
-                    + "in " + secuboid.getName() + "/plugin.yml!");
+                    + "in " + secuboid.getName() + "/inventory.yml!");
             return invNameToInvSpec.get(GLOBAL);
         }
 

@@ -101,6 +101,17 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
+    public void insertIgnore(final Connection conn, final I i, final V v) throws SQLException {
+        final String sql = String.format("INSERT IGNORE INTO `{{TP}}%s` (`%s`, `%s`) " //
+                + "VALUES (?, ?)", tableSuffix, idColumnLabel, valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            setFromClass(idClazz, stmt, 1, i);
+            setFromClass(valueClazz, stmt, 2, v);
+            stmt.executeUpdate();
+        }
+    }
+
     public void insertOrUpdate(final Connection conn, final I i, final V v) throws SQLException {
         final String sql = String.format("INSERT INTO `{{TP}}%s` (`%s`, `%s`) " //
                 + "VALUES (?, ?) " //

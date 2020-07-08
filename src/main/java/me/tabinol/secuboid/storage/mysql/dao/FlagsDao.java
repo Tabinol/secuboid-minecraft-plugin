@@ -80,7 +80,7 @@ public final class FlagsDao {
 
     public void updateLandFlagIdInheritance(final Connection conn, final UUID landUUID, final long flagId,
                                             final boolean inheritance) throws SQLException {
-        final String sql = "UPDATE `{{TP}}lands_flags` SET `inheritance`=?" //
+        final String sql = "UPDATE `{{TP}}lands_flags` SET `inheritance`=? " //
                 + "WHERE `land_uuid`=? AND `flag_id`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

@@ -640,7 +640,7 @@ public final class StorageMySql implements Storage {
     public void saveLandResident(final Land land, final PlayerContainer playerContainer) {
         try (final Connection conn = dbConn.openConnection()) {
             final long playerContainerId = getOrAddPlayerContainer(conn, playerContainer);
-            landsResidentsDao.insert(conn, land.getUUID(), playerContainerId);
+            landsResidentsDao.insertIgnore(conn, land.getUUID(), playerContainerId);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format(
                     "Unable to add the resident to the land to database [landUUID=%s, landName=%s, playerContainer=%s]",
@@ -778,14 +778,14 @@ public final class StorageMySql implements Storage {
                 final PlayerInvEntry survivalInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, false,
                         null);
                 if (survivalInvEntryNullable != null) {
-                        inventories.saveInventory(null, survivalInvEntryNullable, false, false, false);
+                    inventories.saveInventory(null, survivalInvEntryNullable, false, false, false);
                 }
 
                 // Creative
                 final PlayerInvEntry creativeInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, true,
                         null);
                 if (creativeInvEntryNullable != null) {
-                        inventories.saveInventory(null, creativeInvEntryNullable, false, false, false);
+                    inventories.saveInventory(null, creativeInvEntryNullable, false, false, false);
                 }
 
                 // Death

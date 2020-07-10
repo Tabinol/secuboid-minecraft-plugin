@@ -334,6 +334,10 @@ public final class Lands {
         if (land.getParent() != null) {
             land.getParent().removeChild(land.getUUID());
         }
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_PERMISSION_REMOVE_ALL, SaveOn.DATABASE, land);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_FLAG_REMOVE_ALL, SaveOn.DATABASE, land);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_PLAYER_NOTIFY_REMOVE_ALL, SaveOn.DATABASE, land);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_RESIDENT_REMOVE_ALL, SaveOn.DATABASE, land);
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.LAND_REMOVE, SaveOn.BOTH, land);
 
         return true;

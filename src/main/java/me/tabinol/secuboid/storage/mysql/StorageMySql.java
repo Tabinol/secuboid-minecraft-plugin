@@ -380,9 +380,6 @@ public final class StorageMySql implements Storage {
                 removeLandArea(land, area);
             }
 
-            // Remove Residents
-            landsResidentsDao.delete(conn, land.getUUID());
-
             // Remove land
             landsDao.deleteLand(conn, land.getUUID());
         } catch (final SQLException e) {

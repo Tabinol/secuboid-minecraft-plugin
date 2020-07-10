@@ -215,7 +215,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
     }
 
     private Set<String> listFlag() {
-        return secuboid.getPermissionsFlags().getFlagTypeNames();
+        return secuboid.getPermissionsFlags().getRegisteredFlagTypeNames();
     }
 
     private List<String> listLand() {
@@ -262,7 +262,7 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
     }
 
     private Set<String> listPermission() {
-        return secuboid.getPermissionsFlags().getPermissionTypeNames();
+        return secuboid.getPermissionsFlags().getRegisteredPermissionTypeNames();
     }
 
     private List<String> listType() {

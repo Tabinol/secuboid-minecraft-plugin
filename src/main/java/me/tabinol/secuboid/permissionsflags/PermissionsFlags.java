@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 
@@ -162,7 +163,7 @@ public final class PermissionsFlags {
      * @return the permission type
      */
     private PermissionType registerPermissionType(final String permissionName, final boolean defaultValue,
-            final PermissionType parent) {
+                                                  final PermissionType parent) {
 
         final String permissionNameUpper = permissionName.toUpperCase();
         final PermissionType permissionType = getPermissionTypeNoValid(permissionNameUpper, parent);
@@ -181,7 +182,7 @@ public final class PermissionsFlags {
      */
     public FlagType registerFlagType(final String flagName, final Object defaultValue) {
 
-        FlagValue flagDefaultValue;
+        final FlagValue flagDefaultValue;
 
         // Check is default value is raw or is FlagDefaultValue
         if (defaultValue instanceof FlagValue) {
@@ -227,12 +228,12 @@ public final class PermissionsFlags {
     }
 
     /**
-     * Gets all permission type manes.
+     * Gets all registered permission type manes.
      *
-     * @return the permission type names
+     * @return the registered permission type names
      */
-    public Set<String> getPermissionTypeNames() {
-        return permissions.keySet();
+    public Set<String> getRegisteredPermissionTypeNames() {
+        return permissions.values().stream().filter(PermissionsFlagsType::isRegistered).map(PermissionsFlagsType::getName).collect(Collectors.toSet());
     }
 
     /**
@@ -253,12 +254,12 @@ public final class PermissionsFlags {
     }
 
     /**
-     * Gets all flag type manes.
+     * Gets all registered flag type manes.
      *
-     * @return the flag type names
+     * @return the registered flag type names
      */
-    public Set<String> getFlagTypeNames() {
-        return flags.keySet();
+    public Set<String> getRegisteredFlagTypeNames() {
+        return flags.values().stream().filter(PermissionsFlagsType::isRegistered).map(PermissionsFlagsType::getName).collect(Collectors.toSet());
     }
 
     /**

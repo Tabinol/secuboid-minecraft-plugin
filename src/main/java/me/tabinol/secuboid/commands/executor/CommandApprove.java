@@ -169,8 +169,16 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
                 final Area newAreaLocalNullable;
                 if (newAreaIdNullableLocal != null) {
                     newAreaLocalNullable = landLocal.getArea(newAreaIdNullableLocal);
-                    worldNameLocal = newAreaLocalNullable.getWorldName();
-                    sender.sendMessage(newAreaLocalNullable.getPrint());
+                    if (newAreaLocalNullable == null) {
+                        // Area deleted, approve not available. Autoremove
+                        sender.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                                + secuboid.getLanguage().getMessage("COLLISION.GENERAL.AREANOTFOUND"));
+                        removeFromApproveList();
+                        return;
+                    } else {
+                        worldNameLocal = newAreaLocalNullable.getWorldName();
+                        sender.sendMessage(newAreaLocalNullable.getPrint());
+                    }
                 } else {
                     newAreaLocalNullable = null;
                     worldNameLocal = landSelectNullable.getWorldName();
@@ -187,9 +195,7 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
             } else if (curArg.equalsIgnoreCase("cancel")) {
 
                 // Remove in approve list
-                approves.removeApprove(approve);
-                sender.sendMessage(ChatColor.YELLOW + "[Secuboid] "
-                        + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
+                removeFromApproveList();
             } else {
                 throw new SecuboidCommandException(secuboid, "Approve", sender, "GENERAL.MISSINGPERMISSION");
             }
@@ -211,5 +217,11 @@ public final class CommandApprove extends CommandCollisionsThreadExec {
             sender.sendMessage(
                     ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COLLISION.GENERAL.DONE"));
         }
+    }
+
+    private void removeFromApproveList() {
+        approves.removeApprove(approve);
+        sender.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                + secuboid.getLanguage().getMessage("COLLISION.GENERAL.REMOVE"));
     }
 }

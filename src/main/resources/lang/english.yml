@@ -184,6 +184,7 @@ COLLISION:
     NEEDAPPROVE: "Your operation is listed for approval. \"/secuboid approve cancel %\" if you want to cancel."
     CANNOTDONE: "Problem detected! Your action can't be done."
     DONE: "This action is approved."
+    AREANOTFOUND: "Area not found or deleted."
     REMOVE: "The action is removed from the approve list."
     CLEAR: "The list is now cleared."
     PERCENT: "Waiting for collisions manager... (% percent done)"

@@ -184,6 +184,7 @@ COLLISION:
     NEEDAPPROVE: "Ton action est en attente d'approbation. \"/Secuboid approve cancel %\" si tu veux annuler."
     CANNOTDONE: "Problème détecté! Ton action ne peut être complétée."
     DONE: "Cette action est approuvée."
+    AREANOTFOUND: "Étendue introuvable ou effacée."
     REMOVE: "Cette action est enlevée de la liste."
     CLEAR: "La liste est maintenant détruite."
     PERCENT: "En attente du gestionnaire de collisions... (% pourcent fait)"

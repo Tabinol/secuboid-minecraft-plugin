@@ -23,6 +23,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Bat;
 import org.bukkit.event.Cancellable;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
@@ -45,6 +46,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -72,7 +74,7 @@ public final class WorldListener extends CommonListener implements Listener {
      *
      * @param secuboid secuboid instance
      */
-    public WorldListener(Secuboid secuboid) {
+    public WorldListener(final Secuboid secuboid) {
 
         super(secuboid);
         conf = secuboid.getConf();
@@ -84,7 +86,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onExplosionPrime(ExplosionPrimeEvent event) {
+    public void onExplosionPrime(final ExplosionPrimeEvent event) {
         final Location loc = event.getEntity().getLocation();
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
         final EntityType entityType = event.getEntityType();
@@ -93,10 +95,10 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((entityType == EntityType.CREEPER
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.CREEPER_EXPLOSION.getFlagType()).getValueBoolean())
                 || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT)
-                        && !landPermissionsFlags.getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType())
-                                .getValueBoolean())
+                && !landPermissionsFlags.getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType())
+                .getValueBoolean())
                 || (entityType == EntityType.ENDER_CRYSTAL && !landPermissionsFlags
-                        .getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
+                .getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
                 || !landPermissionsFlags.getFlagAndInherit(FlagList.EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
             if (entityType == EntityType.CREEPER) {
@@ -111,54 +113,54 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityExplode(EntityExplodeEvent event) {
+    public void onEntityExplode(final EntityExplodeEvent event) {
         if (conf.isOverrideExplosions()) {
 
-            float power;
+            final float power;
 
             if (null != event.getEntityType()) // Creeper Explosion
             {
                 switch (event.getEntityType()) {
 
-                case CREEPER:
-                    power = 0L;
-                    ExplodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), power, false);
-                    break;
+                    case CREEPER:
+                        power = 0L;
+                        ExplodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), power, false);
+                        break;
 
-                case WITHER_SKULL:
-                    ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), 1L, false);
-                    break;
+                    case WITHER_SKULL:
+                        ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 1L, false);
+                        break;
 
-                case WITHER:
-                    ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), 7L, false);
-                    break;
+                    case WITHER:
+                        ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 7L, false);
+                        break;
 
-                case FIREBALL:
-                    ExplodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), 1L, true);
-                    break;
+                    case FIREBALL:
+                        ExplodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 1L, true);
+                        break;
 
-                case MINECART_TNT:
-                case PRIMED_TNT:
-                    ExplodeBlocks(event, event.blockList(), FlagList.TNT_DAMAGE.getFlagType(), event.getLocation(),
-                            event.getYield(), 4L, false);
-                    break;
+                    case MINECART_TNT:
+                    case PRIMED_TNT:
+                        ExplodeBlocks(event, event.blockList(), FlagList.TNT_DAMAGE.getFlagType(), event.getLocation(),
+                                event.getYield(), 4L, false);
+                        break;
 
-                case ENDER_DRAGON:
-                    ExplodeBlocks(event, event.blockList(), FlagList.ENDERDRAGON_DAMAGE.getFlagType(),
-                            event.getLocation(), event.getYield(), 4L, false);
-                    break;
+                    case ENDER_DRAGON:
+                        ExplodeBlocks(event, event.blockList(), FlagList.ENDERDRAGON_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), 4L, false);
+                        break;
 
-                case ENDER_CRYSTAL:
-                    ExplodeBlocks(event, event.blockList(), FlagList.END_CRYSTAL_DAMAGE.getFlagType(),
-                            event.getLocation(), event.getYield(), 4L, false);
-                    break;
+                    case ENDER_CRYSTAL:
+                        ExplodeBlocks(event, event.blockList(), FlagList.END_CRYSTAL_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), 4L, false);
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
         }
@@ -170,7 +172,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the event
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onFireworkExplode(FireworkExplodeEvent event){
+    public void onFireworkExplode(final FireworkExplodeEvent event) {
         final Location loc = event.getEntity().getLocation();
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
 
@@ -188,7 +190,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onHangingBreak(HangingBreakEvent event) {
+    public void onHangingBreak(final HangingBreakEvent event) {
         if (conf.isOverrideExplosions()) {
             // Check for painting
             if (event.getCause() == RemoveCause.EXPLOSION) {
@@ -208,12 +210,12 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param power   the power
      * @param setFire the set fire
      */
-    private void ExplodeBlocks(Cancellable event, List<Block> blocks, FlagType ft, Location loc, float yield,
-            float power, boolean setFire) {
+    private void ExplodeBlocks(final Cancellable event, final List<Block> blocks, final FlagType ft, final Location loc, final float yield,
+                               final float power, final boolean setFire) {
 
         FlagValue value;
         boolean cancelEvent = false;
-        Iterator<Block> itBlock = blocks.iterator();
+        final Iterator<Block> itBlock = blocks.iterator();
         Block block;
 
         // Check if 1 block or more is in a protected place
@@ -239,7 +241,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+    public void onEntityChangeBlock(final EntityChangeBlockEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getBlock().getLocation());
@@ -250,7 +252,7 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((event.getEntityType() == EntityType.ENDERMAN
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.ENDERMAN_DAMAGE.getFlagType()).getValueBoolean())
                 || (event.getEntityType() == EntityType.WITHER && !landPermissionsFlags
-                        .getFlagAndInherit(FlagList.WITHER_DAMAGE.getFlagType()).getValueBoolean())) {
+                .getFlagAndInherit(FlagList.WITHER_DAMAGE.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
 
             // Crop trample
@@ -266,7 +268,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockIgnite(BlockIgniteEvent event) {
+    public void onBlockIgnite(final BlockIgniteEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getBlock().getLocation());
@@ -284,7 +286,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockBurn(BlockBurnEvent event) {
+    public void onBlockBurn(final BlockBurnEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getBlock().getLocation());
@@ -301,7 +303,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
+    public void onCreatureSpawn(final CreatureSpawnEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getEntity().getLocation());
@@ -309,10 +311,22 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((event.getEntity() instanceof Animals
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.ANIMAL_SPAWN.getFlagType()).getValueBoolean())
                 || ((event.getEntity() instanceof Monster || event.getEntity() instanceof Slime
-                        || event.getEntity() instanceof Flying)
-                        && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType())
-                                .getValueBoolean())
+                || event.getEntity() instanceof Flying)
+                && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType())
+                .getValueBoolean())
                 || (event.getEntity() instanceof Villager && !landPermissionsFlags.getFlagAndInherit(FlagList.VILLAGER_SPAWN.getFlagType()).getValueBoolean())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEntitySpawn(final EntitySpawnEvent event) {
+
+        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
+                .getPermissionsFlags(event.getEntity().getLocation());
+
+        if (event.getEntity() instanceof Bat
+                && !landPermissionsFlags.getFlagAndInherit(FlagList.BAT_SPAWN.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
         }
     }
@@ -323,7 +337,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLeavesDecay(LeavesDecayEvent event) {
+    public void onLeavesDecay(final LeavesDecayEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getBlock().getLocation());
@@ -339,7 +353,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onBlockFromTo(BlockFromToEvent event) {
+    public void onBlockFromTo(final BlockFromToEvent event) {
 
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                 .getPermissionsFlags(event.getBlock().getLocation());
@@ -349,7 +363,7 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((ml == Material.LAVA
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.LAVA_FLOW.getFlagType()).getValueBoolean())
                 || (ml == Material.WATER && !landPermissionsFlags.getFlagAndInherit(FlagList.WATER_FLOW.getFlagType())
-                        .getValueBoolean())) {
+                .getValueBoolean())) {
             event.setCancelled(true);
         }
     }
@@ -360,11 +374,11 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param event the events
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void onEntityDamage(final EntityDamageEvent event) {
 
         if (conf.isOverrideExplosions() && event.getEntity() instanceof Hanging
                 && (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION
-                        || event.getCause() == DamageCause.PROJECTILE)) {
+                || event.getCause() == DamageCause.PROJECTILE)) {
             // Check for ItemFrame
             event.setCancelled(true);
         }

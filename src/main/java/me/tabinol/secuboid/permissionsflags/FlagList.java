@@ -97,6 +97,10 @@ public enum FlagList {
      */
     VILLAGER_SPAWN(true),
     /**
+     * The bat spawn.
+     */
+    BAT_SPAWN(true),
+    /**
      * The leaves decay
      */
     LEAF_DECAY(true),

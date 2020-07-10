@@ -48,6 +48,7 @@ END_CRYSTAL_DAMAGE    | boolean         | true          | End crystal damage
 MOB_SPAWN             | boolean         | true          | Hostile monsters spawn
 ANIMAL_SPAWN          | boolean         | true          | Animals spawn
 VILLAGER_SPAWN        | boolean         | true          | Villagers spawn
+BAT_SPAWN             | boolean         | true          | Bats spawn
 FULL_PVP              | boolean         | true          | Players versus players
 MESSAGE_ENTER         | text            |               | Message on land enter
 MESSAGE_EXIT          | text            |               | Message on land exit

@@ -107,16 +107,20 @@ public final class FlyCreativeListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerGameModeChangeEvent(final PlayerGameModeChangeEvent event) {
         final Player player = event.getPlayer();
+        final GameMode newGameMode = event.getNewGameMode();
 
         // Noting to do, just changed by Secuboid, ignored game mode or player has ignore permission
-        if (creative.removeJustChangedByThisPluginGMPlayers(player) || conf.getIgnoredGameMode().contains(event.getNewGameMode()) || player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
+        if (creative.removeJustChangedByThisPluginGMPlayers(player) || conf.getIgnoredGameMode().contains(newGameMode) || player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
             return;
         }
 
         // Detect manual GM change out of survival
-        final GameMode newGameMode = event.getNewGameMode();
-        if (newGameMode != GameMode.SURVIVAL) {
+        if (newGameMode == GameMode.SURVIVAL) {
             creative.removeManualChangeCreativeGMPlayers(player);
+
+            // Put back creative/fly of the land 20 tick after, outside of this event
+            Bukkit.getScheduler().runTaskLater(secuboid, () -> setFlyCreative(null, player, secuboid.getLands().getPermissionsFlags(event.getPlayer().getLocation())), 1);
+
         } else {
             creative.addManualChangeCreativeGMPlayers(player);
         }

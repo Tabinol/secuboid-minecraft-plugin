@@ -52,8 +52,8 @@ public final class Creative {
     private final Config conf;
     private final PermissionType permissionType;
 
-    private final Set<Player> justChangedByThisPluginGMPlayers;
-    private final Set<Player> manualChangeCreativeGMPlayers;
+    private final Set<HumanEntity> justChangedByThisPluginGMPlayers;
+    private final Set<HumanEntity> manualChangeCreativeGMPlayers;
 
     /**
      * Instantiates a new creative.
@@ -102,25 +102,25 @@ public final class Creative {
         return justChangedByThisPluginGMPlayers.remove(player);
     }
 
-    public void addManualChangeCreativeGMPlayers(final Player player) {
+    public void addManualChangeCreativeGMPlayers(final HumanEntity player) {
         manualChangeCreativeGMPlayers.add(player);
     }
 
-    public boolean isManualChangeCreativeGMPlayers(final Player player) {
+    public boolean isManualChangeCreativeGMPlayers(final HumanEntity player) {
         return manualChangeCreativeGMPlayers.contains(player);
     }
 
-    public boolean removeManualChangeCreativeGMPlayers(final Player player) {
+    public boolean removeManualChangeCreativeGMPlayers(final HumanEntity player) {
         return manualChangeCreativeGMPlayers.remove(player);
     }
 
     public boolean dropItem(final Player player) {
-        return conf.isCreativeNoDrop() && !player.hasPermission(OVERRIDE_NODROP_PERM);
+        return !isManualChangeCreativeGMPlayers(player) && conf.isCreativeNoDrop() && !player.hasPermission(OVERRIDE_NODROP_PERM);
     }
 
     public void invOpen(final InventoryOpenEvent event, final HumanEntity player) {
 
-        if (conf.isCreativeNoOpenChest() && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
+        if (!isManualChangeCreativeGMPlayers(player) && conf.isCreativeNoOpenChest() && !player.hasPermission(OVERRIDE_NOOPENCHEST_PERM)) {
 
             final InventoryType it = event.getView().getType();
 
@@ -143,7 +143,7 @@ public final class Creative {
 
         final Location blockLoc;
 
-        if (conf.isCreativeNoBuildOutside() && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
+        if (!isManualChangeCreativeGMPlayers(player) && conf.isCreativeNoBuildOutside() && !player.hasPermission(OVERRIDE_NOBUILDOUTSIDE_PERM)) {
 
             if (event instanceof BlockBreakEvent) {
                 blockLoc = ((BlockBreakEvent) event).getBlock().getLocation();
@@ -157,7 +157,7 @@ public final class Creative {
 
     public void checkBannedItems(final InventoryCloseEvent event, final HumanEntity player) {
 
-        if (!player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
+        if (!isManualChangeCreativeGMPlayers(player) && !player.hasPermission(OVERRIDE_BANNEDITEMS_PERM)) {
 
             for (final Material mat : conf.getCreativeBannedItems()) {
                 event.getPlayer().getInventory().remove(mat);

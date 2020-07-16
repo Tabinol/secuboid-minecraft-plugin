@@ -26,6 +26,7 @@ import me.tabinol.secuboid.flycreative.Fly;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -153,25 +154,25 @@ public final class FlyCreativeListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerDropItem(final PlayerDropItemEvent event) {
-
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE && creative.dropItem(event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE && creative.dropItem(player)) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(final InventoryOpenEvent event) {
-
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            creative.invOpen(event, event.getPlayer());
+        final HumanEntity player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            creative.invOpen(event, player);
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(final BlockBreakEvent event) {
-
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            if (creative.build(event, event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            if (creative.build(event, player)) {
                 event.setCancelled(true);
             }
         }
@@ -179,8 +180,9 @@ public final class FlyCreativeListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockPlace(final BlockPlaceEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            if (creative.build(event, event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            if (creative.build(event, player)) {
                 event.setCancelled(true);
             }
         }
@@ -188,8 +190,9 @@ public final class FlyCreativeListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onInventoryClose(final InventoryCloseEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-            creative.checkBannedItems(event, event.getPlayer());
+        final HumanEntity player = event.getPlayer();
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            creative.checkBannedItems(event, player);
         }
 
     }

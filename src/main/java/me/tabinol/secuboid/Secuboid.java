@@ -267,6 +267,7 @@ public final class Secuboid extends JavaPlugin {
                 // Reload players
                 if (!connectionListener.doAsyncPlayerPreLogin(playerUUID, playerName)) {
                     player.kickPlayer("Problem with Secuboid inventory. Contact an administrator.");
+                    continue;
                 }
                 connectionListener.doPlayerJoin(player);
             }

@@ -872,7 +872,7 @@ public final class PlayerListener extends CommonListener implements Listener {
 
         final Player player = event.getPlayer();
 
-        if (!playerConf.get(event.getPlayer()).isAdminMode()) {
+        if (!playerConf.get(player).isAdminMode()) {
 
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                     .getPermissionsFlags(player.getLocation());

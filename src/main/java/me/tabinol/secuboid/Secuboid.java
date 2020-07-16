@@ -258,19 +258,17 @@ public final class Secuboid extends JavaPlugin {
             pluginCommand.setTabCompleter(commandListener);
         }
 
-        if (!isServerBoot) {
-            // Reload players
-            for (final Player player : this.getServer().getOnlinePlayers()) {
-                final UUID playerUUID = player.getUniqueId();
-                final String playerName = player.getName();
+        // Reload players, not only on "sd reload" because there is also de bukkit "reload" command.
+        for (final Player player : this.getServer().getOnlinePlayers()) {
+            final UUID playerUUID = player.getUniqueId();
+            final String playerName = player.getName();
 
-                // Reload players
-                if (!connectionListener.doAsyncPlayerPreLogin(playerUUID, playerName)) {
-                    player.kickPlayer("Problem with Secuboid inventory. Contact an administrator.");
-                    continue;
-                }
-                connectionListener.doPlayerJoin(player);
+            // Reload players
+            if (!connectionListener.doAsyncPlayerPreLogin(playerUUID, playerName)) {
+                player.kickPlayer("Problem with Secuboid inventory. Contact an administrator.");
+                continue;
             }
+            connectionListener.doPlayerJoin(player);
         }
     }
 

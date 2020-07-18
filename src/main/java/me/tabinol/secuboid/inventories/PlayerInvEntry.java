@@ -18,10 +18,9 @@
 package me.tabinol.secuboid.inventories;
 
 
+import me.tabinol.secuboid.storage.Savable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-
-import me.tabinol.secuboid.storage.Savable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,5 +167,20 @@ public class PlayerInvEntry implements Savable {
     @Override
     public UUID getUUID() {
         return getPlayerUUIDNullable();
+    }
+
+    public PlayerInvEntry copyOf() {
+        final PlayerInvEntry invEntryCopy = new PlayerInvEntry(playerInventoryCacheNullable, inventorySpec, isCreativeInv);
+        invEntryCopy.setSlotItems(slotItems);
+        invEntryCopy.setEnderChestItems(enderChestItems);
+        invEntryCopy.level = level;
+        invEntryCopy.exp = exp;
+        invEntryCopy.health = health;
+        invEntryCopy.foodLevel = foodLevel;
+        for (final PotionEffect potionEffect : potionEffects) {
+            invEntryCopy.addPotionEffect(potionEffect);
+        }
+
+        return invEntryCopy;
     }
 }

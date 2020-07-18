@@ -135,25 +135,27 @@ public final class Inventories {
         }
 
         // Request save
+        // Need copyOf because the inventory can change between the save request and the save.
+        final PlayerInvEntry playerInvEntryCopy = playerInvEntry.copyOf();
         if (isDeath) {
-            playerInvEntry.getPlayerInventoryCacheNullable().addInventoryDeath(playerInvEntry);
+            playerInvEntry.getPlayerInventoryCacheNullable().addInventoryDeath(playerInvEntryCopy);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_HISTORY_SAVE, SaveOn.BOTH,
-                    playerInvEntry);
+                    playerInvEntryCopy);
         } else if (isDefaultInv) {
-            inventorySpecToDefaultInvEntry.put(playerInvEntry.getInventorySpec(), playerInvEntry);
+            inventorySpecToDefaultInvEntry.put(playerInvEntry.getInventorySpec(), playerInvEntryCopy);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_SAVE, SaveOn.BOTH,
-                    playerInvEntry);
+                    playerInvEntryCopy);
         } else if (isEnderChestOnly) {
             playerInvEntry.getPlayerInventoryCacheNullable().addInventory(playerInvEntry.getInventorySpec(),
-                    playerInvEntry);
+                    playerInvEntryCopy);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_DEATH_SAVE, SaveOn.BOTH,
-                    playerInvEntry);
+                    playerInvEntryCopy);
         } else {
             // Normal save
             playerInvEntry.getPlayerInventoryCacheNullable().addInventory(playerInvEntry.getInventorySpec(),
-                    playerInvEntry);
+                    playerInvEntryCopy);
             secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PLAYER_SAVE, SaveOn.BOTH,
-                    playerInvEntry);
+                    playerInvEntryCopy);
         }
     }
 

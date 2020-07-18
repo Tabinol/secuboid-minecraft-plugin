@@ -99,7 +99,7 @@ public final class PermissionsDao {
 
     public void deleteAllLandPermissions(final Connection conn, final UUID landUUID) throws SQLException {
         final String sql = "DELETE FROM `{{TP}}lands_permissions` " //
-                + "WHERE `land_uuid`";
+                + "WHERE `land_uuid`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             DbUtils.setUUID(stmt, 1, landUUID);

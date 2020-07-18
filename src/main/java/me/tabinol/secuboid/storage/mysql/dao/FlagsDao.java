@@ -24,8 +24,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -74,6 +76,23 @@ public final class FlagsDao {
                     return rs.getLong("id");
                 }
                 return null;
+            }
+        }
+    }
+
+    public Set<Long> getLandFlagIds(final Connection conn, final UUID landUUID)
+            throws SQLException {
+        final String sql = "SELECT `id` FROM `{{TP}}lands_flags` " //
+                + "WHERE `land_uuid`=?";
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            final Set<Long> results = new HashSet<>();
+            DbUtils.setUUID(stmt, 1, landUUID);
+            try (final ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    results.add(rs.getLong("id"));
+                }
+                return results;
             }
         }
     }

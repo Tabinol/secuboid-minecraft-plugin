@@ -491,12 +491,20 @@ public final class StorageMySql implements Storage {
 
     @Override
     public void removeAllLandFlags(final Land land) {
+        final UUID landUUID = land.getUUID();
         try (final Connection conn = dbConn.openConnection()) {
-            flagsDao.deleteAllLandFlags(conn, land.getUUID());
+            final Set<Long> flagIds = flagsDao.getLandFlagIds(conn, landUUID);
+            for (final long flagId : flagIds) {
+                flagsValuesBooleanDao.delete(conn, flagId);
+                flagsValuesStringDao.delete(conn, flagId);
+                flagsValuesDoubleDao.delete(conn, flagId);
+                flagsValuesListDao.deleteLandFlagValueList(conn, flagId);
+            }
+            flagsDao.deleteAllLandFlags(conn, landUUID);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to remove all flags from the land from database [landUUID=%s, landName=%s]",
-                            land.getUUID(), land.getName()),
+                            landUUID, land.getName()),
                     e);
         }
     }

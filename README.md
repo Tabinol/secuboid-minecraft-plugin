@@ -2,7 +2,8 @@
 
 Secuboid is a complete land (region) protection plugin. It has a lot of functionalities. You can make cuboid lands, cylinder lands and road (beta) protection. The player can make his own land with economy, rent or sell his land. There is also a very complete list of flags and permissions.
 
-Join us on Discord: https://discord.gg/XXXXXX
+## If you are a developer, please adopt this plugin
+I am sorry. I have to stop maintaining this plugin due to my work. If you are a developer, be free to continue this work. **The v1.5.0 for Minecraft 1.16.x will be the last version developed by Tabinol.**
 
 ## Documentation
 
@@ -84,10 +85,9 @@ Ouaou, Tabinol
 
 ## Tanks to
 
-Breston (Documentation), Undia (Logo), Modulmonde staff (Tests)
+Breston (Documentation), Modulmonde staff (Tests)
 
 # License
 
 * Secuboid license is [GPL3](http://fsf.org/)
-* Secuboid logo is copyright
 * OpenMoji icons is [CC BY-SA 4.0](https://openmoji.org/)

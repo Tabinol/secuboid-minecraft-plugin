@@ -22,7 +22,7 @@ I am sorry. I have to stop maintaining this plugin due to my work. If you are a 
 
 * No one can place, destroy blocks, or drop items in your region if you don’t want
 * Moderation for every region
-* You can ban o kick any player of the region
+* You can ban or kick any player of the region
 * You can accept or deny any land when a player creates it
 * Pre-visualize your claim with sponges
 
@@ -35,8 +35,8 @@ I am sorry. I have to stop maintaining this plugin due to my work. If you are a 
 ## Land Management
 ![](https://tabinol.github.io/secuboid-minecraft-plugin/images/1F3E1-100x.png)
 
-* Flags (list here)
-* Permissions (list here)
+* Flags ([list here](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES))
+* Permissions ([list here](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES))
 * You can decide what your players can set themselves in config.yml
 * Different roles (owner, resident manager, resident, visitor…)
 
@@ -72,8 +72,7 @@ I am sorry. I have to stop maintaining this plugin due to my work. If you are a 
 
 # History
 
-The Secuboid project began in 1994 on the "Factoid" name. The goal was to
-You have a complete protection plugin with an unlimited possibilities of configuration for lands and worlds. We also wanted to add a inventory system for lands, worlds and game modes.
+The Secuboid project began in 2014 on the "Factoid" name. The goal was to have a complete protection plugin with an unlimited possibilities of configuration for lands and worlds. We also wanted to add an inventory system for lands, worlds and game modes.
 
 ## Former developers
 

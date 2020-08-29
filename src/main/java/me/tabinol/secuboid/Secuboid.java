@@ -416,4 +416,13 @@ public final class Secuboid extends JavaPlugin {
     public CommandListener getCommandListener() {
         return commandListener;
     }
+
+    /**
+     * Gets the approve notification system.
+     *
+     * @return the approve notification
+     */
+    public ApproveNotif getApproveNotif() {
+        return approveNotif;
+    }
 }

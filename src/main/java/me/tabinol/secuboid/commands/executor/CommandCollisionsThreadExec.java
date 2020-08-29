@@ -95,7 +95,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandCollisionsThreadExec(final Secuboid secuboid, final InfoCommand infoCommand,
-            final CommandSender sender, final ArgList argList) throws SecuboidCommandException {
+                                       final CommandSender sender, final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -124,8 +124,8 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
      * @param addForApprove the add for approve
      */
     final void checkCollision(final String worldName, final String landName, final Land land, final Type type,
-            final Collisions.LandAction action, final int removeId, final Area newArea, final Land parent,
-            final PlayerContainer owner, final boolean addForApprove) {
+                              final Collisions.LandAction action, final int removeId, final Area newArea, final Land parent,
+                              final PlayerContainer owner, final boolean addForApprove) {
 
         // allowApprove: false: The command can absolutely not be done if there is
         // error!
@@ -190,10 +190,9 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                     sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage()
                             .getMessage("COLLISION.GENERAL.NEEDAPPROVE", collisions.getLandName()));
                     final Integer newAreaIdNullable = Optional.ofNullable(newArea).map(Area::getKey).orElse(null);
-                    secuboid.getLands().getApproves()
-                            .addApprove(new Approve(landLocal, action,
-                                    removeId != 0 ? removeId : null, newAreaIdNullable, owner,
-                                    parent, collisions.getPrice(), Calendar.getInstance()));
+                    final Approve approve = new Approve(landLocal, action, removeId != 0 ? removeId : null, newAreaIdNullable,
+                            owner, parent, collisions.getPrice(), Calendar.getInstance());
+                    secuboid.getLands().getApproves().addApprove(approve, player);
                     new CommandCancel(secuboid, null, sender, argList).commandExecute();
 
                 } else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || !allowApprove) {
@@ -266,7 +265,7 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
         // or access to create in parent if it is a subland.
         if (!playerConf.isAdminMode()
                 && (landCheckValues.localPermissionsFlagsParent == null || !landCheckValues.localPermissionsFlagsParent
-                        .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
+                .checkPermissionAndInherit(player, PermissionList.LAND_CREATE.getPermissionType()))) {
             throw new SecuboidCommandException(secuboid, "CommandCreate", player, "GENERAL.MISSINGPERMISSION");
         }
 

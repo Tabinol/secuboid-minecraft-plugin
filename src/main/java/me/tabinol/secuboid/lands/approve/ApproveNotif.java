@@ -17,6 +17,8 @@
  */
 package me.tabinol.secuboid.lands.approve;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -54,21 +56,13 @@ public final class ApproveNotif extends SecuboidRunnable {
         // Start only if notification is activated in configuration
         if (notifyTime != 0) {
             this.runLater(notifyTime, true);
-            this.stopNextRun();
         }
 
     }
 
     @Override
     public void run() {
-
-        final int lstCount;
-
-        if ((lstCount = secuboid.getLands().getApproves().getApproveList().size()) != 0) {
-
-            // If there is some notification to done
-            notifyListApprove(lstCount);
-        }
+        notifyListApprove(null);
     }
 
     /**
@@ -79,27 +73,38 @@ public final class ApproveNotif extends SecuboidRunnable {
      */
     void notifyForApprove(final String landName, final String playerName) {
         notifyPlayer(
-                secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN));
+                secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFYLAND", landName, playerName + ChatColor.GREEN), null);
     }
 
     /**
      * Notify list approve.
      *
-     * @param lstCount the lst count
+     * @param targetPlayerNullable notify this player or all players with permission if is nullable
      */
-    private void notifyListApprove(final int lstCount) {
-        notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""));
+    public void notifyListApprove(final Player targetPlayerNullable) {
+        final int lstCount = secuboid.getLands().getApproves().getApproveList().size();
+        if (lstCount != 0) {
+            // If there is some notification to done
+            notifyPlayer(secuboid.getLanguage().getMessage("COLLISION.SHOW.NOTIFY", lstCount + ""), targetPlayerNullable);
+        }
     }
 
     /**
      * Notify the player with a message.
      *
-     * @param message the message
+     * @param message              the message
+     * @param targetPlayerNullable notify this player or all players with permission if is nullable
      */
-    private void notifyPlayer(final String message) {
-        for (final Player players : secuboid.getServer().getOnlinePlayers()) {
-            if (players.hasPermission(PERM_APPROVE)) {
-                players.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
+    private void notifyPlayer(final String message, final Player targetPlayerNullable) {
+        final Collection<? extends Player> players;
+        if (targetPlayerNullable != null) {
+            players = Collections.singleton(targetPlayerNullable);
+        } else {
+            players = secuboid.getServer().getOnlinePlayers();
+        }
+        for (final Player player : players) {
+            if (player.hasPermission(PERM_APPROVE)) {
+                player.sendMessage(ChatColor.GREEN + "[Secuboid] " + message);
             }
         }
         secuboid.getLogger().log(Level.INFO, "[Secuboid] {0}", message);

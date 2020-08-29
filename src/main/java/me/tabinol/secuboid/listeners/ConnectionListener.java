@@ -129,6 +129,9 @@ public class ConnectionListener extends CommonListener implements Listener {
         if (player.hasPermission("secuboid.adminmode.auto")) {
             playerConf.get(player).setAdminMode(true);
         }
+
+        // Notify for approves
+        secuboid.getApproveNotif().notifyListApprove(player);
     }
 
     /**

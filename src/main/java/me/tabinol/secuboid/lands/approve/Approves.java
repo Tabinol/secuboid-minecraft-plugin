@@ -29,6 +29,7 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 import me.tabinol.secuboid.storage.StorageThread.SaveActionEnum;
 import me.tabinol.secuboid.storage.StorageThread.SaveOn;
+import org.bukkit.entity.Player;
 
 /**
  * Approves
@@ -51,26 +52,31 @@ public class Approves {
      */
     public void loadApproves(final List<Approve> approves) {
         landNameToApprove.clear();
-        approves.forEach(this::addApprove);
+        approves.forEach(approve -> addApprove(approve, null));
     }
 
     /**
      * Adds the approve.
      *
-     * @param approve the approve
+     * @param approve        the approve
+     * @param playerNullable the player for notification
      */
-    public void addApprove(final Approve approve) {
+    public void addApprove(final Approve approve, final Player playerNullable) {
         final Land land = approve.getLand();
 
         // Verify if the areas still exist
         if ((approve.getRemovedAreaIdNullable() != null && land.getArea(approve.getRemovedAreaIdNullable()) == null)
                 || (approve.getNewAreaIdNullable() != null && land.getArea(approve.getNewAreaIdNullable()) == null)) {
-            secuboid.getLogger().log(Level.WARNING,
+            secuboid.getLogger().log(Level.WARNING, () ->
                     "Skipping the approve because it referes to a non existing area [name=" + approve.getName() + "]");
             return;
         }
 
         landNameToApprove.put(approve.getName(), approve);
+
+        if (playerNullable != null) {
+            secuboid.getApproveNotif().notifyForApprove(approve.getLand().getName(), playerNullable.getDisplayName());
+        }
 
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_SAVE, SaveOn.BOTH, approve);
     }

@@ -18,6 +18,7 @@
 package me.tabinol.secuboid.lands.approve;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -132,7 +133,7 @@ public class Approves {
      */
     public void removeAll() {
         secuboid.getStorageThread().addSaveAction(SaveActionEnum.APPROVE_REMOVE_ALL, SaveOn.BOTH, null);
-        for (final Approve approve : landNameToApprove.values()) {
+        for (final Approve approve : new HashSet<>(landNameToApprove.values())) { // Copy to resolve concurrent exception
             removeLandAndAreaIfNeeded(approve);
         }
         landNameToApprove.clear();

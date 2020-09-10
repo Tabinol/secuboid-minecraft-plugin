@@ -196,9 +196,14 @@ public abstract class CommandCollisionsThreadExec extends CommandExec {
                     new CommandCancel(secuboid, null, sender, argList).commandExecute();
 
                 } else if (secuboid.getConf().getAllowCollision() == Config.AllowCollisionType.FALSE || !allowApprove) {
-
-                    throw new SecuboidCommandException(secuboid, "Land collision", sender,
-                            "COLLISION.GENERAL.CANNOTDONE");
+                    // Create a consume the Exception to fix a not needed console trace.
+                    try {
+                        throw new SecuboidCommandException(secuboid, "Land collision", sender,
+                                "COLLISION.GENERAL.CANNOTDONE");
+                    } catch (final SecuboidCommandException e) {
+                        e.notifySender();
+                    }
+                    return;
                 }
             }
         }

@@ -42,7 +42,7 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      *
      * @param secuboid the secuboid instance
      */
-    public SecuboidRunnable(Secuboid secuboid) {
+    public SecuboidRunnable(final Secuboid secuboid) {
         super();
         this.secuboid = secuboid;
         taskId = null;
@@ -54,9 +54,13 @@ public abstract class SecuboidRunnable extends BukkitRunnable {
      * @param tick     the tick
      * @param multiple the multiple
      */
-    public final void runLater(Long tick, boolean multiple) {
+    public final void runLater(final Long tick, final boolean multiple) {
         stopNextRun();
-        taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+        if (multiple) {
+            taskId = Bukkit.getServer().getScheduler().runTaskTimer(secuboid, (Runnable) this, tick, tick);
+        } else {
+            taskId = Bukkit.getServer().getScheduler().runTaskLater(secuboid, (Runnable) this, tick);
+        }
     }
 
     /**

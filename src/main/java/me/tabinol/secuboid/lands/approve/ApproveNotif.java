@@ -54,7 +54,7 @@ public final class ApproveNotif extends SecuboidRunnable {
         final long notifyTime = secuboid.getConf().getApproveNotifyTime();
 
         // Start only if notification is activated in configuration
-        if (notifyTime != 0) {
+        if (notifyTime > 0) {
             this.runLater(notifyTime, true);
         }
 

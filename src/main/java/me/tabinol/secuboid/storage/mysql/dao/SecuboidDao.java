@@ -39,6 +39,7 @@ public final class SecuboidDao {
                     "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}player_containers_types` ({{LS}}" +
@@ -47,6 +48,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}players` ({{LS}}" +
@@ -54,6 +56,7 @@ public final class SecuboidDao {
                     "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`uuid`),{{LS}}" +
                     "  UNIQUE KEY `uuid` (`uuid`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}player_containers` ({{LS}}" +
@@ -76,6 +79,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands` ({{LS}}" +
@@ -119,6 +123,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}areas_types` ({{LS}}" +
@@ -127,6 +132,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas` ({{LS}}" +
@@ -153,6 +159,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas_roads_matrices` ({{LS}}" +
@@ -173,6 +180,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_residents` ({{LS}}" +
@@ -190,6 +198,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_banneds` ({{LS}}" +
@@ -207,6 +216,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}permissions` ({{LS}}" +
@@ -215,6 +225,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_permissions` ({{LS}}" +
@@ -241,6 +252,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}permissions` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}flags` ({{LS}}" +
@@ -249,6 +261,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags` ({{LS}}" +
@@ -270,6 +283,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}flags` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_string` ({{LS}}" +
@@ -283,6 +297,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_double` ({{LS}}" +
@@ -296,6 +311,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_boolean` ({{LS}}" +
@@ -309,6 +325,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_list` ({{LS}}" +
@@ -323,6 +340,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_players_notifies` ({{LS}}" +
@@ -340,6 +358,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}approves_actions` ({{LS}}" +
@@ -348,6 +367,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}approves` ({{LS}}" +
@@ -397,6 +417,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories` ({{LS}}" +
@@ -405,6 +426,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_entries` ({{LS}}" +
@@ -417,6 +439,7 @@ public final class SecuboidDao {
                     "  `ender_chest_contents` MEDIUMTEXT NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_defaults` ({{LS}}" +
@@ -435,6 +458,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}game_modes` ({{LS}}" +
@@ -443,6 +467,7 @@ public final class SecuboidDao {
                     "  PRIMARY KEY (`id`),{{LS}}" +
                     "  UNIQUE KEY `id` (`id`),{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_saves` ({{LS}}" +
@@ -475,6 +500,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_deaths` ({{LS}}" +
@@ -508,6 +534,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_potion_effects` ({{LS}}" +
@@ -522,6 +549,7 @@ public final class SecuboidDao {
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
                     "    ON DELETE NO ACTION{{LS}}" +
                     "    ON UPDATE NO ACTION){{LS}}" +
+                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
                     "ENGINE = InnoDB",
 
             // Functions
@@ -567,6 +595,7 @@ public final class SecuboidDao {
                 + "  `value` VARCHAR(45) NOT NULL,{{LS}}" //
                 + "  PRIMARY KEY (`name`),{{LS}}" //
                 + "  UNIQUE KEY `name` (`name`)){{LS}}" //
+                + "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" //
                 + "ENGINE = InnoDB";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

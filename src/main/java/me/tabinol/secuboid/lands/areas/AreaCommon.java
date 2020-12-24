@@ -72,6 +72,7 @@ final class AreaCommon {
                final int z1, final int x2, final int y2, final int z2) {
 
         this.area = area;
+        this.isApproved = isApproved;
         this.worldName = worldName;
         this.x1 = LocalMath.lowerInt(x1, x2);
         this.x2 = LocalMath.greaterInt(x1, x2);

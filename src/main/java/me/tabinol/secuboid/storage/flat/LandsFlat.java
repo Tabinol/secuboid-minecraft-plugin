@@ -118,12 +118,6 @@ public final class LandsFlat {
         final Map<Land, UUID> orphanToParentUUID = new HashMap<>();
         final File[] files = new File(landsDir).listFiles();
 
-        assert files != null;
-        if (files.length == 0) {
-            // No land yet
-            return null;
-        }
-
         // Pass 1: load lands
         for (final File file : files) {
             if (file.isFile() && file.getName().toLowerCase().endsWith(EXT_CONF)) {

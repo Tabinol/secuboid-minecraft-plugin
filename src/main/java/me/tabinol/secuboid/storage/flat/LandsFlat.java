@@ -374,7 +374,7 @@ public final class LandsFlat {
         if (forRent) {
             land.setForRent(rentPrice, rentRenew, rentAutoRenew, forRentSignLoc);
             if (rented) {
-                land.setRented(tenant);
+                land.setRented(tenant, false);
                 land.setLastPaymentTime(lastPayment);
             }
         }

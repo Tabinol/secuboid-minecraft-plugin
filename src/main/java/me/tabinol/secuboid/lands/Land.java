@@ -1330,10 +1330,22 @@ public final class Land implements Savable, Approvable {
      * @param tenant the new rented
      */
     public void setRented(final PlayerContainerPlayer tenant) {
+        setRented(tenant, true);
+    }
+
+    /**
+     * Sets the rented.
+     *
+     * @param tenant the new rented
+     * @param isRemoveLandTenantPerms Remove or not all the LAND_TENANT permissions
+     */
+    public void setRented(final PlayerContainerPlayer tenant, final boolean isRemoveLandTenantPerms) {
         rented = true;
         this.tenant = tenant;
         lastPayment = System.currentTimeMillis();
-        landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        if (isRemoveLandTenantPerms) {
+            landPermissionsFlags.removeAllPermissionsType(PermissionList.LAND_TENANT.getPermissionType(), SaveOn.DATABASE);
+        }
         doSave(SaveActionEnum.LAND_SAVE, SaveOn.BOTH);
     }
 

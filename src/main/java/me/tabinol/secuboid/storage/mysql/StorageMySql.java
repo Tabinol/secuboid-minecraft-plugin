@@ -1089,7 +1089,7 @@ public final class StorageMySql implements Storage {
                     Optional.ofNullable(landPojo.getRentAutoRenewNullable()).orElse(false), forRentSignLocNullable);
             Optional.ofNullable(landPojo.getTenantUUIDNullable()).ifPresent(tenantUUID -> {
                 final PlayerContainerPlayer tenant = secuboid.getPlayerContainers().getOrAddPlayerContainerPlayer(tenantUUID);
-                land.setRented(tenant);
+                land.setRented(tenant, false);
                 land.setLastPaymentTime(Optional.ofNullable(landPojo.getLastPaymentMillisNullable()).orElse(0L));
 
             });

@@ -60,7 +60,6 @@ class ReturnPlayerToCommand implements Callable<Void> {
         try {
             commandExec.commandThreadExecute(playerCacheEntry);
         } catch (final SecuboidCommandException e) {
-            secuboid.getLogger().log(Level.SEVERE, "Error in command", e);
             e.notifySender();
         }
         return null;

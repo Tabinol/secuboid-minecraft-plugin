@@ -17,6 +17,8 @@
  */
 package me.tabinol.secuboid.exceptions;
 
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -72,7 +74,9 @@ public class SecuboidCommandException extends Exception {
      * Notifies the sender or just return if the sender is null.
      */
     public void notifySender() {
+
         if (sender != null) {
+            secuboid.getLogger().log(Level.INFO, sender.getName() + ": the Parameter is Incorrect: " + getMessage());
             sender.sendMessage(ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage(langMsg, params));
         }
     }

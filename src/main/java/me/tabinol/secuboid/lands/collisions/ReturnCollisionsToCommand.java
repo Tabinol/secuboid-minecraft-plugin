@@ -66,7 +66,6 @@ final class ReturnCollisionsToCommand implements Callable<Void> {
                 throw new SecuboidCommandException(secuboid, commandExec.getSender(), "Unknown exception", re);
             }
         } catch (final SecuboidCommandException e) {
-            secuboid.getLogger().log(Level.SEVERE, "Error in command", e);
             e.notifySender();
         }
 

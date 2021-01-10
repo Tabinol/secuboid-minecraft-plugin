@@ -187,6 +187,12 @@ public final class InventoryListener extends CommonListener implements Listener 
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
         final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
+
+        // Fix player disconnect before the command (mycmd)
+        if (playerConfEntry == null) {
+            return;
+        }
+
         final InventorySpec inventorySpec = playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry()
                 .getInventorySpec();
 

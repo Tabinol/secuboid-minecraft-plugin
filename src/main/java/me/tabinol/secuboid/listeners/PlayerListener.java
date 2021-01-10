@@ -871,8 +871,14 @@ public final class PlayerListener extends CommonListener implements Listener {
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event) {
 
         final Player player = event.getPlayer();
+        final PlayerConfEntry playerConfEntry = playerConf.get(player);
 
-        if (!playerConf.get(player).isAdminMode()) {
+        // Fix player disconnect before the command (mycmd)
+        if (playerConfEntry == null) {
+            return;
+        }
+        
+        if (!playerConfEntry.isAdminMode()) {
 
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
                     .getPermissionsFlags(player.getLocation());

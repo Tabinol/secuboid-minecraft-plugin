@@ -43,6 +43,7 @@ import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.players.PlayerConfEntry;
+import me.tabinol.secuboid.selection.PlayerSelection;
 import me.tabinol.secuboid.utilities.StringChanges;
 
 /**
@@ -148,41 +149,41 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         final List<String> argList = new ArrayList<>();
         for (final String completion : completions) {
             switch (completion) {
-            case "@approveLandList":
-                argList.addAll(listApproveLandList(sender));
-                break;
-            case "@areaLand":
-                argList.addAll(listAreaLand(sender));
-                break;
-            case "@boolean":
-                argList.addAll(listBoolean());
-                break;
-            case "@command":
-                argList.addAll(listCommand());
-                break;
-            case "@flag":
-                argList.addAll(listFlag());
-                break;
-            case "@land":
-                argList.addAll(listLand());
-                break;
-            case "@number":
-                argList.addAll(Arrays.asList("1", "10", "100", "1000"));
-                break;
-            case "@player":
-                argList.addAll(listPlayer());
-                break;
-            case "@playerContainer":
-                argList.addAll(listPlayerContainer(firstChars));
-                break;
-            case "@permission":
-                argList.addAll(listPermission());
-                break;
-            case "@type":
-                argList.addAll(listType());
-                break;
-            default:
-                argList.add(completion);
+                case "@approveLandList":
+                    argList.addAll(listApproveLandList(sender));
+                    break;
+                case "@areaLand":
+                    argList.addAll(listAreaLand(sender));
+                    break;
+                case "@boolean":
+                    argList.addAll(listBoolean());
+                    break;
+                case "@command":
+                    argList.addAll(listCommand());
+                    break;
+                case "@flag":
+                    argList.addAll(listFlag());
+                    break;
+                case "@land":
+                    argList.addAll(listLand());
+                    break;
+                case "@number":
+                    argList.addAll(Arrays.asList("1", "10", "100", "1000"));
+                    break;
+                case "@player":
+                    argList.addAll(listPlayer());
+                    break;
+                case "@playerContainer":
+                    argList.addAll(listPlayerContainer(firstChars));
+                    break;
+                case "@permission":
+                    argList.addAll(listPermission());
+                    break;
+                case "@type":
+                    argList.addAll(listType());
+                    break;
+                default:
+                    argList.add(completion);
             }
         }
         return filterList(argList, firstChars);
@@ -197,11 +198,14 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private List<String> listAreaLand(final CommandSender sender) {
         final PlayerConfEntry playerConf = secuboid.getPlayerConf().get(sender);
-        if (playerConf.getSelection() != null && playerConf.getSelection().hasSelection()) {
-            final Land land = playerConf.getSelection().getLand();
-            final List<String> areasStrs = land.getAreasKey().stream().map(key -> key.toString())
-                    .collect(Collectors.toList());
-            return areasStrs;
+        final PlayerSelection playerSelection = playerConf.getSelection();
+        if (playerSelection != null) {
+            final Land land = playerSelection.getLand();
+            if (land != null) {
+                final List<String> areasStrs = land.getAreasKey().stream().map(key -> key.toString())
+                        .collect(Collectors.toList());
+                return areasStrs;
+            }
         }
         return Collections.emptyList();
     }
@@ -234,17 +238,17 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
         final List<String> argList = new ArrayList<>();
         if (firstChars.matches("^.:")) {
             switch (firstChars.substring(0, 1).toLowerCase()) {
-            case "b":
-                argList.add("B:perm.perm");
-                break;
-            case "g":
-                argList.add("G:group");
-                break;
-            case "p":
-                argList.addAll(secuboid.getPlayersCache().getPlayerNames().stream()
-                        .map(playerName -> String.format("P:%s", playerName)).collect(Collectors.toList()));
-                break;
-            default:
+                case "b":
+                    argList.add("B:perm.perm");
+                    break;
+                case "g":
+                    argList.add("G:group");
+                    break;
+                case "p":
+                    argList.addAll(secuboid.getPlayersCache().getPlayerNames().stream()
+                            .map(playerName -> String.format("P:%s", playerName)).collect(Collectors.toList()));
+                    break;
+                default:
             }
         } else {
             argList.addAll(secuboid.getPlayersCache().getPlayerNames());

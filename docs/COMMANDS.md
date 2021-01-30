@@ -33,7 +33,7 @@ Bans a player from a land.
 
 `/secuboid ban add PLAYER_CONTAINER`
 
-Adds a player the the ban list.
+Adds a player to the ban list.
 
 `/secuboid ban remove PLAYER_CONTAINER`
 

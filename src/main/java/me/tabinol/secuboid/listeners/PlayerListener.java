@@ -17,6 +17,8 @@
  */
 package me.tabinol.secuboid.listeners;
 
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
@@ -99,6 +101,9 @@ public final class PlayerListener extends CommonListener implements Listener {
      * The Constant DEFAULT_TIME_LAPS.
      */
     public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
+
+    private static final Set<Material> WATER_FISH_BUCKETS = EnumSet.of(Material.WATER_BUCKET, Material.COD_BUCKET,
+            Material.PUFFERFISH_BUCKET, Material.SALMON_BUCKET, Material.TROPICAL_FISH_BUCKET);
 
     /**
      * The conf.
@@ -682,7 +687,7 @@ public final class PlayerListener extends CommonListener implements Listener {
             if (landPermissionsFlags.isBanned(event.getPlayer())
                     || (mt == Material.LAVA_BUCKET && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUCKET_LAVA.getPermissionType()))
-                    || (mt == Material.WATER_BUCKET && !checkPermission(landPermissionsFlags, event.getPlayer(),
+                    || (WATER_FISH_BUCKETS.contains(mt) && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUCKET_WATER.getPermissionType()))) {
                 messagePermission(event.getPlayer());
                 event.setCancelled(true);
@@ -707,7 +712,7 @@ public final class PlayerListener extends CommonListener implements Listener {
             if (landPermissionsFlags.isBanned(event.getPlayer())
                     || (mt == Material.LAVA_BUCKET && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUCKET_LAVA.getPermissionType()))
-                    || (mt == Material.WATER_BUCKET && !checkPermission(landPermissionsFlags, event.getPlayer(),
+                    || (WATER_FISH_BUCKETS.contains(mt) && !checkPermission(landPermissionsFlags, event.getPlayer(),
                             PermissionList.BUCKET_WATER.getPermissionType()))) {
                 messagePermission(event.getPlayer());
                 event.setCancelled(true);

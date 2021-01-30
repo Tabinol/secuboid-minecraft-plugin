@@ -484,7 +484,7 @@ public final class PlayerListener extends CommonListener implements Listener {
         if (landPermissionsFlags.isBanned(player) || (event.getRightClicked() instanceof ItemFrame
                 && !checkPermission(landPermissionsFlags, player, PermissionList.BUILD_PLACE.getPermissionType()))
                 || (event.getRightClicked() instanceof Tameable
-                        && !event.getPlayer().equals(((Tameable) event.getRightClicked()).getOwner())
+                        && !((Tameable) event.getRightClicked()).isTamed()
                         && !checkPermission(landPermissionsFlags, player, PermissionList.TAME.getPermissionType()))
                 || (event.getRightClicked() instanceof Merchant
                         && !checkPermission(landPermissionsFlags, player, PermissionList.TRADE.getPermissionType()))

@@ -34,6 +34,8 @@ import me.tabinol.secuboid.config.Config;
  */
 public final class Lang {
 
+    private static String STR_POURCENT = "%";
+
     /**
      * The actual version of lang file.
      */
@@ -52,7 +54,7 @@ public final class Lang {
     /**
      * The langconfig.
      */
-    private final FileConfiguration langconfig;
+    final FileConfiguration langconfig;
 
     /**
      * The plugin.
@@ -150,61 +152,18 @@ public final class Lang {
             return "MESSAGE NOT FOUND FOR PATH: " + path;
         }
         if (param.length >= 1) {
-            final int occurence = getOccurrence(message, '%');
-            if (occurence == param.length) {
-                for (int i = 0; i < occurence; i++) {
-                    message = replace(message, "%", param[i]);
-                    // System.out.print(message);
-                }
-            } else {
-                return "Error! variable missing for Entries.";
+            // New "%i%"
+            for (int i = 0; i < param.length; i++) {
+                message = message.replaceFirst(STR_POURCENT + (i + 1) + STR_POURCENT, param[i]);
+            }
+
+            // Legacy "%"
+            for (int i = 0; i < param.length; i++) {
+                message = message.replaceFirst(STR_POURCENT, param[i]);
             }
         }
 
         return message;
-    }
-
-    /**
-     * Replace.
-     *
-     * @param s_original the s_original
-     * @param s_cherche  the s_cherche
-     * @param s_nouveau  the s_nouveau
-     * @return the string
-     */
-    public String replace(final String s_original, final String s_cherche, final String s_nouveau) {
-        if ((s_original == null) || (s_original.isEmpty())) {
-            return "";
-        }
-        if ((s_nouveau == null) || (s_nouveau.isEmpty()) || (s_cherche == null) || (s_cherche.isEmpty())) {
-            return s_original;
-        }
-
-        final StringBuffer sFinal;
-        final int index = s_original.indexOf(s_cherche);
-
-        sFinal = new StringBuffer(s_original.substring(0, index));
-        sFinal.append(s_nouveau);
-        sFinal.append(s_original.substring(index + s_cherche.length()));
-
-        return sFinal.toString();
-    }
-
-    /**
-     * Gets the occurrence.
-     *
-     * @param s the s
-     * @param r the r
-     * @return the occurrence
-     */
-    private int getOccurrence(final String s, final char r) {
-        int counter = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == r) {
-                counter++;
-            }
-        }
-        return counter;
     }
 
     /**

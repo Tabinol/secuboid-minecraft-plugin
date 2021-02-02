@@ -20,6 +20,7 @@ package me.tabinol.secuboid.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -154,12 +155,14 @@ public final class Lang {
         if (param.length >= 1) {
             // New "%i%"
             for (int i = 0; i < param.length; i++) {
-                message = message.replaceFirst(STR_POURCENT + (i + 1) + STR_POURCENT, param[i]);
+                String replacer = Matcher.quoteReplacement(param[i]);
+                message = message.replaceFirst(STR_POURCENT + (i + 1) + STR_POURCENT, replacer);
             }
 
             // Legacy "%"
             for (int i = 0; i < param.length; i++) {
-                message = message.replaceFirst(STR_POURCENT, param[i]);
+                String replacer = Matcher.quoteReplacement(param[i]);
+                message = message.replaceFirst(STR_POURCENT, replacer);
             }
         }
 

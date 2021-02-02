@@ -44,4 +44,20 @@ public class LangTest {
         String message = lang.getMessage("testPath", "1", "3", "2");
         assertEquals("1 1 2 2 3 3", message);
     }
+
+    @Test
+    public void testMessageNoParam() {
+        Lang lang = new Lang(secuboid);
+        lang.langconfig.set("testPath", "1 2 3 4");
+        String message = lang.getMessage("testPath");
+        assertEquals("1 2 3 4", message);
+    }
+
+    @Test
+    public void testMessageEscapeChar() {
+        Lang lang = new Lang(secuboid);
+        lang.langconfig.set("testPath", "%1% entre sur le terrain %2%.");
+        String message = lang.getMessage("testPath", "[Admin] Breston $", "toto");
+        assertEquals("[Admin] Breston $ entre sur le terrain toto.", message);
+    }
 }

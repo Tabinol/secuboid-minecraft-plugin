@@ -200,6 +200,12 @@ public final class CuboidArea implements Area {
     }
 
     @Override
+    public boolean isLocationInside(final int x, final int y, final int z) {
+        return LocalMath.isInInterval(x, getX1(), getX2()) && LocalMath.isInInterval(y, getY1(), getY2())
+                && LocalMath.isInInterval(z, getZ1(), getZ2());
+    }
+
+    @Override
     public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }

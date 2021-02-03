@@ -288,6 +288,11 @@ public final class RoadArea implements Area {
     }
 
     @Override
+    public boolean isLocationInside(final int x, final int y, final int z) {
+        return regionMatrix.getPoint(x, z) && LocalMath.isInInterval(y, getY1(), getY2());
+    }
+
+    @Override
     public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }

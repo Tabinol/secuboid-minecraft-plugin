@@ -285,7 +285,11 @@ public final class CylinderArea implements Area {
 
     @Override
     public boolean isLocationInside(final String worldName, final int x, final int z) {
-        return getWorldName().equals(worldName) && ((Math.pow((x - originH), 2) / Math.pow(rX, 2))
+        return getWorldName().equals(worldName) && isLocationInside(x, z);
+    }
+
+    private boolean isLocationInside(final int x, final int z) {
+        return ((Math.pow((x - originH), 2) / Math.pow(rX, 2))
                 + (Math.pow((z - originK), 2) / Math.pow(rZ, 2))) < 1;
     }
 
@@ -294,6 +298,10 @@ public final class CylinderArea implements Area {
         return isLocationInside(worldName, x, z) && LocalMath.isInInterval(y, getY1(), getY2());
     }
 
+    @Override
+    public boolean isLocationInside(final int x, final int y, final int z) {
+        return isLocationInside(x, z) && LocalMath.isInInterval(y, getY1(), getY2());
+    }
     @Override
     public boolean isLocationInside(final Location loc) {
         return isLocationInside(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());

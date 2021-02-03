@@ -311,6 +311,17 @@ public interface Area extends Comparable<Area>, Approvable, SavableParameter {
     boolean isLocationInside(String worldName, int x, int y, int z);
 
     /**
+     * Gets if the location is inside the area. IMPORTANT: This method does not
+     * check the world.
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return if true or false
+     */
+    boolean isLocationInside(int x, int y, int z);
+
+    /**
      * Gets if the location is inside the area.
      *
      * @param loc the location

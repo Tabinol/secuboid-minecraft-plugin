@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  discord: antonioned/discord@0.1.0
+
 jobs:
   build:
     working_directory: ~/secuboid-minecraft-plugin
@@ -26,6 +29,7 @@ jobs:
           root: /tmp/artifacts
           paths:
             - secuboid-*.jar
+      - discord/status
   deploy:
     docker:
       - image: circleci/ubuntu-server
@@ -45,4 +49,4 @@ workflows:
             - build
           filters:
             branches:
-              only: master
+              only: /^master$|^\d+\.\d+\.\d+$/

@@ -59,78 +59,61 @@ public final class Areas {
     }
 
     public void add(Area area) {
-        addRemove(area, true);
-    }
+        int chunkX1 = area.getX1() >> 4;
+        int chunkX2 = area.getX2() >> 4;
+        int chunkZ1 = area.getZ1() >> 4;
+        int chunkZ2 = area.getZ2() >> 4;
 
-    public void remove(Area area) {
-        addRemove(area, false);
-    }
-
-    private void addRemove(Area area, boolean isAdd) {
-        int x1 = area.getX1();
-        int z1 = area.getZ1();
-        int x2 = area.getX2();
-        int z2 = area.getZ2();
-        int minRegionX = x1 >> 9;
-        int maxRegionX = x2 >> 9;
-        int minRegionZ = z1 >> 9;
-        int maxRegionZ = z2 >> 9;
-        for (int regionX = minRegionX; regionX <= maxRegionX; regionX++) {
-            for (int regionZ = minRegionZ; regionZ <= maxRegionZ; regionZ++) {
-                if (isAdd) {
-                    addInRegion(x1, x2, z1, z2, regionX, regionZ, area);
-                } else {
-                    removeInRegion(x1, x2, z1, z2, regionX, regionZ, area);
-                }
+        for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
+            for (int chunkZ = chunkZ1; chunkZ <= chunkZ2; chunkZ++) {
+                addInChunk(chunkX, chunkZ, area);
             }
         }
     }
 
-    private void addInRegion(int x1, int x2, int z1, int z2, int regionX, int regionZ, Area area) {
-        long regionXZ = getRegionXZ(regionX, regionZ);
+    public void remove(Area area) {
+        int chunkX1 = area.getX1() >> 4;
+        int chunkX2 = area.getX2() >> 4;
+        int chunkZ1 = area.getZ1() >> 4;
+        int chunkZ2 = area.getZ2() >> 4;
+
+        for (int chunkX = chunkX1; chunkX <= chunkX2; chunkX++) {
+            for (int chunkZ = chunkZ1; chunkZ <= chunkZ2; chunkZ++) {
+                removeInChunk(chunkX, chunkZ, area);
+            }
+        }
+    }
+
+    private void addInChunk(int chunkX, int chunkZ, Area area) {
+        long regionXZ = getRegionXZFromChunk(chunkX, chunkZ);
 
         @SuppressWarnings("unchecked")
         List<Area>[] chunkXZAreas = regionXZToChunkXZAreas.computeIfAbsent(regionXZ, k -> new List[1024]);
 
-        int minChunkX = x1 <= regionX << 9 ? 0 : x1 >> 4 & 0x1F;
-        int maxChunkX = x2 > ((regionX << 9) | 0x1F) ? 31 : x2 >> 4 & 0x1F;
-        int minChunkZ = z1 <= regionZ << 9 ? 0 : z1 & 0x1F;
-        int maxChunkZ = z2 > ((regionZ << 9) | 0x1F) ? 31 : z2 >> 4 & 0x1F;
-        for (int iChunkX = minChunkX; iChunkX <= maxChunkX; iChunkX++) {
-            for (int iChunkZ = minChunkZ; iChunkZ <= maxChunkZ; iChunkZ++) {
-                int chunkInRegionXZ = getChunkInRegionXZ(iChunkX, iChunkZ);
-                List<Area> areas = chunkXZAreas[chunkInRegionXZ];
-                if (areas == null) {
-                    areas = new ArrayList<Area>();
-                    chunkXZAreas[chunkInRegionXZ] = areas;
-                }
-                areas.add(area);
-            }
+        int chunkInRegionXZ = getChunkInRegionXZFromChunk(chunkX, chunkZ);
+        List<Area> areas = chunkXZAreas[chunkInRegionXZ];
+        if (areas == null) {
+            areas = new ArrayList<Area>();
+            chunkXZAreas[chunkInRegionXZ] = areas;
         }
+        areas.add(area);
     }
 
-    private void removeInRegion(int x1, int x2, int z1, int z2, int regionX, int regionZ, Area area) {
-        long regionXZ = getRegionXZ(regionX, regionZ);
+    private void removeInChunk(int chunkX, int chunkZ, Area area) {
+        long regionXZ = getRegionXZFromChunk(chunkX, chunkZ);
+
         List<Area>[] chunkXZAreas = regionXZToChunkXZAreas.get(regionXZ);
         if (chunkXZAreas == null) {
             return;
         }
 
-        int minChunkX = x1 <= regionX << 9 ? 0 : x1 >> 4 & 0x1F;
-        int maxChunkX = x2 > ((regionX << 9) | 0x1F) ? 31 : x2 >> 4 & 0x1F;
-        int minChunkZ = z1 <= regionZ << 9 ? 0 : z1 & 0x1F;
-        int maxChunkZ = z2 > ((regionZ << 9) | 0x1F) ? 31 : z2 >> 4 & 0x1F;
-        for (int iChunkX = minChunkX; iChunkX <= maxChunkX; iChunkX++) {
-            for (int iChunkZ = minChunkZ; iChunkZ <= maxChunkZ; iChunkZ++) {
-                int chunkInRegionXZ = getChunkInRegionXZ(iChunkX, iChunkZ);
-                List<Area> areas = chunkXZAreas[chunkInRegionXZ];
-                if (areas != null) {
-                    areas.remove(area);
-                }
-                if (areas.isEmpty()) {
-                    chunkXZAreas[chunkInRegionXZ] = null;
-                }
-            }
+        int chunkInRegionXZ = getChunkInRegionXZFromChunk(chunkX, chunkZ);
+        List<Area> areas = chunkXZAreas[chunkInRegionXZ];
+        if (areas != null) {
+            areas.remove(area);
+        }
+        if (areas.isEmpty()) {
+            chunkXZAreas[chunkInRegionXZ] = null;
         }
 
         if (isArrayAllNull(chunkXZAreas)) {
@@ -145,9 +128,21 @@ public final class Areas {
     }
 
     private int getChunkInRegionXZ(int x, int z) {
-        final int chunkX = x >> 4 & 0x1F;
-        final int chunkZ = z >> 4 & 0x1F;
-        return (chunkX << 5) | (chunkZ & 0x1F);
+        int chunkInRegionX = x >> 4 & 0x1F;
+        int chunkInRegionZ = z >> 4 & 0x1F;
+        return (chunkInRegionX << 5) | chunkInRegionZ;
+    }
+
+    private long getRegionXZFromChunk(int chunkX, int chunkZ) {
+        int regionX = chunkX >> 5;
+        int regionZ = chunkZ >> 5;
+        return (((long) regionX) << 32) | (regionZ & 0xFFFFFFFFL);
+    }
+
+    private int getChunkInRegionXZFromChunk(int chunkX, int chunkZ) {
+        int chunkInRegionX = chunkX & 0x1F;
+        int chunkInRegionZ = chunkZ & 0x1F;
+        return (chunkInRegionX << 5) | chunkInRegionZ;
     }
 
     private boolean isArrayAllNull(List<Area>[] chunkXZAreas) {

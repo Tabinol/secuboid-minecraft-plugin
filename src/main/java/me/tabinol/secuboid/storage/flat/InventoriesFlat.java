@@ -61,13 +61,22 @@ public class InventoriesFlat {
             return;
         }
 
-        final Inventories inventories = secuboid.getInventoriesOpt().get();
-        for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
-            final File invDirFile = getInventoryDir(inventorySpec.getInventoryName());
+        // Prior 1.6.0 to lowercase
+        File inventoryDir = getInventoryDir();
+        for (File invDirFile : inventoryDir.listFiles()) {
             if (invDirFile.isDirectory()) {
-                final File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
+                invDirFile.renameTo(new File(invDirFile.getParentFile(), invDirFile.getName().toLowerCase()));
+            }
+        }
+
+        Inventories inventories = secuboid.getInventoriesOpt().get();
+        for (File invDirFile : inventoryDir.listFiles()) {
+            if (invDirFile.isDirectory()) {
+                File invDefaultFile = new File(invDirFile, DEFAULT_INV + INV_EXT);
                 if (invDefaultFile.isFile()) {
-                    final PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, null,
+                    String invName = invDirFile.getName();
+                    InventorySpec inventorySpec = inventories.getInvSpec(invName);
+                    PlayerInvEntry playerInvEntry = loadInventoryFromFile(invDefaultFile, null,
                             inventorySpec, false);
                     inventories.saveInventory(null, playerInvEntry, false, true, false);
                 }
@@ -301,8 +310,12 @@ public class InventoriesFlat {
         }
     }
 
+    private File getInventoryDir() {
+        return new File(secuboid.getDataFolder(), INV_DIR);
+    }
+
     private File getInventoryDir(final String invName) {
-        return new File(secuboid.getDataFolder(), INV_DIR + "/" + invName);
+        return new File(getInventoryDir(), invName);
     }
 
     private String getGameModeFromBoolean(final boolean isCreative) {

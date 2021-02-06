@@ -51,7 +51,7 @@ public final class RoadArea implements Area {
             final RegionMatrix regionMatrix) {
 
         // We need to set x, y and z after the new instance to have a reversed order
-        areaCommon = new AreaCommon(this, isApproved, worldName, 0, y1, 0, 0, y2, 0);
+        areaCommon = new AreaCommon(isApproved, worldName, 0, y1, 0, 0, y2, 0);
         areaCommon.setX1(Integer.MAX_VALUE);
         areaCommon.setZ1(Integer.MAX_VALUE);
         areaCommon.setX2(Integer.MIN_VALUE);

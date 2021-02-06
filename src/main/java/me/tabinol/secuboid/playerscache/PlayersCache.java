@@ -220,7 +220,7 @@ public final class PlayersCache extends SecuboidQueueThread<PlayersCache.PlayerC
                 }
             }
             // Return the output of the request on the main thread
-            final ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(secuboid, outputRequest.commandExec,
+            final ReturnPlayerToCommand returnToCommand = new ReturnPlayerToCommand(outputRequest.commandExec,
                     entries);
             Bukkit.getScheduler().callSyncMethod(secuboid, returnToCommand);
         } else if (outputRequestObj instanceof PlayerCacheEntry) {

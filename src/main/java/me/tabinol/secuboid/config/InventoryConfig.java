@@ -19,6 +19,7 @@ package me.tabinol.secuboid.config;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ import me.tabinol.secuboid.permissionsflags.FlagValue;
  */
 public final class InventoryConfig {
 
-    public static final String GLOBAL = "Default"; // Means it is assigned to all
+    public static final String GLOBAL = "default"; // Means it is assigned to all
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
     public static final String PERM_DEFAULT = "secuboid.inv.default";
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";
@@ -87,7 +88,7 @@ public final class InventoryConfig {
     private void loadInventory() {
 
         // Load World and Land inventories
-        final ConfigurationSection configSec = config.getConfigurationSection("Inventories");
+        ConfigurationSection configSec = config.getConfigurationSection("Inventories");
         for (final Map.Entry<String, Object> invEntry : configSec.getValues(false).entrySet()) {
             if (invEntry.getValue() instanceof ConfigurationSection) {
                 final boolean isCreativeChange = ((ConfigurationSection) invEntry.getValue())
@@ -105,24 +106,26 @@ public final class InventoryConfig {
 
     private void createInventoryEntry(final String key, final boolean creativeChange, final boolean saveInventory,
                                       final boolean allowDrop, final List<String> disabledCommands) {
-        invNameToInvSpec.put(key, new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
+        invNameToInvSpec.put(key.toLowerCase(), new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
-    public InventorySpec getInvSpec(final LandPermissionsFlags dummyPermsFlags) {
-        final FlagValue invFlagValue = dummyPermsFlags.getFlagAndInherit(invFlag);
+    public InventorySpec getInvSpec(LandPermissionsFlags dummyPermsFlags) {
+        FlagValue invFlagValue = dummyPermsFlags.getFlagAndInherit(invFlag);
 
         // If the flag is not set
         if (invFlagValue.getValueString().isEmpty()) {
             return invNameToInvSpec.get(GLOBAL);
         }
 
-        final InventorySpec invSpec = invNameToInvSpec.get(invFlagValue.getValueString());
+        String invNameLower = invFlagValue.getValueString().toLowerCase();
+        InventorySpec invSpec = invNameToInvSpec.get(invNameLower);
 
         // If the flag is set with wrong inventory
         if (invSpec == null) {
             secuboid.getLogger().warning("Inventory name \"" + invFlagValue.getValueString() + "\" is not found "
-                    + "in " + secuboid.getName() + "/inventory.yml!");
-            return invNameToInvSpec.get(GLOBAL);
+                    + "in " + secuboid.getName() + "/inventory.yml! Creating a new one with the default configuration.");
+            
+            invSpec = new InventorySpec(invNameLower, true, true, true, Collections.emptyList());
         }
 
         return invSpec;
@@ -133,6 +136,6 @@ public final class InventoryConfig {
     }
 
     public InventorySpec getInvSpec(final String invName) {
-        return invNameToInvSpec.get(invName);
+        return invNameToInvSpec.get(invName.toLowerCase());
     }
 }

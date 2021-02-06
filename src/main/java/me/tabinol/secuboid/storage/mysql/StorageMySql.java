@@ -722,6 +722,9 @@ public final class StorageMySql implements Storage {
 
         final Inventories inventories = secuboid.getInventoriesOpt().get();
         try (final Connection conn = dbConn.openConnection()) {
+            // Prior 1.6.0 to lowercase
+            inventoriesDao.valueToLowerCase(conn);
+
             final Map<Long, String> idToInventoryName = inventoriesDao.getIdToValue(conn);
             for (final Map.Entry<Long, Long> inventoryIdToEntryIdEntry : inventoriesDefaultsDao.getIdToValue(conn)
                     .entrySet()) {

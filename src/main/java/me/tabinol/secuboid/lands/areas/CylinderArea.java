@@ -49,7 +49,7 @@ public final class CylinderArea implements Area {
     public CylinderArea(final boolean isApproved, final String worldName, final int x1, final int y1, final int z1,
             final int x2, final int y2, final int z2) {
 
-        areaCommon = new AreaCommon(this, isApproved, worldName, x1, y1, z1, x2, y2, z2);
+        areaCommon = new AreaCommon(isApproved, worldName, x1, y1, z1, x2, y2, z2);
         updatePos();
     }
 

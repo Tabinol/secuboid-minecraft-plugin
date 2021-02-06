@@ -28,11 +28,6 @@ import me.tabinol.secuboid.utilities.LocalMath;
  */
 final class AreaCommon {
 
-    /**
-     * The area.
-     */
-    private final Area area;
-
     private boolean isApproved;
 
     /**
@@ -58,7 +53,6 @@ final class AreaCommon {
     /**
      * Instantiates a new area.
      *
-     * @param area       the area
      * @param isApproved is this land is approved or in approve list
      * @param worldName  the world name
      * @param x1         the x1
@@ -68,10 +62,9 @@ final class AreaCommon {
      * @param y2         the y2
      * @param z2         the z2
      */
-    AreaCommon(final Area area, final boolean isApproved, final String worldName, final int x1, final int y1,
+    AreaCommon(final boolean isApproved, final String worldName, final int x1, final int y1,
                final int z1, final int x2, final int y2, final int z2) {
 
-        this.area = area;
         this.isApproved = isApproved;
         this.worldName = worldName;
         this.x1 = LocalMath.lowerInt(x1, x2);

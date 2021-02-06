@@ -197,6 +197,15 @@ public final class GenericIdValueDao<I, V> {
         }
     }
 
+    // Update to lowercase prior 1.6.0
+    public void valueToLowerCase(Connection conn) throws SQLException {
+        String sql = String.format("UPDATE `{{TP}}%s` SET `%s`=LOWER(`%s`)", valueColumnLabel, valueColumnLabel);
+
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            stmt.executeUpdate();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private <C> C getFromClass(final Class<C> clazz, final ResultSet rs, final String columnLabel) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {

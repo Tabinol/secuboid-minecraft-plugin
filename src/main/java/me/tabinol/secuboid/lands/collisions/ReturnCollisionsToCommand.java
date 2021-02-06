@@ -18,7 +18,6 @@
 package me.tabinol.secuboid.lands.collisions;
 
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.executor.CommandCollisionsThreadExec;

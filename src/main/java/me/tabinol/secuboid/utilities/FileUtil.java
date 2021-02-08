@@ -29,9 +29,9 @@ import java.util.Scanner;
 /**
  * The Class FileCopy.
  */
-public final class FileCopy {
+public final class FileUtil {
 
-    private FileCopy() {
+    private FileUtil() {
     }
 
     /**
@@ -42,9 +42,9 @@ public final class FileCopy {
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public static void copyTextFromJav(InputStream in, File fileTo) throws IOException {
-        final Scanner scan = new Scanner(in, "UTF8");
-        final OutputStream out = new FileOutputStream(fileTo);
-        try (final BufferedWriter outbw = new BufferedWriter(new OutputStreamWriter(out))) {
+        Scanner scan = new Scanner(in, "UTF8");
+        OutputStream out = new FileOutputStream(fileTo);
+        try (BufferedWriter outbw = new BufferedWriter(new OutputStreamWriter(out))) {
             while (scan.hasNext()) {
                 outbw.write(scan.nextLine());
                 outbw.newLine();
@@ -53,5 +53,24 @@ public final class FileCopy {
             out.close();
             scan.close();
         }
+    }
+
+    /**
+     * Delete files recursively.
+     * 
+     * @param file the directory or file
+     * @return true if deleted or false if unable to delete
+     */
+    public static boolean delete(File file) {
+        if (file.isDirectory()) {
+            for (File c : file.listFiles()) {
+                delete(c);
+            }
+        }
+        if (!file.delete()) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -20,11 +20,14 @@ package me.tabinol.secuboid.inventories;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+
+import me.tabinol.secuboid.storage.Savable;
 
 /**
  * The class for inventory specifications.
  */
-public class InventorySpec {
+public class InventorySpec implements Savable {
 
     private final String inventoryName;
     private final boolean isCreativeChange;
@@ -86,5 +89,15 @@ public class InventorySpec {
     @Override
     public int hashCode() {
         return Objects.hash(inventoryName);
+    }
+
+    @Override
+    public String getName() {
+        return inventoryName;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return null;
     }
 }

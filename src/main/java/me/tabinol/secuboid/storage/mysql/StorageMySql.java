@@ -764,8 +764,7 @@ public final class StorageMySql implements Storage {
             final Long inventoryEntryIdNullable = inventoriesDefaultsDao.getValueNullable(conn, inventoryId);
             if (inventoryEntryIdNullable != null) {
                 inventoriesDefaultsDao.delete(conn, inventoryId);
-                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryIdNullable);
-                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryIdNullable);
+                deleteInvEntry(conn, inventoryEntryIdNullable);
             }
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
@@ -779,8 +778,10 @@ public final class StorageMySql implements Storage {
         final Inventories inventories = secuboid.getInventoriesOpt().get();
 
         try (final Connection conn = dbConn.openConnection()) {
-            for (final InventorySpec inventorySpec : inventories.getInvSpecs()) {
-                final long inventoryId = inventoriesDao.insertOrGetId(conn, inventorySpec.getInventoryName());
+            for (Map.Entry<Long, String> entry : inventoriesDao.getIdToValue(conn).entrySet()) {
+                long inventoryId = entry.getKey();
+                String inventoryName = entry.getValue();
+                InventorySpec inventorySpec = secuboid.getInventoriesOpt().get().getOrCreateInvSpec(inventoryName);
 
                 // Survival
                 final PlayerInvEntry survivalInvEntryNullable = createInventoriesEntryPlayerNullable(conn, playerInventoryCache, inventoryId, inventorySpec, false,
@@ -839,6 +840,16 @@ public final class StorageMySql implements Storage {
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to save the player death inventory history to database %s",
                     playerInvEntry.getName()), e);
+        }
+    }
+
+    @Override
+    public void purgeInventory(InventorySpec inventorySpec) {
+        try (final Connection conn = dbConn.openConnection()) {
+            purgeInventoryDb(conn, inventorySpec.getInventoryName());
+        } catch (final SQLException e) {
+            log.log(Level.SEVERE, String.format("Unable to purge inventory from database %s",
+                    inventorySpec.getInventoryName()), e);
         }
     }
 
@@ -1154,8 +1165,7 @@ public final class StorageMySql implements Storage {
                     inventoryId, gameModeId, 9);
             inventoriesDeathsDao.deleteNinth(conn, playerUUIDNullable, inventoryId, gameModeId);
             if (inventoryEntryId9Nullable != null) {
-                inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId9Nullable);
-                inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId9Nullable);
+                deleteInvEntry(conn, inventoryEntryId9Nullable);
             }
             for (int t = 8; t >= 1; t--) {
                 inventoriesDeathsDao.incrementDeathNumber(conn, playerUUIDNullable, inventoryId, gameModeId, t);
@@ -1266,6 +1276,38 @@ public final class StorageMySql implements Storage {
                     playerInventoryCache, inventorySpec, isCreative);
         }
         return null;
+    }
+
+    private void purgeInventoryDb(Connection conn, String inventoryName) throws SQLException {
+        Long inventoryId = inventoriesDao.getIdNullable(conn, inventoryName);
+        if (inventoryId == null) {
+            return;
+        }
+
+        Long defaultInvEntryId = inventoriesDefaultsDao.getValueNullable(conn, inventoryId);
+        if (defaultInvEntryId != null) {
+            inventoriesDefaultsDao.delete(conn, inventoryId);
+            deleteInvEntry(conn, defaultInvEntryId);
+        }
+
+        List<Long> saveEntryIds = inventoriesSavesDao.getEntryIdsFromInventoryId(conn, inventoryId);
+        inventoriesSavesDao.deleteFromInventoryId(conn, inventoryId);
+        for (long saveEntryId : saveEntryIds) {
+            deleteInvEntry(conn, saveEntryId);
+        }
+
+        List <Long> deathEntryIds = inventoriesDeathsDao.getEntryIdsFromInventoryId(conn, inventoryId);
+        inventoriesDeathsDao.deleteFromInventoryId(conn, inventoryId);
+        for (long deathEntryId : deathEntryIds) {
+            deleteInvEntry(conn, deathEntryId);
+        }
+
+        inventoriesDao.delete(conn, inventoryId);
+    }
+
+    private void deleteInvEntry(Connection conn, Long inventoryEntryId) throws SQLException {
+        inventoriesPotionEffectsDao.deletePotionEffectsFromEntryId(conn, inventoryEntryId);
+        inventoriesEntriesDao.deleteInventoryEntry(conn, inventoryEntryId);
     }
 
     private String getGameModeFromBoolean(final boolean isCreative) {

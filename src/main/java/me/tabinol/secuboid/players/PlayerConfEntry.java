@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.ConfirmEntry;
+import me.tabinol.secuboid.commands.executor.CommandConfirmable;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.LandPermissionsFlags;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
@@ -64,10 +64,7 @@ public final class PlayerConfEntry {
      */
     private boolean adminMode = false;
 
-    /**
-     * secuboid confirm command
-     */
-    private ConfirmEntry confirm = null;
+    private CommandConfirmable commandConfirmable = null;
 
     /**
      * pages for /secuboid page command
@@ -217,22 +214,12 @@ public final class PlayerConfEntry {
         adminMode = value;
     }
 
-    /**
-     * Gets the confirm.
-     *
-     * @return the confirm
-     */
-    public ConfirmEntry getConfirm() {
-        return confirm;
+    public CommandConfirmable getCommandConfirmable() {
+        return commandConfirmable;
     }
 
-    /**
-     * Sets the confirm.
-     *
-     * @param entry the new confirm
-     */
-    public void setConfirm(final ConfirmEntry entry) {
-        confirm = entry;
+    public void setCommandConfirmable(CommandConfirmable commandConfirmable) {
+        this.commandConfirmable = commandConfirmable;
     }
 
     /**

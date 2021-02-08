@@ -100,7 +100,7 @@ public final class Lang {
                         .severe("Unable to create the directory " + langFile.getParentFile().getPath() + ".");
             }
             try {
-                FileCopy.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
+                FileUtil.copyTextFromJav(secuboid.getResource("lang/" + lang + ".yml"), langFile);
             } catch (final IOException e) {
                 secuboid.getLogger().severe("Unable to copy language file from jar.");
             }

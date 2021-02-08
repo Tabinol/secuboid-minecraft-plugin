@@ -22,10 +22,10 @@ import org.bukkit.command.CommandSender;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
-import me.tabinol.secuboid.commands.ConfirmEntry;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.exceptions.SecuboidLandException;
 import me.tabinol.secuboid.lands.collisions.Collisions;
 import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
 
@@ -34,7 +34,7 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
  */
 @InfoCommand(name = "remove", //
         completion = { //
-                @CompletionMap(regex = "^$", completions = {"force", "recursive"}) //
+                @CompletionMap(regex = "^$", completions = { "force", "recursive" }) //
         })
 public final class CommandRemove extends CommandCollisionsThreadExec {
 
@@ -48,7 +48,7 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandRemove(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-                         final ArgList argList) throws SecuboidCommandException {
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -85,8 +85,42 @@ public final class CommandRemove extends CommandCollisionsThreadExec {
         }
 
         new CommandCancel(secuboid, null, sender, argList).commandExecute();
-        playerConf.setConfirm(new ConfirmEntry(ConfirmEntry.ConfirmType.REMOVE_LAND, landSelectNullable, 0,
-                collisions.getAction()));
+        playerConf.setCommandConfirmable(new CommandRemoveConfirm(collisions.getAction()));
         player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
     }
+
+    final class CommandRemoveConfirm implements CommandConfirmable {
+
+        private final LandAction landAction;
+
+        private CommandRemoveConfirm(LandAction landAction) {
+            this.landAction = landAction;
+        }
+
+        @Override
+        public void execConfirm() throws SecuboidCommandException {
+            final int i = landSelectNullable.getAreas().size();
+            try {
+                switch (landAction) {
+                    case LAND_REMOVE:
+                        secuboid.getLands().removeLand(landSelectNullable);
+                        break;
+                    case LAND_REMOVE_FORCE:
+                        secuboid.getLands().removeLandForce(landSelectNullable);
+                        break;
+                    case LAND_REMOVE_RECURSIVE:
+                        secuboid.getLands().removeLandRecursive(landSelectNullable);
+                        break;
+                    default:
+                        // Never done
+                }
+            } catch (final SecuboidLandException ex) {
+                ex.printStackTrace();
+                throw new SecuboidCommandException(secuboid, "On land remove", player, "GENERAL.ERROR");
+            }
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage()
+                    .getMessage("COMMAND.REMOVE.DONE.LAND", landSelectNullable.getName(), i + ""));
+        }
+    }
+
 }

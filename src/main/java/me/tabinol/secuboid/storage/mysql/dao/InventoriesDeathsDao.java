@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
@@ -79,6 +81,33 @@ public final class InventoriesDeathsDao {
             DbUtils.setUUID(stmt, 1, playerUUID);
             stmt.setLong(2, inventoryId);
             stmt.setLong(3, gameModeId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public List<Long> getEntryIdsFromInventoryId(Connection conn, long inventoryId) throws SQLException {
+        final String sql = "SELECT `inventories_entries_id` FROM `{{TP}}inventories_deaths` " //
+                + "WHERE `inventory_id`=?";
+
+        try (PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            stmt.setLong(1, inventoryId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Long> results = new ArrayList<>();
+                if (rs.next()) {
+                    results.add(rs.getLong("inventories_entries_id"));
+                }
+                return results;
+            }
+        }
+    }
+
+    public void deleteFromInventoryId(Connection conn, long inventoryId) throws SQLException {
+        final String sql = "DELETE FROM `{{TP}}inventories_deaths` " //
+                + "WHERE `inventory_id`=?";
+
+        try (PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            stmt.setLong(1, inventoryId);
             stmt.executeUpdate();
         }
     }

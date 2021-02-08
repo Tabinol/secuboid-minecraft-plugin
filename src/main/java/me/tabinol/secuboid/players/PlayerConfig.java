@@ -17,6 +17,7 @@
  */
 package me.tabinol.secuboid.players;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -114,6 +115,10 @@ public final class PlayerConfig {
      */
     public PlayerConfEntry get(final CommandSender sender) {
         return playerConfList.get(sender);
+    }
+
+    public Collection<PlayerConfEntry> getAll() {
+        return playerConfList.values();
     }
 
     /**

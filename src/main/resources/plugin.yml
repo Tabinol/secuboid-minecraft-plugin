@@ -60,14 +60,16 @@ permissions:
             secuboid.inv.default: true
             secuboid.inv.loaddeath: true
             secuboid.inv.ignoredisabledcommands: true
+            secuboid.inv.list: true
+            secuboid.inv.purge: true
     secuboid.inv.forcesave:
-        description: Can use /secuboid finv forcesave command
+        description: Can use /secuboid inv forcesave command
         default: op
     secuboid.inv.default:
-        description: Can use /secuboid finv default command
+        description: Can use /secuboid inv default command
         default: op
     secuboid.inv.loaddeath:
-        description: Can use /secuboid finv loaddeath command
+        description: Can use /secuboid inv loaddeath command
         default: op
     secuboid.inv.ignorecreativeinv:
         description: Ignore creative inventory change
@@ -79,6 +81,12 @@ permissions:
             secuboid.inv.ignorecreativeinv: true
     secuboid.inv.ignoredisabledcommands:
         description: Ignore disabled commands
+        default: op
+    secuboid.inv.list:
+        description: Can use /secuboid inv list command
+        default: op
+    secuboid.inv.purge:
+        description: Can use /secuboid inv purge command
         default: op
 
     # FlyCreative

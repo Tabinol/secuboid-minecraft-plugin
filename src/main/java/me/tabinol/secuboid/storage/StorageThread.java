@@ -25,6 +25,7 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -54,8 +55,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     public enum SaveActionEnum {
         APPROVE_REMOVE, APPROVE_REMOVE_ALL, APPROVE_SAVE, INVENTORY_DEFAULT_REMOVE, INVENTORY_DEFAULT_SAVE,
         INVENTORY_PLAYER_LOAD, INVENTORY_PLAYER_SAVE, INVENTORY_PLAYER_DEATH_HISTORY_SAVE, INVENTORY_PLAYER_DEATH_SAVE,
-        LAND_AREA_REMOVE, LAND_AREA_SAVE, LAND_BANNED_REMOVE, LAND_BANNED_SAVE, LAND_FLAG_REMOVE, LAND_FLAG_REMOVE_ALL,
-        LAND_FLAG_SAVE, LAND_PERMISSION_REMOVE, LAND_PERMISSION_REMOVE_ALL, LAND_PERMISSION_SAVE,
+        INVENTORY_PURGE, LAND_AREA_REMOVE, LAND_AREA_SAVE, LAND_BANNED_REMOVE, LAND_BANNED_SAVE, LAND_FLAG_REMOVE,
+        LAND_FLAG_REMOVE_ALL, LAND_FLAG_SAVE, LAND_PERMISSION_REMOVE, LAND_PERMISSION_REMOVE_ALL, LAND_PERMISSION_SAVE,
         LAND_PLAYER_NOTIFY_REMOVE, LAND_PLAYER_NOTIFY_REMOVE_ALL, LAND_PLAYER_NOTIFY_SAVE, LAND_REMOVE,
         LAND_RESIDENT_REMOVE, LAND_RESIDENT_REMOVE_ALL, LAND_RESIDENT_SAVE, LAND_SAVE, PLAYERS_CACHE_SAVE, THREAD_NOTIFY
     }
@@ -71,7 +72,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         final SavableParameter[] savableParameters;
 
         private SaveEntry(final SaveActionEnum saveActionEnum, final SaveOn saveOn, final Savable savableNullable,
-                          final SavableParameter[] savableParameters) {
+                final SavableParameter[] savableParameters) {
             this.saveActionEnum = saveActionEnum;
             this.saveOn = saveOn;
             this.savableNullable = savableNullable;
@@ -132,8 +133,10 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
         try {
             doSave(saveEntry);
         } catch (final RuntimeException e) {
-            final String savableNameNullable = Optional.ofNullable(saveEntry.savableNullable).map(o -> o.getName()).orElse(null);
-            final String savableUUIDNullable = Optional.ofNullable(saveEntry.savableNullable).map(o -> o.getUUID().toString()).orElse(null);
+            final String savableNameNullable = Optional.ofNullable(saveEntry.savableNullable).map(o -> o.getName())
+                    .orElse(null);
+            final String savableUUIDNullable = Optional.ofNullable(saveEntry.savableNullable)
+                    .map(o -> o.getUUID().toString()).orElse(null);
             secuboid.getLogger().log(Level.SEVERE,
                     String.format("Unable to save or load \"%s\" for \"%s\", UUID \"%s\". Possible data loss!",
                             saveEntry.saveActionEnum, savableNameNullable, savableUUIDNullable),
@@ -166,7 +169,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
                 storage.loadInventoriesPlayer(playerInventoryCache);
                 preLoginThreadNotify(playerInventoryCache.getUUID());
             }
-            break;
+                break;
             case INVENTORY_PLAYER_SAVE:
                 storage.saveInventoryPlayer((PlayerInvEntry) savableNullable);
                 break;
@@ -175,6 +178,9 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
                 break;
             case INVENTORY_PLAYER_DEATH_SAVE:
                 storage.saveInventoryPlayerDeath((PlayerInvEntry) savableNullable);
+                break;
+            case INVENTORY_PURGE:
+                storage.purgeInventory((InventorySpec) savableNullable);
                 break;
             case LAND_AREA_REMOVE:
                 storage.removeLandArea((Land) savableNullable, (Area) savableParameters[0]);
@@ -252,8 +258,8 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
      * @param savableNullable   the savable object optional
      * @param savableParameters An array of savable parameters
      */
-    public void addSaveAction(final SaveActionEnum saveActionEnum, final SaveOn saveOn,
-                              final Savable savableNullable, final SavableParameter... savableParameters) {
+    public void addSaveAction(final SaveActionEnum saveActionEnum, final SaveOn saveOn, final Savable savableNullable,
+            final SavableParameter... savableParameters) {
         addElement(new SaveEntry(saveActionEnum, saveOn, savableNullable, savableParameters));
     }
 

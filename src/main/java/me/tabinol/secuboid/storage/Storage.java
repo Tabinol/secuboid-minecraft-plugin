@@ -21,6 +21,7 @@ import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -295,6 +296,13 @@ public interface Storage {
      * @param playerInvEntry the player inventory.
      */
     void saveInventoryPlayerDeathHistory(PlayerInvEntry playerInvEntry);
+
+    /**
+     * Purge a specific inventory.
+     * 
+     * @param playerInvEntry the player inventory.
+     */
+    void purgeInventory(InventorySpec inventorySpec);
 
     /**
      * Load players cache.

@@ -49,23 +49,26 @@ public final class CommandCancel extends CommandExec {
     @Override
     public void commandExecute() throws SecuboidCommandException {
 
-        if (playerConf.getConfirm() != null) {
-            playerConf.setConfirm(null);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
+        if (playerConf.getCommandConfirmable() != null) {
+            playerConf.setCommandConfirmable(null);
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.ACTION"));
 
         }
 
         if (playerConf.getSelection().getSelection(SelectionType.AREA) != null) {
 
             playerConf.getSelection().removeSelection(SelectionType.AREA);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.SELECT.CANCEL"));
 
         }
 
         if (playerConf.getSelection().getSelection(SelectionType.LAND) != null) {
 
             playerConf.getSelection().removeSelection(SelectionType.LAND);
-            player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
+            player.sendMessage(
+                    ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CANCEL.SELECT"));
 
             // Cancel selection (it is the last think selected)
             playerConf.setAutoCancelSelect(false);

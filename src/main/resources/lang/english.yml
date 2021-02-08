@@ -93,8 +93,10 @@ HELP:
       3: "/secuboid flag remove <flag> : Remove a flag."
     INV:
       1: "/secuboid inv loaddeath <player name> [(1-9)] : Reload a player inventory before death, 1 = last death"
-      2: "/secuboid inv default <save/remove>: Save (or remove) your inventory has the default inventory for players"
+      2: "/secuboid inv default <save/remove> : Save (or remove) your inventory has the default inventory for players"
       3: "/secuboid inv forcesave : Save configuration and inventories"
+      4: "/secuboid inv list : List active inventory names"
+      5: "/secuboid inv purge <inv name> : Completely destroy an inventory"
     KICK:
       1: "/secuboid kick [player] <land> : Kick a player from a land."
     LIST:
@@ -387,6 +389,11 @@ COMMAND:
     ERRORDEATHNOTFOUND: "This death save is not found or the player is at the wrong place!"
     DEATHDONE: "Reload inventory done for '%'!"
     SAVEDONE: "Inventories save done!"
+    LISTSTART: "-Inventory list-"
+    ERRORMISSING: "This inventory is missing!"
+    ERRORACTIVE: "This inventory is active!"
+    ERRORPLAYERUSEINV: "The player '%1%' is using the inventory '%2%'!"
+    PURGEDONE: "The purge of '%1%' is done."
   TOP:
     INVALID: "Invalid number: Positive is absolute, negative is from feet."
     DONE: "The new value for top is '%'."

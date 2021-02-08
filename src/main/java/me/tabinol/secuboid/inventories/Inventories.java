@@ -19,7 +19,9 @@ package me.tabinol.secuboid.inventories;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -43,6 +45,7 @@ public final class Inventories {
     private final Secuboid secuboid;
     private final InventoryConfig inventoryConfig;
     private final Map<InventorySpec, PlayerInvEntry> inventorySpecToDefaultInvEntry;
+    private final Set<InventorySpec> activeInventorySpecs;
 
     /**
      * Player Join, Quit, Change
@@ -55,6 +58,7 @@ public final class Inventories {
         this.secuboid = secuboid;
         this.inventoryConfig = inventoryConfig;
         inventorySpecToDefaultInvEntry = new HashMap<>();
+        activeInventorySpecs = new HashSet<>();
     }
 
     /**
@@ -70,8 +74,16 @@ public final class Inventories {
         return inventoryConfig.getInvSpecs();
     }
 
+    public Set<InventorySpec> getActiveInventorySpecs() {
+        return activeInventorySpecs;
+    }
+
     public InventorySpec getInvSpec(final String invName) {
         return inventoryConfig.getInvSpec(invName);
+    }
+
+    public InventorySpec getOrCreateInvSpec(final String invName) {
+        return inventoryConfig.getOrCreateInvSpec(invName);
     }
 
     public boolean loadDeathInventory(final Player player, final int deathVersion) {
@@ -84,8 +96,7 @@ public final class Inventories {
 
     public void saveDefaultInventory(final PlayerConfEntry playerConfEntry) {
         final Player player = playerConfEntry.getPlayer();
-        saveInventory(player, playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry(), false,
-                true, false);
+        saveInventory(player, playerConfEntry.getPlayerInventoryCacheOpt().get().getCurInvEntry(), false, true, false);
     }
 
     /**
@@ -99,8 +110,8 @@ public final class Inventories {
 
     public void forceSave() {
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCacheOpt().get()
-                    .getCurInvEntry();
+            final PlayerInvEntry playerInvEntry = secuboid.getPlayerConf().get(player).getPlayerInventoryCacheOpt()
+                    .get().getCurInvEntry();
             if (!player.isDead()) {
                 saveInventory(player, playerInvEntry, false, false, false);
             }
@@ -114,8 +125,8 @@ public final class Inventories {
                 PlayerAction.QUIT);
     }
 
-    public void saveInventory(final Player playerNullable, final PlayerInvEntry playerInvEntry,
-                              final boolean isDeath, final boolean isDefaultInv, final boolean isEnderChestOnly) {
+    public void saveInventory(final Player playerNullable, final PlayerInvEntry playerInvEntry, final boolean isDeath,
+            final boolean isDefaultInv, final boolean isEnderChestOnly) {
 
         // Il a player is just connected before the inventory load
         if (playerInvEntry == null) {
@@ -135,7 +146,9 @@ public final class Inventories {
         }
 
         // Request save
-        // Need copyOf because the inventory can change between the save request and the save.
+        // Need copyOf because the inventory can change between the save request and the
+        // save.
+        activeInventorySpecs.add(inventorySpec);
         final PlayerInvEntry playerInvEntryCopy = playerInvEntry.copyOf();
         if (isDeath) {
             playerInvEntry.getPlayerInventoryCacheNullable().addInventoryDeath(playerInvEntryCopy);
@@ -160,7 +173,7 @@ public final class Inventories {
     }
 
     private void updateFromPlayer(final Player player, final PlayerInvEntry playerInvEntry,
-                                  final boolean isEnderChestOnly) {
+            final boolean isEnderChestOnly) {
         // If the player is death, reset and save only ender chest
         if (isEnderChestOnly) {
             playerInvEntry.setDefault();
@@ -191,7 +204,7 @@ public final class Inventories {
     }
 
     private boolean loadInventoryToPlayer(final PlayerConfEntry playerConfEntry, final InventorySpec inventorySpec,
-                                          final boolean isCreative, final boolean fromDeath, final int deathVersion) {
+            final boolean isCreative, final boolean fromDeath, final int deathVersion) {
         final Player player = playerConfEntry.getPlayer();
         final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCacheOpt().get();
 
@@ -267,12 +280,11 @@ public final class Inventories {
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
         inventorySpecToDefaultInvEntry.remove(playerInvEntry.getInventorySpec());
-        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, SaveOn.BOTH,
-                playerInvEntry);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_DEFAULT_REMOVE, SaveOn.BOTH, playerInvEntry);
     }
 
     public void switchInventory(final PlayerConfEntry playerConfEntry, final LandPermissionsFlags landPermissionsFlags,
-                                boolean toIsCreative, final PlayerAction playerAction) {
+            boolean toIsCreative, final PlayerAction playerAction) {
         final Player player = playerConfEntry.getPlayer();
         final PlayerInventoryCache playerInventoryCache = playerConfEntry.getPlayerInventoryCacheOpt().get();
 
@@ -311,8 +323,8 @@ public final class Inventories {
 
         // Update player inventory information
         if (playerAction != PlayerAction.QUIT) {
-            playerInventoryCache
-                    .setCurInvEntry(new PlayerInvEntry(playerInventoryCache, toInv, toIsCreative));
+            activeInventorySpecs.add(toInv);
+            playerInventoryCache.setCurInvEntry(new PlayerInvEntry(playerInventoryCache, toInv, toIsCreative));
         }
 
         // Return if the inventory will be exacly the same
@@ -335,5 +347,14 @@ public final class Inventories {
         if (playerAction != PlayerAction.QUIT && playerAction != PlayerAction.DEATH) {
             loadInventoryToPlayer(playerConfEntry, toInv, toIsCreative, false, 0);
         }
+    }
+
+    public void purgeInventory(InventorySpec inventorySpec) {
+        for (PlayerConfEntry confEntry : secuboid.getPlayerConf().getAll()) {
+            confEntry.getPlayerInventoryCacheOpt()
+                    .ifPresent(playerInventoryCache -> playerInventoryCache.purgeInventory(inventorySpec));
+        }
+        activeInventorySpecs.remove(inventorySpec);
+        secuboid.getStorageThread().addSaveAction(SaveActionEnum.INVENTORY_PURGE, SaveOn.BOTH, inventorySpec);
     }
 }

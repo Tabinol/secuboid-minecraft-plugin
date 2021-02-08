@@ -25,8 +25,6 @@ import org.bukkit.command.CommandSender;
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
 import me.tabinol.secuboid.commands.ChatPage;
-import me.tabinol.secuboid.commands.ConfirmEntry;
-import me.tabinol.secuboid.commands.ConfirmEntry.ConfirmType;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.Config;
@@ -40,8 +38,8 @@ import me.tabinol.secuboid.lands.collisions.Collisions.LandAction;
  */
 @InfoCommand(name = "area", forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = {"add", "list", "remove", "replace"}), //
-                @CompletionMap(regex = "^(remove|replace)$", completions = {"@areaLand"}) //
+                @CompletionMap(regex = "^$", completions = { "add", "list", "remove", "replace" }), //
+                @CompletionMap(regex = "^(remove|replace)$", completions = { "@areaLand" }) //
         })
 public final class CommandArea extends CommandCollisionsThreadExec {
 
@@ -57,7 +55,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
      * @throws SecuboidCommandException the secuboid command exception
      */
     public CommandArea(final Secuboid secuboid, final InfoCommand infoCommand, final CommandSender sender,
-                       final ArgList argList) throws SecuboidCommandException {
+            final ArgList argList) throws SecuboidCommandException {
 
         super(secuboid, infoCommand, sender, argList);
     }
@@ -182,8 +180,7 @@ public final class CommandArea extends CommandCollisionsThreadExec {
                 throw new SecuboidCommandException(secuboid, "Area", sender, "COMMAND.REMOVE.AREA.INVALID");
             }
 
-            playerConf.setConfirm(new ConfirmEntry(ConfirmType.REMOVE_AREA, landSelectNullable, removeId,
-                    LandAction.AREA_REMOVE));
+            playerConf.setCommandConfirmable(new CommandAreaRemoveConfirm());
             player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
 
         } else if (fonction.equalsIgnoreCase("replace")) {
@@ -197,6 +194,22 @@ public final class CommandArea extends CommandCollisionsThreadExec {
             new CommandCancel(secuboid, null, sender, null).commandExecute();
             playerConf.getSelection().refreshLand();
         }
+    }
 
+    final class CommandAreaRemoveConfirm implements CommandConfirmable {
+
+        private CommandAreaRemoveConfirm() {
+        }
+
+        @Override
+        public void execConfirm() throws SecuboidCommandException {
+            // Remove area
+            if (!landSelectNullable.removeArea(removeId)) {
+                throw new SecuboidCommandException(secuboid, "Area", player, "COMMAND.REMOVE.AREA.INVALID");
+            }
+            playerConf.getSelection().refreshLand();
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.REMOVE.DONE.AREA", landSelectNullable.getName()));
+        }
     }
 }

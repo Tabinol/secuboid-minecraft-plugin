@@ -2,8 +2,10 @@
 #
 # "InventoryName"
 # You give the name you want.
-# "Default" is anywhere except where you have INVENTORY flag is set.
-# Do not remove Default inventory!
+# "default" is anywhere except where you have INVENTORY flag is set.
+# Do not remove default inventory!
+# Removing an inventory in this file does not remove the inventory database.
+# See "/sd inv purge" command.
 #
 # Options:
 # SeparateCreative: (default: true) For a separate creative inventory.
@@ -14,7 +16,7 @@
 # DisabledCommands: List of disabled commands (without "/")
 
 Inventories:
-    Default:
+    default:
         SeparateCreative: true
 #    Pvp:
 #        SeparateCreative: true

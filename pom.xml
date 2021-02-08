@@ -18,7 +18,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- *** Change Language version here here *** -->
-        <langVersion>34</langVersion>
+        <langVersion>35</langVersion>
         <!-- *** Change land .conf version here here *** -->
         <landVersion>8</landVersion>
         <!-- *** Change players cache .conf version here here *** -->

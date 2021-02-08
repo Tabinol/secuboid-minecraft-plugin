@@ -39,6 +39,7 @@ import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.commands.executor.CommandExec;
 import me.tabinol.secuboid.commands.executor.CommandHelp;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.lands.types.Type;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
@@ -164,6 +165,9 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
                 case "@flag":
                     argList.addAll(listFlag());
                     break;
+                case "@inventory":
+                    argList.addAll(listInventory());
+                    break;
                 case "@land":
                     argList.addAll(listLand());
                     break;
@@ -220,6 +224,11 @@ public final class CommandListener implements CommandExecutor, TabCompleter {
 
     private Set<String> listFlag() {
         return secuboid.getPermissionsFlags().getRegisteredFlagTypeNames();
+    }
+
+    private List<String> listInventory() {
+        return secuboid.getInventoriesOpt().map(i -> i.getActiveInventorySpecs().stream()
+                .map(InventorySpec::getInventoryName).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
 
     private List<String> listLand() {

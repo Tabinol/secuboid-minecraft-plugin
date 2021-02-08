@@ -43,6 +43,8 @@ public final class InventoryConfig {
     public static final String PERM_FORCESAVE = "secuboid.inv.forcesave";
     public static final String PERM_DEFAULT = "secuboid.inv.default";
     public static final String PERM_LOADDEATH = "secuboid.inv.loaddeath";
+    public static final String PERM_LIST = "secuboid.inv.list";
+    public static final String PERM_PURGE = "secuboid.inv.purge";
     public static final String PERM_IGNORE_CREATIVE_INV = "secuboid.inv.ignorecreativeinv";
     public static final String PERM_IGNORE_INV = "secuboid.inv.ignoreinv";
     public static final String PERM_IGNORE_DISABLED_COMMANDS = "secuboid.inv.ignoredisabledcommands";
@@ -98,15 +100,16 @@ public final class InventoryConfig {
                 final boolean isAllowDrop = ((ConfigurationSection) invEntry.getValue()).getBoolean("AllowDrop", true);
                 final List<String> disabledCommands = ((ConfigurationSection) invEntry.getValue())
                         .getStringList("DisabledCommands");
-                createInventoryEntry(invEntry.getKey(), isCreativeChange, isSaveInventory, isAllowDrop,
+                createInventoryEntry(invEntry.getKey().toLowerCase(), isCreativeChange, isSaveInventory, isAllowDrop,
                         disabledCommands);
             }
         }
     }
 
     private void createInventoryEntry(final String key, final boolean creativeChange, final boolean saveInventory,
-                                      final boolean allowDrop, final List<String> disabledCommands) {
-        invNameToInvSpec.put(key.toLowerCase(), new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
+            final boolean allowDrop, final List<String> disabledCommands) {
+        invNameToInvSpec.put(key.toLowerCase(),
+                new InventorySpec(key, creativeChange, saveInventory, allowDrop, disabledCommands));
     }
 
     public InventorySpec getInvSpec(LandPermissionsFlags dummyPermsFlags) {
@@ -122,10 +125,10 @@ public final class InventoryConfig {
 
         // If the flag is set with wrong inventory
         if (invSpec == null) {
-            secuboid.getLogger().warning("Inventory name \"" + invFlagValue.getValueString() + "\" is not found "
-                    + "in " + secuboid.getName() + "/inventory.yml! Creating a new one with the default configuration.");
-            
-            invSpec = new InventorySpec(invNameLower, true, true, true, Collections.emptyList());
+            secuboid.getLogger().info("Inventory name \"" + invFlagValue.getValueString() + "\" is not found " + "in "
+                    + secuboid.getName() + "/inventory.yml! Creating a new one with the default configuration.");
+
+            invSpec = createNoneExistingInvSpec(invNameLower);
         }
 
         return invSpec;
@@ -135,7 +138,18 @@ public final class InventoryConfig {
         return invNameToInvSpec.values();
     }
 
-    public InventorySpec getInvSpec(final String invName) {
+    public InventorySpec getInvSpec(String invName) {
         return invNameToInvSpec.get(invName.toLowerCase());
+    }
+
+    public InventorySpec getOrCreateInvSpec(String invName) {
+        return invNameToInvSpec.computeIfAbsent(invName.toLowerCase(), this::createNoneExistingInvSpec);
+    }
+
+    private InventorySpec createNoneExistingInvSpec(String invNameLower) {
+        InventorySpec invSpec = new InventorySpec(invNameLower, true, true, true, Collections.emptyList());
+        invNameToInvSpec.put(invNameLower, invSpec);
+
+        return invSpec;
     }
 }

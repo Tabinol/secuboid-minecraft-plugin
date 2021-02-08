@@ -17,6 +17,7 @@
  */
 package me.tabinol.secuboid.storage.flat;
 
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
 import me.tabinol.secuboid.inventories.PlayerInventoryCache;
 import me.tabinol.secuboid.lands.Land;
@@ -207,6 +208,11 @@ public class StorageFlat implements Storage {
     @Override
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
         inventoriesFlat.saveInventoryPlayerDeathHistory(playerInvEntry);
+    }
+
+    @Override
+    public void purgeInventory(InventorySpec inventorySpec) {
+        inventoriesFlat.purgeInventory(inventorySpec);
     }
 
     @Override

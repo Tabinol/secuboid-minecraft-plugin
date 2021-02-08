@@ -45,7 +45,7 @@ public final class GenericIdValueDao<I, V> {
     private final String valueColumnLabel;
 
     public GenericIdValueDao(final DatabaseConnection dbConn, final Class<I> idClazz, final Class<V> valueClazz,
-                             final String tableSuffix, final String idColumnLabel, final String valueColumnLabel) {
+            final String tableSuffix, final String idColumnLabel, final String valueColumnLabel) {
         this.dbConn = dbConn;
         this.idClazz = idClazz;
         this.valueClazz = valueClazz;
@@ -199,7 +199,8 @@ public final class GenericIdValueDao<I, V> {
 
     // Update to lowercase prior 1.6.0
     public void valueToLowerCase(Connection conn) throws SQLException {
-        String sql = String.format("UPDATE `{{TP}}%s` SET `%s`=LOWER(`%s`)", valueColumnLabel, valueColumnLabel);
+        String sql = String.format("UPDATE `{{TP}}%s` SET `%s`=LOWER(`%s`)", tableSuffix, valueColumnLabel,
+                valueColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.executeUpdate();
@@ -232,7 +233,7 @@ public final class GenericIdValueDao<I, V> {
     }
 
     private <C> void setFromClass(final Class<C> clazz, final PreparedStatement stmt, final int parameterIndex,
-                                  final C c) throws SQLException {
+            final C c) throws SQLException {
         if (clazz.isAssignableFrom(Integer.class)) {
             stmt.setInt(parameterIndex, (Integer) c);
         } else if (clazz.isAssignableFrom(Long.class)) {

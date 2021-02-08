@@ -150,6 +150,12 @@ public class PlayerInventoryCache implements Savable {
         return this;
     }
 
+    void purgeInventory(InventorySpec inventorySpec) {
+        // No save here
+        inventorySpecToSurvivalInvEntry.remove(inventorySpec);
+        inventorySpecToCreativeInvEntry.remove(inventorySpec);
+    }
+
     @Override
     public String getName() {
         return playerName;

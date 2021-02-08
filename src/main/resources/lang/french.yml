@@ -95,6 +95,8 @@ HELP:
       1: "/secuboid inv loaddeath <joueur> [(1-9)] : Recharge l'inventaire avant la mort, 1 = dernière mort"
       2: "/secuboid inv default <save/remove>: Sauvegarde (ou enlève) ton inventaire pour le défaut pour les joueurs"
       3: "/secuboid inv forcesave : Sauvegarde la configuration et les inventaires"
+      4: "/secuboid inv list : Liste des noms d'inventaires actifs"
+      5: "/secuboid inv purge <inv name> : Détruire complètement un inventaire"
     KICK:
       1: "/secuboid kick <joueur> [terrain] : Jeter un joueur hors du terrain."
     LIST:
@@ -387,6 +389,11 @@ COMMAND:
     ERRORDEATHNOTFOUND: "Le sauvegarde de la mort n'est pas trouvée ou le joueur est au mauvais endroit!"
     DEATHDONE: "L'inventaire est rechargé pour '%'!"
     SAVEDONE: "Les inventaires sont sauvegardés!"
+    LISTSTART: "-Liste des inventaires-"
+    ERRORMISSING: "Cet inventaire est absent!"
+    ERRORACTIVE: "Cet inventaire est actif!"
+    ERRORPLAYERUSEINV: "Le joueur '%1%' utilise l'inventaire '%2%'!"
+    PURGEDONE: "La purge de '%1%' est terminée."
   TOP:
     INVALID: "Nombre invalide : Positif est absolu, negatif est depuis les pieds."
     DONE: "La nouvelle valeur pour le haut est '%'."

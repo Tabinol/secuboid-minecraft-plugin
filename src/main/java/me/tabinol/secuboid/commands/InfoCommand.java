@@ -51,6 +51,7 @@ public @interface InfoCommand {
          * {@literal @}boolean: a boolean (true, false)<br>
          * {@literal @}command: a command<br>
          * {@literal @}flag: a flag<br>
+         * {@literal @}inventory: a inventory name<br>
          * {@literal @}land: a land name<br>
          * {@literal @}permission: a permission<br>
          * {@literal @}player: a player name<br>

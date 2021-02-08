@@ -17,6 +17,11 @@
  */
 package me.tabinol.secuboid.commands.executor;
 
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.google.common.base.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -24,21 +29,25 @@ import org.bukkit.entity.Player;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.commands.ArgList;
+import me.tabinol.secuboid.commands.ChatPage;
 import me.tabinol.secuboid.commands.InfoCommand;
 import me.tabinol.secuboid.commands.InfoCommand.CompletionMap;
 import me.tabinol.secuboid.config.InventoryConfig;
 import me.tabinol.secuboid.exceptions.SecuboidCommandException;
 import me.tabinol.secuboid.inventories.Inventories;
+import me.tabinol.secuboid.inventories.InventorySpec;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
+import me.tabinol.secuboid.players.PlayerConfEntry;
 
 /**
  * Represents an inventory command.
  */
 @InfoCommand(name = "inv", aliases = { "inventory" }, allowConsole = true, forceParameter = true, //
         completion = { //
-                @CompletionMap(regex = "^$", completions = { "default", "loaddeath", "forcesave" }), //
+                @CompletionMap(regex = "^$", completions = { "default", "forcesave", "list", "loaddeath", "purge" }), //
                 @CompletionMap(regex = "^default$", completions = { "save", "remove" }), //
-                @CompletionMap(regex = "^loaddeath$", completions = { "@player" }) //
+                @CompletionMap(regex = "^loaddeath$", completions = { "@player" }), //
+                @CompletionMap(regex = "^purge$", completions = { "@inventory" }) //
         })
 public final class CommandInv extends CommandExec {
 
@@ -79,6 +88,12 @@ public final class CommandInv extends CommandExec {
         } else if (function.equalsIgnoreCase("forcesave")) {
             checkPermission(false, false, null, InventoryConfig.PERM_FORCESAVE);
             forceSave();
+        } else if (function.equalsIgnoreCase("list")) {
+            checkPermission(false, false, null, InventoryConfig.PERM_LIST);
+            list();
+        } else if (function.equalsIgnoreCase("purge")) {
+            checkPermission(false, false, null, InventoryConfig.PERM_PURGE);
+            purge();
         } else {
             throw new SecuboidCommandException(secuboid, "Missing information command", sender, "GENERAL.MISSINGINFO");
         }
@@ -160,5 +175,79 @@ public final class CommandInv extends CommandExec {
         inventories.forceSave();
         player.sendMessage(
                 ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.SAVEDONE"));
+    }
+
+    private void list() throws SecuboidCommandException {
+        Set<String> inventoryNamesSort = new TreeSet<>();
+
+        for (InventorySpec inventorySpec : inventories.getActiveInventorySpecs()) {
+            inventoryNamesSort.add(inventorySpec.getInventoryName());
+        }
+
+        StringBuilder stList = new StringBuilder();
+        stList.append(ChatColor.YELLOW);
+        for (String inventoryName : inventoryNamesSort) {
+            stList.append(inventoryName).append(" ");
+        }
+        new ChatPage(secuboid, "COMMAND.INV.LISTSTART", stList.toString(), player, null).getPage(1);
+    }
+
+    private void purge() {
+        String inventoryName = argList.getNext();
+        InventorySpec inventorySpec;
+        if (inventoryName == null || (inventorySpec = inventories.getInvSpec(inventoryName)) == null) {
+            player.sendMessage(
+                    ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.ERRORMISSING"));
+            return;
+        }
+
+        playerConf.setCommandConfirmable(new CommandInvPurgeConfirm(inventorySpec));
+        player.sendMessage(ChatColor.YELLOW + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.CONFIRM"));
+    }
+
+    final class CommandInvPurgeConfirm implements CommandConfirmable {
+
+        private final InventorySpec inventorySpec;
+
+        private CommandInvPurgeConfirm(InventorySpec inventorySpec) {
+            this.inventorySpec = inventorySpec;
+        }
+
+        @Override
+        public void execConfirm() throws SecuboidCommandException {
+            if (checkIfInvActive()) {
+                player.sendMessage(
+                        ChatColor.RED + "[Secuboid] " + secuboid.getLanguage().getMessage("COMMAND.INV.ERRORACTIVE"));
+                return;
+            }
+
+            inventories.purgeInventory(inventorySpec);
+            player.sendMessage(ChatColor.YELLOW + "[Secuboid] "
+                    + secuboid.getLanguage().getMessage("COMMAND.INV.PURGEDONE", inventorySpec.getInventoryName()));
+        }
+
+        private boolean checkIfInvActive() {
+            for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
+                PlayerConfEntry curConfEntry = secuboid.getPlayerConf().get(checkPlayer);
+                if (curConfEntry != null) {
+                    if (curConfEntry.getPlayerInventoryCacheOpt().map(playerInvCache -> {
+                        PlayerInvEntry curInvEntry = playerInvCache.getCurInvEntry();
+                        if (curInvEntry != null) {
+                            InventorySpec curInventorySpec = curInvEntry.getInventorySpec();
+                            if (Objects.equal(curInventorySpec, inventorySpec)) {
+                                player.sendMessage(ChatColor.RED + "[Secuboid] "
+                                        + secuboid.getLanguage().getMessage("COMMAND.INV.ERRORPLAYERUSEINV",
+                                                player.getName(), inventorySpec.getInventoryName()));
+                                return true;
+                            }
+                        }
+                        return false;
+                    }).orElse(false)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

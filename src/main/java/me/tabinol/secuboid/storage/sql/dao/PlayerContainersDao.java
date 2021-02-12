@@ -15,19 +15,18 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.PlayerContainerPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class PlayerContainersDao {
@@ -46,7 +45,7 @@ public final class PlayerContainersDao {
             final Map<Long, PlayerContainerPojo> results = new HashMap<>();
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    final long id = rs.getLong("id");
+                    final long id = DbUtils.getRowId(rs, dbConn);
                     final long playerContainerTypeId = rs.getLong("player_container_type_id");
                     final UUID playerUUIDNullable = DbUtils.getNullable(rs, "player_uuid", c -> DbUtils.getUUID(rs, c));
                     final String parameterNullable = DbUtils.getNullable(rs, "parameter", rs::getString);
@@ -75,7 +74,7 @@ public final class PlayerContainersDao {
             }
             try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getLong("id");
+                    return DbUtils.getRowId(rs, dbConn);
                 }
                 return null;
             }
@@ -92,8 +91,7 @@ public final class PlayerContainersDao {
         final String sql = "INSERT INTO `{{TP}}player_containers` " //
                 + "(`player_container_type_id`, `player_uuid`, `parameter`) VALUES (?, ?, ?)";
 
-        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
-                Statement.RETURN_GENERATED_KEYS)) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsAndGeneratedKey(conn, sql)) {
             stmt.setLong(1, playerContainerTypeId);
             DbUtils.setNullable(stmt, 2, playerUUIDNullable, (i, u) -> DbUtils.setUUID(stmt, i, u));
             DbUtils.setNullable(stmt, 3, parameterNullable, stmt::setString);

@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.PermissionPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class PermissionsDao {
@@ -67,7 +67,7 @@ public final class PermissionsDao {
         final String sql = "INSERT INTO `{{TP}}lands_permissions`(" //
                 + "`land_uuid`, `player_container_id`, `permission_id`, `value`, `inheritance`) " //
                 + "VALUES(?, ?, ?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
+                + "{{ONDUPLICATEKEY(`land_uuid`, `player_container_id`, `permission_id`)}} " //
                 + "`value`=?, `inheritance`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

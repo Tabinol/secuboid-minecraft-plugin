@@ -590,7 +590,7 @@ public final class Config {
 
         config.addDefault("General.worlds", new String[] { "world", "world_nether", "world_the_end" });
         lang = config.getString("General.Lang", "english");
-        storage = config.getString("General.Storage", "flat");
+        storage = config.getString("General.Storage", "sqlite");
         mySqlHostName = config.getString("General.MySQL.HostName", "localhost");
         mySqlPort = config.getInt("General.MySQL.Port", 3306);
         mySqlDatabase = config.getString("General.MySQL.Database", "secuboid");

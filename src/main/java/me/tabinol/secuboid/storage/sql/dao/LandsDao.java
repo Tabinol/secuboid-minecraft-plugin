@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.LandPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 /**
@@ -88,7 +88,7 @@ public final class LandsDao {
                 + "`sale_price`, `for_rent`, `for_rent_sign_location`, `rent_price`, " //
                 + "`rent_renew`, `rent_auto_renew`, `tenant_uuid`, `last_payment_millis`) " //
                 + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
+                + "{{ONDUPLICATEKEY(`uuid`)}} " //
                 + "`name`=?, `approved`=?, `type_id`=?, `owner_id`=?, " //
                 + "`parent_uuid`=?, `priority`=?, `money`=?, `for_sale`=?, `for_sale_sign_location`=?, " //
                 + "`sale_price`=?, `for_rent`=?, `for_rent_sign_location`=?, `rent_price`=?, " //

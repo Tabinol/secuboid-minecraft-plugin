@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql;
+package me.tabinol.secuboid.storage.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -70,35 +70,35 @@ import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerType;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.Storage;
-import me.tabinol.secuboid.storage.mysql.dao.ApprovesDao;
-import me.tabinol.secuboid.storage.mysql.dao.AreasDao;
-import me.tabinol.secuboid.storage.mysql.dao.AreasRoadsMatricesDao;
-import me.tabinol.secuboid.storage.mysql.dao.FlagsDao;
-import me.tabinol.secuboid.storage.mysql.dao.FlagsValuesListDao;
-import me.tabinol.secuboid.storage.mysql.dao.GenericIdValueDao;
-import me.tabinol.secuboid.storage.mysql.dao.InventoriesDeathsDao;
-import me.tabinol.secuboid.storage.mysql.dao.InventoriesEntriesDao;
-import me.tabinol.secuboid.storage.mysql.dao.InventoriesPotionEffectsDao;
-import me.tabinol.secuboid.storage.mysql.dao.InventoriesSavesDao;
-import me.tabinol.secuboid.storage.mysql.dao.LandsDao;
-import me.tabinol.secuboid.storage.mysql.dao.PermissionsDao;
-import me.tabinol.secuboid.storage.mysql.dao.PlayerContainersDao;
-import me.tabinol.secuboid.storage.mysql.dao.SecuboidDao;
-import me.tabinol.secuboid.storage.mysql.pojo.ApprovePojo;
-import me.tabinol.secuboid.storage.mysql.pojo.AreaPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.InventoryPotionEffectPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.LandPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.PermissionPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.PlayerContainerPojo;
-import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
+import me.tabinol.secuboid.storage.sql.dao.ApprovesDao;
+import me.tabinol.secuboid.storage.sql.dao.AreasDao;
+import me.tabinol.secuboid.storage.sql.dao.AreasRoadsMatricesDao;
+import me.tabinol.secuboid.storage.sql.dao.FlagsDao;
+import me.tabinol.secuboid.storage.sql.dao.FlagsValuesListDao;
+import me.tabinol.secuboid.storage.sql.dao.GenericIdValueDao;
+import me.tabinol.secuboid.storage.sql.dao.InventoriesDeathsDao;
+import me.tabinol.secuboid.storage.sql.dao.InventoriesEntriesDao;
+import me.tabinol.secuboid.storage.sql.dao.InventoriesPotionEffectsDao;
+import me.tabinol.secuboid.storage.sql.dao.InventoriesSavesDao;
+import me.tabinol.secuboid.storage.sql.dao.LandsDao;
+import me.tabinol.secuboid.storage.sql.dao.PermissionsDao;
+import me.tabinol.secuboid.storage.sql.dao.PlayerContainersDao;
+import me.tabinol.secuboid.storage.sql.dao.SecuboidDao;
+import me.tabinol.secuboid.storage.sql.pojo.ApprovePojo;
+import me.tabinol.secuboid.storage.sql.pojo.AreaPojo;
+import me.tabinol.secuboid.storage.sql.pojo.FlagPojo;
+import me.tabinol.secuboid.storage.sql.pojo.InventoryEntryPojo;
+import me.tabinol.secuboid.storage.sql.pojo.InventoryPotionEffectPojo;
+import me.tabinol.secuboid.storage.sql.pojo.LandPojo;
+import me.tabinol.secuboid.storage.sql.pojo.PermissionPojo;
+import me.tabinol.secuboid.storage.sql.pojo.PlayerContainerPojo;
+import me.tabinol.secuboid.storage.sql.pojo.RoadMatrixPojo;
 import me.tabinol.secuboid.utilities.DbUtils.SqlConsumer;
 
 /**
  * StorageMySql
  */
-public final class StorageMySql implements Storage {
+public final class StorageSql implements Storage {
 
     private final Secuboid secuboid;
     private final Logger log;
@@ -134,27 +134,27 @@ public final class StorageMySql implements Storage {
     private final InventoriesDeathsDao inventoriesDeathsDao;
     private final InventoriesPotionEffectsDao inventoriesPotionEffectsDao;
 
-    public StorageMySql(final Secuboid secuboid, final DatabaseConnection dbConn) {
+    public StorageSql(final Secuboid secuboid, final DatabaseConnection dbConn) {
         this.secuboid = secuboid;
         this.dbConn = dbConn;
         log = secuboid.getLogger();
 
         areasDao = new AreasDao(dbConn);
         areasRoadsMatricesDao = new AreasRoadsMatricesDao(dbConn);
-        areasTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "areas_types", "id", "name");
+        areasTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "areas_types", "{{ROWID}}", "name");
         landsDao = new LandsDao(dbConn);
-        landsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "lands_types", "id", "name");
+        landsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "lands_types", "{{ROWID}}", "name");
         playerContainersDao = new PlayerContainersDao(dbConn);
         playerContainersTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "player_containers_types",
-                "id", "name");
+                "{{ROWID}}", "name");
         landsResidentsDao = new GenericIdValueDao<>(dbConn, UUID.class, Long.class, "lands_residents", "land_uuid",
                 "player_container_id");
         landsBannedDao = new GenericIdValueDao<>(dbConn, UUID.class, Long.class, "lands_banneds", "land_uuid",
                 "player_container_id");
         permissionsDao = new PermissionsDao(dbConn);
-        permissionsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "permissions", "id", "name");
+        permissionsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "permissions", "{{ROWID}}", "name");
         flagsDao = new FlagsDao(dbConn);
-        flagsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "flags", "id", "name");
+        flagsTypesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "flags", "{{ROWID}}", "name");
         flagsValuesStringDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "lands_flags_values_string",
                 "land_flag_id", "value_string");
         flagsValuesDoubleDao = new GenericIdValueDao<>(dbConn, Long.class, Double.class, "lands_flags_values_double",
@@ -165,14 +165,14 @@ public final class StorageMySql implements Storage {
         playerNotifiesDao = new GenericIdValueDao<>(dbConn, UUID.class, UUID.class, "lands_players_notifies",
                 "land_uuid", "player_uuid");
         approvesDao = new ApprovesDao(dbConn);
-        approvesActionsDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "approves_actions", "id",
+        approvesActionsDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "approves_actions", "{{ROWID}}",
                 "name");
         playersDao = new GenericIdValueDao<>(dbConn, UUID.class, String.class, "players", "uuid", "name");
-        inventoriesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "inventories", "id", "name");
+        inventoriesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "inventories", "{{ROWID}}", "name");
         inventoriesEntriesDao = new InventoriesEntriesDao(dbConn);
         inventoriesDefaultsDao = new GenericIdValueDao<>(dbConn, Long.class, Long.class, "inventories_defaults",
                 "inventory_id", "inventories_entries_id");
-        gameModesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "game_modes", "id", "name");
+        gameModesDao = new GenericIdValueDao<>(dbConn, Long.class, String.class, "game_modes", "{{ROWID}}", "name");
         inventoriesSavesDao = new InventoriesSavesDao(dbConn);
         inventoriesDeathsDao = new InventoriesDeathsDao(dbConn);
         inventoriesPotionEffectsDao = new InventoriesPotionEffectsDao(dbConn);

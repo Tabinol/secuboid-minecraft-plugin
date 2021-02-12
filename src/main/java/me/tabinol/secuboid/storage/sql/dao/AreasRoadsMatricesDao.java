@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.RoadMatrixPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.RoadMatrixPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class AreasRoadsMatricesDao {
@@ -66,7 +66,7 @@ public final class AreasRoadsMatricesDao {
         final String sql = "INSERT INTO `{{TP}}lands_areas_roads_matrices`(" //
                 + "`land_uuid`, `area_id`, `chunk_x`, `chunk_z`, `matrix`) " //
                 + "VALUES(?, ?, ?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
+                + "{{ONDUPLICATEKEY(`land_uuid`, `area_id`, `chunk_x`, `chunk_z`)}} " //
                 + "`matrix`=?";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {

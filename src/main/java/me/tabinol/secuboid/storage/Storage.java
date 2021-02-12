@@ -17,6 +17,7 @@
  */
 package me.tabinol.secuboid.storage;
 
+import java.io.File;
 import java.util.logging.Level;
 
 import me.tabinol.secuboid.Secuboid;
@@ -37,39 +38,53 @@ import me.tabinol.secuboid.storage.flat.InventoriesFlat;
 import me.tabinol.secuboid.storage.flat.LandsFlat;
 import me.tabinol.secuboid.storage.flat.PlayersCacheFlat;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.StorageMySql;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.DatabaseConnectionMySql;
+import me.tabinol.secuboid.storage.sql.DatabaseConnectionSqlite;
+import me.tabinol.secuboid.storage.sql.StorageSql;
 
 /**
  * The Interface Storage.
  */
 public interface Storage {
 
-    static Storage getStorageFromConfig(final Secuboid secuboid, final String configParam) {
+    static final String SQLITE_FILENAME = "secuboid.db";
+
+    static Storage getStorageFromConfig(Secuboid secuboid, String configParam) {
         final Storage storage;
 
         switch (configParam.toLowerCase()) {
-            default: // No break because dafault execute "flat"
+            default: {
+                // No break because dafault execute "flat"
                 secuboid.getLogger().log(Level.WARNING, () -> String
                         .format("The storage type \"%s\" is not available, using default \"flat\"", configParam));
-            case "flat":
-                final LandsFlat landsFlat = new LandsFlat(secuboid);
-                final ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
-                final PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
-                final InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
-                storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
+            } // No break, go to "sqlite"
+            case "sqlite": {
+                File dbFile = new File(secuboid.getDataFolder(), SQLITE_FILENAME);
+                DatabaseConnection dbConn = new DatabaseConnectionSqlite(dbFile.getPath());
+                storage = new StorageSql(secuboid, dbConn);
+            }
                 break;
-            case "mysql":
-                final Config config = secuboid.getConf();
-                final String hostName = config.mySqlHostName();
-                final int port = config.mySqlPort();
-                final String database = config.mySqlDatabase();
-                final String user = config.mySqlUser();
-                final String password = config.mySqlPassword();
-                final String prefix = config.mySqlPrefix();
-                final DatabaseConnection dbConn = new DatabaseConnection(hostName, port, database, user, password,
+            case "mysql": {
+                Config config = secuboid.getConf();
+                String hostName = config.mySqlHostName();
+                int port = config.mySqlPort();
+                String database = config.mySqlDatabase();
+                String user = config.mySqlUser();
+                String password = config.mySqlPassword();
+                String prefix = config.mySqlPrefix();
+                DatabaseConnection dbConn = new DatabaseConnectionMySql(hostName, port, database, user, password,
                         prefix);
-                storage = new StorageMySql(secuboid, dbConn);
+                storage = new StorageSql(secuboid, dbConn);
+            }
+                break;
+            case "flat": {
+                LandsFlat landsFlat = new LandsFlat(secuboid);
+                ApprovesFlat approvesFlat = new ApprovesFlat(secuboid);
+                PlayersCacheFlat playersCacheFlat = new PlayersCacheFlat(secuboid);
+                InventoriesFlat inventoriesFlat = new InventoriesFlat(secuboid);
+                storage = new StorageFlat(landsFlat, approvesFlat, playersCacheFlat, inventoriesFlat);
+            }
         }
         return storage;
     }

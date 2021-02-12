@@ -33,6 +33,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
 
 public final class DbUtils {
 
@@ -52,6 +53,10 @@ public final class DbUtils {
     }
 
     private DbUtils() {
+    }
+
+    public static long getRowId(ResultSet rs, DatabaseConnection dbConn) throws SQLException {
+        return rs.getLong(dbConn.getRowIdName());
     }
 
     public static void setCalendar(final PreparedStatement stmt, final int parameterIndex, final Calendar calendar)

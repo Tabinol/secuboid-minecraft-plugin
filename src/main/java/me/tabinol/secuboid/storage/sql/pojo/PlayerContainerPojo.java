@@ -15,41 +15,38 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.pojo;
+package me.tabinol.secuboid.storage.sql.pojo;
 
 import java.util.UUID;
 
-public final class FlagPojo {
+public final class PlayerContainerPojo {
 
     private final long id;
-    private final UUID landUUID;
-    private final long flagId;
-    private final boolean inheritance;
+    private final long playerContainerTypeId;
+    private final UUID playerUUIDNullable;
+    private final String parameterNullable;
 
-    public FlagPojo(final long id, final UUID landUUID, final long flagId, final boolean inheritance) {
+    public PlayerContainerPojo(final long id, final long playerContainerTypeId, final UUID playerUUIDNullable,
+                               final String parameterNullable) {
         this.id = id;
-        this.landUUID = landUUID;
-        this.flagId = flagId;
-        this.inheritance = inheritance;
+        this.playerContainerTypeId = playerContainerTypeId;
+        this.playerUUIDNullable = playerUUIDNullable;
+        this.parameterNullable = parameterNullable;
     }
 
     public long getId() {
         return this.id;
     }
 
-    public UUID getLandUUID() {
-        return this.landUUID;
+    public long getPlayerContainerTypeId() {
+        return this.playerContainerTypeId;
     }
 
-    public long getFlagId() {
-        return this.flagId;
+    public UUID getPlayerUUIDNullable() {
+        return this.playerUUIDNullable;
     }
 
-    public boolean getInheritance() {
-        return this.inheritance;
-    }
-
-    public boolean isInheritance() {
-        return this.inheritance;
+    public String getParameterNullable() {
+        return this.parameterNullable;
     }
 }

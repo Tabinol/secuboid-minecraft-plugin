@@ -15,20 +15,19 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.bukkit.inventory.ItemStack;
 
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
 import me.tabinol.secuboid.inventories.PlayerInvEntry;
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.InventoryEntryPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.InventoryEntryPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class InventoriesEntriesDao {
@@ -71,8 +70,7 @@ public final class InventoriesEntriesDao {
                 + "(`level`, `exp`, `health`, `food_level`, `contents`, `ender_chest_contents`) " //
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
-                Statement.RETURN_GENERATED_KEYS)) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsAndGeneratedKey(conn, sql)) {
             stmt.setInt(1, level);
             stmt.setFloat(2, exp);
             stmt.setDouble(3, health);

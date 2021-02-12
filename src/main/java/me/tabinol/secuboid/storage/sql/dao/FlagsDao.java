@@ -15,13 +15,12 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.FlagPojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.FlagPojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class FlagsDao {
@@ -50,7 +49,7 @@ public final class FlagsDao {
             final Map<UUID, List<FlagPojo>> results = new HashMap<>();
             try (final ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    final long id = rs.getLong("id");
+                    final long id = DbUtils.getRowId(rs, dbConn);
                     final UUID landUUID = DbUtils.getUUID(rs, "land_uuid");
                     final long flagId = rs.getLong("flag_id");
                     final boolean inheritance = rs.getBoolean("inheritance");
@@ -73,7 +72,7 @@ public final class FlagsDao {
             stmt.setLong(2, flagId);
             try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getLong("id");
+                    return DbUtils.getRowId(rs, dbConn);
                 }
                 return null;
             }
@@ -90,7 +89,7 @@ public final class FlagsDao {
             DbUtils.setUUID(stmt, 1, landUUID);
             try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    results.add(rs.getLong("id"));
+                    results.add(DbUtils.getRowId(rs, dbConn));
                 }
                 return results;
             }
@@ -123,8 +122,7 @@ public final class FlagsDao {
                 + "`land_uuid`, `flag_id`, `inheritance`) " //
                 + "VALUES(?, ?, ?)";
 
-        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
-                Statement.RETURN_GENERATED_KEYS)) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsAndGeneratedKey(conn, sql)) {
             DbUtils.setUUID(stmt, 1, landUUID);
             stmt.setLong(2, flagId);
             stmt.setBoolean(3, inheritance);

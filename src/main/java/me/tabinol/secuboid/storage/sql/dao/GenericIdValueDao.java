@@ -15,13 +15,12 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import me.tabinol.secuboid.exceptions.SecuboidRuntimeException;
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 /**
@@ -115,8 +114,8 @@ public final class GenericIdValueDao<I, V> {
     public void insertOrUpdate(final Connection conn, final I i, final V v) throws SQLException {
         final String sql = String.format("INSERT INTO `{{TP}}%s` (`%s`, `%s`) " //
                 + "VALUES (?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
-                + "`%s`=?", tableSuffix, idColumnLabel, valueColumnLabel, valueColumnLabel);
+                + "{{ONDUPLICATEKEY(`%s`)}} " //
+                + "`%s`=?", tableSuffix, idColumnLabel, valueColumnLabel, idColumnLabel, valueColumnLabel);
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             setFromClass(idClazz, stmt, 1, i);
@@ -166,8 +165,7 @@ public final class GenericIdValueDao<I, V> {
 
         final String sql = String.format("INSERT INTO `{{TP}}%s` SET `%s`=?", tableSuffix, valueColumnLabel);
 
-        try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql,
-                Statement.RETURN_GENERATED_KEYS)) {
+        try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsAndGeneratedKey(conn, sql)) {
             setFromClass(valueClazz, stmt, 1, v);
             stmt.executeUpdate();
             try (final ResultSet rs = stmt.getGeneratedKeys()) {
@@ -213,7 +211,10 @@ public final class GenericIdValueDao<I, V> {
             return (C) Integer.valueOf(rs.getInt(columnLabel));
         }
         if (clazz.isAssignableFrom(Long.class)) {
-            return (C) Long.valueOf(rs.getLong(columnLabel));
+            String realColumnLabel = columnLabel.equalsIgnoreCase(DatabaseConnection.PATERN_ROWID_SEARCH)
+                    ? dbConn.getRowIdName()
+                    : columnLabel;
+            return (C) Long.valueOf(rs.getLong(realColumnLabel));
         }
         if (clazz.isAssignableFrom(Double.class)) {
             return (C) Double.valueOf(rs.getDouble(columnLabel));

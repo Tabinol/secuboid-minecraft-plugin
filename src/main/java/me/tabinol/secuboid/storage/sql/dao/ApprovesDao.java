@@ -15,7 +15,7 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,8 +26,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
-import me.tabinol.secuboid.storage.mysql.pojo.ApprovePojo;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.pojo.ApprovePojo;
 import me.tabinol.secuboid.utilities.DbUtils;
 
 public final class ApprovesDao {
@@ -69,7 +69,7 @@ public final class ApprovesDao {
                 + "`land_uuid`, `approve_action_id`, `removed_area_id`, `new_area_id`, " //
                 + "`owner_id`, `parent_uuid`, `price`, `transaction_datetime`) " //
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " //
-                + "ON DUPLICATE KEY UPDATE " //
+                + "{{ONDUPLICATEKEY(`land_uuid`)}} " //
                 + "`approve_action_id`=?, `removed_area_id`=?, `new_area_id`=?, " //
                 + "`owner_id`=?, `parent_uuid`=?, `price`=?, `transaction_datetime`=?";
 

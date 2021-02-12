@@ -37,7 +37,7 @@ import me.tabinol.secuboid.playercontainer.PlayerContainer;
 import me.tabinol.secuboid.playercontainer.PlayerContainerPlayer;
 import me.tabinol.secuboid.playerscache.PlayerCacheEntry;
 import me.tabinol.secuboid.storage.flat.StorageFlat;
-import me.tabinol.secuboid.storage.mysql.StorageMySql;
+import me.tabinol.secuboid.storage.sql.StorageSql;
 import me.tabinol.secuboid.utilities.SecuboidQueueThread;
 
 /**
@@ -126,7 +126,7 @@ public class StorageThread extends SecuboidQueueThread<StorageThread.SaveEntry> 
     @Override
     protected boolean doElement(final SaveEntry saveEntry) {
         if ((saveEntry.saveOn == SaveOn.DATABASE && storage instanceof StorageFlat)
-                || (saveEntry.saveOn == SaveOn.FLAT && storage instanceof StorageMySql)) {
+                || (saveEntry.saveOn == SaveOn.FLAT && storage instanceof StorageSql)) {
             // Skip save for flat file or database
             return true;
         }

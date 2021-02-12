@@ -15,14 +15,14 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.dao;
+package me.tabinol.secuboid.storage.sql.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import me.tabinol.secuboid.storage.mysql.DatabaseConnection;
+import me.tabinol.secuboid.storage.sql.DatabaseConnection;
 import me.tabinol.secuboid.utilities.MavenAppProperties;
 
 /**
@@ -35,72 +35,61 @@ public final class SecuboidDao {
     // @formatter:off
     private static final String[] CREATE_TABLE_STMS_V1 = new String[]{
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_types`({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}player_containers_types` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}players` ({{LS}}" +
-                    "  `uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
+                    "  `uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`uuid`),{{LS}}" +
                     "  UNIQUE KEY `uuid` (`uuid`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}player_containers` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `player_container_type_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `player_uuid` BINARY(16) NULL,{{LS}}" +
-                    "  `parameter` VARCHAR(200) NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `player_container_type_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `player_uuid` {{TYPEUUID}} NULL,{{LS}}" +
+                    "  `parameter` {{TYPEVARCHAR(200)}} NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `player_container_type_id` (`player_container_type_id`, `player_uuid`, `parameter`),{{LS}}" +
                     "  INDEX `fk_player_containers_name_id_idx` (`player_container_type_id`),{{LS}}" +
                     "  INDEX `fk_player_containers_player_uuid_idx` (`player_uuid`),{{LS}}" +
                     "  CONSTRAINT `fk_player_containers_type_id`{{LS}}" +
                     "    FOREIGN KEY (`player_container_type_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers_types` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_player_containers_player_uuid`{{LS}}" +
                     "    FOREIGN KEY (`player_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands` ({{LS}}" +
-                    "  `uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
-                    "  `approved` TINYINT NOT NULL,{{LS}}" +
-                    "  `type_id` BIGINT NULL,{{LS}}" +
-                    "  `owner_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
-                    "  `priority` SMALLINT NOT NULL,{{LS}}" +
-                    "  `money` DOUBLE NOT NULL,{{LS}}" +
-                    "  `for_sale` TINYINT NOT NULL,{{LS}}" +
-                    "  `for_sale_sign_location` VARCHAR(200) NULL,{{LS}}" +
-                    "  `sale_price` DOUBLE NULL,{{LS}}" +
-                    "  `for_rent` TINYINT NOT NULL,{{LS}}" +
-                    "  `for_rent_sign_location` VARCHAR(200) NULL,{{LS}}" +
-                    "  `rent_price` DOUBLE NULL,{{LS}}" +
-                    "  `rent_renew` INT NULL,{{LS}}" +
-                    "  `rent_auto_renew` TINYINT NULL,{{LS}}" +
-                    "  `tenant_uuid` BINARY(16) NULL,{{LS}}" +
-                    "  `last_payment_millis` BIGINT NULL,{{LS}}" +
+                    "  `uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(200)}} NOT NULL,{{LS}}" +
+                    "  `approved` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  `type_id` {{TYPEBIGINT}} NULL,{{LS}}" +
+                    "  `owner_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `parent_uuid` {{TYPEUUID}} NULL,{{LS}}" +
+                    "  `priority` {{TYPESMALLINT}} NOT NULL,{{LS}}" +
+                    "  `money` {{TYPEDOUBLE}} NOT NULL,{{LS}}" +
+                    "  `for_sale` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  `for_sale_sign_location` {{TYPEVARCHAR(200)}} NULL,{{LS}}" +
+                    "  `sale_price` {{TYPEDOUBLE}} NULL,{{LS}}" +
+                    "  `for_rent` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  `for_rent_sign_location` {{TYPEVARCHAR(200)}} NULL,{{LS}}" +
+                    "  `rent_price` {{TYPEDOUBLE}} NULL,{{LS}}" +
+                    "  `rent_renew` {{TYPEINT}} NULL,{{LS}}" +
+                    "  `rent_auto_renew` {{TYPEBOOLEAN}} NULL,{{LS}}" +
+                    "  `tenant_uuid` {{TYPEUUID}} NULL,{{LS}}" +
+                    "  `last_payment_millis` {{TYPEBIGINT}} NULL,{{LS}}" +
                     "  PRIMARY KEY (`uuid`),{{LS}}" +
                     "  UNIQUE KEY `uuid` (`uuid`),{{LS}}" +
                     "  INDEX `fk_lands_type_id_idx` (`type_id`),{{LS}}" +
@@ -111,273 +100,207 @@ public final class SecuboidDao {
                     "  CONSTRAINT `fk_lands_type_id`{{LS}}" +
                     "    FOREIGN KEY (`type_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_types` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_owner_id`{{LS}}" +
                     "    FOREIGN KEY (`owner_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_parent_uuid`{{LS}}" +
                     "    FOREIGN KEY (`parent_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}areas_types` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `area_id` INT NOT NULL,{{LS}}" +
-                    "  `approved` TINYINT NOT NULL,{{LS}}" +
-                    "  `world_name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  `area_type_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `x1` INT NOT NULL,{{LS}}" +
-                    "  `y1` INT NOT NULL,{{LS}}" +
-                    "  `z1` INT NOT NULL,{{LS}}" +
-                    "  `x2` INT NOT NULL,{{LS}}" +
-                    "  `y2` INT NOT NULL,{{LS}}" +
-                    "  `z2` INT NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `area_id` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `approved` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  `world_name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  `area_type_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `x1` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `y1` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `z1` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `x2` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `y2` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `z2` {{TYPEINT}} NOT NULL,{{LS}}" +
                     "  INDEX `fk_areas_type_id_idx` (`area_type_id`),{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `area_id`),{{LS}}" +
                     "  CONSTRAINT `fk_areas_type_id`{{LS}}" +
                     "    FOREIGN KEY (`area_type_id`){{LS}}" +
                     "    REFERENCES `{{TP}}areas_types` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_areas_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_areas_roads_matrices` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `area_id` INT NOT NULL,{{LS}}" +
-                    "  `chunk_x` INT NOT NULL,{{LS}}" +
-                    "  `chunk_z` INT NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `area_id` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `chunk_x` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `chunk_z` {{TYPEINT}} NOT NULL,{{LS}}" +
                     "  `matrix` BINARY(32) NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `area_id`, `chunk_x`, `chunk_z`),{{LS}}" +
                     "  INDEX `fk_areas_roads_matrices_land_uuid_idx` (`land_uuid`),{{LS}}" +
                     "  CONSTRAINT `fk_areas_roads_matrices_area_id`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`, `area_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_areas_roads_matrices_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_residents` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `player_container_id` BIGINT NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `player_container_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `player_container_id`),{{LS}}" +
                     "  INDEX `fk_lands_residents_player_container_id_idx` (`player_container_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_residents_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_residents_player_container_id`{{LS}}" +
                     "    FOREIGN KEY (`player_container_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_banneds` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `player_container_id` BIGINT NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `player_container_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `player_container_id`),{{LS}}" +
                     "  INDEX `fk_lands_banneds_player_container_id_idx` (`player_container_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_banneds_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_banneds_player_container_id`{{LS}}" +
                     "    FOREIGN KEY (`player_container_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}permissions` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(200)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_permissions` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `player_container_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `permission_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `value` TINYINT NOT NULL,{{LS}}" +
-                    "  `inheritance` TINYINT NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `player_container_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `permission_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `value` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  `inheritance` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `player_container_id`, `permission_id`),{{LS}}" +
                     "  INDEX `fk_lands_permissions_player_container_id_idx` (`player_container_id`),{{LS}}" +
                     "  INDEX `fk_lands_permissions_permission_id_idx` (`permission_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_permissions_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_permissions_player_container_id`{{LS}}" +
                     "    FOREIGN KEY (`player_container_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_permissions_permission_id`{{LS}}" +
                     "    FOREIGN KEY (`permission_id`){{LS}}" +
                     "    REFERENCES `{{TP}}permissions` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}flags` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(200)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `flag_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `inheritance` TINYINT NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `flag_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `inheritance` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `lands_uuid` (`land_uuid`, `flag_id`),{{LS}}" +
                     "  INDEX `fk_lands_flags_flag_id_idx` (`flag_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_flag_id`{{LS}}" +
                     "    FOREIGN KEY (`flag_id`){{LS}}" +
                     "    REFERENCES `{{TP}}flags` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_string` ({{LS}}" +
-                    "  `land_flag_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `value_string` VARCHAR(512) NOT NULL,{{LS}}" +
+                    "  `land_flag_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `value_string` {{TYPEVARCHAR(512)}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_flag_id`),{{LS}}" +
                     "  UNIQUE KEY `land_flag_id` (`land_flag_id`),{{LS}}" +
                     "  INDEX `fk_lands_flags_values_string_land_flag_id_idx` (`land_flag_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_values_string_land_flag_id`{{LS}}" +
                     "    FOREIGN KEY (`land_flag_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_double` ({{LS}}" +
-                    "  `land_flag_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `value_double` DOUBLE NOT NULL,{{LS}}" +
+                    "  `land_flag_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `value_double` {{TYPEDOUBLE}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_flag_id`),{{LS}}" +
                     "  UNIQUE KEY `land_flag_id` (`land_flag_id`),{{LS}}" +
                     "  INDEX `fk_lands_flags_values_double_land_flag_id_idx` (`land_flag_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_values_double_land_flag_id`{{LS}}" +
                     "    FOREIGN KEY (`land_flag_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_boolean` ({{LS}}" +
-                    "  `land_flag_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `value_boolean` TINYINT NOT NULL,{{LS}}" +
+                    "  `land_flag_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `value_boolean` {{TYPEBOOLEAN}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_flag_id`),{{LS}}" +
                     "  UNIQUE KEY `land_flag_id` (`land_flag_id`),{{LS}}" +
                     "  INDEX `fk_lands_flags_values_boolean_land_flag_id_idx` (`land_flag_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_values_boolean_land_flag_id`{{LS}}" +
                     "    FOREIGN KEY (`land_flag_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_flags_values_list` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `land_flag_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `value_string` VARCHAR(512) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `land_flag_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `value_string` {{TYPEVARCHAR(512)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  INDEX `fk_lands_flags_values_list_land_flag_id_idx` (`land_flag_id`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_flags_values_list_land_flag_id`{{LS}}" +
                     "    FOREIGN KEY (`land_flag_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_flags` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}lands_players_notifies` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `player_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`, `player_uuid`),{{LS}}" +
                     "  INDEX `fk_lands_players_notifies_player_uuid_idx` (`player_uuid`),{{LS}}" +
                     "  CONSTRAINT `fk_lands_players_notifies_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_lands_players_notifies_player_uuid`{{LS}}" +
                     "    FOREIGN KEY (`player_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}approves_actions` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}approves` ({{LS}}" +
-                    "  `land_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `approve_action_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `removed_area_id` INT NULL,{{LS}}" +
-                    "  `new_area_id` INT NULL,{{LS}}" +
-                    "  `owner_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `parent_uuid` BINARY(16) NULL,{{LS}}" +
-                    "  `price` DOUBLE NOT NULL,{{LS}}" +
+                    "  `land_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `approve_action_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `removed_area_id` {{TYPEINT}} NULL,{{LS}}" +
+                    "  `new_area_id` {{TYPEINT}} NULL,{{LS}}" +
+                    "  `owner_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `parent_uuid` {{TYPEUUID}} NULL,{{LS}}" +
+                    "  `price` {{TYPEDOUBLE}} NOT NULL,{{LS}}" +
                     "  `transaction_datetime` DATETIME NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`land_uuid`),{{LS}}" +
                     "  UNIQUE KEY `land_uuid` (`land_uuid`),{{LS}}" +
@@ -390,91 +313,67 @@ public final class SecuboidDao {
                     "  CONSTRAINT `fk_approves_land_uuid`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_approves_approve_action_id`{{LS}}" +
                     "    FOREIGN KEY (`approve_action_id`){{LS}}" +
                     "    REFERENCES `{{TP}}approves_actions` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_approves_removed_area_id`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`, `removed_area_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_approves_new_area_id`{{LS}}" +
                     "    FOREIGN KEY (`land_uuid`, `new_area_id`){{LS}}" +
                     "    REFERENCES `{{TP}}lands_areas` (`land_uuid`, `area_id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_approves_owner_id`{{LS}}" +
                     "    FOREIGN KEY (`owner_id`){{LS}}" +
                     "    REFERENCES `{{TP}}player_containers` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_approves_parent_id`{{LS}}" +
                     "    FOREIGN KEY (`parent_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}lands` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(200) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(200)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_entries` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `level` INT NOT NULL,{{LS}}" +
-                    "  `exp` FLOAT NOT NULL,{{LS}}" +
-                    "  `health` DOUBLE NOT NULL,{{LS}}" +
-                    "  `food_level` INT NOT NULL,{{LS}}" +
-                    "  `contents` MEDIUMTEXT NOT NULL,{{LS}}" +
-                    "  `ender_chest_contents` MEDIUMTEXT NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `level` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `exp` {{TYPEFLOAT}} NOT NULL,{{LS}}" +
+                    "  `health` {{TYPEDOUBLE}} NOT NULL,{{LS}}" +
+                    "  `food_level` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `contents` {{TYPEMEDIUMTEXT}} NOT NULL,{{LS}}" +
+                    "  `ender_chest_contents` {{TYPEMEDIUMTEXT}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_defaults` ({{LS}}" +
-                    "  `inventory_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `inventories_entries_id` BIGINT NOT NULL,{{LS}}" +
+                    "  `inventory_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `inventories_entries_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`inventory_id`),{{LS}}" +
                     "  INDEX `fk_inventories_defaults_inventories_id_idx` (`inventory_id`),{{LS}}" +
                     "  INDEX `fk_inventories_defaults_entries_id_idx` (`inventories_entries_id`),{{LS}}" +
                     "  CONSTRAINT `fk_inventories_defaults_inventories_id`{{LS}}" +
                     "    FOREIGN KEY (`inventory_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_defaults_entries_id`{{LS}}" +
                     "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}game_modes` ({{LS}}" +
-                    "  `id` BIGINT NOT NULL AUTO_INCREMENT,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  PRIMARY KEY (`id`),{{LS}}" +
-                    "  UNIQUE KEY `id` (`id`),{{LS}}" +
+                    "  {{CREATEID}}{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  {{PRIMARYID}}{{LS}}" +
                     "  UNIQUE KEY `name` (`name`)){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_saves` ({{LS}}" +
-                    "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `inventory_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `game_mode_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `inventories_entries_id` BIGINT NOT NULL,{{LS}}" +
+                    "  `player_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `inventory_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `game_mode_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `inventories_entries_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`player_uuid`, `inventory_id`, `game_mode_id`),{{LS}}" +
                     "  INDEX `fk_inventories_saves_game_mode_id_idx` (`game_mode_id`),{{LS}}" +
                     "  INDEX `fk_inventories_saves_inventory_id_idx` (`inventory_id`),{{LS}}" +
@@ -483,32 +382,23 @@ public final class SecuboidDao {
                     "  CONSTRAINT `fk_inventories_saves_inventory_id`{{LS}}" +
                     "    FOREIGN KEY (`inventory_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_saves_game_mode_id`{{LS}}" +
                     "    FOREIGN KEY (`game_mode_id`){{LS}}" +
                     "    REFERENCES `{{TP}}game_modes` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_saves_player_uuid`{{LS}}" +
                     "    FOREIGN KEY (`player_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_saves_entries_id`{{LS}}" +
                     "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_deaths` ({{LS}}" +
-                    "  `player_uuid` BINARY(16) NOT NULL,{{LS}}" +
-                    "  `inventory_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `game_mode_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `death_number` INT NOT NULL,{{LS}}" +
-                    "  `inventories_entries_id` BIGINT NOT NULL,{{LS}}" +
+                    "  `player_uuid` {{TYPEUUID}} NOT NULL,{{LS}}" +
+                    "  `inventory_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `game_mode_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `death_number` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `inventories_entries_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`player_uuid`, `inventory_id`, `game_mode_id`, `death_number`),{{LS}}" +
                     "  INDEX `fk_inventories_deaths_game_mode_id_idx` (`game_mode_id`),{{LS}}" +
                     "  INDEX `fk_inventories_deaths_inventory_id_idx` (`inventory_id`),{{LS}}" +
@@ -517,46 +407,36 @@ public final class SecuboidDao {
                     "  CONSTRAINT `fk_inventories_deaths_inventory_id`{{LS}}" +
                     "    FOREIGN KEY (`inventory_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_deaths_game_mode_id`{{LS}}" +
                     "    FOREIGN KEY (`game_mode_id`){{LS}}" +
                     "    REFERENCES `{{TP}}game_modes` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_deaths_player_uuid`{{LS}}" +
                     "    FOREIGN KEY (`player_uuid`){{LS}}" +
                     "    REFERENCES `{{TP}}players` (`uuid`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION,{{LS}}" +
                     "  CONSTRAINT `fk_inventories_deaths_entries_id`{{LS}}" +
                     "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}",
 
             "CREATE TABLE IF NOT EXISTS `{{TP}}inventories_potion_effects` ({{LS}}" +
-                    "  `inventories_entries_id` BIGINT NOT NULL,{{LS}}" +
-                    "  `name` VARCHAR(45) NOT NULL,{{LS}}" +
-                    "  `duration` INT NOT NULL,{{LS}}" +
-                    "  `amplifier` INT NOT NULL,{{LS}}" +
-                    "  `ambient` TINYINT(1) NOT NULL,{{LS}}" +
+                    "  `inventories_entries_id` {{TYPEBIGINT}} NOT NULL,{{LS}}" +
+                    "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" +
+                    "  `duration` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `amplifier` {{TYPEINT}} NOT NULL,{{LS}}" +
+                    "  `ambient` {{TYPEBOOLEAN}}(1) NOT NULL,{{LS}}" +
                     "  PRIMARY KEY (`inventories_entries_id`, `name`),{{LS}}" +
                     "  CONSTRAINT `fk_inventories_potion_effects_entries_id`{{LS}}" +
                     "    FOREIGN KEY (`inventories_entries_id`){{LS}}" +
                     "    REFERENCES `{{TP}}inventories_entries` (`id`){{LS}}" +
-                    "    ON DELETE NO ACTION{{LS}}" +
-                    "    ON UPDATE NO ACTION){{LS}}" +
-                    "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" +
-                    "ENGINE = InnoDB",
+                    "{{CHARENGINE}}"
+    };
 
-            // Functions
+    // Functions
+    private static final String[] CREATE_FUNCTION_STMS_V1 = new String[]{
             "DROP FUNCTION IF EXISTS {{TP}}uuid_to_bin",
 
             "CREATE FUNCTION {{TP}}uuid_to_bin(_uuid BINARY(36)){{LS}}" +
-                    "  RETURNS BINARY(16){{LS}}" +
+                    "  RETURNS {{TYPEUUID}}{{LS}}" +
                     "  LANGUAGE SQL DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER{{LS}}" +
                     "RETURN{{LS}}" +
                     "  UNHEX(CONCAT({{LS}}" +
@@ -568,7 +448,7 @@ public final class SecuboidDao {
 
             "DROP FUNCTION IF EXISTS {{TP}}bin_to_uuid",
 
-            "CREATE FUNCTION {{TP}}bin_to_uuid(_bin BINARY(16)){{LS}}" +
+            "CREATE FUNCTION {{TP}}bin_to_uuid(_bin {{TYPEUUID}}){{LS}}" +
                     "  RETURNS BINARY(36){{LS}}" +
                     "  LANGUAGE SQL DETERMINISTIC CONTAINS SQL SQL SECURITY INVOKER{{LS}}" +
                     "RETURN{{LS}}" +
@@ -591,8 +471,8 @@ public final class SecuboidDao {
 
     public void createVarables(final Connection conn) throws SQLException {
         final String sql = "CREATE TABLE IF NOT EXISTS `{{TP}}variables` ({{LS}}" //
-                + "  `name` VARCHAR(45) NOT NULL,{{LS}}" //
-                + "  `value` VARCHAR(45) NOT NULL,{{LS}}" //
+                + "  `name` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" //
+                + "  `value` {{TYPEVARCHAR(45)}} NOT NULL,{{LS}}" //
                 + "  PRIMARY KEY (`name`),{{LS}}" //
                 + "  UNIQUE KEY `name` (`name`)){{LS}}" //
                 + "CHARACTER SET 'utf8' COLLATE 'utf8_general_ci'{{LS}}" //
@@ -624,8 +504,15 @@ public final class SecuboidDao {
 
     public void initDatabase(final Connection conn) throws SQLException {
         for (final String sql : CREATE_TABLE_STMS_V1) {
-            try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
+            try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsCreate(conn, sql)) {
                 stmt.executeUpdate();
+            }
+        }
+        if (dbConn.isFunctionCompatible()) {
+            for (final String sql : CREATE_FUNCTION_STMS_V1) {
+                try (final PreparedStatement stmt = dbConn.preparedStatementWithTagsCreate(conn, sql)) {
+                    stmt.executeUpdate();
+                }
             }
         }
     }
@@ -633,7 +520,7 @@ public final class SecuboidDao {
     public void setVersion(final Connection conn) throws SQLException {
         final String sql = "INSERT INTO `{{TP}}variables` (`name`, `value`) " //
                 + "VALUES('" + VARIABLE_VERSION + "', '" + currentVersion + "') " //
-                + "ON DUPLICATE KEY UPDATE `value` = '" + currentVersion + "'";
+                + "{{ONDUPLICATEKEY(`name`)}} `value` = '" + currentVersion + "'";
 
         try (final PreparedStatement stmt = dbConn.preparedStatementWithTags(conn, sql)) {
             stmt.executeUpdate();

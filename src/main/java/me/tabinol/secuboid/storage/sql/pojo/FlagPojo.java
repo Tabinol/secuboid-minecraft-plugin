@@ -15,45 +15,34 @@
  You should have received a copy of the GNU General Public License
  along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package me.tabinol.secuboid.storage.mysql.pojo;
+package me.tabinol.secuboid.storage.sql.pojo;
 
 import java.util.UUID;
 
-public final class PermissionPojo {
+public final class FlagPojo {
 
+    private final long id;
     private final UUID landUUID;
-    private final long playerContainerId;
-    private final long permissionId;
-    private final boolean value;
+    private final long flagId;
     private final boolean inheritance;
 
-    public PermissionPojo(final UUID landUUID, final long playerContainerId, final long permissionId,
-            final boolean value, final boolean inheritance) {
+    public FlagPojo(final long id, final UUID landUUID, final long flagId, final boolean inheritance) {
+        this.id = id;
         this.landUUID = landUUID;
-        this.playerContainerId = playerContainerId;
-        this.permissionId = permissionId;
-        this.value = value;
+        this.flagId = flagId;
         this.inheritance = inheritance;
+    }
+
+    public long getId() {
+        return this.id;
     }
 
     public UUID getLandUUID() {
         return this.landUUID;
     }
 
-    public long getPlayerContainerId() {
-        return this.playerContainerId;
-    }
-
-    public long getPermissionId() {
-        return this.permissionId;
-    }
-
-    public boolean getValue() {
-        return this.value;
-    }
-
-    public boolean isValue() {
-        return this.value;
+    public long getFlagId() {
+        return this.flagId;
     }
 
     public boolean getInheritance() {

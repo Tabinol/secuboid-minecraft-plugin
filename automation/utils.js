@@ -1,9 +1,10 @@
-import { accessSync, constants, createWriteStream, mkdirSync } from 'fs'
+import { accessSync, constants, createReadStream, createWriteStream, mkdirSync } from 'fs'
 import follow_redirects from 'follow-redirects'
 import { loopWhile } from 'deasync'
 import { exit } from 'process'
+import { x } from 'tar'
 
-const { https } = follow_redirects;
+const { https } = follow_redirects
 
 export function fileExists(filename) {
     try {
@@ -41,6 +42,21 @@ export function downloadSync(source, target) {
     }).on('error', (e) => {
         console.error(e)
         exit(1)
+    })
+    loopWhile(() => !isDone)
+}
+
+export function removeLineBreaks(data) {
+    return data.toString().replace(/(\r\n|\n|\r)/gm, "")
+}
+
+export function unTarGzSync(file, options) {
+    console.log(`Extracting ${file}...` )
+    let isDone = false
+    let rs = createReadStream(file)
+    rs.pipe(x(options))
+    rs.on('close', function () {
+        isDone = true
     })
     loopWhile(() => !isDone)
 }

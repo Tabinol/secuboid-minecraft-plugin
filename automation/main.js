@@ -3,8 +3,10 @@ import { exit } from 'process'
 import { Parser } from 'xml2js'
 import { loopWhile } from 'deasync'
 import { basename } from 'path'
+import { arch, platform } from 'os'
+import { copySync } from 'fs-extra'
 
-import { downloadSync, fileExists, mkdirRecursive } from './utils.js'
+import { downloadSync, fileExists, mkdirRecursive, unTarGzSync } from './utils.js'
 import { JavaExec } from './javaexec.js'
 
 import constants from './constants.js'
@@ -48,18 +50,26 @@ function downloadIfNotExists(url, version = "") {
     return fileBaseName;
 }
 
-let mavenProp = getMavenProp()
+if (platform != 'linux' && arch != 'x64') {
+    console.error('Sorry! Only Linux x64 is supported for Automation!')
+    exit(1)
+}
+
+const mavenProp = getMavenProp()
 
 mkdirRecursive(constants.cacheDir)
-let spigotFile = downloadIfNotExists(constants.spigotUrl, mavenProp.spigotVersion)
-let vaultFile = downloadIfNotExists(constants.vaultUrl, mavenProp.vaultVersion)
-let groupmanagerFile = downloadIfNotExists(constants.groupmanagerUrl)
-let essentialsFile = downloadIfNotExists(constants.essentialsUrl)
-let essentialsChatFile = downloadIfNotExists(constants.essentialschatUrl)
-let essentialsSpawnFile = downloadIfNotExists(constants.essentialsspawnUrl)
+const jdkFile = downloadIfNotExists(constants.jreUrl)
+const mariadbFile = downloadIfNotExists(constants.mariadbUrl)
+const spigotFile = downloadIfNotExists(constants.spigotUrl, mavenProp.spigotVersion)
+const vaultFile = downloadIfNotExists(constants.vaultUrl, mavenProp.vaultVersion)
+const groupmanagerFile = downloadIfNotExists(constants.groupmanagerUrl)
+const essentialsFile = downloadIfNotExists(constants.essentialsUrl)
+const essentialsChatFile = downloadIfNotExists(constants.essentialschatUrl)
+const essentialsSpawnFile = downloadIfNotExists(constants.essentialsspawnUrl)
 
-rmSync(constants.serverDir, { recursive: true, force: true })
-mkdirRecursive(constants.pluginsDir)
+rmSync(constants.workDir, { recursive: true, force: true })
+mkdirRecursive(constants.workDir)
+copySync('workresources', constants.workDir)
 copyFileSync(`${constants.cacheDir}/${spigotFile}`, `${constants.workDir}/${spigotFile}`)
 copyFileSync(`${constants.cacheDir}/${vaultFile}`, `${constants.pluginsDir}/${vaultFile}`)
 copyFileSync(`${constants.cacheDir}/${groupmanagerFile}`, `${constants.pluginsDir}/${groupmanagerFile}`)
@@ -67,17 +77,24 @@ copyFileSync(`${constants.cacheDir}/${essentialsFile}`, `${constants.pluginsDir}
 copyFileSync(`${constants.cacheDir}/${essentialsChatFile}`, `${constants.pluginsDir}/${essentialsChatFile}`)
 copyFileSync(`${constants.cacheDir}/${essentialsSpawnFile}`, `${constants.pluginsDir}/${essentialsSpawnFile}`)
 
-const javaExec = new JavaExec(spigotFile)
-const procEmitter = javaExec.spawnServer()
+const jreDir = constants.workDir + '/jdk'
+const mariadbDir = constants.workDir + '/mariadb'
+mkdirRecursive(jreDir)
+mkdirRecursive(mariadbDir)
+unTarGzSync(`${constants.cacheDir}/${jdkFile}`, { C: jreDir, strip: 1 })
+unTarGzSync(`${constants.cacheDir}/${mariadbFile}`, { C: mariadbDir, strip: 1 })
 
-procEmitter.on('data', (data => {
-
-}))
-
-procEmitter.on('error', (data => {
-    
-}))
-
-procEmitter.on('ext', (data => {
-    
-}))
+//const javaExec = new JavaExec(jreDir, spigotFile)
+//const procEmitter = javaExec.spawnServer()
+//
+//procEmitter.on('data', (data => {
+//
+//}))
+//
+//procEmitter.on('error', (data => {
+//
+//}))
+//
+//procEmitter.on('ext', (data => {
+//
+//}))

@@ -46,12 +46,8 @@ export function downloadSync(source, target) {
     loopWhile(() => !isDone)
 }
 
-export function removeLineBreaks(data) {
-    return data.toString().replace(/(\r\n|\n|\r)/gm, "")
-}
-
 export function unTarGzSync(file, options) {
-    console.log(`Extracting ${file}...` )
+    console.log(`Extracting ${file}...`)
     let isDone = false
     let rs = createReadStream(file)
     rs.pipe(x(options))

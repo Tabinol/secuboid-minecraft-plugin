@@ -7,6 +7,8 @@ import { arch, platform } from 'os'
 import { copySync } from 'fs-extra'
 
 import { downloadSync, fileExists, mkdirRecursive, unTarGzSync } from './utils.js'
+import { ExecList } from './execlist.js'
+import { MariadbExec } from './mariadbexec.js'
 import { JavaExec } from './javaexec.js'
 
 import constants from './constants.js'
@@ -83,6 +85,13 @@ mkdirRecursive(jreDir)
 mkdirRecursive(mariadbDir)
 unTarGzSync(`${constants.cacheDir}/${jdkFile}`, { C: jreDir, strip: 1 })
 unTarGzSync(`${constants.cacheDir}/${mariadbFile}`, { C: mariadbDir, strip: 1 })
+
+const execList = new ExecList()
+execList.catchSig()
+const mariadbExec = new MariadbExec(execList, mariadbDir)
+mariadbExec.init()
+mariadbExec.start()
+mariadbExec.createDatabase()
 
 //const javaExec = new JavaExec(jreDir, spigotFile)
 //const procEmitter = javaExec.spawnServer()

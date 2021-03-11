@@ -4,8 +4,8 @@ import constants from './constants.js'
 
 export class JavaExec extends Exec {
 
-    constructor(jreDir, spigotFile) {
-        super('server')
+    constructor(execList, jreDir, spigotFile) {
+        super(execList, 'server')
         this.jreDir = jreDir
         this.spigotFile = spigotFile
     }
@@ -20,7 +20,7 @@ export class JavaExec extends Exec {
             javaArgs = constants.javaArgsDefault
         }
 
-        spawnServer(javaExec, javaArgs.concat(['-jar', this.spigotFile, '--nogui']), {
+        this.spawnServer(javaExec, javaArgs.concat(['-jar', this.spigotFile, '--nogui']), {
             cwd: constants.workDir,
             env: {
                 JAVA_HOME: this.jreDir

@@ -5,6 +5,7 @@ import { loopWhile } from 'deasync'
 import { basename } from 'path'
 import { arch, platform } from 'os'
 import { copySync } from 'fs-extra'
+import { createBot } from 'mineflayer'
 
 import { downloadSync, fileExists, mkdirRecursive, unTarGzSync } from './utils.js'
 import { ExecList } from './execlist.js'
@@ -79,7 +80,8 @@ copyFileSync(`${constants.cacheDir}/${essentialsFile}`, `${constants.pluginsDir}
 copyFileSync(`${constants.cacheDir}/${essentialsChatFile}`, `${constants.pluginsDir}/${essentialsChatFile}`)
 copyFileSync(`${constants.cacheDir}/${essentialsSpawnFile}`, `${constants.pluginsDir}/${essentialsSpawnFile}`)
 
-const jreDir = constants.workDir + '/jdk'
+const jreRelativeDir = 'jre'
+const jreDir = constants.workDir + '/' + jreRelativeDir
 const mariadbDir = constants.workDir + '/mariadb'
 mkdirRecursive(jreDir)
 mkdirRecursive(mariadbDir)
@@ -93,17 +95,13 @@ mariadbExec.init()
 mariadbExec.start()
 mariadbExec.createDatabase()
 
-//const javaExec = new JavaExec(jreDir, spigotFile)
-//const procEmitter = javaExec.spawnServer()
-//
-//procEmitter.on('data', (data => {
-//
-//}))
-//
-//procEmitter.on('error', (data => {
-//
-//}))
-//
-//procEmitter.on('ext', (data => {
-//
-//}))
+const javaExec = new JavaExec(execList, jreRelativeDir, spigotFile)
+javaExec.start()
+javaExec.waitFor('[Server thread/INFO]: Done')
+
+console.log('Create bot...')
+const bot = createBot({ host: 'localhost', port: '25565' })
+bot.once('spawn', () => {
+    bot.chat('salut')
+})
+

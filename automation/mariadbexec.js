@@ -37,10 +37,12 @@ export class MariadbExec extends Exec {
             '-u',
             'root'
         ], { cwd: this.mariadbDir })
-        mariadbClient.send("CREATE USER IF NOT EXISTS 'secuboid'@'localhost' IDENTIFIED '12345';")
-        mariadbClient.send("DROP DATABASE IF NOT EXISTS secuboid;")
+        mariadbClient.send("CREATE USER IF NOT EXISTS 'secuboid'@'localhost' IDENTIFIED BY '12345';")
+        mariadbClient.send("DROP DATABASE IF EXISTS secuboid;")
         mariadbClient.send("CREATE DATABASE secuboid;")
         mariadbClient.send("GRANT ALL ON secuboid.* TO 'secuboid'@'localhost';")
+        mariadbClient.send("FLUSH PRIVILEGES;")
+        mariadbClient.send("quit")
         mariadbClient.waitUntilExit()
     }
 }

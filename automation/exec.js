@@ -80,7 +80,7 @@ export class Exec {
     send(command) {
         console.log(this.serverName + '< ' + command)
         this.messageQueue = []
-        this.proc.stdin.write(command + '\r')
+        this.proc.stdin.write(command + '\n')
     }
 
     waitUntilExit(timeoutTime = DEFAULT_TIMEOUT) {

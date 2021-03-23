@@ -5,12 +5,12 @@ import { loopWhile } from 'deasync'
 import { basename } from 'path'
 import { arch, platform } from 'os'
 import { copySync } from 'fs-extra'
-import { createBot } from 'mineflayer'
 
 import { downloadSync, fileExists, mkdirRecursive, unTarGzSync } from './utils.js'
 import { ExecList } from './execlist.js'
 import { MariadbExec } from './mariadbexec.js'
 import { JavaExec } from './javaexec.js'
+import { ExecBot } from './execbot.js'
 
 import constants from './constants.js'
 
@@ -73,6 +73,7 @@ const essentialsSpawnFile = downloadIfNotExists(constants.essentialsspawnUrl)
 rmSync(constants.workDir, { recursive: true, force: true })
 mkdirRecursive(constants.workDir)
 copySync('workresources', constants.workDir)
+copyFileSync(mavenProp.jarFile, `${constants.pluginsDir}/${basename(mavenProp.jarFile)}`)
 copyFileSync(`${constants.cacheDir}/${spigotFile}`, `${constants.workDir}/${spigotFile}`)
 copyFileSync(`${constants.cacheDir}/${vaultFile}`, `${constants.pluginsDir}/${vaultFile}`)
 copyFileSync(`${constants.cacheDir}/${groupmanagerFile}`, `${constants.pluginsDir}/${groupmanagerFile}`)
@@ -90,18 +91,23 @@ unTarGzSync(`${constants.cacheDir}/${mariadbFile}`, { C: mariadbDir, strip: 1 })
 
 const execList = new ExecList()
 execList.catchSig()
-const mariadbExec = new MariadbExec(execList, mariadbDir)
-mariadbExec.init()
-mariadbExec.start()
-mariadbExec.createDatabase()
 
-const javaExec = new JavaExec(execList, jreRelativeDir, spigotFile)
-javaExec.start()
-javaExec.waitFor('[Server thread/INFO]: Done')
+try {
+    const mariadbExec = new MariadbExec(execList, mariadbDir)
+    mariadbExec.init()
+    mariadbExec.start()
+    mariadbExec.createDatabase()
 
-console.log('Create bot...')
-const bot = createBot({ host: 'localhost', port: '25565' })
-bot.once('spawn', () => {
-    bot.chat('salut')
-})
+    const javaExec = new JavaExec(execList, jreRelativeDir, spigotFile)
+    javaExec.start()
+    javaExec.waitFor('[Server thread/INFO]: Done')
 
+    const player01 = new ExecBot(execList, 'player01')
+    player01.start()
+    player01.waitFor('"event":"spawn"')
+    player01.send({ command: 'chat', args: { message: 'test-1-2-1-2' } })
+} catch (err) {
+    console.error(err)
+    execList.killAll()
+    exit(1)
+}

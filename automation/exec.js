@@ -70,7 +70,7 @@ export class Exec {
     }
 
     waitFor(expected, timeoutTime = DEFAULT_TIMEOUT) {
-        console.log(this.serverName + ' wait for: ' + expected)
+        console.log(this.serverName + ' waits for: ' + expected)
         this.expected = expected
         const timeout = this.doTimeout(timeoutTime)
         loopWhile(() => this.expected != null)
@@ -78,9 +78,15 @@ export class Exec {
     }
 
     send(command) {
-        console.log(this.serverName + '< ' + command)
+        let output
+        if (command instanceof Object) {
+            output = JSON.stringify(command)
+        } else {
+            output = command
+        }
+        console.log(this.serverName + '< ' + output)
         this.messageQueue = []
-        this.proc.stdin.write(command + '\n')
+        this.proc.stdin.write(output + '\n')
     }
 
     waitUntilExit(timeoutTime = DEFAULT_TIMEOUT) {

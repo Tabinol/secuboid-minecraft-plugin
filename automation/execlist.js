@@ -16,9 +16,9 @@ export class ExecList {
     }
 
     killAll() {
-        for (let i = 0; i < this.execs.length; i++) {
-            this.execs[i].proc.kill()
-            this.execs[i].waitUntilExit()
+        while (this.execs.length > 0) {
+            this.execs[0].proc.kill()
+            this.execs[0].waitUntilExit()
         }
     }
 

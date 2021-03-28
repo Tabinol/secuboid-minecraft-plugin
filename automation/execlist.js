@@ -1,3 +1,5 @@
+import { exit } from 'process'
+
 export class ExecList {
 
     constructor() {
@@ -17,9 +19,9 @@ export class ExecList {
 
     killAll() {
         while (this.execs.length > 0) {
-            this.execs[0].proc.kill()
-            this.execs[0].waitUntilExit()
+            this.execs[0].killAndWait()
         }
+        exit(1)
     }
 
     add(exec) {

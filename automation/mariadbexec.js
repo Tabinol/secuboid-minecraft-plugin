@@ -1,11 +1,3 @@
-/*
-./scripts/mariadb-install-db --basedir=/home/michel/develop/secuboid-minecraft-plugin/automation/target/work/mariadb --auth-root-authentication-method=normal
-./bin/mariadbd --basedir=/home/michel/develop/secuboid-minecraft-plugin/automation/target/work/mariadb
-./bin/mariadb -u root
-
-
-*/
-
 import { Exec } from './exec.js'
 
 import constants from './constants.js'

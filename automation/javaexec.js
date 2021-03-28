@@ -8,6 +8,7 @@ export class JavaExec extends Exec {
         super(execList, 'server')
         this.jreDir = jreDir
         this.spigotFile = spigotFile
+        this.breakMessages.push('at me.tabinol.secuboid.Secuboid')
     }
 
     start() {
@@ -26,5 +27,15 @@ export class JavaExec extends Exec {
                 JAVA_HOME: this.jreDir
             }
         })
+    }
+
+    startAndWaitForDone() {
+        this.start()
+        this.waitFor('[Server thread/INFO]: Done')
+    }
+
+    stopAndWaitForDone() {
+        this.send('stop')
+        this.waitUntilExit()
     }
 }

@@ -6,11 +6,16 @@
     "private": true,
     "license": "GPL3",
     "type": "module",
+    "scripts": {
+        "start": "node main.js"
+    },
     "dependencies": {
         "deasync": "^0.1.20",
         "follow-redirects": "^1.13.3",
         "fs-extra": "^9.1.0",
+        "minecraft-data": "^2.81.0",
         "mineflayer": "^3.0.0",
+        "mineflayer-pathfinder": "^1.6.1",
         "tar": "^6.1.0",
         "xml2js": "^0.4.23"
     }

@@ -11,11 +11,21 @@ export class Exec {
         this.execList = execList
         this.serverName = serverName
         this.proc = null
+        this.breakMessages = []
         this.expected = null
         this.messageQueue = []
+        this.error = false
+        this.toKill = false
+        this.isExit = false
     }
 
     spawnServer(command, args, options = {}) {
+        this.expected = null
+        this.messageQueue = []
+        this.error = false
+        this.toKill = false
+        this.isExit = false
+
         console.log(`Starting ${this.serverName}...`)
         this.proc = spawn(command, args, options)
         this.execList.add(this)
@@ -29,8 +39,9 @@ export class Exec {
         })
 
         this.proc.on('exit', (code) => {
+            this.isExit = true
             this.execList.remove(this)
-            if (code !== 0) {
+            if (!this.toKill && code != null && code !== 0) {
                 console.error(this.serverName + ' exit code=' + code)
                 this.execList.killAll()
                 exit(1)
@@ -50,6 +61,20 @@ export class Exec {
                 } else {
                     console.log(this.serverName + '> ' + output)
                 }
+
+                if (!this.isError) {
+                    for (let j in this.breakMessages) {
+                        if (output.includes(this.breakMessages[j])) {
+                            this.error = true
+                            setTimeout(() => {
+                                console.error(this.serverName + ": An error is detected!")
+                                this.execList.killAll()
+                                exit(1)
+                            }, 1000)
+                        }
+                    }
+                }
+
                 this.messageQueue.push(output)
                 let message
                 while (this.expected != null && (message = this.messageQueue.shift()) !== undefined) {
@@ -89,11 +114,21 @@ export class Exec {
         this.proc.stdin.write(output + '\n')
     }
 
+    killAndWait(timeoutTime = DEFAULT_TIMEOUT) {
+        if (this.toKill) {
+            return
+        }
+
+        this.toKill = true
+        this.proc.kill()
+        this.waitUntilExit(timeoutTime)
+    }
+
     waitUntilExit(timeoutTime = DEFAULT_TIMEOUT) {
         console.log(this.serverName + ' waiting for exit...')
         this.messageQueue = []
         const timeout = this.doTimeout(timeoutTime)
-        loopWhile(() => this.proc.exitCode == null)
+        loopWhile(() => !this.isExit)
         clearTimeout(timeout)
     }
 }

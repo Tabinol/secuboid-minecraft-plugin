@@ -8,9 +8,7 @@ import { copySync } from 'fs-extra'
 
 import { downloadSync, fileExists, mkdirRecursive, unTarGzSync } from './utils.js'
 import { ExecList } from './execlist.js'
-import { MariadbExec } from './mariadbexec.js'
-import { JavaExec } from './javaexec.js'
-import { ExecBot } from './execbot.js'
+import { AutoTest } from './autotests.js'
 
 import constants from './constants.js'
 
@@ -70,44 +68,41 @@ const essentialsFile = downloadIfNotExists(constants.essentialsUrl)
 const essentialsChatFile = downloadIfNotExists(constants.essentialschatUrl)
 const essentialsSpawnFile = downloadIfNotExists(constants.essentialsspawnUrl)
 
-rmSync(constants.workDir, { recursive: true, force: true })
-mkdirRecursive(constants.workDir)
-copySync('workresources', constants.workDir)
-copyFileSync(mavenProp.jarFile, `${constants.pluginsDir}/${basename(mavenProp.jarFile)}`)
-copyFileSync(`${constants.cacheDir}/${spigotFile}`, `${constants.workDir}/${spigotFile}`)
-copyFileSync(`${constants.cacheDir}/${vaultFile}`, `${constants.pluginsDir}/${vaultFile}`)
-copyFileSync(`${constants.cacheDir}/${groupmanagerFile}`, `${constants.pluginsDir}/${groupmanagerFile}`)
-copyFileSync(`${constants.cacheDir}/${essentialsFile}`, `${constants.pluginsDir}/${essentialsFile}`)
-copyFileSync(`${constants.cacheDir}/${essentialsChatFile}`, `${constants.pluginsDir}/${essentialsChatFile}`)
-copyFileSync(`${constants.cacheDir}/${essentialsSpawnFile}`, `${constants.pluginsDir}/${essentialsSpawnFile}`)
+for (let i = 0; i <= 1; i++) {
+    const isMaria = (i == 1)
 
-const jreRelativeDir = 'jre'
-const jreDir = constants.workDir + '/' + jreRelativeDir
-const mariadbDir = constants.workDir + '/mariadb'
-mkdirRecursive(jreDir)
-mkdirRecursive(mariadbDir)
-unTarGzSync(`${constants.cacheDir}/${jdkFile}`, { C: jreDir, strip: 1 })
-unTarGzSync(`${constants.cacheDir}/${mariadbFile}`, { C: mariadbDir, strip: 1 })
+    rmSync(constants.workDir, { recursive: true, force: true })
+    mkdirRecursive(constants.workDir)
+    copySync('workresources', constants.workDir)
+    if (isMaria) {
+        copySync('workresources-mariadb', constants.workDir)
+    }
+    copyFileSync(mavenProp.jarFile, `${constants.pluginsDir}/${basename(mavenProp.jarFile)}`)
+    copyFileSync(`${constants.cacheDir}/${spigotFile}`, `${constants.workDir}/${spigotFile}`)
+    copyFileSync(`${constants.cacheDir}/${vaultFile}`, `${constants.pluginsDir}/${vaultFile}`)
+    copyFileSync(`${constants.cacheDir}/${groupmanagerFile}`, `${constants.pluginsDir}/${groupmanagerFile}`)
+    copyFileSync(`${constants.cacheDir}/${essentialsFile}`, `${constants.pluginsDir}/${essentialsFile}`)
+    copyFileSync(`${constants.cacheDir}/${essentialsChatFile}`, `${constants.pluginsDir}/${essentialsChatFile}`)
+    copyFileSync(`${constants.cacheDir}/${essentialsSpawnFile}`, `${constants.pluginsDir}/${essentialsSpawnFile}`)
 
-const execList = new ExecList()
-execList.catchSig()
+    const jreRelativeDir = 'jre'
+    const jreDir = constants.workDir + '/' + jreRelativeDir
+    const mariadbDir = constants.workDir + '/mariadb'
+    mkdirRecursive(jreDir)
+    mkdirRecursive(mariadbDir)
+    unTarGzSync(`${constants.cacheDir}/${jdkFile}`, { C: jreDir, strip: 1 })
+    unTarGzSync(`${constants.cacheDir}/${mariadbFile}`, { C: mariadbDir, strip: 1 })
 
-try {
-    const mariadbExec = new MariadbExec(execList, mariadbDir)
-    mariadbExec.init()
-    mariadbExec.start()
-    mariadbExec.createDatabase()
+    const execList = new ExecList()
+    execList.catchSig()
 
-    const javaExec = new JavaExec(execList, jreRelativeDir, spigotFile)
-    javaExec.start()
-    javaExec.waitFor('[Server thread/INFO]: Done')
-
-    const player01 = new ExecBot(execList, 'player01')
-    player01.start()
-    player01.waitFor('"event":"spawn"')
-    player01.send({ command: 'chat', args: { message: 'test-1-2-1-2' } })
-} catch (err) {
-    console.error(err)
-    execList.killAll()
-    exit(1)
+    try {
+        const autoTest = new AutoTest(execList, mariadbDir, jreRelativeDir, spigotFile)
+        console.log('=== Test with maria ' + isMaria + ' ===')
+        autoTest.run(isMaria)
+    } catch (err) {
+        console.error(err)
+        execList.killAll()
+        exit(1)
+    }
 }

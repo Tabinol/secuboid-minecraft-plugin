@@ -119,5 +119,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 ## Node/NPM
-node_modules
+automation/node
+automation/node_modules
 package-lock.json

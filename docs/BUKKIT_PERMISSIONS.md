@@ -14,6 +14,8 @@ Here is the list of Bukkit permissons. The * are accepted.
  Inventory (if active)|secuboid.inv.forcesave                        |op    |Can use "/secuboid inv forcesave"
  &nbsp;               |secuboid.inv.default                          |op    |Can use "/secuboid inv default"
  &nbsp;               |secuboid.inv.loaddeath                        |op    |Can use "/secuboid inv loaddeath"
+ &nbsp;               |secuboid.inv.list *v1.6.0+*                   |op    |Can use "/secuboid inv list"
+ &nbsp;               |secuboid.inv.purge *v1.6.0+*                  |op    |Can use "/secuboid inv purge"
  &nbsp;               |secuboid.inv.ignorecreativeinv                |false |Ignore creative inventory (ignored by secuboid.*)
  &nbsp;               |secuboid.inv.ignoreinv                        |false |Ignore inventory changes (ignored by secuboid.*)
  &nbsp;               |secuboid.inv.ignoredisabledcommands           |op    |Ignore disabled commands

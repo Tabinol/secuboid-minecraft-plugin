@@ -341,3 +341,16 @@ Give back an inventory before player death. You can specify a number from 1 to 9
 Bukkit permission: *secuboid.inv.forcesave, op*
 
 Force inventory save from all players.
+
+`/secuboid inventory list` *v1.6.0+*
+
+Bukkit permission: *secuboid.inv.list, op*
+
+List available inventories.
+
+`/secuboid inventory purge INVENTORY_NAME` *v1.6.0+*
+
+Bukkit permission: *secuboid.inv.purge, op*
+
+Purge (completely remove) an inventory.
+

@@ -90,7 +90,7 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false, true);
     }
 
     public void removeInventoryDefault(final PlayerInvEntry playerInvEntry) {
@@ -151,16 +151,16 @@ public class InventoriesFlat {
     }
 
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false, false);
 
     }
 
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, true);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, true, false);
     }
 
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
-        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), true, false);
+        saveInventory(playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), true, false, false);
     }
 
     private PlayerInvEntry loadInventoryFromFile(final File playerItemFile,
@@ -223,7 +223,7 @@ public class InventoriesFlat {
     }
 
     public void saveInventory(final PlayerInvEntry playerInvEntry, final UUID playerUUIDNullable,
-            final boolean isDeathHistory, final boolean enderChestOnly) {
+            final boolean isDeathHistory, final boolean enderChestOnly, final boolean isDefaultInv) {
         final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
         // If for some reasons whe have to skip save (ex: SaveInventory = false)
@@ -264,7 +264,7 @@ public class InventoriesFlat {
                 }
             }
 
-        } else if (playerUUIDNullable == null) {
+        } else if (isDefaultInv) {
             // Save default inventory
             filePreName = DEFAULT_INV;
 

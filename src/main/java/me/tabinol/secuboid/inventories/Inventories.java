@@ -128,7 +128,7 @@ public final class Inventories {
     public void saveInventory(final Player playerNullable, final PlayerInvEntry playerInvEntry, final boolean isDeath,
             final boolean isDefaultInv, final boolean isEnderChestOnly) {
 
-        // Il a player is just connected before the inventory load
+        // If a player is just connected before the inventory load
         if (playerInvEntry == null) {
             return;
         }

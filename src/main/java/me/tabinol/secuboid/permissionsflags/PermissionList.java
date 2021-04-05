@@ -241,6 +241,10 @@ public enum PermissionList {
      */
     EAT(true),
     /**
+     * The eat cake.
+     */
+    EAT_CAKE(true),
+    /**
      * Eat a chorus fruit.
      */
     EAT_CHORUS_FRUIT(true),

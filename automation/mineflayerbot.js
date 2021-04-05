@@ -2,8 +2,12 @@ import { createBot } from 'mineflayer'
 import mineflayerPathfinder from 'mineflayer-pathfinder'
 import minecraftData from 'minecraft-data'
 import { createInterface } from 'readline'
+import vec3Module from 'vec3'
+import prismarineItem from 'prismarine-item'
 
 const { pathfinder, Movements, goals: { GoalXZ } } = mineflayerPathfinder
+const { Vec3 } = vec3Module
+const Item = prismarineItem("1.16")
 
 const playerName = process.argv.slice(2)[0]
 const bot = createBot({ username: playerName, hideErrors: false })
@@ -23,13 +27,10 @@ bot.on('spawn', () => {
     sendToConsole('spawn')
 })
 
-bot.on('chat', (username, message, translate, jsonMsg, matches) => {
-    sendToConsole('spawn', {
-        username: username,
-        message: message,
-        translate: translate,
+bot.on('message', (jsonMsg, position) => {
+    sendToConsole('message', {
         jsonMsg: jsonMsg,
-        matches: matches
+        position: position
     })
 })
 
@@ -56,9 +57,38 @@ rl.on('line', (line) => {
         case 'chat':
             bot.chat(args.message)
             break
-        case 'move': // Bug!
+        case 'creativeSetInventorySlot':
+            const item = new Item(mcData.itemsByName[args.itemName].id, args.count)
+            bot.creative.setInventorySlot(args.slot, item, () => {
+                sendToConsole('creativeSetInventorySlotDone')
+            })
+            break
+        case 'lookAt':
+            bot.lookAt(new Vec3(args.x, args.y, args.z), args.force, () => {
+                sendToConsole('lookAtDone')
+            })
+            break
+        case 'move':
             bot.pathfinder.setMovements(defaultMove)
             bot.pathfinder.setGoal(new GoalXZ(args.x, args.z))
+            break
+        case 'placeBlock':
+            const referenceBlock = bot.blockAtCursor()
+            bot.placeBlock(referenceBlock, new Vec3(args.vx, args.vy, args.vz), () => {
+                sendToConsole('placeBlockDone')
+            })
+            break
+
+        case 'activateBlock':
+            const block = bot.blockAtCursor()
+            bot.activateBlock(block, () => {
+                sendToConsole('activateBlockDone')
+            })
+            break
+        case 'waitForChunksToLoad':
+            bot.waitForChunksToLoad(() => {
+                sendToConsole('waitForChunksToLoadDone')
+            })
             break
         case 'quit':
             bot.quit()

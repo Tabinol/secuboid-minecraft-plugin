@@ -352,8 +352,10 @@ public final class PlayerListener extends CommonListener implements Listener {
                     || ((ml == Material.BEEHIVE || ml == Material.BEE_NEST) && !checkPermission(landPermissionsFlags,
                             player, PermissionList.OPEN_BEEHIVE.getPermissionType())))
                     // For dragon egg fix
-                    || (ml == Material.DRAGON_EGG && !checkPermission(landPermissionsFlags, event.getPlayer(),
-                            PermissionList.BUILD_DESTROY.getPermissionType()))) {
+                    || (ml == Material.DRAGON_EGG && !checkPermission(landPermissionsFlags, player,
+                            PermissionList.BUILD_DESTROY.getPermissionType()))
+                    || (ml == Material.CAKE && !checkPermission(landPermissionsFlags, player,
+                            PermissionList.EAT_CAKE.getPermissionType()))) {
 
                 messagePermission(player);
                 event.setCancelled(true);

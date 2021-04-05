@@ -1,4 +1,5 @@
 import { Exec } from './exec.js'
+import { createInterface } from 'readline'
 
 import constants from './constants.js'
 
@@ -9,6 +10,7 @@ export class JavaExec extends Exec {
         this.jreDir = jreDir
         this.spigotFile = spigotFile
         this.breakMessages.push('at me.tabinol.secuboid.Secuboid')
+        this.rl = null
     }
 
     start() {
@@ -27,6 +29,11 @@ export class JavaExec extends Exec {
                 JAVA_HOME: this.jreDir
             }
         })
+
+        this.rl = createInterface({ input: process.stdin, output: process.stdout })
+        this.rl.on('line', (line) => {
+            this.send(line)
+        })
     }
 
     startAndWaitForDone() {
@@ -35,6 +42,10 @@ export class JavaExec extends Exec {
     }
 
     stopAndWaitForDone() {
+        if (this.rl != null) {
+            this.rl.close()
+            this.rl = null
+        }
         this.send('stop')
         this.waitUntilExit()
     }

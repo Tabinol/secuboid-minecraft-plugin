@@ -123,6 +123,7 @@ FIRE                                                                            
 AUTO_HEAL                                                                           | false   | Automatically heal
 FOOD_HEAL                                                                           | true    | Automatically feed
 EAT                                                                                 | true    | Can eat
+EAT_CAKE *v1.6.0+*                                                                  | true    | Can eat a cake
 EAT_CHORUS_FRUIT                                                                    | true    | Can eat chorus fruit
 POTION_SPLASH                                                                       | true    | Potion splashes
 TAME                                                                                | true    | Tame a pet

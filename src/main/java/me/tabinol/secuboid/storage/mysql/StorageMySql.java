@@ -746,7 +746,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryDefault(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false, true);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the inventory default to database %s", playerInvEntry.getName()), e);
@@ -811,7 +811,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayer(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, false, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the player inventory to database %s", playerInvEntry.getName()), e);
@@ -821,7 +821,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayerDeath(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, true);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), false, true, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE,
                     String.format("Unable to save the player death inventory to database %s", playerInvEntry.getName()),
@@ -832,7 +832,7 @@ public final class StorageMySql implements Storage {
     @Override
     public void saveInventoryPlayerDeathHistory(final PlayerInvEntry playerInvEntry) {
         try (final Connection conn = dbConn.openConnection()) {
-            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), true, false);
+            saveInventory(conn, playerInvEntry, playerInvEntry.getPlayerUUIDNullable(), true, false, false);
         } catch (final SQLException e) {
             log.log(Level.SEVERE, String.format("Unable to save the player death inventory history to database %s",
                     playerInvEntry.getName()), e);
@@ -1125,7 +1125,8 @@ public final class StorageMySql implements Storage {
     }
 
     public void saveInventory(final Connection conn, final PlayerInvEntry playerInvEntry,
-                              final UUID playerUUIDNullable, final boolean isDeathHistory, final boolean enderChestOnly)
+                              final UUID playerUUIDNullable, final boolean isDeathHistory, final boolean enderChestOnly,
+                              final boolean isDefaultInv)
             throws SQLException {
         final InventorySpec inventorySpec = playerInvEntry.getInventorySpec();
 
@@ -1162,7 +1163,7 @@ public final class StorageMySql implements Storage {
             saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdNullable,
                     i -> inventoriesDeathsDao.insertInventoryDeath(conn, playerUUIDNullable, inventoryId, gameModeId, 1, i));
 
-        } else if (playerUUIDNullable == null) {
+        } else if (isDefaultInv) {
             // Save default inventory
             final Long inventoryEntryIdNullable = inventoriesDefaultsDao.getValueNullable(conn, inventoryId);
             saveInventoryEntry(conn, playerInvEntry, enderChestOnly, inventoryEntryIdNullable,

@@ -10,10 +10,15 @@ The help is welcome for development and language typos.
 * [configuration](https://tabinol.github.io/secuboid-minecraft-plugin/CONFIG)
 * [Bukkit permissions](https://tabinol.github.io/secuboid-minecraft-plugin/BUKKIT_PERMISSIONS)
 * [How to create a land quick guide](https://tabinol.github.io/secuboid-minecraft-plugin/CREATE_LAND)
-* [Tables (Player containers, Permsions, Flags)](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES)
+* [Tables (Player containers, Permissions, Flags)](https://tabinol.github.io/secuboid-minecraft-plugin/TABLES)
 * [Commands](https://tabinol.github.io/secuboid-minecraft-plugin/COMMANDS)
 * [Issues](https://github.com/Tabinol/secuboid-minecraft-plugin/issues)
 * [For developers](https://tabinol.github.io/secuboid-minecraft-plugin/DEVELOPERS)
+
+## Support
+* [Open an issue](https://github.com/Tabinol/secuboid-minecraft-plugin/issues)
+* [Secuboid on Discord](https://discord.gg/37PAVevWut)
+
 
 # Features
 

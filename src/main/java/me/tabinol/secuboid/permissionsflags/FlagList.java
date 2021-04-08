@@ -56,6 +56,7 @@ public enum FlagList {
      * The firework explosion.
      */
     FIREWORK_EXPLOSION(true),
+    BLOCK_EXPLOSION(true),
     /**
      * The creeper damage.
      */
@@ -84,6 +85,7 @@ public enum FlagList {
      * The tnt damage.
      */
     TNT_DAMAGE(true),
+    BLOCK_DAMAGE(true),
     /**
      * The mob spawn.
      */

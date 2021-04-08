@@ -37,6 +37,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
@@ -124,38 +125,38 @@ public final class WorldListener extends CommonListener implements Listener {
 
                     case CREEPER:
                         power = 0L;
-                        ExplodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(), event.getLocation(),
+                        explodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), power, false);
                         break;
 
                     case WITHER_SKULL:
-                        ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
+                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), 1L, false);
                         break;
 
                     case WITHER:
-                        ExplodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
+                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), 7L, false);
                         break;
 
                     case FIREBALL:
-                        ExplodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(), event.getLocation(),
+                        explodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), 1L, true);
                         break;
 
                     case MINECART_TNT:
                     case PRIMED_TNT:
-                        ExplodeBlocks(event, event.blockList(), FlagList.TNT_DAMAGE.getFlagType(), event.getLocation(),
+                        explodeBlocks(event, event.blockList(), FlagList.TNT_DAMAGE.getFlagType(), event.getLocation(),
                                 event.getYield(), 4L, false);
                         break;
 
                     case ENDER_DRAGON:
-                        ExplodeBlocks(event, event.blockList(), FlagList.ENDERDRAGON_DAMAGE.getFlagType(),
+                        explodeBlocks(event, event.blockList(), FlagList.ENDERDRAGON_DAMAGE.getFlagType(),
                                 event.getLocation(), event.getYield(), 4L, false);
                         break;
 
                     case ENDER_CRYSTAL:
-                        ExplodeBlocks(event, event.blockList(), FlagList.END_CRYSTAL_DAMAGE.getFlagType(),
+                        explodeBlocks(event, event.blockList(), FlagList.END_CRYSTAL_DAMAGE.getFlagType(),
                                 event.getLocation(), event.getYield(), 4L, false);
                         break;
 
@@ -163,6 +164,19 @@ public final class WorldListener extends CommonListener implements Listener {
                         break;
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onBlockExplodeEvent(BlockExplodeEvent event) {
+        final Location loc = event.getBlock().getLocation();
+        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
+
+        if (!landPermissionsFlags.getFlagAndInherit(FlagList.BLOCK_EXPLOSION.getFlagType()).getValueBoolean()) {
+            event.setCancelled(true);
+        } else {
+            explodeBlocks(event, event.blockList(), FlagList.BLOCK_DAMAGE.getFlagType(),
+                    loc, event.getYield(), 5L, true);
         }
     }
 
@@ -210,7 +224,7 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param power   the power
      * @param setFire the set fire
      */
-    private void ExplodeBlocks(final Cancellable event, final List<Block> blocks, final FlagType ft, final Location loc, final float yield,
+    private void explodeBlocks(final Cancellable event, final List<Block> blocks, final FlagType ft, final Location loc, final float yield,
                                final float power, final boolean setFire) {
 
         FlagValue value;

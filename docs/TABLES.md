@@ -26,42 +26,44 @@ Nobody     | N                 | Nobody (You really want to give access to nobod
 
 A flag is a configuration that effects the land/world and is attributed to all players.
 
-Flag                  | Type            | Default value | Description
-----------------------|-----------------|---------------|------------------------------------------------------------------------------------------------------------------------------------
-INHERIT_OWNER         | boolean         | true          | Inherits permissions of parent land owner
-INHERIT_RESIDENTS     | boolean         | true          | Inherits permissions of parent residents
-INHERIT_TENANT        | boolean         | true          | Inherits permissions of parent tenant
-FIRESPREAD            | boolean         | true          | Fire spreads
-FIRE                  | boolean         | true          | Allow fire
-EXPLOSION             | boolean         | true          | Allow explosions
-CREEPER_EXPLOSION     | boolean         | true          | Creepers explosions
-TNT_EXPLOSION         | boolean         | true          | TNT explosions
-FIREWORK_EXPLOSION    | boolean         | true          | Firework explosions
-END_CRYSTAL_EXPLOSION | boolean         | true          | End crystal explosions
-CREEPER_DAMAGE        | boolean         | true          | Creepers damage
-ENDERMAN_DAMAGE       | boolean         | true          | Endermans damage
-WITHER_DAMAGE         | boolean         | true          | Whiters damage
-GHAST_DAMAGE          | boolean         | true          | Ghasts damage
-ENDERDRAGON_DAMAGE    | boolean         | true          | Ender dragons damage
-TNT_DAMAGE            | boolean         | true          | TNT damage
-END_CRYSTAL_DAMAGE    | boolean         | true          | End crystal damage
-MOB_SPAWN             | boolean         | true          | Hostile monsters spawn
-ANIMAL_SPAWN          | boolean         | true          | Animals spawn
-VILLAGER_SPAWN        | boolean         | true          | Villagers spawn
-BAT_SPAWN             | boolean         | true          | Bats spawn
-FULL_PVP              | boolean         | true          | Players versus players
-MESSAGE_ENTER         | text            |               | Message on land enter
-MESSAGE_EXIT          | text            |               | Message on land exit
-ECO_BLOCK_PRICE       | double (123.45) | 0             | Price per block for a land
-EXCLUDE_COMMANDS      | string list     |               | Banned commands list
-SPAWN                 | text            |               | Land spawn point (created with /secuboid setspawn)
-LEAF_DECAY            | boolean         | true          | Leafs decay
-CROP_TRAMPLE          | boolean         | true          | Crop trample from every source (animal, player)
-WATER_FLOW            | boolean         | true          | Water flow
-LAVA_FLOW             | boolean         | true          | Lava flow
-PORTAL_WORLD          | text            |               | Teleport the player to a specific world
-PORTAL_LAND           | text            |               | Teleport the player to a specific land (the land must have a spawn point)
-PORTAL_WORLD_RANDOM   | text            |               | Teleport the player to a random point and outside a land to a specific world (Be sure to adjust "/worldborder" on the destination!)
+Flag                               | Type            | Default value | Description
+-----------------------------------|-----------------|---------------|------------------------------------------------------------------------------------------------------------------------------------
+INHERIT_OWNER                      | boolean         | true          | Inherits permissions of parent land owner
+INHERIT_RESIDENTS                  | boolean         | true          | Inherits permissions of parent residents
+INHERIT_TENANT                     | boolean         | true          | Inherits permissions of parent tenant
+FIRESPREAD                         | boolean         | true          | Fire spreads
+FIRE                               | boolean         | true          | Allow fire
+EXPLOSION                          | boolean         | true          | Allow explosions
+CREEPER_EXPLOSION                  | boolean         | true          | Creepers explosions
+TNT_EXPLOSION                      | boolean         | true          | TNT explosions
+FIREWORK_EXPLOSION                 | boolean         | true          | Firework explosions
+END_CRYSTAL_EXPLOSION              | boolean         | true          | End crystal explosions
+BLOCK_EXPLOSION *v1.6.0+*          | boolean         | true          | Respawn anchor, bed, ... explosions
+CREEPER_DAMAGE                     | boolean         | true          | Creepers damage
+ENDERMAN_DAMAGE                    | boolean         | true          | Endermans damage
+WITHER_DAMAGE                      | boolean         | true          | Whiters damage
+GHAST_DAMAGE                       | boolean         | true          | Ghasts damage
+ENDERDRAGON_DAMAGE                 | boolean         | true          | Ender dragons damage
+TNT_DAMAGE                         | boolean         | true          | TNT damage
+END_CRYSTAL_DAMAGE                 | boolean         | true          | End crystal damage
+BLOCK_DAMAGE *v1.6.0+*             | boolean         | true          | Respawn anchor, bed, ... damage
+MOB_SPAWN                          | boolean         | true          | Hostile monsters spawn
+ANIMAL_SPAWN                       | boolean         | true          | Animals spawn
+VILLAGER_SPAWN                     | boolean         | true          | Villagers spawn
+BAT_SPAWN                          | boolean         | true          | Bats spawn
+FULL_PVP                           | boolean         | true          | Players versus players
+MESSAGE_ENTER                      | text            |               | Message on land enter
+MESSAGE_EXIT                       | text            |               | Message on land exit
+ECO_BLOCK_PRICE                    | double (123.45) | 0             | Price per block for a land
+EXCLUDE_COMMANDS                   | string list     |               | Banned commands list
+SPAWN                              | text            |               | Land spawn point (created with /secuboid setspawn)
+LEAF_DECAY                         | boolean         | true          | Leafs decay
+CROP_TRAMPLE                       | boolean         | true          | Crop trample from every source (animal, player)
+WATER_FLOW                         | boolean         | true          | Water flow
+LAVA_FLOW                          | boolean         | true          | Lava flow
+PORTAL_WORLD                       | text            |               | Teleport the player to a specific world
+PORTAL_LAND                        | text            |               | Teleport the player to a specific land (the land must have a spawn point)
+PORTAL_WORLD_RANDOM                | text            |               | Teleport the player to a random point and outside a land to a specific world (Be sure to adjust "/worldborder" on the destination!)
 PORTAL_LAND_RANDOM    | text            |               | Teleport the player randomly inside a specific land (the land must include ground level)
 INVENTORY             | text            | Default       | Name of the inventory: MultipleInventories must be "true" in config.yml and the inventory name must be defined in inventory.yml
 

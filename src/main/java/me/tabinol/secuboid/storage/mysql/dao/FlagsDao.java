@@ -89,7 +89,7 @@ public final class FlagsDao {
             final Set<Long> results = new HashSet<>();
             DbUtils.setUUID(stmt, 1, landUUID);
             try (final ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     results.add(rs.getLong("id"));
                 }
                 return results;

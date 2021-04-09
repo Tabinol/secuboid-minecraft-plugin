@@ -76,7 +76,7 @@ public final class InventoryListener extends CommonListener implements Listener 
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void PlayerGameModeChange(final PlayerGameModeChangeEvent event) {
+    public void onPlayerGameModeChange(final PlayerGameModeChangeEvent event) {
         final Player player = event.getPlayer();
         final PlayerConfEntry playerConfEntry = secuboid.getPlayerConf().get(player);
 

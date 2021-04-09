@@ -40,6 +40,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
@@ -86,23 +87,31 @@ public final class FlyCreativeListener implements Listener {
         setFlyCreative(event, event.getPlayer(), event.getLandPermissionsFlags());
     }
 
-    /**
-     * Bugfix when tp is from an other worlds
-     *
-     * @param event the player teleport event
-     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerTeleport(final PlayerTeleportEvent event) {
-
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
         final Player player = event.getPlayer();
 
         if (event.getFrom().getWorld() != event.getTo().getWorld()) {
-            Bukkit.getScheduler().runTaskLater(secuboid, () -> {
-                if (player.isOnline()) {
-                    setFlyCreative(null, player, secuboid.getLands().getPermissionsFlags(player.getLocation()));
-                }
-            }, 1);
+            onPlayerTeleportRespawn(player);
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        final Player player = event.getPlayer();
+        onPlayerTeleportRespawn(player);
+    }
+
+    /*
+     * Bugfix when tp is from an other worlds
+     */
+    private void onPlayerTeleportRespawn(Player player) {
+
+        Bukkit.getScheduler().runTaskLater(secuboid, () -> {
+            if (player.isOnline()) {
+                setFlyCreative(null, player, secuboid.getLands().getPermissionsFlags(player.getLocation()));
+            }
+        }, 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -110,8 +119,10 @@ public final class FlyCreativeListener implements Listener {
         final Player player = event.getPlayer();
         final GameMode newGameMode = event.getNewGameMode();
 
-        // Noting to do, just changed by Secuboid, ignored game mode or player has ignore permission
-        if (creative.removeJustChangedByThisPluginGMPlayers(player) || conf.getIgnoredGameMode().contains(newGameMode) || player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
+        // Noting to do, just changed by Secuboid, ignored game mode or player has
+        // ignore permission
+        if (creative.removeJustChangedByThisPluginGMPlayers(player) || conf.getIgnoredGameMode().contains(newGameMode)
+                || player.hasPermission(Creative.CREATIVE_IGNORE_PERM)) {
             return;
         }
 
@@ -120,7 +131,8 @@ public final class FlyCreativeListener implements Listener {
             creative.removeManualChangeCreativeGMPlayers(player);
 
             // Put back creative/fly of the land 20 tick after, outside of this event
-            Bukkit.getScheduler().runTaskLater(secuboid, () -> setFlyCreative(null, player, secuboid.getLands().getPermissionsFlags(event.getPlayer().getLocation())), 1);
+            Bukkit.getScheduler().runTaskLater(secuboid, () -> setFlyCreative(null, player,
+                    secuboid.getLands().getPermissionsFlags(event.getPlayer().getLocation())), 1);
 
         } else {
             creative.addManualChangeCreativeGMPlayers(player);
@@ -198,8 +210,8 @@ public final class FlyCreativeListener implements Listener {
     }
 
     private void setFlyCreative(final Event event, final Player player, final LandPermissionsFlags permissionsFlags) {
-        if (!secuboid.getDependPlugin().getVanish().isVanished(player) &&
-                !conf.getIgnoredGameMode().contains(player.getGameMode())
+        if (!secuboid.getDependPlugin().getVanish().isVanished(player)
+                && !conf.getIgnoredGameMode().contains(player.getGameMode())
                 && !creative.isManualChangeCreativeGMPlayers(player)
                 && !creative.isCreative(event, player, permissionsFlags)) {
             fly.isFly(event, player, permissionsFlags);

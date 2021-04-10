@@ -184,6 +184,7 @@ public final class Secuboid extends JavaPlugin {
     @Override
     public void onEnable() {
         loadSecuboid(true);
+        new SecuboidMetrics(this).start();
     }
 
     @Override

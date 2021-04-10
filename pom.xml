@@ -130,6 +130,13 @@
         <!-- included in Spigot/Bukkit End -->
 
         <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>2.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>${vaultapi.version}</version>
@@ -166,40 +173,37 @@
                     <groupId>com.nijikokun</groupId>
                     <artifactId>iconomy</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>org.khelekore</groupId>
                     <artifactId>prtree</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>net.sf.opencsv</groupId>
                     <artifactId>opencsv</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>de.schlichtherle</groupId>
                     <artifactId>truezip</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>rhino</groupId>
                     <artifactId>js</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>com.sk89q</groupId>
                     <artifactId>commandbook</artifactId>
                 </exclusion>
-
                 <exclusion>
                     <groupId>com.sk89q</groupId>
                     <artifactId>jchronic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bstats</groupId>
+                    <artifactId>bstats</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -222,6 +226,7 @@
         </resources>
 
         <plugins>
+
             <!-- Required for sonarcloud -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -247,6 +252,29 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.tabinol.secuboid</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
         <extensions>

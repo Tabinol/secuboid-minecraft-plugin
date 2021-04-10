@@ -65,10 +65,27 @@ The help is welcome for development and language typos.
 * Flat files (default)
 * MySQL/Maria (since 1.5.0)
 
-## Dependencies:
+## Dependencies
 
 * **Needed**: Vault (groups, economy)
 * **Optional**: WorldEdit, Essentials(-X) (chat, vanish), VanishNoPacket (vanish), SuperVanish/PremiumVanish (vanish)
+
+## Metrics
+
+This plugin utilises bStats plugin metrics system, which means that the following information is collected and sent to bstats.org:
+
+* A unique identifier
+* The server's version of Java
+* Whether the server is in offline or online mode
+* The plugin's version
+* The server's version
+* The OS version/name and architecture
+* The core count for the CPU
+* The number of players online
+* The Metrics version
+* The number and type of Secuboid lands/areas and some basic configurations
+
+Opting out of this service can be done by editing plugins/Plugin Metrics/config.yml and changing opt-out to true.
 
 # History
 

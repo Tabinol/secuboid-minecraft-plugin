@@ -143,7 +143,8 @@ public final class InventoryConfig {
     }
 
     public InventorySpec getOrCreateInvSpec(String invName) {
-        return invNameToInvSpec.computeIfAbsent(invName.toLowerCase(), this::createNoneExistingInvSpec);
+        return invNameToInvSpec.computeIfAbsent(invName.toLowerCase(),
+                invNameLower -> new InventorySpec(invNameLower, true, true, true, Collections.emptyList()));
     }
 
     private InventorySpec createNoneExistingInvSpec(String invNameLower) {

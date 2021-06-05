@@ -92,10 +92,10 @@ class VisualCommon {
         int playerTop = entry.getSelectionTop();
         int maxTop = secuboid.getConf().getMaxTop();
         if (playerBottom != y1) {
-            y1 = Math.min(playerBottom, Math.min(worldMinY, maxBottom));
+            y1 = Math.max(playerBottom, Math.max(worldMinY, maxBottom));
         }
         if (playerTop != y2) {
-            y2 = Math.max(playerTop, Math.max(worldMaxY, maxTop));
+            y2 = Math.min(playerTop, Math.min(worldMaxY, maxTop));
         }
     }
 

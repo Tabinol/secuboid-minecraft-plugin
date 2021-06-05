@@ -86,7 +86,7 @@ class VisualCommon {
     final void setBottomTop(Location playerLocation) {
         World world = player.getWorld();
         int worldMinY = world.getMinHeight();
-        int worldMaxY = world.getMaxHeight();
+        int worldMaxY = world.getMaxHeight() - 1;
         int playerBottom = entry.getSelectionBottom();
         int maxBottom = secuboid.getConf().getMaxBottom();
         int playerTop = entry.getSelectionTop();

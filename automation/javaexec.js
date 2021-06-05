@@ -9,7 +9,7 @@ export class JavaExec extends Exec {
         super(execList, 'server')
         this.jreDir = jreDir
         this.spigotFile = spigotFile
-        this.breakMessages.push('at me.tabinol.secuboid.Secuboid')
+        this.breakMessages.push('at me.tabinol.secuboid.')
         this.rl = null
     }
 

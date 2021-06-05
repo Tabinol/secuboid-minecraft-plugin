@@ -65,11 +65,11 @@ Lands:
                                      # or 0 for disabling
   DefaultXsize: 10                   # Size on selection start
   DefaultZsize: 10
-  DefaultBottom: 0                   # Default selection: positive = absolute
-  DefaultTop: 255                    # negative = from player feet
+  DefaultBottom: -2147483648         # Default selection: positive = absolute
+  DefaultTop: 2147483647
   DefaultRadius: 5                   # Default selection radius for roads
-  MaxBottom: 0                       # Maximum selection high
-  MaxTop: 255
+  MaxBottom: -2147483648             # Maximum selection high
+  MaxTop: 2147483647
   MaxRadius: 10                      # Maximum selection radius for roads
 
   # Need approve (if activated)

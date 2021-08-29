@@ -22,7 +22,11 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Bed;
+import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.Bat;
 import org.bukkit.event.Cancellable;
 import org.bukkit.entity.Animals;
@@ -36,6 +40,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -52,6 +57,7 @@ import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.FireworkExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
@@ -96,10 +102,10 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((entityType == EntityType.CREEPER
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.CREEPER_EXPLOSION.getFlagType()).getValueBoolean())
                 || ((entityType == EntityType.PRIMED_TNT || entityType == EntityType.MINECART_TNT)
-                && !landPermissionsFlags.getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType())
-                .getValueBoolean())
+                        && !landPermissionsFlags.getFlagAndInherit(FlagList.TNT_EXPLOSION.getFlagType())
+                                .getValueBoolean())
                 || (entityType == EntityType.ENDER_CRYSTAL && !landPermissionsFlags
-                .getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
+                        .getFlagAndInherit(FlagList.END_CRYSTAL_EXPLOSION.getFlagType()).getValueBoolean())
                 || !landPermissionsFlags.getFlagAndInherit(FlagList.EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
             if (entityType == EntityType.CREEPER) {
@@ -125,23 +131,23 @@ public final class WorldListener extends CommonListener implements Listener {
 
                     case CREEPER:
                         power = 0L;
-                        explodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(), event.getLocation(),
-                                event.getYield(), power, false);
+                        explodeBlocks(event, event.blockList(), FlagList.CREEPER_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), power, false);
                         break;
 
                     case WITHER_SKULL:
-                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
-                                event.getYield(), 1L, false);
+                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), 1L, false);
                         break;
 
                     case WITHER:
-                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(), event.getLocation(),
-                                event.getYield(), 7L, false);
+                        explodeBlocks(event, event.blockList(), FlagList.WITHER_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), 7L, false);
                         break;
 
                     case FIREBALL:
-                        explodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(), event.getLocation(),
-                                event.getYield(), 1L, true);
+                        explodeBlocks(event, event.blockList(), FlagList.GHAST_DAMAGE.getFlagType(),
+                                event.getLocation(), event.getYield(), 1L, true);
                         break;
 
                     case MINECART_TNT:
@@ -170,13 +176,31 @@ public final class WorldListener extends CommonListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockExplodeEvent(BlockExplodeEvent event) {
         final Location loc = event.getBlock().getLocation();
-        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
 
-        if (!landPermissionsFlags.getFlagAndInherit(FlagList.BLOCK_EXPLOSION.getFlagType()).getValueBoolean()) {
-            event.setCancelled(true);
-        } else {
-            explodeBlocks(event, event.blockList(), FlagList.BLOCK_DAMAGE.getFlagType(),
-                    loc, event.getYield(), 5L, true);
+        explodeBlocks(event, event.blockList(), FlagList.BLOCK_DAMAGE.getFlagType(), loc, event.getYield(), 5L, true);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onPlayerInteract(final PlayerInteractEvent event) {
+        final Action action = event.getAction();
+
+        if (action == Action.RIGHT_CLICK_BLOCK) {
+            final Location loc = event.getClickedBlock().getLocation();
+            final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
+
+            if (!landPermissionsFlags.getFlagAndInherit(FlagList.BLOCK_EXPLOSION.getFlagType()).getValueBoolean()) {
+                final BlockData blockData = event.getClickedBlock().getBlockData();
+                final Environment environment = loc.getWorld().getEnvironment();
+
+                if (environment == Environment.NETHER && blockData instanceof Bed) {
+                    event.setCancelled(true);
+                } else if (environment == Environment.NORMAL && blockData instanceof RespawnAnchor) {
+                    final RespawnAnchor respawnAnchor = (RespawnAnchor) blockData;
+                    if (respawnAnchor.getCharges() == respawnAnchor.getMaximumCharges()) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 
@@ -190,10 +214,10 @@ public final class WorldListener extends CommonListener implements Listener {
         final Location loc = event.getEntity().getLocation();
         final LandPermissionsFlags landPermissionsFlags = secuboid.getLands().getPermissionsFlags(loc);
 
-        //Check if the explosion is in a land
+        // Check if the explosion is in a land
         if (!landPermissionsFlags.getFlagAndInherit(FlagList.FIREWORK_EXPLOSION.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
-            //Remove entity to stop completly the event
+            // Remove entity to stop completly the event
             event.getEntity().remove();
         }
     }
@@ -224,8 +248,8 @@ public final class WorldListener extends CommonListener implements Listener {
      * @param power   the power
      * @param setFire the set fire
      */
-    private void explodeBlocks(final Cancellable event, final List<Block> blocks, final FlagType ft, final Location loc, final float yield,
-                               final float power, final boolean setFire) {
+    private void explodeBlocks(final Cancellable event, final List<Block> blocks, final FlagType ft, final Location loc,
+            final float yield, final float power, final boolean setFire) {
 
         FlagValue value;
         boolean cancelEvent = false;
@@ -266,7 +290,7 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((event.getEntityType() == EntityType.ENDERMAN
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.ENDERMAN_DAMAGE.getFlagType()).getValueBoolean())
                 || (event.getEntityType() == EntityType.WITHER && !landPermissionsFlags
-                .getFlagAndInherit(FlagList.WITHER_DAMAGE.getFlagType()).getValueBoolean())) {
+                        .getFlagAndInherit(FlagList.WITHER_DAMAGE.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
 
             // Crop trample
@@ -325,10 +349,10 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((event.getEntity() instanceof Animals
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.ANIMAL_SPAWN.getFlagType()).getValueBoolean())
                 || ((event.getEntity() instanceof Monster || event.getEntity() instanceof Slime
-                || event.getEntity() instanceof Flying)
-                && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType())
-                .getValueBoolean())
-                || (event.getEntity() instanceof Villager && !landPermissionsFlags.getFlagAndInherit(FlagList.VILLAGER_SPAWN.getFlagType()).getValueBoolean())) {
+                        || event.getEntity() instanceof Flying)
+                        && !landPermissionsFlags.getFlagAndInherit(FlagList.MOB_SPAWN.getFlagType()).getValueBoolean())
+                || (event.getEntity() instanceof Villager && !landPermissionsFlags
+                        .getFlagAndInherit(FlagList.VILLAGER_SPAWN.getFlagType()).getValueBoolean())) {
             event.setCancelled(true);
         }
     }
@@ -377,7 +401,7 @@ public final class WorldListener extends CommonListener implements Listener {
         if ((ml == Material.LAVA
                 && !landPermissionsFlags.getFlagAndInherit(FlagList.LAVA_FLOW.getFlagType()).getValueBoolean())
                 || (ml == Material.WATER && !landPermissionsFlags.getFlagAndInherit(FlagList.WATER_FLOW.getFlagType())
-                .getValueBoolean())) {
+                        .getValueBoolean())) {
             event.setCancelled(true);
         }
     }
@@ -392,7 +416,7 @@ public final class WorldListener extends CommonListener implements Listener {
 
         if (conf.isOverrideExplosions() && event.getEntity() instanceof Hanging
                 && (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION
-                || event.getCause() == DamageCause.PROJECTILE)) {
+                        || event.getCause() == DamageCause.PROJECTILE)) {
             // Check for ItemFrame
             event.setCancelled(true);
         }

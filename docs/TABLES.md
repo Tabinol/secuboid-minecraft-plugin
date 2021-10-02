@@ -59,6 +59,7 @@ EXCLUDE_COMMANDS                   | string list     |               | Banned co
 SPAWN                              | text            |               | Land spawn point (created with /secuboid setspawn)
 LEAF_DECAY                         | boolean         | true          | Leafs decay
 CROP_TRAMPLE                       | boolean         | true          | Crop trample from every source (animal, player)
+FERTILIZE *v1.6.0+*                | boolean         | true          | Fertilizing with a bonemeal (natural, player)
 WATER_FLOW                         | boolean         | true          | Water flow
 LAVA_FLOW                          | boolean         | true          | Lava flow
 PORTAL_WORLD                       | text            |               | Teleport the player to a specific world
@@ -153,6 +154,7 @@ TP                                                                              
 TP_DEATH                                                                            | false   | On death, return to the land spawn point
 LAND_DEATH                                                                          | false   | Kill player on land entrance (ouch!)
 CROP_TRAMPLE                                                                        | true    | Crop trample
+FERTILIZE *v1.6.0+*                                                                 | true    | Fertilizing with a bonemeal
 GOD                                                                                 | false   | No damage
 END_PORTAL_TP                                                                       | true    | Use ender portals
 NETHER_PORTAL_TP                                                                    | true    | Use nether portals

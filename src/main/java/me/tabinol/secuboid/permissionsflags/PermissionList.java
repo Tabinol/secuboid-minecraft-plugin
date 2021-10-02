@@ -363,7 +363,8 @@ public enum PermissionList {
     /**
      * Teleport from Secuboid portal
      */
-    PORTAL_TP(true);
+    PORTAL_TP(true),
+    FERTILIZE(true);
 
     /**
      * The base value.

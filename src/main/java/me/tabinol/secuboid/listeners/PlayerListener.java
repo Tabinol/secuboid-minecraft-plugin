@@ -46,6 +46,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -485,8 +486,7 @@ public final class PlayerListener extends CommonListener implements Listener {
                 .getPermissionsFlags(event.getRightClicked().getLocation());
         if (landPermissionsFlags.isBanned(player) || (event.getRightClicked() instanceof ItemFrame
                 && !checkPermission(landPermissionsFlags, player, PermissionList.BUILD_PLACE.getPermissionType()))
-                || (event.getRightClicked() instanceof Tameable
-                        && !((Tameable) event.getRightClicked()).isTamed()
+                || (event.getRightClicked() instanceof Tameable && !((Tameable) event.getRightClicked()).isTamed()
                         && !checkPermission(landPermissionsFlags, player, PermissionList.TAME.getPermissionType()))
                 || (event.getRightClicked() instanceof Merchant
                         && !checkPermission(landPermissionsFlags, player, PermissionList.TRADE.getPermissionType()))
@@ -884,7 +884,7 @@ public final class PlayerListener extends CommonListener implements Listener {
         if (playerConfEntry == null) {
             return;
         }
-        
+
         if (!playerConfEntry.isAdminMode()) {
 
             final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
@@ -947,6 +947,22 @@ public final class PlayerListener extends CommonListener implements Listener {
                     || ((worldEnvFrom == World.Environment.THE_END || worldEnvTo == World.Environment.THE_END)
                             && !checkPermission(landPermissionsFlags, player,
                                     PermissionList.END_PORTAL_TP.getPermissionType()))) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onBlockFertilize(final BlockFertilizeEvent event) {
+
+        final Player player = (Player) event.getPlayer();
+
+        if (player != null && playerConf.get(player) != null) {
+
+            final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
+                    .getPermissionsFlags(event.getBlock().getLocation());
+
+            if (!checkPermission(landPermissionsFlags, player, PermissionList.FERTILIZE.getPermissionType())) {
                 event.setCancelled(true);
             }
         }

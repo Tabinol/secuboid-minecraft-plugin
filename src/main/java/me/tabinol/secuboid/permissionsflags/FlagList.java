@@ -169,7 +169,8 @@ public enum FlagList {
     /**
      * Is a portal for a world (random)
      */
-    PORTAL_LAND_RANDOM("");
+    PORTAL_LAND_RANDOM(""),
+    FERTILIZE(true);
 
     /**
      * The base value.

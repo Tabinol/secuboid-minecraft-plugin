@@ -43,6 +43,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
@@ -418,6 +419,17 @@ public final class WorldListener extends CommonListener implements Listener {
                 && (event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.ENTITY_EXPLOSION
                         || event.getCause() == DamageCause.PROJECTILE)) {
             // Check for ItemFrame
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onBlockFertilize(final BlockFertilizeEvent event) {
+
+        final LandPermissionsFlags landPermissionsFlags = secuboid.getLands()
+                .getPermissionsFlags(event.getBlock().getLocation());
+
+        if (!landPermissionsFlags.getFlagAndInherit(FlagList.FERTILIZE.getFlagType()).getValueBoolean()) {
             event.setCancelled(true);
         }
     }

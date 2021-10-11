@@ -7,7 +7,7 @@ jobs:
   build:
     working_directory: ~/secuboid-minecraft-plugin
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:16-jdk-buster
     steps:
       - checkout
       - restore_cache:

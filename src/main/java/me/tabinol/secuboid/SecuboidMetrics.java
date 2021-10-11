@@ -46,6 +46,7 @@ public final class SecuboidMetrics {
     }
 
     void start() {
+        /* maven-shade-plugin is not working with Java 16. Bstats disabled!
         Metrics metrics = new Metrics(secuboid, BSTATS_PLUGIN_ID);
 
         // Storage
@@ -97,5 +98,6 @@ public final class SecuboidMetrics {
 
         // Economy enabled
         metrics.addCustomChart(new SimplePie("economy_enabled", () -> secuboid.getConf().useEconomy() ? YES : NO));
+        */
     }
 }

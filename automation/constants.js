@@ -7,12 +7,11 @@ export default {
     javaArgsDefault: [
         "-Xms2G",
         "-Xmx2G",
-        "-XX:+UseConcMarkSweepGC",
         "-DIReallyKnowWhatIAmDoingISwear"
     ],
-    jreUrl: "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u282-b08/OpenJDK8U-jre_x64_linux_hotspot_8u282b08.tar.gz",
-    mariadbUrl: "https://mirror.its.dal.ca/mariadb/mariadb-10.5.9/bintar-linux-x86_64/mariadb-10.5.9-linux-x86_64.tar.gz",
-    spigotUrl: "https://cdn.getbukkit.org/spigot/spigot-{{VERSION}}.jar",
+    jreUrl: "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz",
+    mariadbUrl: "https://ftp.osuosl.org/pub/mariadb/mariadb-10.6.4/bintar-linux-systemd-x86_64/mariadb-10.6.4-linux-systemd-x86_64.tar.gz",
+    spigotUrl: "https://download.getbukkit.org/spigot/spigot-{{VERSION}}.jar",
     vaultUrl: "https://jitpack.io/com/github/MilkBowl/Vault/{{VERSION}}/Vault-{{VERSION}}.jar",
     groupmanagerUrl: "https://github.com/ElgarL/GroupManager/releases/download/v2.9/GroupManager.jar",
     essentialsUrl: "https://github.com/EssentialsX/Essentials/releases/download/2.18.2/EssentialsX-2.18.2.0.jar",

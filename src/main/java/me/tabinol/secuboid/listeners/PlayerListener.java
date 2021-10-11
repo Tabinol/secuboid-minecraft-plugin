@@ -104,7 +104,7 @@ public final class PlayerListener extends CommonListener implements Listener {
     public static final int DEFAULT_TIME_LAPS = 500; // in milliseconds
 
     private static final Set<Material> WATER_FISH_BUCKETS = EnumSet.of(Material.WATER_BUCKET, Material.COD_BUCKET,
-            Material.PUFFERFISH_BUCKET, Material.SALMON_BUCKET, Material.TROPICAL_FISH_BUCKET);
+            Material.PUFFERFISH_BUCKET, Material.SALMON_BUCKET, Material.TROPICAL_FISH_BUCKET, Material.AXOLOTL_BUCKET);
 
     /**
      * The conf.

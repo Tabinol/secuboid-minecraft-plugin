@@ -15,7 +15,6 @@ import me.tabinol.secuboid.Secuboid;
 import me.tabinol.secuboid.config.Config;
 import me.tabinol.secuboid.lands.Land;
 import me.tabinol.secuboid.players.PlayerConfig;
-import me.tabinol.secuboid.utilities.ColoredConsole;
 
 /**
  * Chat listener
@@ -86,7 +85,7 @@ public class ChatListener extends CommonListener implements Listener {
             final String message = event.getMessage().substring(1);
 
             // send messages
-            ColoredConsole.info(
+            secuboid.getLogger().info(
                     ChatColor.WHITE + "[" + player.getDisplayName() + ChatColor.WHITE + " " + firstChar + " " + "'"
                             + ChatColor.GREEN + land.getName() + ChatColor.WHITE + "'] " + ChatColor.GRAY + message);
             for (final Player playerToMsg : playersToMsg) {

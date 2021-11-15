@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.tabinol.secuboid</groupId>
     <artifactId>secuboid</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1-SNAPSHOT</version>
     <name>Secuboid</name>
     <description>Lands and grief protection plugin for Minecraft (Factoid fork)</description>
     <!-- Note 1: Bstats is broken (see below)-->
@@ -47,6 +47,14 @@
             <url>https://maven.sk89q.com/repo/</url>
         </repository>
     </repositories>
+
+    <!-- Temporary use of maven-shade-plugin Snapshot to be compatible with Java 16 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-snapshots</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencies>
         <!-- Test begin -->
@@ -247,11 +255,11 @@
                 </executions>
             </plugin>
 
-            <!-- maven-shade-plugin is not working with Java 16. Bstats disabled!
+            <!-- Temporary use of maven-shade-plugin Snapshot to be compatible with Java 16 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.3.0-SNAPSHOT</version>
                 <configuration>
                     <relocations>
                         <relocation>
@@ -269,8 +277,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
-
         </plugins>
     </build>
 

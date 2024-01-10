@@ -1,5 +1,7 @@
 # Secuboid
 
+**Hello, I have to announce that the Secuboid project is unfortunately no longer in development. It's still available on GitHub if someone ever wants to pick it up. I'm sorry but I had to come to this conclusion due to lack of time and because I'm working on other projects.**
+
 Secuboid is a complete land (region) protection plugin. It has a lot of functionalities. You can make cuboid lands, cylinder lands and road (beta) protection. The player can make his own land with economy, rent or sell his land. There is also a very complete list of flags and permissions.
 
 ## Help needed

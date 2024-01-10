@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json.schemastore.org/bukkit-plugin.json
+name: SecuboidPermissionGroup
+main: app.secuboid.permission.group.SecuboidPermissionGroupPlugin
+version: ${project.version}
+description: "Adds Bukkit permission group system to the land parameters"
+depend: [ Secuboid, Vault ]
+authors: [ Tabinol, Kaz00, Ouaou ]
+api-version: ${spigot.plugin.api.version}

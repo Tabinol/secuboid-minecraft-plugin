@@ -1,0 +1,312 @@
+<!--
+  ~  Secuboid: Lands and Protection plugin for Minecraft server
+  ~  Copyright (C) 2014 Tabinol
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>app.secuboid</groupId>
+        <artifactId>secuboid-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <artifactId>secuboid</artifactId>
+    <name>Secuboid</name>
+    <description>Lands and grief protection plugin for Minecraft</description>
+
+    <dependencies>
+
+        <!-- Internal -->
+        <dependency>
+            <groupId>app.secuboid</groupId>
+            <artifactId>secuboid-api</artifactId>
+        </dependency>
+        <!-- Internal End -->
+
+        <!-- Spigot API -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Spigot API End-->
+
+        <!-- packaged in Secuboid -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-hikaricp</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- packaged in Secuboid End -->
+
+        <!-- Minecraft plugins -->
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Minecraft plugins End -->
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Test End -->
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources-filtered/</directory>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src-gen/main/resources/</directory>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>app.secuboid</groupId>
+                <artifactId>secuboid-generator-maven-plugin</artifactId>
+                <version>${revision}</version>
+                <executions>
+                    <execution>
+                        <id>generate-configService</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-config</goal>
+                        </goals>
+                        <configuration>
+                            <configSource>${project.basedir}/src/main/resources-filtered/config.yml
+                            </configSource>
+                            <configJavaTemplate>
+                                ${project.basedir}/src-template/main/java/app/secuboid/core/config/ConfigService.java.template
+                            </configJavaTemplate>
+                            <configJavaTarget>
+                                ${project.basedir}/src-gen/main/java/app/secuboid/core/config/ConfigService.java
+                            </configJavaTarget>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-messages</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-messages</goal>
+                        </goals>
+                        <configuration>
+                            <messagesSource>${project.basedir}/src/main/resources-filtered/lang/en.yml</messagesSource>
+                            <messagesJavaTemplate>
+                                ${project.basedir}/src-template/main/java/app/secuboid/core/messages/MessagePaths.java.template
+                            </messagesJavaTemplate>
+                            <messagesJavaTarget>
+                                ${project.basedir}/src-gen/main/java/app/secuboid/core/messages/MessagePaths.java
+                            </messagesJavaTarget>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-flags</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-flags</goal>
+                        </goals>
+                        <configuration>
+                            <flagsSource>${project.basedir}/src-template/generator/flags.yml</flagsSource>
+                            <flagsJavaTemplate>
+                                ${project.basedir}/src-template/main/java/app/secuboid/core/flags/FlagDeclarations.java.template
+                            </flagsJavaTemplate>
+                            <flagsJavaTarget>
+                                ${project.basedir}/src-gen/main/java/app/secuboid/core/flags/FlagDeclarations.java
+                            </flagsJavaTarget>
+                            <languageToTarget>
+                                <en>${project.basedir}/src-gen/main/resources/lang/flags-en.yml</en>
+                            </languageToTarget>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src-gen/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Needed for junit 5 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>fat</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${maven-shade-plugin.version}</version>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>app.secuboid:secuboid-api</include>
+                                    <!-- Dependencies -->
+                                    <include>com.fasterxml:classmate</include>
+                                    <include>jakarta.*:*</include>
+                                    <include>net.bytebuddy:byte-buddy</include>
+                                    <include>org.antlr:antlr4-runtime</include>
+                                    <include>org.bstats:*</include>
+                                    <include>org.hibernate.*:*</include>
+                                    <include>org.jboss.logging:jboss-logging</include>
+                                    <include>org.mariadb.jdbc:mariadb-java-client</include>
+                                    <include>com.zaxxer:HikariCP</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.fasterxml</pattern>
+                                    <shadedPattern>app.secuboid.fasterxml</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>jakarta</pattern>
+                                    <shadedPattern>app.secuboid.jakarta</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadedPattern>app.secuboid.bytebuddy</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.antlr</pattern>
+                                    <shadedPattern>app.secuboid.antlr4-runtime</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>app.secuboid.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.hibernate</pattern>
+                                    <shadedPattern>app.secuboid.hibernate</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jboss.logging</pattern>
+                                    <shadedPattern>app.secuboid.jboss.logging</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mariadb.jdbc</pattern>
+                                    <shadedPattern>app.secuboid.mariadb.jdbc</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>app.secuboid.hikari</shadedPattern>
+                                </relocation>
+                            </relocations>
+
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

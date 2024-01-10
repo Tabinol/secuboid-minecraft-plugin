@@ -1,0 +1,30 @@
+###############################
+# Secuboid configuration file #
+###############################
+
+# "en" (English) or "fr" (French) currently supported
+lang: en
+
+# Database section: You need a MariaDB or MySQL database to be able to use
+# Secuboid. This plugin DOES NOT support local file save.
+# IMPORTANT: Need a complete stop and start after a modification in this
+# section.
+database:
+
+  # Change "localhost" to your server url if your database is remote.
+  host: localhost
+
+  # Database port (3306 is the default)
+  port: 3306
+
+  # Database name
+  database: secuboid
+
+  # Database username
+  user: secuboid
+
+  # Database password
+  password: secuboid
+
+selection:
+  default-start-diameter: 3

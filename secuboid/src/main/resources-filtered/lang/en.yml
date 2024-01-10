@@ -1,0 +1,46 @@
+general:
+  test: This is a test message [{{argument-1}},{{argument-2}}]
+  pre-reload: Secuboid is about to be reloaded... Risk of severe lags!
+  reload: Secuboid is now reloaded.
+  inventory-full: Your inventory is full.
+  need-parameter: You need at least one parameter.
+  error: 'Error: {{error}}'
+chat-page:
+  header: "-{{subject}}: Page {{page-number}} of {{total-pages}}-"
+  footer-left-active: "[<-page {{page-number}}-]"
+  footer-right-active: "[-page {{page-number}}->]"
+  not-available: No page available.
+  not-found: "Page not found. Specify from {{first-page}} to {{last-page}}."
+selection:
+  scoreboard:
+    active:
+      title-create: Creating a new land...
+      selection-type: "Selection type: {{selection-type}}"
+      selection-types:
+        passive: "-passive-"
+        expand: "<-expand->"
+        retract: "->retract<-"
+        move: "->move->"
+      volume: "Volume: {{volume}} cube(s)"
+      type-when-done: 'Type: "{{command-when-done}}" when done.'
+    area:
+      title: Selecting a land and its area...
+      location-path: '{{location-path}}'
+  cancel: The selection is canceled.
+  empty: No area or land selected.
+  create:
+    enter-name: 'Enter the land name:'
+    need-active-selection: 'Need active selection, type "{{command-select}}" first.'
+    no-space: "A land name doesn't accept space."
+    created: "Land {{land}} created."
+info:
+  location-path: '{{location-path}}'
+tool:
+  name: Secuboid tool
+  lore-1: "Left Click: SELECT or CREATE"
+  lore-2: "Right Click: INFO or CANCEL"
+  done: You have now the Secuboid tool.
+  already: You have already the Secuboid tool.
+area:
+  cuboid: "cuboid: ({{x1}},{{y1}},{{z1}})-({{x2}},{{y2}},{{z2}})"
+  cylinder: "cylinder: (h:{{origin-h}},k:{{origin-k}}) (rx:{{rx}},rz:{{rz}})"

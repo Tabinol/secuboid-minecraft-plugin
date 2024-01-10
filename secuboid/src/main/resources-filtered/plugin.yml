@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json.schemastore.org/bukkit-plugin.json
+name: Secuboid
+main: app.secuboid.core.SecuboidPluginImpl
+version: ${project.version}
+description: "LandService and grief protection plugin"
+authors: [ Tabinol, Kaz00, Ouaou ]
+api-version: ${spigot.plugin.api.version}
+commands:
+  secuboid:
+    description: Secuboid Command
+    aliases: [ sd ]
+    usage: /secuboid help
+permissions:
+  secuboid.core.reload:
+    description: Reload Secuboid plugin
+    default: op

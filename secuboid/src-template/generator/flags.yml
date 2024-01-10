@@ -1,0 +1,14 @@
+# Default:
+# need-source: true
+# need-target: false
+# need-metadata: false
+# hidden: false
+
+build:
+  description:
+    en: Build and destroy
+    fr: Construire et détruire
+land-create:
+  description:
+    en: Create a land
+    fr: Créer un terrain
